@@ -1,0 +1,91 @@
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.CreatePassword {
+  padding: 1rem 1.5rem;
+  position: relative;
+  height: 100%;
+  animation: slide-in-right 300ms ease;
+
+  &-title {
+    font-size: 1.5rem;
+  }
+
+  &-label {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  &-input {
+    width: 100%;
+  }
+
+  &-strength {
+    background: #EEE;
+    margin: 0.2rem 0;
+    border-radius: 4px;
+    overflow: hidden;
+
+    &-meter {
+      height: 0.6rem;
+      transform-origin: left;
+      transition: background-color 100ms ease, transform 100ms ease;
+      
+      &.is-str0 {
+        transform: scaleX(0);
+        background: #EEE;
+      }
+
+      &.is-str1 {
+        transform: scaleX(0.25);
+        background: #e94a34;
+      }
+
+      &.is-str2 {
+        transform: scaleX(0.5);
+        background: #e87d01;
+      }
+
+      &.is-str3 {
+        transform: scaleX(0.75);
+        background: #1fcd6d;
+      }
+
+      &.is-str4 {
+        transform: scaleX(1);
+        background: #8e44ad;
+      }
+    }
+  }
+
+  &-check {
+    color: #1fcd6d;
+  }
+
+  &-close {
+    color: #e94a34;
+  }
+
+  &-continue {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  &-disclaimer {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    opacity: 0.4;
+    text-align: justify;
+  }
+}

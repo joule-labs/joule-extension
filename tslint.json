@@ -1,0 +1,16 @@
+{
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "jsx-boolean-value": false,
+    "jsx-no-lambda": false,
+    "member-access": false,
+    "interface-name": [true, "never-prefix"],
+    "curly": [true, "ignore-same-line"],
+    "no-console": false
+  },
+  "linterOptions": {
+    "exclude": ["client/lib/contracts/**/*.json"]
+  }
+}

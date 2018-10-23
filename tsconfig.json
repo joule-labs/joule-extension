@@ -1,0 +1,72 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "outDir": "dist/tsc_output",
+    "sourceMap": true,
+    "strict": true,
+    "noEmitOnError": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "skipLibCheck": true,
+    "lib": ["dom", "es2017"],
+    "baseUrl": ".",
+    "paths": {
+      "components/*": ["./src/app/components/*"],
+      "lib/*": ["./src/app/lib/*"],
+      "modules/*": ["./src/app/modules/*"],
+      "pages/*": ["./src/app/pages/*"],
+      "static/*": ["./src/app/static/*"],
+      "store/*": ["./src/app/store/*"],
+      "styles/*": ["./src/app/styles/*"],
+      "typings/*": ["./src/app/typings/*"],
+      "utils/*": ["./src/app/utils/*"]
+    }
+  },
+  "include": ["src", "webpack.config.ts"]
+
+  // {
+  //   "compileOnSave": false,
+  //   "compilerOptions": {
+  //     "target": "esnext",
+  //     "module": "esnext",
+  //     "outDir": "dist",
+  //     "jsx": "preserve",
+  //     "allowJs": true,
+  //     "moduleResolution": "node",
+  //     "allowSyntheticDefaultImports": true,
+  //     "noUnusedLocals": true,
+  //     "noUnusedParameters": true,
+  //     "noImplicitAny": true,
+  //     "removeComments": false,
+  //     "preserveConstEnums": true,
+  //     "sourceMap": true,
+  //     "skipLibCheck": true,
+  //     "baseUrl": ".",
+  //     "lib": ["dom", "es2017"],
+  //     "paths": {
+  //       "contracts/*": ["../contract/build/contracts/*"],
+  //       "api/*": ["./client/api/*"],
+  //       "components/*": ["./client/components/*"],
+  //       "lib/*": ["./client/lib/*"],
+  //       "modules/*": ["./client/modules/*"],
+  //       "pages/*": ["./client/pages/*"],
+  //       "static/*": ["./client/static/*"],
+  //       "store/*": ["./client/store/*"],
+  //       "styles/*": ["./client/styles/*"],
+  //       "typings/*": ["./client/typings/*"],
+  //       "types/*": ["./types/*"],
+  //       "utils/*": ["./client/utils/*"],
+  //       "web3interact/*": ["./client/web3interact/*"]
+  //     }
+  //   },
+  //   "include": ["./client/**/*", "./server/**/*", "./stories/**/*", "./types/**/*"],
+  //   "exclude": ["./client/static"]
+  // }
+}

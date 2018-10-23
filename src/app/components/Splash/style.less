@@ -1,0 +1,58 @@
+@keyframes fade-splash-up {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.Splash {
+  padding: 2rem;
+  position: relative;
+  height: 100%;
+
+  &-inner {
+    animation: fade-splash-up 500ms ease 1;
+  }
+
+  h2 {
+    font-family: courier;
+    text-align: center;
+    font-weight: 400;
+    opacity: 0.55;
+  }
+
+  & svg {
+    display: block;
+    margin: 0 auto;
+  }
+
+  ul {
+    margin: 2rem 0 2rem 0;
+    font-size: 1rem;
+    line-height: 2.4rem;
+    list-style: none;
+    padding: 0 0 0 1rem;
+
+    & li::before {
+      margin-right: 0.6rem;
+      font-size: 1.5rem;
+      vertical-align: bottom;
+      content: '•';
+      color: #f4bb00;
+    }
+  }
+
+  &-controls {
+    text-align: center;
+
+    &-restore {
+      margin-top: 1rem;
+      display: inline-block;
+      color: #828282;
+    }
+  }
+}

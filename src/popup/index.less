@@ -1,0 +1,32 @@
+@orange: #f4bb00;
+
+// ant
+.ant-btn-primary {
+  background-color: @orange;
+  border-color: @orange;
+  &:hover {
+    background-color: darken(@orange, 2%);
+    border-color: darken(@orange, 2%);
+  }
+}
+.ant-btn-lg {
+  padding: 0 4rem;
+  font-size: 1.3rem;
+  border-radius: 4px;
+  height: 3.2rem;
+}
+
+html,
+body,
+:global(#root) {
+  width: 360px;
+  height: 480px;
+  overflow: auto;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  color: #4d4d4d;
+}

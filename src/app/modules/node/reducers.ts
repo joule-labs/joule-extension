@@ -1,0 +1,88 @@
+import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
+import types from './types';
+
+export interface NodeState {
+  lib: LndHttpClient | null;
+  url: string | null;
+  isNodeChecked: boolean;
+  macaroon: Macaroon | null;
+  nodeInfo: GetInfoResponse | null;
+  isCheckingNode: boolean;
+  checkNodeError: null | Error;
+  isCheckingAuth: boolean;
+  checkAuthError: null | Error;
+}
+
+export const INITIAL_STATE: NodeState = {
+  lib: null,
+  url: null,
+  isNodeChecked: false,
+  macaroon: null,
+  nodeInfo: null,
+  isCheckingNode: false,
+  checkNodeError: null,
+  isCheckingAuth: false,
+  checkAuthError: null,
+};
+
+export default function cryptoReducers(
+  state: NodeState = INITIAL_STATE,
+  action: any
+): NodeState {
+  switch (action.type) {
+    case types.CHECK_NODE:
+      return {
+        ...state,
+        url: null,
+        isNodeChecked: false,
+        isCheckingNode: true,
+        checkNodeError: null,
+        checkAuthError: null,
+      };
+    case types.CHECK_NODE_SUCCESS:
+      return {
+        ...state,
+        url: action.payload,
+        isNodeChecked: true,
+        isCheckingNode: false,
+      };
+    case types.CHECK_NODE_FAILURE:
+      return {
+        ...state,
+        isCheckingNode: false,
+        checkNodeError: action.payload,
+      };
+    
+    case types.CHECK_AUTH:
+      return {
+        ...state,
+        isCheckingAuth: true,
+        checkAuthError: null,
+      };
+    case types.CHECK_AUTH_SUCCESS:
+      return {
+        ...state,
+        url: action.payload.url,
+        nodeInfo: action.payload.response,
+        isCheckingAuth: false,
+      };
+    case types.CHECK_AUTH_FAILURE:
+      return {
+        ...state,
+        isCheckingAuth: false,
+        checkAuthError: action.payload,
+      };
+    
+    case types.SET_NODE:
+    case types.SYNC_NODE_STATE:
+      return {
+        ...state,
+        ...action.payload,
+      };
+
+    case types.RESET_NODE:
+      return { ...INITIAL_STATE };
+  }
+
+  return state;
+}

@@ -1,0 +1,62 @@
+@keyframes error-shake {
+  0%   { transform: translateX(0); }
+  10%  { transform: translateX(-10px); }
+  25%  { transform: translateX(8px); }
+  40%  { transform: translateX(-6px); }
+  65%  { transform: translateX(4px); }
+  80%  { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes form-fade-in {
+  0%, 40% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(0.999);
+  }
+}
+
+.EnterPassword {
+  width: 100%;
+  text-align: center;
+  animation: form-fade-in 700ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
+  transform: scale(0.999);
+
+  &-form {
+    .ant-form-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .ant-form-item-control.has-error {
+      animation: error-shake 400ms ease-out 1;
+    }
+
+    &-input {
+      .ant-input,
+      .ant-input-search-button {
+        height: 3rem;
+      }
+
+      .ant-input {
+        font-size: 1.1rem;
+      }
+
+      .ant-input-search-button {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  &-clear {
+    font-size: 0.8rem;
+    opacity: 0.4;
+    color: inherit;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
