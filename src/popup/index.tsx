@@ -4,4 +4,7 @@ import App from '../app/index';
 
 import './index.less';
 
-ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
+ReactDOM.render(
+  <App /> as any,
+  document.getElementById('root') as HTMLElement,
+);

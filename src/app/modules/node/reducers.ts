@@ -7,10 +7,13 @@ export interface NodeState {
   isNodeChecked: boolean;
   macaroon: Macaroon | null;
   nodeInfo: GetInfoResponse | null;
+
   isCheckingNode: boolean;
   checkNodeError: null | Error;
   isCheckingAuth: boolean;
   checkAuthError: null | Error;
+  isFetchingNodeInfo: boolean;
+  fetchNodeInfoError: null | Error;
 }
 
 export const INITIAL_STATE: NodeState = {
@@ -19,10 +22,13 @@ export const INITIAL_STATE: NodeState = {
   isNodeChecked: false,
   macaroon: null,
   nodeInfo: null,
+
   isCheckingNode: false,
   checkNodeError: null,
   isCheckingAuth: false,
   checkAuthError: null,
+  isFetchingNodeInfo: false,
+  fetchNodeInfoError: null,
 };
 
 export default function cryptoReducers(
@@ -72,6 +78,26 @@ export default function cryptoReducers(
         isCheckingAuth: false,
         checkAuthError: action.payload,
       };
+    
+    case types.GET_NODE_INFO:
+      return {
+        ...state,
+        nodeInfo: null,
+        isFetchingNodeInfo: true,
+        fetchNodeInfoError: null,
+      };
+    case types.GET_NODE_INFO_SUCCESS:
+      return {
+        ...state,
+        isFetchingNodeInfo: false,
+        nodeInfo: action.payload,
+      };
+    case types.GET_NODE_INFO_FAILURE:
+      return {
+        ...state,
+        isFetchingNodeInfo: false,
+        fetchNodeInfoError: action.payload,
+      }
     
     case types.SET_NODE:
     case types.SYNC_NODE_STATE:

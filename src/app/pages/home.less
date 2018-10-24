@@ -1,0 +1,50 @@
+.Home {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  // Ant override
+  .ant-tabs {
+    flex: 1;
+  }
+
+  .ant-tabs-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    background: #FFF;
+    z-index: 1000;
+  }
+
+  .ant-tabs-nav {
+    width: 100%;
+
+    > div {
+      display: flex;
+      width: 100%;
+    }
+
+    .ant-tabs-tab {
+      margin: 0;
+      flex: 1;
+      text-align: center;
+      font-weight: normal;
+    }
+  }
+  
+  .ant-tabs-content {
+    height: 100%;
+    padding-top: 44px; // Height of sticky nav
+
+    .ant-tabs-tabpane {
+      height: 100%;
+      overflow: auto;
+
+      &.ant-tabs-tabpane-inactive {
+        overflow: visible;
+      }
+    }
+  }
+}

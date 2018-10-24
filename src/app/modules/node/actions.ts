@@ -18,6 +18,10 @@ export function checkAuth(url: string, macaroon: Macaroon) {
   };
 }
 
+export function getNodeInfo() {
+  return { type: types.GET_NODE_INFO };
+}
+
 export function setNode(url: string, macaroon: Macaroon) {
   return {
     type: types.SET_NODE,

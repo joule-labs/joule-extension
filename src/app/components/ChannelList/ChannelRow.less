@@ -1,0 +1,36 @@
+@import "~style/variables.less";
+
+.ChannelRow {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(#000, 0.08);
+
+  &.is-clickable:hover {
+    border-color: @primary-color;
+  }
+
+  &-avatar {
+    flex-shrink: 0;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin-right: 1rem;
+  }
+
+  &-info {
+    flex: 1;
+    min-width: 0;
+
+    &-alias {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+    
+    &-pubkey {
+      font-size: 0.65rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

@@ -1,0 +1,60 @@
+.AccountInfo {
+  padding: 1rem 1.25rem;
+
+  &-top {
+    display: flex;
+    margin-bottom: 1rem;
+
+    &-avatar {
+      width: 4rem;
+      height: 4rem;
+      margin-right: 1rem;
+      border-radius: 100%;
+      overflow: hidden;
+
+      .is-loading & {
+        background: #EEE;
+      }
+    }
+
+    &-info {
+      &-alias {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      &-balance {
+        font-size: 1rem;
+      }
+
+      &-balances {
+        display: flex;
+        font-size: 0.8rem;
+        opacity: 0.8;
+        
+        > * {
+          margin-right: 1rem;
+
+          &:last-child {
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .ant-btn {
+      flex: 1;
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

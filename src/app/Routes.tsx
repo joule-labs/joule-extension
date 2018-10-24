@@ -15,7 +15,7 @@ interface StateProps {
 type Props = StateProps & RouteComponentProps;
 
 class Routes extends React.Component<Props> {
-  componentDidMount() {
+  componentWillMount() {
     this.redirectAsNeeded();
   }
 
@@ -26,7 +26,8 @@ class Routes extends React.Component<Props> {
   render() {
     return (
       <Switch>
-        <Route path="/" exact component={HomePage} />
+        <Route path="/" exact render={() => 'loading'} />
+        <Route path="/home" exact component={HomePage} />
         <Route path="/onboarding" exact component={OnboardingPage} />
         <Route path="/password" exact component={PasswordPage} />
         <Route path="/settings" exact component={SettingsPage} />
@@ -45,6 +46,8 @@ class Routes extends React.Component<Props> {
       if (location.pathname !== '/password') {
         history.replace('/password');
       }
+    } else if (location.pathname === '/') {
+      history.replace('/home');
     }
   }
 }
