@@ -5,6 +5,7 @@ import Loader from 'components/Loader';
 import BigMessage from 'components/BigMessage';
 import TransactionRow from './TransactionRow';
 import { getTransactions } from 'modules/account/actions';
+import { AnyTransaction } from 'modules/account/types';
 import { AppState } from 'store/reducers'
 
 interface TxRowData {
@@ -18,6 +19,7 @@ interface StateProps {
   transactions: AppState['account']['transactions'];
   isFetchingTransactions: AppState['account']['isFetchingTransactions'];
   fetchTransactionsError: AppState['account']['fetchTransactionsError'];
+  onClick?(transaction: AnyTransaction): void;
 }
 
 interface DispatchProps {
@@ -76,7 +78,7 @@ class TransactionList extends React.Component<Props> {
   }
 
   private renderTransactionRows = () => {
-    const { payments, invoices, transactions } = this.props;
+    const { payments, invoices, transactions, onClick } = this.props;
     if (!payments || !invoices || !transactions) {
       return [];
     }
@@ -94,6 +96,7 @@ class TransactionList extends React.Component<Props> {
             timestamp={parseInt(payment.creation_date, 10)}
             status="complete"
             delta={new BN(`-${payment.value_sat}`)}
+            onClick={onClick}
           />
         )
       }))
@@ -116,6 +119,7 @@ class TransactionList extends React.Component<Props> {
               timestamp={timestamp}
               status={status}
               delta={status === 'complete' && new BN(invoice.amt_paid_sat)}
+              onClick={onClick}
             />
           ),
         };
@@ -133,6 +137,7 @@ class TransactionList extends React.Component<Props> {
             timestamp={parseInt(tx.time_stamp, 10)}
             status={tx.num_confirmations > 2 ? 'complete' : 'pending'}
             delta={new BN(`-${tx.amount}`)}
+            onClick={onClick}
           />
         ),
       }))

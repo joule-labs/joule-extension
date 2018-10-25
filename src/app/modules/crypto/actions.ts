@@ -35,6 +35,14 @@ export function enterPassword(payload: string) {
   };
 }
 
+export function requestPassword() {
+  return { type: types.REQUEST_PASSWORD };
+}
+
+export function cancelPassword() {
+  return { type: types.CANCEL_PASSWORD };
+}
+
 export function logout() {
   return { type: types.LOGOUT };
 }

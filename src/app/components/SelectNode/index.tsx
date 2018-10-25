@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Button, Spin } from 'antd';
-import UploadMacaroon from './UploadMacaroon';
+import UploadMacaroons from './UploadMacaroons';
 import ConfirmNode from './ConfirmNode';
 import { DEFAULT_LOCAL_NODE_URL } from 'utils/constants';
 import { checkNode, checkAuth, setNode, resetNode } from 'modules/node/actions';
 import { AppState } from 'store/reducers';
+import './style.less';
 
 enum NODE_TYPE {
   LOCAL = 'LOCAL',
@@ -35,14 +36,16 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   url: string;
-  macaroonHex: string;
+  adminMacaroon: string;
+  readonlyMacaroon: string;
   nodeType: null | NODE_TYPE;
 }
 
 class SelectNode extends React.Component<Props, State> {
   state: State = {
     url: '',
-    macaroonHex: '',
+    adminMacaroon: '',
+    readonlyMacaroon: '',
     nodeType: null,
   };
 
@@ -66,6 +69,7 @@ class SelectNode extends React.Component<Props, State> {
         content = checkNodeError.message;
       }
       else if (nodeInfo) {
+        title = 'Confirm your node';
         content = (
           <ConfirmNode
             nodeInfo={nodeInfo}
@@ -75,28 +79,39 @@ class SelectNode extends React.Component<Props, State> {
         );
       }
       else if (isNodeChecked) {
-        content = <UploadMacaroon onUpload={this.handleMacaroon} />;
+        title = 'Upload Macaroons';
+        content = <UploadMacaroons onUploaded={this.handleMacaroons} />;
       }
       else {
         content = <input placeholder="url" />;
       }
     } else {
-      title = 'What type of node are you running?';
+      title = 'What are we connecting to?';
       content = (
-        <>
-          <Button onClick={() => this.setNodeType(NODE_TYPE.LOCAL)}>
+        <div className="SelectNode-buttons">
+          <Button
+            size="large"
+            icon="laptop"
+            block
+            onClick={() => this.setNodeType(NODE_TYPE.LOCAL)}
+          >
             Local node
           </Button>
-          <Button onClick={() => this.setNodeType(NODE_TYPE.REMOTE)}>
+          <Button
+            size="large"
+            icon="global"
+            block
+            onClick={() => this.setNodeType(NODE_TYPE.REMOTE)}
+          >
             Remote node
           </Button>
-        </>
+        </div>
       );
     }
 
     return (
       <div className="SelectNode">
-        {title && <h1 className="SelectNode-title">{title}</h1>}
+        {title && <h2 className="SelectNode-title">{title}</h2>}
         {content}
       </div>
     );
@@ -111,13 +126,14 @@ class SelectNode extends React.Component<Props, State> {
     }
   };
 
-  private handleMacaroon = (macaroonHex: string) => {
-    this.setState({ macaroonHex });
-    this.props.checkAuth(this.state.url, macaroonHex);
+  private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
+    this.setState({ adminMacaroon, readonlyMacaroon });
+    this.props.checkAuth(this.state.url, adminMacaroon, readonlyMacaroon);
   };
 
   private confirmNode = () => {
-    this.props.setNode(this.state.url, this.state.macaroonHex);
+    const { url, adminMacaroon, readonlyMacaroon } = this.state;
+    this.props.setNode(url, adminMacaroon, readonlyMacaroon);
     this.props.onConfirmNode();
   }
 

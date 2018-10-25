@@ -82,6 +82,7 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): Saga
   // Call their respective actions
   const payload = decryptData(data, password, salt);
   yield put(syncConfig.action(payload));
+  yield put({ type: types.FINISH_DECRYPT})
 }
 
 export default function* cryptoSagas(): SagaIterator {

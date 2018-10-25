@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button } from 'antd';
+import { Button, Icon } from 'antd';
+import { ButtonProps } from 'antd/lib/button';
 import Identicon from 'components/Identicon';
 import { getAccountInfo } from 'modules/account/actions';
 import { AppState } from 'store/reducers';
@@ -14,7 +15,12 @@ interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
 }
 
-type Props = DispatchProps & StateProps;
+interface OwnProps {
+  onSendClick(): void;
+  onInvoiceClick(): void;
+}
+
+type Props = DispatchProps & StateProps & OwnProps;
 
 class AccountInfo extends React.Component<Props> {
   componentDidMount() { 
@@ -25,16 +31,17 @@ class AccountInfo extends React.Component<Props> {
 
   render() {
     const { account } = this.props;
-    const actions = [{
-      text: 'Deposit',
+    const actions: ButtonProps[] = [{
+      children: 'Deposit',
       icon: 'qrcode',
     }, {
-      text: 'Invoice',
+      children: 'Invoice',
       icon: 'file-text',
+      onClick: this.props.onInvoiceClick,
     }, {
-      text: 'Send',
-      icon: 'thunderbolt',
-      type: 'primary',
+      children: <><Icon type="thunderbolt" theme="filled"/> Send</>,
+      type: 'primary' as any,
+      onClick: this.props.onSendClick,
     }];
     
     return (
@@ -63,10 +70,8 @@ class AccountInfo extends React.Component<Props> {
         )}
 
         <div className="AccountInfo-actions">
-          {actions.map(({ text, ...props }) => (
-            <Button key={text} disabled={!account} {...props}>
-              {text}
-            </Button>
+          {actions.map(props => (
+            <Button key={props.children} disabled={!account} {...props} />
           ))}
         </div>
       </div>

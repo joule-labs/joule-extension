@@ -1,8 +1,13 @@
 import { AppState } from 'store/reducers';
 
-export const selectSyncedNodeState = (s: AppState) => ({
+export const selectSyncedUnencryptedNodeState = (s: AppState) => ({
   url: s.node.url,
-  macaroon: s.node.macaroon,
+  readonlyMacaroon: s.node.readonlyMacaroon,
+});
+
+export const selectSyncedEncryptedNodeState = (s: AppState) => ({
+  url: s.node.url,
+  adminMacaroon: s.node.adminMacaroon,
 });
 
 export const selectNodeLib = (s: AppState) => s.node.lib;

@@ -20,7 +20,7 @@ export default class Splash extends React.Component<Props> {
             <li>Have a decentralized identity</li>
           </ul>
           <div className="Splash-controls">
-            <Button size="large" type="primary" onClick={this.props.handleContinue}>
+            <Button block size="large" type="primary" onClick={this.props.handleContinue}>
               Get started
             </Button>
             <a className="Splash-controls-restore" onClick={this.props.handleRestore}>

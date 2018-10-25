@@ -1,10 +1,12 @@
 import types from './types';
+import { type } from 'os';
 
 export interface CryptoState {
   salt: null | string;
   hasSetPassword: boolean;
   password: null | string;
   testCipher: null | string;
+  isRequestingPassword: boolean;
 }
 
 export const INITIAL_STATE: CryptoState = {
@@ -12,6 +14,7 @@ export const INITIAL_STATE: CryptoState = {
   hasSetPassword: false,
   password: null,
   testCipher: null,
+  isRequestingPassword: false,
 };
 
 export default function cryptoReducers(
@@ -42,6 +45,19 @@ export default function cryptoReducers(
       return {
         ...state,
         password: action.payload,
+        isRequestingPassword: false,
+      };
+    
+    case types.REQUEST_PASSWORD:
+      return {
+        ...state,
+        isRequestingPassword: true,
+      }
+
+    case types.CANCEL_PASSWORD:
+      return {
+        ...state,
+        isRequestingPassword: false,
       };
 
     case types.LOGOUT:

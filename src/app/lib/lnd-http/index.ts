@@ -1,6 +1,6 @@
 import { stringify } from 'query-string';
 import { parseNodeErrorResponse } from './utils';
-import { NetworkError } from './errors';
+import { NetworkError, SendTransactionError } from './errors';
 import * as T from './types';
 export * from './errors';
 export * from './types';
@@ -128,7 +128,7 @@ export class LndHttpClient {
         ...invoice,
       }));
       return res;
-    });;
+    });
   };
 
   getInvoice = (paymentHash: string) => {
@@ -141,6 +141,47 @@ export class LndHttpClient {
         settled: false,
       },
     )
+  };
+
+  decodePaymentRequest = (paymentRequest: string) => {
+    return this.request<T.DecodePaymentRequestResponse>(
+      'GET',
+      `/v1/payreq/${paymentRequest}`,
+      undefined,
+      {
+        route_hints: [],
+      },
+    );
+  };
+
+  queryRoutes = (pubKey: string, amount: string, args: T.QueryRoutesArguments) => {
+    return this.request<T.QueryRoutesResponse, T.QueryRoutesArguments>(
+      'GET',
+      `/v1/graph/routes/${pubKey}/${amount}`,
+      args,
+      { routes: [] },
+    ).then(res => {
+      // Default attributes for channels
+      res.routes = res.routes.map(route => ({
+        total_fees: '0',
+        total_fees_msat: '0',
+        ...route,
+      }));
+      return res;
+    });
+  };
+
+  sendPayment = (args: T.SendPaymentArguments) => {
+    return this.request<any, T.SendPaymentArguments>(
+      'POST',
+      '/v1/channels/transactions',
+      args,
+    ).then(res => {
+      if (res.payment_error) {
+        throw new SendTransactionError(res.payment_error);
+      }
+      return res as T.SendPaymentResponse;
+    });
   };
 
   // Internal fetch function

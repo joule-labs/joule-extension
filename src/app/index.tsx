@@ -4,6 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import SyncGate from 'components/SyncGate';
+import PasswordPrompt from 'components/PasswordPrompt';
 import { configureStore } from 'store/configure';
 import Routes from './Routes';
 
@@ -16,6 +17,7 @@ const App = () => (
       <MemoryRouter>
         <Routes />
       </MemoryRouter>
+      <PasswordPrompt />
     </SyncGate>
   </Provider>
 );

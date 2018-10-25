@@ -24,7 +24,6 @@ export default class ConfirmNode extends React.Component<Props> {
 
     return (
       <div className="ConfirmNode">
-        <h1 className="ConfirmNode-title">Confirm your Node</h1>
         <table className="ConfirmNode-info">
           <tbody>
             {rows.map(r => (
@@ -36,11 +35,11 @@ export default class ConfirmNode extends React.Component<Props> {
           </tbody>
         </table>
         <div className="ConfirmNode-buttons">
-          <Button onClick={onConfirm}>
-            Confirm
-          </Button>
-          <Button onClick={onCancel}>
+          <Button size="large" onClick={onCancel}>
             Cancel
+          </Button>
+          <Button size="large" type="primary" onClick={onConfirm}>
+            Confirm
           </Button>
         </div>
       </div>

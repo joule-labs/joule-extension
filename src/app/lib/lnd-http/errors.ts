@@ -8,4 +8,6 @@ export class NetworkError extends Error {
 }
 export class InvalidArgumentError extends Error {};
 export class MacaroonAuthError extends Error {};
+export class PermissionDeniedError extends Error{};
 export class UnknownServerError extends Error {};
+export class SendTransactionError extends Error {};

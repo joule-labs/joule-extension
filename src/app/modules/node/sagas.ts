@@ -2,7 +2,7 @@ import { SagaIterator } from 'redux-saga';
 import { takeLatest, call, put, select } from 'redux-saga/effects';
 import * as actions from './actions';
 import { selectNodeLibOrThrow, selectNodeInfo } from './selectors';
-import LndHttpClient, { MacaroonAuthError } from 'lib/lnd-http';
+import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
 import types from './types';
 
 export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): SagaIterator {
@@ -20,21 +20,46 @@ export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): 
 }
 
 export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): SagaIterator {
-  const { url, macaroon } = action.payload;
-  const client = new LndHttpClient(url, macaroon);
+  const { url, admin, readonly } = action.payload;
+
+  // Check read-only by making sure request doesn't error
+  let client = new LndHttpClient(url, readonly);
+  let nodeInfo;
   try {
-    const response = yield call(client.getInfo);
-    yield put({
-      type: types.CHECK_AUTH_SUCCESS,
-      payload: {
-        url,
-        response,
-      },
-    });
+    nodeInfo = yield call(client.getInfo);
   } catch(err) {
-    yield put({ type: types.CHECK_AUTH_FAILURE, payload: err });
+    console.error('Read only macaroon failed:', err);
+    yield put({
+      type: types.CHECK_AUTH_FAILURE,
+      payload: new Error('Read-only macaroon did not authenticate'),
+    });
     return;
   }
+
+  // Test admin by intentionally send an invalid payment,
+  // but make sure we didn't error out with a macaroon auth error
+  // TODO: Replace with sign message once REST supports it
+  client = new LndHttpClient(url, admin);
+  try {
+    yield call(client.sendPayment, { payment_request: 'testing admin' });
+  } catch(err) {
+    console.log(err);
+    if (err.constructor === MacaroonAuthError || err.constructor === PermissionDeniedError) {
+      yield put({
+        type: types.CHECK_AUTH_FAILURE,
+        payload: new Error('Admin macaroon did not authenticate'),
+      });
+      return;
+    }
+  }
+
+  yield put({
+    type: types.CHECK_AUTH_SUCCESS,
+    payload: {
+      url,
+      response: nodeInfo,
+    },
+  });
 }
 
 export function* handleGetNodeInfo(): SagaIterator {

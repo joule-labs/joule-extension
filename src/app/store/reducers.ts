@@ -5,6 +5,7 @@ import sync, { SyncState, INITIAL_STATE as syncInitialState } from 'modules/sync
 import node, { NodeState, INITIAL_STATE as nodeInitialState } from 'modules/node';
 import channels, { ChannelsState, INITIAL_STATE as channelsInitialState } from 'modules/channels';
 import account, { AccountState, INITIAL_STATE as accountInitialState } from 'modules/account';
+import payment, { PaymentState, INITIAL_STATE as paymentInitialState } from 'modules/payment/reducers';
 
 export interface AppState {
   crypto: CryptoState;
@@ -12,6 +13,7 @@ export interface AppState {
   node: NodeState;
   channels: ChannelsState;
   account: AccountState;
+  payment: PaymentState;
 }
 
 export const combineInitialState: Partial<AppState> = {
@@ -20,6 +22,7 @@ export const combineInitialState: Partial<AppState> = {
   node: nodeInitialState,
   channels: channelsInitialState,
   account: accountInitialState,
+  payment: paymentInitialState,
 };
 
 export default combineReducers<AppState>({
@@ -28,4 +31,5 @@ export default combineReducers<AppState>({
   node,
   channels,
   account,
+  payment,
 });

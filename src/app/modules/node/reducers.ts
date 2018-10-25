@@ -5,7 +5,8 @@ export interface NodeState {
   lib: LndHttpClient | null;
   url: string | null;
   isNodeChecked: boolean;
-  macaroon: Macaroon | null;
+  adminMacaroon: Macaroon | null;
+  readonlyMacaroon: Macaroon | null;
   nodeInfo: GetInfoResponse | null;
 
   isCheckingNode: boolean;
@@ -20,7 +21,8 @@ export const INITIAL_STATE: NodeState = {
   lib: null,
   url: null,
   isNodeChecked: false,
-  macaroon: null,
+  adminMacaroon: null,
+  readonlyMacaroon: null,
   nodeInfo: null,
 
   isCheckingNode: false,
@@ -100,7 +102,8 @@ export default function cryptoReducers(
       }
     
     case types.SET_NODE:
-    case types.SYNC_NODE_STATE:
+    case types.SYNC_UNENCRYPTED_NODE_STATE:
+    case types.SYNC_ENCRYPTED_NODE_STATE:
       return {
         ...state,
         ...action.payload,

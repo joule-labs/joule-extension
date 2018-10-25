@@ -1,4 +1,5 @@
 import LndHttpClient, { Macaroon } from 'lib/lnd-http';
+import { selectSyncedUnencryptedNodeState, selectSyncedEncryptedNodeState } from './selectors';
 import types from './types';
 
 export function checkNode(url: string) {
@@ -8,12 +9,13 @@ export function checkNode(url: string) {
   };
 }
 
-export function checkAuth(url: string, macaroon: Macaroon) {
+export function checkAuth(url: string, admin: Macaroon, readonly: Macaroon) {
   return {
     type: types.CHECK_AUTH,
     payload: {
       url,
-      macaroon,
+      admin,
+      readonly,
     },
   };
 }
@@ -22,13 +24,18 @@ export function getNodeInfo() {
   return { type: types.GET_NODE_INFO };
 }
 
-export function setNode(url: string, macaroon: Macaroon) {
+export function setNode(
+  url: string,
+  adminMacaroon: Macaroon,
+  readonlyMacaroon: Macaroon,
+) {
   return {
     type: types.SET_NODE,
     payload: {
       url,
-      macaroon,
-      lib: new LndHttpClient(url, macaroon),
+      adminMacaroon,
+      readonlyMacaroon,
+      lib: new LndHttpClient(url, adminMacaroon),
     },
   };
 }
@@ -37,14 +44,26 @@ export function resetNode() {
   return { type: types.RESET_NODE };
 }
 
-export function setSyncedNodeState(payload: ReturnType<typeof selectSyncedNodeState>) {
-  const { url, macaroon } = payload;
+export function setSyncedUnencryptedNodeState(payload: ReturnType<typeof selectSyncedUnencryptedNodeState>) {
+  const { url, readonlyMacaroon } = payload;
   return {
-    type: types.SYNC_NODE_STATE,
+    type: types.SYNC_UNENCRYPTED_NODE_STATE,
     payload: {
       url,
-      macaroon,
-      lib: new LndHttpClient(url, macaroon),
+      readonlyMacaroon,
+      lib: new LndHttpClient(url as string, readonlyMacaroon as string),
+    },
+  }
+}
+
+export function setSyncedEncryptedNodeState(payload: ReturnType<typeof selectSyncedEncryptedNodeState>) {
+  const { url, adminMacaroon } = payload;
+  return {
+    type: types.SYNC_UNENCRYPTED_NODE_STATE,
+    payload: {
+      url,
+      adminMacaroon,
+      lib: new LndHttpClient(url as string, adminMacaroon as string),
     },
   }
 }

@@ -6,8 +6,8 @@ import {
 } from 'modules/crypto/selectors';
 import { setSyncedCryptoState } from 'modules/crypto/actions';
 import cryptoTypes from 'modules/crypto/types';
-import { selectSyncedNodeState } from 'modules/node/selectors';
-import { setSyncedNodeState } from 'modules/node/actions';
+import { selectSyncedEncryptedNodeState, selectSyncedUnencryptedNodeState } from 'modules/node/selectors';
+import { setSyncedEncryptedNodeState, setSyncedUnencryptedNodeState } from 'modules/node/actions';
 import nodeTypes from 'modules/node/types';
 import { AppState } from 'store/reducers';
 import { Dispatch } from 'redux';
@@ -45,10 +45,17 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     triggerActions: [cryptoTypes.SET_PASSWORD, 'BACKUP_RESTORED'],
   },
   {
-    key: 'node',
+    key: 'node-unencrypted',
+    encrypted: false,
+    selector: selectSyncedUnencryptedNodeState,
+    action: setSyncedUnencryptedNodeState,
+    triggerActions: [nodeTypes.SET_NODE, 'BACKUP_RESTORED'],
+  },
+  {
+    key: 'node-encryped',
     encrypted: true,
-    selector: selectSyncedNodeState,
-    action: setSyncedNodeState,
+    selector: selectSyncedEncryptedNodeState,
+    action: setSyncedEncryptedNodeState,
     triggerActions: [nodeTypes.SET_NODE, 'BACKUP_RESTORED'],
   },
 ];

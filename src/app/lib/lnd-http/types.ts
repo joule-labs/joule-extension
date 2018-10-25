@@ -1,3 +1,5 @@
+import { string } from "prop-types";
+
 // Shared Types
 export type Macaroon = string;
 
@@ -60,6 +62,25 @@ export interface RouteHint {
   hop_hints: HopHint[];
 }
 
+export interface Hop {
+  chan_id: string;
+  fee: string;
+  expiry: string;
+  amt_to_forward_msat: string;
+  fee_msat: string;
+  chan_capacity: string;
+  amt_to_forward: string;
+}
+
+export interface Route {
+  total_amt: string;
+  total_amt_msat: string;
+  total_fees: string;
+  total_fees_msat: string;
+  total_time_lock: string;
+  hops: Hop[];
+}
+
 export interface BitcoinTransaction {
   amount: string;
   dest_addresses: string[];
@@ -102,6 +123,8 @@ export interface LightningInvoice {
   private: boolean;
   r_hash: string;
 }
+
+type FeeLimit = { percent: string } | { fixed: string };
 
 // Argument & Response Types
 export interface GetInfoResponse {
@@ -163,3 +186,49 @@ export interface GetInvoicesResponse {
 }
 
 export type GetInvoiceResponse = LightningInvoice;
+
+export interface DecodePaymentRequestResponse {
+  timestamp: string;	
+  payment_hash: string;
+  description: string;
+  expiry: string;
+  description_hash: string;
+  route_hints: RouteHint[];
+  destination: string;
+  num_satoshis: string;
+  cltv_expiry: string;
+  fallback_addr: string;
+}
+
+export interface QueryRoutesArguments {
+  num_routes?: number;
+  final_clv_delta?: number;
+  fee_limit?: 'fixed' | 'percent';
+}
+
+export interface QueryRoutesResponse {
+  routes: Route[];
+}
+
+export type SendPaymentArguments = {
+  payment_request: string;
+  amt?: string;
+  fee_limit?: FeeLimit;
+} | {
+  dest_string: string;
+  amt: string;
+  final_cltv_delta: string;
+  payment_hash_string: string;
+  fee_limit?: FeeLimit;
+};
+
+export interface SendPaymentResponse {
+  payment_route: Route;
+  payment_preimage: string;
+};
+
+export interface CreateInvoiceArguments {
+  memo?: string;
+  receipt?: string;
+  r_preimage?: string;
+}

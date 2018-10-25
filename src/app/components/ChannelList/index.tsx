@@ -5,6 +5,8 @@ import Loader from 'components/Loader';
 import BigMessage from 'components/BigMessage';
 import { getChannels } from 'modules/channels/actions';
 import { AppState } from 'store/reducers';
+import { ChannelWithNode } from 'modules/channels/types';
+
 
 interface StateProps {
   channels: AppState['channels']['channels'];
@@ -16,7 +18,11 @@ interface DispatchProps {
   getChannels: typeof getChannels;
 }
 
-type Props = StateProps & DispatchProps;
+interface OwnProps {
+  onClick?(channel: ChannelWithNode): void;
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
 
 class ChannelList extends React.Component<Props> {
   componentWillMount() {
@@ -26,14 +32,14 @@ class ChannelList extends React.Component<Props> {
   }
 
   render() {
-    const { channels, isFetchingChannels, fetchChannelsError } = this.props;
+    const { channels, isFetchingChannels, fetchChannelsError, onClick } = this.props;
 
     let content;
     if (isFetchingChannels) {
       content = <Loader />;
     } else if (channels && channels.length) {
       content = channels.map(c => (
-        <ChannelRow key={c.chan_id} channel={c} />
+        <ChannelRow key={c.chan_id} channel={c} onClick={onClick} />
       ));
     } else if (fetchChannelsError) {
       content = (
@@ -65,7 +71,7 @@ class ChannelList extends React.Component<Props> {
   }
 }
 
-export default connect<StateProps, DispatchProps, {}, AppState>(
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     channels: state.channels.channels,
     isFetchingChannels: state.channels.isFetchingChannels,
