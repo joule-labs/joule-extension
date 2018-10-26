@@ -19,14 +19,17 @@ interface StateProps {
   transactions: AppState['account']['transactions'];
   isFetchingTransactions: AppState['account']['isFetchingTransactions'];
   fetchTransactionsError: AppState['account']['fetchTransactionsError'];
-  onClick?(transaction: AnyTransaction): void;
 }
 
 interface DispatchProps {
   getTransactions: typeof getTransactions;
 }
 
-type Props = StateProps & DispatchProps;
+interface OwnProps {
+  onClick?(transaction: AnyTransaction): void;
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
 
 class TransactionList extends React.Component<Props> {
   componentWillMount() {
@@ -133,10 +136,10 @@ class TransactionList extends React.Component<Props> {
             key={tx.tx_hash}
             source={tx}
             type="bitcoin"
-            pubkey={tx.dest_addresses[0]}
+            pubkey={tx.tx_hash}
             timestamp={parseInt(tx.time_stamp, 10)}
             status={tx.num_confirmations > 2 ? 'complete' : 'pending'}
-            delta={new BN(`-${tx.amount}`)}
+            delta={new BN(tx.amount)}
             onClick={onClick}
           />
         ),
@@ -147,7 +150,7 @@ class TransactionList extends React.Component<Props> {
   };
 }
 
-export default connect<StateProps, DispatchProps, {}, AppState>(
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     payments: state.account.payments,
     invoices: state.account.invoices,

@@ -7,6 +7,7 @@ import { DEFAULT_LOCAL_NODE_URL } from 'utils/constants';
 import { checkNode, checkAuth, setNode, resetNode } from 'modules/node/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
+import InputAddress from './InputAddress';
 
 enum NODE_TYPE {
   LOCAL = 'LOCAL',
@@ -65,9 +66,6 @@ class SelectNode extends React.Component<Props, State> {
       if (isCheckingNode || isCheckingAuth) {
         content = <Spin />;
       }
-      else if (checkNodeError) {
-        content = checkNodeError.message;
-      }
       else if (nodeInfo) {
         title = 'Confirm your node';
         content = (
@@ -83,7 +81,13 @@ class SelectNode extends React.Component<Props, State> {
         content = <UploadMacaroons onUploaded={this.handleMacaroons} />;
       }
       else {
-        content = <input placeholder="url" />;
+        title = 'Provide a URL'
+        content = (
+          <InputAddress
+            submitUrl={this.setUrl}
+            error={checkNodeError}
+          />
+        );
       }
     } else {
       title = 'What are we connecting to?';
@@ -124,6 +128,11 @@ class SelectNode extends React.Component<Props, State> {
       this.setState({ url: DEFAULT_LOCAL_NODE_URL });
       this.props.checkNode(DEFAULT_LOCAL_NODE_URL);
     }
+  };
+
+  private setUrl = (url: string) => {
+    this.setState({ url });
+    this.props.checkNode(url);
   };
 
   private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {

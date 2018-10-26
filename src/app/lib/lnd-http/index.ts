@@ -187,6 +187,14 @@ export class LndHttpClient {
     });
   };
 
+  getAddress = (type: T.AddressType = 'p2wkh') => {
+    return this.request<T.NewAddressResponse, T.NewAddressArguments>(
+      'GET',
+      '/v1/newaddress',
+      { type },
+    );
+  };
+
   // Internal fetch function
   private request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,

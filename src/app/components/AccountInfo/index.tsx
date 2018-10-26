@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Button, Icon } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import Identicon from 'components/Identicon';
+import DepositModal from './DepositModal';
 import { getAccountInfo } from 'modules/account/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
@@ -22,7 +23,15 @@ interface OwnProps {
 
 type Props = DispatchProps & StateProps & OwnProps;
 
-class AccountInfo extends React.Component<Props> {
+interface State {
+  isDepositModalOpen: boolean;
+}
+
+class AccountInfo extends React.Component<Props, State> {
+  state: State = {
+    isDepositModalOpen: false,
+  };
+
   componentDidMount() { 
     if (!this.props.account) {
       this.props.getAccountInfo();
@@ -31,9 +40,11 @@ class AccountInfo extends React.Component<Props> {
 
   render() {
     const { account } = this.props;
+    const { isDepositModalOpen } = this.state;
     const actions: ButtonProps[] = [{
       children: 'Deposit',
       icon: 'qrcode',
+      onClick: this.openDepositModal,
     }, {
       children: 'Invoice',
       icon: 'file-text',
@@ -70,13 +81,24 @@ class AccountInfo extends React.Component<Props> {
         )}
 
         <div className="AccountInfo-actions">
-          {actions.map(props => (
-            <Button key={props.children} disabled={!account} {...props} />
+          {actions.map((props, idx) => (
+            <Button key={idx} disabled={!account} {...props} />
           ))}
         </div>
+
+        {account &&
+          <DepositModal
+            address={account.chainAddress}
+            isOpen={isDepositModalOpen}
+            onClose={this.closeDepositModal}
+          />
+        }
       </div>
     );
   }
+
+  private openDepositModal = () => this.setState({ isDepositModalOpen: true });
+  private closeDepositModal = () => this.setState({ isDepositModalOpen: false });
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(

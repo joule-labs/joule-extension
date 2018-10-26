@@ -10,5 +10,10 @@ export function parseNodeErrorResponse(res: ErrorResponse): Error {
     return new Errors.PermissionDeniedError('You lack permission to do that');
   }
 
+  if (res.error.includes('unable to find a path to destination')) {
+    return new Errors.NoRouteError('No route available for payment');
+  }
+
+  console.warn('Encountered unknown server error:', res.error);
   return new Errors.UnknownServerError('Unknown server error');
 }

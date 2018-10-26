@@ -11,3 +11,4 @@ export class MacaroonAuthError extends Error {};
 export class PermissionDeniedError extends Error{};
 export class UnknownServerError extends Error {};
 export class SendTransactionError extends Error {};
+export class NoRouteError extends Error {};

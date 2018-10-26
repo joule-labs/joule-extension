@@ -12,8 +12,9 @@ export function* handleGetAccountInfo(): SagaIterator {
       call(nodeLib.getNodeInfo, myPubKey),
       call(nodeLib.getBlockchainBalance),
       call(nodeLib.getChannelsBalance),
-    ]
-    const [nodeInfo, chainBalances, channelsBalances] = yield all(calls);
+      // call(nodeLib.getAddress),
+    ];
+    const [nodeInfo, chainBalances, channelsBalances, addressResponse] = yield all(calls);
     const payload: Account = {
       pubKey: myPubKey,
       alias: nodeInfo.node.alias,
@@ -22,6 +23,8 @@ export function* handleGetAccountInfo(): SagaIterator {
       blockchainBalancePending: chainBalances.total_balance,
       channelBalance: channelsBalances.balance,
       channelBalancePending: channelsBalances.pending_open_balance,
+      chainAddress: '',
+      // chainAddress: addressResponse.address,
     };
     yield put({
       type: types.GET_ACCOUNT_INFO_SUCCESS,

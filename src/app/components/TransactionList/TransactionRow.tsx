@@ -2,6 +2,7 @@ import React from 'react';
 import BN from 'bn.js';
 import moment from 'moment';
 import classnames from 'classnames';
+import { Tooltip, Icon } from 'antd';
 import Identicon from 'components/Identicon';
 import './TransactionRow.less';
 import { AnyTransaction } from 'modules/account/types';
@@ -21,11 +22,15 @@ export default class TransactionRow extends React.Component<Props> {
     const { pubkey, type, timestamp, status, delta } = this.props;
     return (
       <div className="TransactionRow">
-        <Identicon className="TransactionRow-avatar" pubkey={pubkey} />
+        <div className="TransactionRow-avatar">
+          <Identicon className="TransactionRow-avatar-img" pubkey={pubkey} />
+          <Tooltip title={status}>
+            <div className={`TransactionRow-avatar-status is-${status}`} />
+          </Tooltip>
+        </div>
         <div className="TransactionRow-info">
           <div>{type}</div>
           <div>{moment.unix(timestamp).fromNow()}</div>
-          <div>{status}</div>
         </div>
         {delta &&
           <div className={

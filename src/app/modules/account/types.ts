@@ -20,6 +20,7 @@ export interface Account {
   blockchainBalancePending: number;
   channelBalance: number;
   channelBalancePending: number;
+  chainAddress: string;
 }
 
 export type AnyTransaction =

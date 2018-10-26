@@ -3,6 +3,8 @@ export type Macaroon = string;
 
 export type Response<T> = Promise<T>;
 
+export type AddressType = 'np2wkh' | 'p2wkh';
+
 export interface ErrorResponse {
   error: string;
   code: number;
@@ -229,4 +231,12 @@ export interface CreateInvoiceArguments {
   memo?: string;
   receipt?: string;
   r_preimage?: string;
+}
+
+export interface NewAddressArguments {
+  type: AddressType;
+}
+
+export interface NewAddressResponse {
+  address: string;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import Result from 'ant-design-pro/lib/Result';
 import Loader from 'components/Loader';
+import './SendState.less';
 
 interface Props {
   isLoading?: boolean;
@@ -38,17 +39,19 @@ const SendState: React.SFC<Props> = (props) => {
   const errorMessage = props.error && <code>{props.error.message}</code>;
 
   return (
-    <Result
-      type={type}
-      title={type === 'success' ? 'Succesfully sent!' : 'Failed to send'}
-      description={
-        type === 'success' ?
-          'See below for more about your transaction' :
-          'See below for the full error'
-      }
-      extra={errorMessage || props.result}
-      actions={actions}
-    />
+    <div className="SendState">
+      <Result
+        type={type}
+        title={type === 'success' ? 'Succesfully sent!' : 'Failed to send'}
+        description={
+          type === 'success' ?
+            'See below for more about your transaction' :
+            'See below for the full error'
+        }
+        extra={errorMessage || props.result}
+        actions={actions}
+      />
+    </div>
   );
 };
 
