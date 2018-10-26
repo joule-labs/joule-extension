@@ -6,16 +6,18 @@ import { MemoryRouter } from 'react-router';
 import SyncGate from 'components/SyncGate';
 import PasswordPrompt from 'components/PasswordPrompt';
 import { configureStore } from 'store/configure';
-import Routes from './Routes';
 
-const initialState = window && (window as any).__PRELOADED_STATE__;
-const { store } = configureStore(initialState);
+const { store } = configureStore();
 
-const App = () => (
+interface Props {
+  routes: React.ReactNode;
+}
+
+const App: React.SFC<Props> = ({ routes }) => (
   <Provider store={store}>
     <SyncGate>
       <MemoryRouter>
-        <Routes />
+        {routes}
       </MemoryRouter>
       <PasswordPrompt />
     </SyncGate>

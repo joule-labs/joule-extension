@@ -1,11 +1,25 @@
-// TODO: Inject message listener
+import 'babel-polyfill';
+import shouldInject from './shouldInject';
+import injectScript from './injectScript';
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.color) {
-    console.log("Receive color = " + msg.color);
-    document.body.style.backgroundColor = msg.color;
-    sendResponse("Change color to " + msg.color);
-  } else {
-    sendResponse("Color message is none.");
-  }
-});
+if (shouldInject()) {
+  injectScript();
+
+  window.addEventListener('message', ev => {
+    // Only accept messages from the current window
+    if (ev.source !== window) {
+      return;
+    }
+
+    if (ev.data && ev.data.application === 'Joule' && !ev.data.response) {
+      chrome.runtime.sendMessage(ev.data, response => {
+        window.postMessage({
+          application: 'Joule',
+          response: true,
+          error: response.error,
+          data: response.data,
+        }, '*');
+      });
+    }
+  });
+}

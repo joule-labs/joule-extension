@@ -83,8 +83,10 @@ module.exports = {
   entry: {
     background_script: path.join(__dirname, 'src/background_script/index.ts'),
     content_script: path.join(__dirname, 'src/content_script/index.ts'),
+    inpage_script: path.join(__dirname, 'src/inpage_script/index.ts'),
     options: path.join(__dirname, 'src/options/index.tsx'),
     popup: path.join(__dirname, 'src/popup/index.tsx'),
+    prompt: path.join(__dirname, 'src/prompt/index.tsx'),
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -130,12 +132,12 @@ module.exports = {
       lib: `${srcApp}/lib`,
       modules: `${srcApp}/modules`,
       pages: `${srcApp}/pages`,
+      prompts: `${srcApp}/prompts`,
       static: `${srcApp}/static`,
       store: `${srcApp}/store`,
       styles: `${srcApp}/styles`,
       typings: `${srcApp}/typings`,
       utils: `${srcApp}/utils`,
-      web3interact: `${srcApp}/web3interact`,
     },
   },
   plugins: [

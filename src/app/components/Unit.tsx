@@ -1,5 +1,4 @@
 import React from 'react';
-import BN from 'bn.js';
 
 interface Props {
   value: string;

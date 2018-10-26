@@ -180,7 +180,10 @@ export class LndHttpClient {
       if (res.payment_error) {
         throw new SendTransactionError(res.payment_error);
       }
-      return res as T.SendPaymentResponse;
+      return {
+        ...res,
+        payment_preimage: new Buffer(res.payment_preimage, 'base64').toString('hex'),
+      } as T.SendPaymentResponse;
     });
   };
 

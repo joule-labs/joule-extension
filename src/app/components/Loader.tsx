@@ -11,6 +11,7 @@ const Loader: React.SFC = () => (
       left: '50%',
       transform: 'translate(-50%, -50%)',
       color: '#8E44AD',
+      fontSize: '2rem',
     }}
   />
 );

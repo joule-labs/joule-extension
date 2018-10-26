@@ -1,0 +1,109 @@
+.PaymentPrompt {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  &-to {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+    background: #FFF;
+    border-bottom: 1px solid #EEE;
+
+    &-avatar {
+      width: 4.6rem;
+      height: 4.6rem;
+      margin-right: 1rem;
+    }
+
+    &-info {
+      &-alias {
+        font-size: 1.1rem;
+        margin-bottom: 0.1rem;
+      }
+
+      &-pubkey {
+        font-size: 0.6rem;
+        opacity: 0.45;
+      }
+    }
+  }
+
+  &-amount,
+  &-description {
+    padding: 0.25rem 1.5rem;
+    margin-bottom: 1rem;
+
+    &-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 0.1rem;
+      opacity: 0.7;
+    }
+  }
+
+  &-amount {
+    &-value {
+      font-size: 1.4rem;
+    }
+  }
+
+  &-description {
+    &-value {
+      font-size: 1.1rem;
+
+      em {
+        opacity: 0.6;
+      }
+    }
+  }
+  
+
+  &-details {
+    flex: 1;
+    background: #FFF;
+    border-top: 1px solid #EEE;
+
+    .ant-tabs-bar {
+      margin-bottom: 0;
+      
+      .ant-tabs-nav-container {
+        padding-left: 1rem;
+      }
+    }
+  }
+}
+
+.DetailsTable {
+  width: 96%;
+  margin: 0 auto;
+
+  &-row {
+    border-bottom: 1px solid rgba(#000, 0.05);
+
+    &:last-child {
+      border: none;
+    }
+
+    &-label {
+      padding: 0.75rem 0 0.75rem 1rem;
+      padding-left: 1.5rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    &-value {
+      padding: 0.75rem 1rem 0.75rem 0;
+      text-align: right;
+      font-size: 1rem;
+
+      em {
+        opacity: 0.4;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
