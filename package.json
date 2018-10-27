@@ -7,7 +7,6 @@
     "react",
     "chrome-extension"
   ],
-  "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack -w",
     "build": "npm run build-prod",

@@ -12,12 +12,13 @@ export default class Splash extends React.Component<Props> {
     return (
       <div className="Splash">
         <div className="Splash-inner">
-          <h2>Lightning Joule</h2>
+          <h2>Joule</h2>
+          <h3>Lightning-charge your browser</h3>
           {/* <Logo /> */}
           <ul>
-            <li>Manage Lightning channels</li>
             <li>Send payments in-browser</li>
-            <li>Have a decentralized identity</li>
+            <li>Manage channels & transactions</li>
+            <li>Auth with a decentralized identity</li>
           </ul>
           <div className="Splash-controls">
             <Button block size="large" type="primary" onClick={this.props.handleContinue}>
