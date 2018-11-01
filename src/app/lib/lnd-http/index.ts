@@ -191,7 +191,7 @@ export class LndHttpClient {
     return this.request<T.NewAddressResponse, T.NewAddressArguments>(
       'GET',
       '/v1/newaddress',
-      { type },
+      // { type },
     );
   };
 

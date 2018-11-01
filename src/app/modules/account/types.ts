@@ -8,6 +8,10 @@ enum AccountTypes {
   GET_TRANSACTIONS = 'GET_TRANSACTIONS',
   GET_TRANSACTIONS_SUCCESS = 'GET_TRANSACTIONS_SUCCESS',
   GET_TRANSACTIONS_FAILURE = 'GET_TRANSACTIONS_FAILURE',
+
+  GET_DEPOSIT_ADDRESS = 'GET_DEPOSIT_ADDRESS',
+  GET_DEPOSIT_ADDRESS_SUCCESS = 'GET_DEPOSIT_ADDRESS_SUCCESS',
+  GET_DEPOSIT_ADDRESS_FAILURE = 'GET_DEPOSIT_ADDRESS_FAILURE',
 }
 
 export default AccountTypes;
@@ -20,7 +24,6 @@ export interface Account {
   blockchainBalancePending: number;
   channelBalance: number;
   channelBalancePending: number;
-  chainAddress: string;
 }
 
 export type AnyTransaction =

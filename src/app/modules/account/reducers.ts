@@ -6,10 +6,13 @@ export interface AccountState {
   payments: LightningPayment[] | null;
   invoices: LightningInvoice[] | null;
   transactions: BitcoinTransaction[] | null;
+  depositAddress: string | null;
   isFetchingAccountInfo: boolean;
   fetchAccountInfoError: null | Error;
   isFetchingTransactions: boolean;
   fetchTransactionsError: null | Error;
+  isFetchingDepositAddress: boolean;
+  fetchDepositAddressError: null | Error;
 }
 
 export const INITIAL_STATE: AccountState = {
@@ -17,10 +20,13 @@ export const INITIAL_STATE: AccountState = {
   payments: null,
   invoices: null,
   transactions: null,
+  depositAddress: null,
   isFetchingAccountInfo: false,
   fetchAccountInfoError: null,
   isFetchingTransactions: false,
   fetchTransactionsError: null,
+  isFetchingDepositAddress: false,
+  fetchDepositAddressError: null,
 };
 
 export default function channelsReducers(
@@ -69,6 +75,26 @@ export default function channelsReducers(
         fetchTransactionsError: action.payload,
         isFetchingTransactions: false,
       }
+    
+    case types.GET_DEPOSIT_ADDRESS:
+      return {
+        ...state,
+        depositAddress: null,
+        fetchDepositAddressError: null,
+        isFetchingDepositAddress: true,
+      };
+    case types.GET_DEPOSIT_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        depositAddress: action.payload,
+        isFetchingDepositAddress: true,
+      };
+    case types.GET_DEPOSIT_ADDRESS_FAILURE:
+      return {
+        ...state,
+        fetchDepositAddressError: action.payload,
+        isFetchingDepositAddress: false,
+      };
   }
 
   return state;

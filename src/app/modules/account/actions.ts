@@ -7,3 +7,7 @@ export function getAccountInfo() {
 export function getTransactions() {
   return { type: types.GET_TRANSACTIONS };
 }
+
+export function getDepositAddress() {
+  return { type: types.GET_DEPOSIT_ADDRESS };
+}

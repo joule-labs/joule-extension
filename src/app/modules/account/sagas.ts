@@ -2,6 +2,7 @@ import { SagaIterator } from 'redux-saga';
 import { takeLatest, select, call, all, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { getNodePubKey } from 'modules/node/sagas';
+import { requirePassword } from 'modules/crypto/sagas';
 import types, { Account } from './types';
 
 export function* handleGetAccountInfo(): SagaIterator {
@@ -12,9 +13,8 @@ export function* handleGetAccountInfo(): SagaIterator {
       call(nodeLib.getNodeInfo, myPubKey),
       call(nodeLib.getBlockchainBalance),
       call(nodeLib.getChannelsBalance),
-      // call(nodeLib.getAddress),
     ];
-    const [nodeInfo, chainBalances, channelsBalances, addressResponse] = yield all(calls);
+    const [nodeInfo, chainBalances, channelsBalances] = yield all(calls);
     const payload: Account = {
       pubKey: myPubKey,
       alias: nodeInfo.node.alias,
@@ -23,8 +23,6 @@ export function* handleGetAccountInfo(): SagaIterator {
       blockchainBalancePending: chainBalances.total_balance,
       channelBalance: channelsBalances.balance,
       channelBalancePending: channelsBalances.pending_open_balance,
-      chainAddress: '',
-      // chainAddress: addressResponse.address,
     };
     yield put({
       type: types.GET_ACCOUNT_INFO_SUCCESS,
@@ -62,7 +60,25 @@ export function* handleGetTransactions(): SagaIterator {
   }
 }
 
+export function* handleGetDepositAddress(): SagaIterator {
+  try {
+    yield call(requirePassword);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+    const res: Yielded<typeof nodeLib.getAddress> = yield call(nodeLib.getAddress);
+    yield put({
+      type: types.GET_DEPOSIT_ADDRESS_SUCCESS,
+      payload: res.address,
+    });
+  } catch(err) {
+    yield put({
+      type: types.GET_DEPOSIT_ADDRESS_FAILURE,
+      payload: err,
+    });
+  }
+}
+
 export default function* channelsSagas(): SagaIterator {
   yield takeLatest(types.GET_ACCOUNT_INFO, handleGetAccountInfo);
   yield takeLatest(types.GET_TRANSACTIONS, handleGetTransactions);
+  yield takeLatest(types.GET_DEPOSIT_ADDRESS, handleGetDepositAddress);
 }
