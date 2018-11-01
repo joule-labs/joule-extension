@@ -1,34 +1,110 @@
 import React from 'react';
-import { Modal } from 'antd';
+import { connect } from 'react-redux';
+import { Modal, Alert } from 'antd';
 import QRCode from 'qrcode.react';
+import Loader from 'components/Loader';
+import Copy from 'components/Copy';
+import { getDepositAddress } from 'modules/account/actions';
+import { AppState } from 'store/reducers';
 import './DepositModal.less';
 
-interface Props {
-  address: string;
+interface StateProps {
+  depositAddress: AppState['account']['depositAddress'];
+  isFetchingDepositAddress: AppState['account']['isFetchingDepositAddress'];
+  fetchDepositAddressError: AppState['account']['fetchDepositAddressError'];
+  hasPassword: boolean;
+}
+
+interface DispatchProps {
+  getDepositAddress: typeof getDepositAddress;
+}
+
+interface OwnProps {
   isOpen?: boolean;
   onClose(): void;
 }
 
-export default class DepositModal extends React.Component<Props> {
+type Props = StateProps & DispatchProps & OwnProps;
+
+class DepositModal extends React.Component<Props> {
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.isOpen && !prevProps.isOpen) {
+      // Fire even if depositAddress is in store in case we need to cycle
+      this.props.getDepositAddress();
+    }
+  }
+
   render() {
-    const { address, isOpen, onClose } = this.props;
+    const {
+      depositAddress,
+      fetchDepositAddressError,
+      isOpen,
+      onClose,
+      hasPassword,
+    } = this.props;
+
+    let content;
+    if (depositAddress) {
+      content = (
+        <>
+          <div className="DepositModal-qr">
+            <QRCode value={depositAddress} size={200} />
+          </div>
+          <Copy text={depositAddress} name="address">
+            <code className="DepositModal-address">
+              {depositAddress}
+            </code>
+          </Copy>
+        </>
+      );
+    } else if (fetchDepositAddressError) {
+      content = (
+        <Alert
+          type="error"
+          message="Failed to get address"
+          description={fetchDepositAddressError.message}
+          showIcon
+        />
+      );
+    } else {
+      // Placeholders to keep the modal the right size
+      content = (
+        <>
+          <div style={{ opacity: 0 }}>
+            <div className="DepositModal-qr">
+              <QRCode value="placeholder" size={200} />
+            </div>
+            <code className="DepositModal-address">
+              placeholder
+            </code>
+          </div>
+          <Loader />
+        </>
+      );
+    }
+
     return (
       <Modal
         title="BTC Address"
-        visible={isOpen}
+        visible={isOpen && hasPassword}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
         centered
       >
         <div className="DepositModal">
-          <div className="DepositModal-qr">
-            <QRCode value={address} size={220} />
-          </div>
-          <code className="DepositModal-address">
-            {address}
-          </code>
+          {content}
         </div>
       </Modal>
     );
   }
 }
+
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(
+  state => ({
+    depositAddress: state.account.depositAddress,
+    isFetchingDepositAddress: state.account.isFetchingDepositAddress,
+    fetchDepositAddressError: state.account.fetchDepositAddressError,
+    hasPassword: !!state.crypto.password,
+  }),
+  { getDepositAddress },
+)(DepositModal);

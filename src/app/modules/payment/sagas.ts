@@ -8,7 +8,6 @@ import types from './types';
 export function* handleSendPayment(action: ReturnType<typeof sendPayment>): SagaIterator {
   try {
     yield call(requirePassword);
-    console.log('Continuing');
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
     const payload = yield call(nodeLib.sendPayment, action.payload);
     yield put({

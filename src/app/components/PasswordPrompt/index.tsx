@@ -53,6 +53,7 @@ class PasswordPrompt extends React.Component<Props, State> {
                 value={password}
                 onChange={this.handleChange}
                 enterButton={<Icon type="unlock" />}
+                onSearch={() => this.handleSubmit()}
                 autoFocus
               />
             </Form.Item>
@@ -69,8 +70,10 @@ class PasswordPrompt extends React.Component<Props, State> {
     });
   };
 
-  private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
-    ev.preventDefault();
+  private handleSubmit = (ev?: React.FormEvent<HTMLFormElement>) => {
+    if (ev) {
+      ev.preventDefault();
+    }
     const { password } = this.state;
     const { testCipher, salt } = this.props;
     try {
