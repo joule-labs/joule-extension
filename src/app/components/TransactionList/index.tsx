@@ -107,9 +107,9 @@ class TransactionList extends React.Component<Props> {
     rows = rows.concat(
       invoices.map(invoice => {
         const timestamp = parseInt(invoice.creation_date, 10);
-        const expiry = timestamp + parseInt(invoice.expiry, 10) * 1000;
+        const expiry = timestamp + parseInt(invoice.expiry, 10);
         const status = invoice.settled ? 'complete' :
-          expiry < Date.now() ? 'expired' : 'pending';
+          expiry > Date.now() ? 'expired' : 'pending';
           
         return {
           timestamp,
