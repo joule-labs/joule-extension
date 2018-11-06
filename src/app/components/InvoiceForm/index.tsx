@@ -39,6 +39,10 @@ class InvoiceForm extends React.Component<Props, State> {
     expiry: '24',
   };
 
+  componentWillUnmount() {
+    this.props.resetCreateInvoice();
+  }
+
   render() {
     const { invoice, isCreatingInvoice, invoiceError, close } = this.props;
     const { value, memo, expiry, fallbackAddress } = this.state;
