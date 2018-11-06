@@ -80,6 +80,13 @@ export default function channelsReducers(
         invoice: null,
         invoiceError: null,
       };
+    
+    case types.RESET_CREATE_INVOICE:
+      return {
+        ...state,
+        invoice: null,
+        invoiceError: null,
+      };
 
     case types.CHECK_PAYMENT_REQUEST:
       return {

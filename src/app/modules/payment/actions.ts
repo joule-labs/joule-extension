@@ -27,5 +27,5 @@ export function createInvoice(payload: CreateInvoiceArguments) {
 }
 
 export function resetCreateInvoice() {
-  return { type: types.RESET_SEND_PAYMENT };
+  return { type: types.RESET_CREATE_INVOICE };
 }

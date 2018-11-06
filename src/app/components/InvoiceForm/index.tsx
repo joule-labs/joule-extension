@@ -31,13 +31,15 @@ interface State {
   expiry: string;
 }
 
+const INITIAL_STATE: State = {
+  value: '',
+  memo: '',
+  fallbackAddress: '',
+  expiry: '24',
+};
+
 class InvoiceForm extends React.Component<Props, State> {
-  state: State = {
-    value: '',
-    memo: '',
-    fallbackAddress: '',
-    expiry: '24',
-  };
+  state: State = { ...INITIAL_STATE };
 
   componentWillUnmount() {
     this.props.resetCreateInvoice();
@@ -69,7 +71,7 @@ class InvoiceForm extends React.Component<Props, State> {
                 Back to home
               </Button>
             )}
-            <Button size="large" type="primary" onClick={this.props.resetCreateInvoice}>
+            <Button size="large" type="primary" onClick={this.reset}>
               Create another
             </Button>
           </div>
@@ -169,6 +171,11 @@ class InvoiceForm extends React.Component<Props, State> {
       fallback_addr: fallbackAddress,
       expiry: parseInt(expiry, 10) * 3600,
     });
+  };
+
+  private reset = () => {
+    this.setState({ ...INITIAL_STATE });
+    this.props.resetCreateInvoice();
   };
 }
 
