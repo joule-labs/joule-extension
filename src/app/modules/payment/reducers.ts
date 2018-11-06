@@ -1,10 +1,10 @@
-import { SendPaymentResponse } from 'lib/lnd-http';
+import { SendPaymentResponse, CreateInvoiceResponse } from 'lib/lnd-http';
 import types, { PaymentRequestState } from './types';
 
 export interface PaymentState {
   sendReceipt: SendPaymentResponse | null;
   paymentRequests: { [req: string]: PaymentRequestState };
-  invoice: any | null;
+  invoice: CreateInvoiceResponse | null;
   sendError: Error | null;
   isSending: boolean;
   invoiceError: Error | null;
@@ -13,8 +13,8 @@ export interface PaymentState {
 
 export const INITIAL_STATE: PaymentState = {
   sendReceipt: null,
-  invoice: null,
   paymentRequests: {},
+  invoice: null,
   sendError: null,
   isSending: false,
   invoiceError: null,
@@ -52,6 +52,33 @@ export default function channelsReducers(
         sendReceipt: null,
         sendError: null,
         isSending: false,
+      };
+    
+    case types.CREATE_INVOICE:
+      return {
+        ...state,
+        invoice: null,
+        isCreatingInvoice: true,
+        invoiceError: null,
+      };
+    case types.CREATE_INVOICE_SUCCESS:
+      return {
+        ...state,
+        invoice: action.payload,
+        isCreatingInvoice: false,
+      };
+    case types.CREATE_INVOICE_FAILURE:
+      return {
+        ...state,
+        invoiceError: action.payload,
+        isCreatingInvoice: false,
+      };
+    
+    case types.RESET_CREATE_INVOICE:
+      return {
+        ...state,
+        invoice: null,
+        invoiceError: null,
       };
 
     case types.CHECK_PAYMENT_REQUEST:
