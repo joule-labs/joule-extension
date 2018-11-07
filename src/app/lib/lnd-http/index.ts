@@ -143,6 +143,14 @@ export class LndHttpClient {
     )
   };
 
+  createInvoice = (args: T.CreateInvoiceArguments) => {
+    return this.request<T.CreateInvoiceResponse, T.CreateInvoiceArguments>(
+      'POST',
+      '/v1/invoices',
+      args,
+    );
+  };
+
   decodePaymentRequest = (paymentRequest: string) => {
     return this.request<T.DecodePaymentRequestResponse>(
       'GET',

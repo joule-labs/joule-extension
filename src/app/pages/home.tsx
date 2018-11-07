@@ -4,6 +4,7 @@ import AccountInfo from 'components/AccountInfo';
 import ChannelList from 'components/ChannelList';
 import TransactionList from 'components/TransactionList';
 import SendForm from 'components/SendForm';
+import InvoiceForm from 'components/InvoiceForm';
 import { ChannelWithNode } from 'modules/channels/types';
 import { AnyTransaction } from 'modules/account/types';
 import './home.less';
@@ -87,7 +88,7 @@ export default class HomePage extends React.Component<{}, State> {
   };
 
   private openInvoiceForm = () => {
-    this.openDrawer(<h1>Invoice</h1>, 'Create Invoice');
+    this.openDrawer(<InvoiceForm close={this.closeDrawer} />, 'Create Invoice');
   };
 
   private handleChannelClick = (channel: ChannelWithNode) => {

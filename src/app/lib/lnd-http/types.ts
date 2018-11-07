@@ -228,9 +228,15 @@ export interface SendPaymentResponse {
 };
 
 export interface CreateInvoiceArguments {
+  value: string;
   memo?: string;
-  receipt?: string;
-  r_preimage?: string;
+  expiry?: string | number;
+  fallback_addr?: string;
+}
+
+export interface CreateInvoiceResponse {
+  payment_request: string;
+  add_index: string;
 }
 
 export interface NewAddressArguments {
