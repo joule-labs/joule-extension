@@ -14,6 +14,5 @@ export function parseNodeErrorResponse(res: ErrorResponse): Error {
     return new Errors.NoRouteError('No route available for payment');
   }
 
-  console.warn('Encountered unknown server error:', res.error);
-  return new Errors.UnknownServerError('Unknown server error');
+  return new Errors.UnknownServerError(res.error);
 }

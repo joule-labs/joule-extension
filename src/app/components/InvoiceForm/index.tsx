@@ -128,7 +128,7 @@ class InvoiceForm extends React.Component<Props, State> {
             <Alert
               type="error"
               message="Failed to create invoice"
-              description={invoiceError}
+              description={invoiceError.message}
               showIcon
               closable
             />
