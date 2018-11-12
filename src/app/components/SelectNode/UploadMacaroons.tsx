@@ -86,13 +86,15 @@ export default class UploadMacaroon extends React.Component<Props, State> {
         <div className="UploadMacaroons-hint">
           Macaroons are usually located in either{' '}
           <code>{LND_DIR.MACOS}</code> on macOS, or{' '}
-          <code>{LND_DIR.LINUX}</code> on Linux.
+          <code>{LND_DIR.LINUX}</code> on Linux if you’re running LND.
+          Other clients may differ.
         </div>
 
         <Button
           disabled={!admin || !readonly}
           type="primary"
           onClick={this.handleSubmit}
+          size="large"
           block
         >
           Continue
