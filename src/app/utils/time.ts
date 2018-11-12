@@ -5,3 +5,4 @@ export function unixMoment(value: string | number) {
 }
 
 export const SHORT_FORMAT = 'MMM Do, h:mm A';
+export const LONG_FORMAT = 'l LT';

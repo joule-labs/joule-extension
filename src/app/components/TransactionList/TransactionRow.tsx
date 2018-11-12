@@ -4,33 +4,60 @@ import moment from 'moment';
 import classnames from 'classnames';
 import { Tooltip, Icon } from 'antd';
 import Identicon from 'components/Identicon';
-import './TransactionRow.less';
 import { AnyTransaction } from 'modules/account/types';
+import { isInvoice, isBitcoinTx } from 'utils/typeguards';
+import BitcoinLogo from 'static/images/bitcoin.svg';
+import './TransactionRow.less';
 
 interface Props {
   source: AnyTransaction;
+  title: React.ReactNode;
   type: 'bitcoin' | 'lightning';
-  pubkey: string;
   timestamp: number;
   status: 'complete' | 'pending' | 'rejected' | 'expired';
+  pubkey?: string;
   delta?: BN | false | null;
   onClick?(source: AnyTransaction): void;
 }
 
+
 export default class TransactionRow extends React.Component<Props> {
   render() {
-    const { pubkey, type, timestamp, status, delta } = this.props;
+    const { pubkey, timestamp, status, delta, onClick, source, title } = this.props;
+
+    let icon;
+    if (pubkey) {
+      icon = <Identicon className="TransactionRow-avatar-img" pubkey={pubkey} />;
+    } else if (isInvoice(source)) {
+      icon = (
+        <div className="TransactionRow-avatar-img is-icon is-invoice">
+          <Icon type="audit" />
+        </div>
+      );
+    } else if (isBitcoinTx(source)) {
+      icon = (
+        <div className="TransactionRow-avatar-img is-icon is-bitcoin">
+          <Icon component={BitcoinLogo} />
+        </div>
+      );
+    }
+
     return (
-      <div className="TransactionRow">
+      <div
+        className={classnames("TransactionRow", onClick && 'is-clickable')}
+        onClick={this.handleClick}
+      >
         <div className="TransactionRow-avatar">
-          <Identicon className="TransactionRow-avatar-img" pubkey={pubkey} />
+          {icon}
           <Tooltip title={status}>
             <div className={`TransactionRow-avatar-status is-${status}`} />
           </Tooltip>
         </div>
         <div className="TransactionRow-info">
-          <div>{type}</div>
-          <div>{moment.unix(timestamp).fromNow()}</div>
+          <div className="TransactionRow-info-title">{title}</div>
+          <div className="TransactionRow-info-time">
+            {moment.unix(timestamp).format('MMM Mo, LT')}
+          </div>
         </div>
         {delta &&
           <div className={
@@ -42,4 +69,10 @@ export default class TransactionRow extends React.Component<Props> {
       </div>
     )
   }
+
+  private handleClick = () => {
+    if (this.props.onClick) {
+      this.props.onClick(this.props.source);
+    }
+  };
 }

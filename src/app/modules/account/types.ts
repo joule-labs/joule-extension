@@ -1,4 +1,4 @@
-import { LightningInvoice, LightningPayment, BitcoinTransaction } from 'lib/lnd-http';
+import { LightningNode, LightningInvoice, LightningPayment, BitcoinTransaction } from 'lib/lnd-http';
 
 enum AccountTypes {
   GET_ACCOUNT_INFO = 'GET_ACCOUNT_INFO',
@@ -26,7 +26,11 @@ export interface Account {
   channelBalancePending: number;
 }
 
+export interface LightningPaymentWithToNode extends LightningPayment {
+  to: LightningNode;
+}
+
 export type AnyTransaction =
   | LightningInvoice
-  | LightningPayment
+  | LightningPaymentWithToNode
   | BitcoinTransaction;

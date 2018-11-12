@@ -107,7 +107,13 @@ export class LndHttpClient {
       '/v1/payments',
       undefined,
       { payments: [] },
-    );
+    ).then(res => {
+      res.payments = res.payments.map(t => ({
+        ...t,
+        fee: '0',
+      }));
+      return res;
+    });;
   };
 
   getInvoices = (args: T.GetInvoicesArguments = {}) => {
