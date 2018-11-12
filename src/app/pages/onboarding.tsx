@@ -32,7 +32,7 @@ interface State {
 
 class OnboardingPage extends React.Component<Props, State> {
   state: State = {
-    step: process.env.APP_CONTAINER === 'page' ? STEP.NODE : STEP.SPLASH,
+    step: STEP.SPLASH,
   };
 
   componentDidMount() {

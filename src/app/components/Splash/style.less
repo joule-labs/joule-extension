@@ -15,6 +15,7 @@
   padding: 2rem;
   position: relative;
   height: 100%;
+  text-align: center;
 
   &-inner {
     animation: fade-splash-up 500ms ease 1;
@@ -38,10 +39,12 @@
   }
 
   ul {
+    display: inline-block;
     margin: 2rem 0 2rem 0;
     font-size: 1rem;
     line-height: 2.4rem;
     list-style: none;
+    text-align: left;
     padding: 0 0 0 1rem;
 
     & li::before {
@@ -56,8 +59,15 @@
   &-controls {
     text-align: center;
 
+    .ant-btn {
+      display: block;
+      max-width: 250px;
+      height: 3.2rem;
+      font-size: 1.2rem;
+      margin: 0 auto 1rem;
+    }
+
     &-restore {
-      margin-top: 1rem;
       display: inline-block;
       color: #828282;
     }
