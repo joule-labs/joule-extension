@@ -21,7 +21,7 @@ export default class Splash extends React.Component<Props> {
             <li>Auth with a decentralized identity</li>
           </ul>
           <div className="Splash-controls">
-            <Button block size="large" type="primary" onClick={this.props.handleContinue}>
+            <Button block size="large" type="primary" onClick={this.handleContinue}>
               Get started
             </Button>
             <a className="Splash-controls-restore" onClick={this.props.handleRestore}>
@@ -32,4 +32,12 @@ export default class Splash extends React.Component<Props> {
       </div>
     );
   }
+
+  private handleContinue = () => {
+    if (process.env.APP_CONTAINER === 'page') {
+      this.props.handleContinue();
+    } else {
+      chrome.runtime.openOptionsPage();
+    }
+  };
 }

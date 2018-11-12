@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { GetInfoResponse } from 'lib/lnd-http';
+import './ConfirmNode.less';
 
 interface Props {
   nodeInfo: GetInfoResponse;
@@ -18,6 +19,9 @@ export default class ConfirmNode extends React.Component<Props> {
       label: 'Version',
       value: nodeInfo.version.split(' ')[0],
     }, {
+      label: 'Testnet',
+      value: JSON.stringify(!!nodeInfo.testnet),
+    }, {
       label: '# of Channels',
       value: nodeInfo.num_active_channels || 'Unknown'
     }];
@@ -27,9 +31,9 @@ export default class ConfirmNode extends React.Component<Props> {
         <table className="ConfirmNode-info">
           <tbody>
             {rows.map(r => (
-              <tr className="ConfirmNode-row" key={r.label}>
-                <td className="ConfirmNode-row-label">{r.label}</td>
-                <td className="ConfirmNode-row-value">{r.value}</td>
+              <tr className="ConfirmNode-info-row" key={r.label}>
+                <td className="ConfirmNode-info-row-label">{r.label}</td>
+                <td className="ConfirmNode-info-row-value">{r.value}</td>
               </tr>
             ))}
           </tbody>

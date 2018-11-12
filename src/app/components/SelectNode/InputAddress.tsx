@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
+import './InputAddress.less';
 
 interface Props {
   error: Error | null;
@@ -40,7 +41,7 @@ export default class InputAddress extends React.Component<Props, State> {
       </>
     );
     return (
-      <Form className="InputAddress" onSubmit={this.handleSubmit}>
+      <Form className="InputAddress" onSubmit={this.handleSubmit} layout="vertical">
         <Form.Item label="Node URL" help={help} validateStatus={validateStatus}>
           <Input
             type="url"
@@ -48,10 +49,17 @@ export default class InputAddress extends React.Component<Props, State> {
             value={url}
             onChange={this.handleChange}
             placeholder="http://localhost:8080"
+            autoFocus
           />
         </Form.Item>
 
-        <Button type="primary" size="large" htmlType="submit" block>
+        <Button
+          type="primary"
+          size="large"
+          htmlType="submit"
+          block
+          disabled={!url}
+        >
           Connect
         </Button>
       </Form>

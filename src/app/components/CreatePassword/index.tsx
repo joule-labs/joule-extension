@@ -54,7 +54,7 @@ export default class CreatePassword extends React.Component<Props, State> {
         'error'
       : undefined;
     return (
-      <Form className="CreatePassword" onSubmit={this.handleSubmit}>
+      <Form className="CreatePassword" onSubmit={this.handleSubmit} layout="vertical">
         <h2 className="CreatePassword-title">Create a Password</h2>
 
         <Form.Item label="Password">
@@ -65,6 +65,7 @@ export default class CreatePassword extends React.Component<Props, State> {
             className="CreatePassword-input"
             size="large"
             type="password"
+            autoFocus
           />
         </Form.Item>
         
@@ -87,6 +88,7 @@ export default class CreatePassword extends React.Component<Props, State> {
             type="primary"
             htmlType="submit"
             disabled={!isReady}
+            block
           >
             Continue
           </Button>
