@@ -5,6 +5,7 @@ import ChannelList from 'components/ChannelList';
 import TransactionList from 'components/TransactionList';
 import SendForm from 'components/SendForm';
 import InvoiceForm from 'components/InvoiceForm';
+import TransactionInfo from 'components/TransactionInfo';
 import { ChannelWithNode } from 'modules/channels/types';
 import { AnyTransaction } from 'modules/account/types';
 import './home.less';
@@ -96,6 +97,6 @@ export default class HomePage extends React.Component<{}, State> {
   };
 
   private handleTransactionClick = (tx: AnyTransaction) => {
-    this.openDrawer(<h1>{JSON.stringify(tx, null, 2)}</h1>);
+    this.openDrawer(<TransactionInfo tx={tx} />, 'Transaction Details');
   };
 }

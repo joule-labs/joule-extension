@@ -94,8 +94,9 @@ class TransactionList extends React.Component<Props> {
           <TransactionRow
             key={payment.payment_hash}
             source={payment}
+            title={payment.to.alias}
             type="lightning"
-            pubkey={payment.payment_hash}
+            pubkey={payment.to.pub_key}
             timestamp={parseInt(payment.creation_date, 10)}
             status="complete"
             delta={new BN(`-${payment.value_sat}`)}
@@ -108,17 +109,19 @@ class TransactionList extends React.Component<Props> {
       invoices.map(invoice => {
         const timestamp = parseInt(invoice.creation_date, 10);
         const expiry = timestamp + parseInt(invoice.expiry, 10);
+        console.log(expiry);
+        console.log(Date.now() / 1000);
         const status = invoice.settled ? 'complete' :
-          expiry > Date.now() ? 'expired' : 'pending';
-          
+          expiry < Date.now() / 1000 ? 'expired' : 'pending';
+
         return {
           timestamp,
           component: (
             <TransactionRow
               key={invoice.payment_request}
               source={invoice}
+              title={`Invoice #${invoice.add_index}`}
               type="lightning"
-              pubkey={invoice.payment_request}
               timestamp={timestamp}
               status={status}
               delta={status === 'complete' && new BN(invoice.amt_paid_sat)}
@@ -135,8 +138,8 @@ class TransactionList extends React.Component<Props> {
           <TransactionRow
             key={tx.tx_hash}
             source={tx}
+            title={<code>{tx.tx_hash}</code>}
             type="bitcoin"
-            pubkey={tx.tx_hash}
             timestamp={parseInt(tx.time_stamp, 10)}
             status={tx.num_confirmations > 2 ? 'complete' : 'pending'}
             delta={new BN(tx.amount)}

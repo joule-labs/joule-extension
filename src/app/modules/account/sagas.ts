@@ -38,16 +38,39 @@ export function* handleGetAccountInfo(): SagaIterator {
 
 export function* handleGetTransactions(): SagaIterator {
   try {
+    // Get various transactions info
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    const [paymentsRes, invoicesRes, transactionsRes] = yield all([
+    const [paymentsRes, invoicesRes, transactionsRes]: [
+      Yielded<typeof nodeLib.getPayments>,
+      Yielded<typeof nodeLib.getInvoices>,
+      Yielded<typeof nodeLib.getTransactions>
+    ] = yield all([
       call(nodeLib.getPayments),
       call(nodeLib.getInvoices, { num_max_invoices: 30 }),
       call(nodeLib.getTransactions),
     ]);
+
+    // Get node information from payments
+    const paymentNodeIds: string[] = paymentsRes.payments
+      .map(payment => payment.path[payment.path.length - 1])
+      .filter((id, idx, ids) => ids.indexOf(id) === idx);
+    const paymentNodes: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
+      paymentNodeIds.map(id => call(nodeLib.getNodeInfo, id))
+    );
+    const payments = paymentsRes.payments.map(p => {
+      const nodeResponse = paymentNodes.find(
+        n => p.path[p.path.length - 1] === n.node.pub_key
+      );
+      return {
+        ...p,
+        to: (nodeResponse as any).node,
+      };
+    });
+
     yield put({
       type: types.GET_TRANSACTIONS_SUCCESS,
       payload: {
-        payments: paymentsRes.payments,
+        payments,
         invoices: invoicesRes.invoices,
         transactions: transactionsRes.transactions,
       },

@@ -1,9 +1,9 @@
-import types, { Account } from './types';
-import { LightningInvoice, LightningPayment, BitcoinTransaction } from 'lib/lnd-http';
+import types, { Account, LightningPaymentWithToNode } from './types';
+import { LightningInvoice, BitcoinTransaction } from 'lib/lnd-http';
 
 export interface AccountState {
   account: Account | null;
-  payments: LightningPayment[] | null;
+  payments: LightningPaymentWithToNode[] | null;
   invoices: LightningInvoice[] | null;
   transactions: BitcoinTransaction[] | null;
   depositAddress: string | null;
@@ -60,8 +60,8 @@ export default function channelsReducers(
         payments: [],
         invoices: [],
         transactions: [],
-        isFetchingAccountInfo: true,
-        fetchAccountInfoError: null,
+        isFetchingTransactions: true,
+        fetchTransactionsError: null,
       };
     case types.GET_TRANSACTIONS_SUCCESS:
       return {
