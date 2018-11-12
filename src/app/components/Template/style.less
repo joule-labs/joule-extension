@@ -16,15 +16,13 @@
   }
 
   &-header {
+    display: none;
+
     &-inner {
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 0 0.5rem 0.75rem;
-    }
-
-    .is-popup & {
-      display: none;
     }
 
     &-branding {
@@ -79,6 +77,10 @@
       &-inner {
         max-width: 680px;
       }
+    }
+
+    &-header {
+      display: block;
     }
 
     &-content {
