@@ -1,39 +1,31 @@
 import React from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Alert } from 'antd';
 import './InputAddress.less';
 
 interface Props {
   error: Error | null;
+  isCheckingNode?: boolean;
   submitUrl(url: string): void;
 }
 
 interface State {
   url: string;
-  error: string;
+  submittedUrl: string;
+  validation: string;
 }
 
 export default class InputAddress extends React.Component<Props, State> {
   state: State = {
     url: '',
-    error: '',
+    submittedUrl: 'https://localhost:8080',
+    validation: '',
   };
 
-  componentWillMount() {
-    if (this.props.error) {
-      this.setState({ error: this.props.error.message });
-    }
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.error && !prevProps.error) {
-      this.setState({ error: this.props.error.message });
-    }
-  }
-
   render() {
-    const { error, url } = this.state;
-    const validateStatus = url ? error ? 'error' : 'success' : undefined;
-    const help = error || (
+    const { error, isCheckingNode } = this.props;
+    const { validation, url, submittedUrl } = this.state;
+    const validateStatus = url ? validation ? 'error' : 'success' : undefined;
+    const help = (url && validation) || (
       <>
         You must provide the REST API address. Must begin with{' '}
         <code>http://</code> or <code>https://</code>, and specify a port if
@@ -53,12 +45,33 @@ export default class InputAddress extends React.Component<Props, State> {
           />
         </Form.Item>
 
+        {error &&
+          <Alert
+            type="error"
+            message="Failed to connect to node"
+            description={<>
+              <p>Request failed with the message "{error.message}"</p>
+              <p>
+                If you're sure you've setup your node correctly, try{' '}
+                <a href={`${submittedUrl}/v1/getinfo`} target="_blank">
+                  clicking this link
+                </a>{' '}
+                and making sure it loads correctly. If there are SSL errors,
+                click "advanced" and proceed to accept the certificate.
+              </p>
+            </>}
+            showIcon
+            closable
+          />
+        }
+
         <Button
           type="primary"
           size="large"
           htmlType="submit"
-          block
           disabled={!url}
+          loading={isCheckingNode}
+          block
         >
           Connect
         </Button>
@@ -68,18 +81,19 @@ export default class InputAddress extends React.Component<Props, State> {
 
   private handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const url = ev.currentTarget.value;
-    let error = '';
+    let validation = '';
     try {
       // tslint:disable-next-line
       new URL(url);
     } catch(err) {
-      error = 'That doesn’t look like a valid url';
+      validation = 'That doesn’t look like a valid url';
     }
-    this.setState({ url, error });
+    this.setState({ url, validation });
   };
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     this.props.submitUrl(this.state.url);
+    this.setState({ submittedUrl: this.state.url });
   };
 }
