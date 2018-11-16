@@ -1,10 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, DispatchProp } from 'react-redux';
 import { Icon, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { AppState } from 'store/reducers';
-import './style.less';
 import { injectBackupData, decryptData, TEST_CIPHER_DATA } from 'utils/crypto';
+import './style.less';
 
 interface StateProps {
   state: AppState;
@@ -68,8 +68,12 @@ class Restore extends React.Component<StateProps, State> {
       </div>
     );
   }
-  private handleChange = (selectorFiles: FileList) => {
-    readFile(selectorFiles[0]).then(blob => this.setState({ blob }));
+  private handleChange = (selectorFiles: FileList | null) => {
+    if (!selectorFiles) {
+      this.setState({ blob: '' });
+    } else {
+      readFile(selectorFiles[0]).then(blob => this.setState({ blob }));
+    }
   };
   private handlePassChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
@@ -96,7 +100,7 @@ class Restore extends React.Component<StateProps, State> {
   };
 }
 
-const ConnectedRestore = connect<StateProps, {}, {}, AppState>(state => ({
+const ConnectedRestore = connect<StateProps, DispatchProp, {}, AppState>(state => ({
   state,
 }))(Restore);
 
