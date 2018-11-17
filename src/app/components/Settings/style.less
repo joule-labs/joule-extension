@@ -1,22 +1,53 @@
 .Settings {
   width: 100%;
+  padding: 4rem 1rem 1rem;
 
-  & h2 {
-    text-align: center;
-  }
-
-  &-back {
-    position: absolute;
-    left: 0;
+  &-top {
+    position: fixed;
     top: 0;
-    padding: 0.2rem 0.5rem;
+    left: 0;
+    right: 0;
+    background: #FFF;
+    border-bottom: 1px solid rgba(#000, 0.08);
+
+    &-title {
+      text-align: center;
+      line-height: 3rem;
+      margin: 0;
+    }
+
+    &-back {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      font-size: 1.2rem;
+      transform: translateY(-50%);
+    }
   }
 
-  &-backup {
-    margin: 2rem;
+  &-form {
+    &-section {
+      margin-bottom: 3rem;
 
-    & button {
-      width: 100%;
+      &-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+      }
+
+      // Ant overrides
+      .ant-form-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .ant-form-item-label label {
+        font-weight: 600;
+        opacity: 0.7;
+      }
+
+      .ant-checkbox-wrapper {
+        display: block;
+        margin: 0.5rem 0 0 0;
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ import { Button, Icon } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
+import SettingsMenu from 'components/SettingsMenu';
 import DepositModal from './DepositModal';
 import { getAccountInfo } from 'modules/account/actions';
 import { AppState } from 'store/reducers';
@@ -93,6 +94,10 @@ class AccountInfo extends React.Component<Props, State> {
             onClose={this.closeDepositModal}
           />
         }
+
+        <div className="AccountInfo-settings">
+          <SettingsMenu />
+        </div>
       </div>
     );
   }

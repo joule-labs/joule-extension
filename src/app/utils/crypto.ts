@@ -9,6 +9,9 @@ import cryptoTypes from 'modules/crypto/types';
 import { selectSyncedEncryptedNodeState, selectSyncedUnencryptedNodeState } from 'modules/node/selectors';
 import { setSyncedEncryptedNodeState, setSyncedUnencryptedNodeState } from 'modules/node/actions';
 import nodeTypes from 'modules/node/types';
+import { selectSettings } from 'modules/settings/selectors';
+import { changeSettings } from 'modules/settings/actions';
+import settingsTypes from 'modules/settings/types';
 import { AppState } from 'store/reducers';
 import { Dispatch } from 'redux';
 
@@ -42,22 +45,29 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     selector: selectSyncedCryptoState,
     action: setSyncedCryptoState,
     // TODO: Add triggers for when they reset account, import account
-    triggerActions: [cryptoTypes.SET_PASSWORD, 'BACKUP_RESTORED'],
+    triggerActions: [cryptoTypes.SET_PASSWORD],
   },
   {
     key: 'node-unencrypted',
     encrypted: false,
     selector: selectSyncedUnencryptedNodeState,
     action: setSyncedUnencryptedNodeState,
-    triggerActions: [nodeTypes.SET_NODE, 'BACKUP_RESTORED'],
+    triggerActions: [nodeTypes.SET_NODE],
   },
   {
     key: 'node-encryped',
     encrypted: true,
     selector: selectSyncedEncryptedNodeState,
     action: setSyncedEncryptedNodeState,
-    triggerActions: [nodeTypes.SET_NODE, 'BACKUP_RESTORED'],
+    triggerActions: [nodeTypes.SET_NODE],
   },
+  {
+    key: 'settings',
+    encrypted: false,
+    selector: selectSettings,
+    action: changeSettings,
+    triggerActions: [settingsTypes.CHANGE_SETTINGS],
+  }
 ];
 
 export function generateBackupData(state: AppState) {
