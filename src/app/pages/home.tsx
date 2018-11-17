@@ -6,7 +6,7 @@ import TransactionList from 'components/TransactionList';
 import SendForm from 'components/SendForm';
 import InvoiceForm from 'components/InvoiceForm';
 import TransactionInfo from 'components/TransactionInfo';
-import { ChannelWithNode } from 'modules/channels/types';
+// import { ChannelWithNode } from 'modules/channels/types';
 import { AnyTransaction } from 'modules/account/types';
 import './home.less';
 
