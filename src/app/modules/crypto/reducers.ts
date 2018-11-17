@@ -1,5 +1,4 @@
 import types from './types';
-import { type } from 'os';
 
 export interface CryptoState {
   salt: null | string;

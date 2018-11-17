@@ -32,7 +32,7 @@ export default class JouleWebLNProvider implements WebLNProvider {
     );
   }
 
-  async makeInvoice(amount: string) {
+  async makeInvoice(_: string) {
     if (!this.isEnabled) {
       throw new Error('Provider must be enabled before calling makeInvoice');
     }
@@ -40,7 +40,7 @@ export default class JouleWebLNProvider implements WebLNProvider {
     return { paymentRequest: '' };
   }
 
-  async signMessage(message: string) {
+  async signMessage(_: string) {
     if (!this.isEnabled) {
       throw new Error('Provider must be enabled before calling signMessage');
     }
@@ -48,7 +48,7 @@ export default class JouleWebLNProvider implements WebLNProvider {
     return { signedMessage: '' };
   }
 
-  async verifyMessage(signedMessage: string) {
+  async verifyMessage(_: string) {
     throw new Error('Not yet implemented');
   }
 

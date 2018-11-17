@@ -4,7 +4,6 @@ import './style.less';
 
 interface Props {
   handleContinue(): void;
-  handleRestore(): void;
 }
 
 export default class Splash extends React.Component<Props> {
@@ -24,9 +23,6 @@ export default class Splash extends React.Component<Props> {
             <Button block size="large" type="primary" onClick={this.handleContinue}>
               Get started
             </Button>
-            <a className="Splash-controls-restore" onClick={this.props.handleRestore}>
-              Restore backup
-            </a>
           </div>
         </div>
       </div>

@@ -5,12 +5,15 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // webpack plugins
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 // postcss plugins
 const autoprefixer = require('autoprefixer');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-const srcApp = path.join(__dirname, 'src/app');
+const src = path.join(__dirname, 'src');
+const srcApp = path.join(src, 'app');
 
 const cssLoaderClient = {
   test: /\.css$/,
@@ -124,7 +127,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.mjs', '.json', '.mp3'],
+    extensions: ['.ts', '.tsx', '.js', '.mjs', '.json'],
     modules: [srcApp, path.join(__dirname, 'node_modules')],
     alias: {
       api: `${srcApp}/api`,
@@ -142,12 +145,25 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename:
-        process.env.NODE_ENV === 'development' ? '[name].css' : '[name].[hash:8].css',
-      chunkFilename:
-        process.env.NODE_ENV === 'development'
-          ? '[name].chunk.css'
-          : '[name].[chunkhash:8].chunk.css',
+      filename: isDev ? '[name].css' : '[name].[hash:8].css',
+    }),
+    new HtmlWebpackPlugin({
+      template: `${src}/options/template.html`,
+      chunks: ['options'],
+      filename: 'options.html',
+      inject: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: `${src}/popup/template.html`,
+      chunks: ['popup'],
+      filename: 'popup.html',
+      inject: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: `${src}/prompt/template.html`,
+      chunks: ['prompt'],
+      filename: 'prompt.html',
+      inject: true,
     }),
     new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
   ],

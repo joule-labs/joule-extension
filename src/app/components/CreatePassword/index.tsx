@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Input, Icon } from 'antd';
+import { Form, Button, Input } from 'antd';
 import zxcvbn from 'zxcvbn';
 import './style.less';
 
