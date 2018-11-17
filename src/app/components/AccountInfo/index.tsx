@@ -88,7 +88,6 @@ class AccountInfo extends React.Component<Props, State> {
 
         {account &&
           <DepositModal
-            address={account.chainAddress}
             isOpen={isDepositModalOpen}
             onClose={this.closeDepositModal}
           />

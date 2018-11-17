@@ -1,5 +1,4 @@
 import React from 'react';
-import { Spin } from 'antd';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 

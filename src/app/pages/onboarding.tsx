@@ -4,7 +4,6 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import SelectNode from 'components/SelectNode';
 import CreatePassword from 'components/CreatePassword';
 import Splash from 'components/Splash';
-import Restore from 'components/Restore';
 import { cryptoActions } from 'modules/crypto';
 import { AppState } from 'store/reducers';
 
@@ -23,7 +22,6 @@ enum STEP {
   SPLASH = 'SPLASH',
   NODE = 'NODE',
   PASSWORD = 'PASSWORD',
-  RESTORE = 'RESTORE',
 }
 
 interface State {
@@ -50,17 +48,12 @@ class OnboardingPage extends React.Component<Props, State> {
     switch (step) {
       case STEP.SPLASH:
         return (
-          <Splash
-            handleContinue={() => this.changeStep(STEP.NODE)}
-            handleRestore={() => this.changeStep(STEP.RESTORE)}
-          />
+          <Splash handleContinue={() => this.changeStep(STEP.NODE)} />
         );
       case STEP.NODE:
         return <SelectNode onConfirmNode={() => this.changeStep(STEP.PASSWORD)} />;
       case STEP.PASSWORD:
         return <CreatePassword onCreatePassword={this.props.setPassword} />;
-      case STEP.RESTORE:
-        return <Restore />;
     }
   }
 
