@@ -1,6 +1,6 @@
 import React from 'react';
 import { Radio, Icon } from 'antd';
-import { RadioChangeEvent } from 'antd/lib/Radio';
+import { RadioChangeEvent } from 'antd/lib/radio';
 import LightningSend from './LightningSend';
 import BigMessage from 'components/BigMessage';
 import './style.less';

@@ -90,6 +90,7 @@
     "tslint-react": "^3.6.0",
     "typescript": "3.1.6",
     "url-loader": "^1.1.1",
+    "webln": "0.0.1",
     "webpack": "^4.19.0",
     "webpack-cli": "^3.1.0",
     "zxcvbn": "4.4.2"
