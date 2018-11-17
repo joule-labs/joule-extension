@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Button, Icon } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import Identicon from 'components/Identicon';
+import Unit from 'components/Unit';
 import DepositModal from './DepositModal';
 import { getAccountInfo } from 'modules/account/actions';
 import { AppState } from 'store/reducers';
@@ -66,11 +67,11 @@ class AccountInfo extends React.Component<Props, State> {
             <div className="AccountInfo-top-info">
               <div className="AccountInfo-top-info-alias">{account.alias}</div>
               <div className="AccountInfo-top-info-balance">
-                {account.channelBalance} sats
+                <Unit value={account.totalBalance} />
               </div>
               <div className="AccountInfo-top-info-balances">
-                <span>Bitcoin: {account.blockchainBalance} sats</span>
-                <span>Channels: {account.channelBalance} sats</span>
+                <span>Channels: <Unit value={account.channelBalance} /></span>
+                <span>Bitcoin: <Unit value={account.blockchainBalance} /></span>
               </div>
             </div>
           </div>

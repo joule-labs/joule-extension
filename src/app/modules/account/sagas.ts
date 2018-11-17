@@ -1,5 +1,6 @@
 import { SagaIterator } from 'redux-saga';
 import { takeLatest, select, call, all, put } from 'redux-saga/effects';
+import BN from 'bn.js';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { getNodePubKey } from 'modules/node/sagas';
 import { requirePassword } from 'modules/crypto/sagas';
@@ -23,6 +24,12 @@ export function* handleGetAccountInfo(): SagaIterator {
       blockchainBalancePending: chainBalances.total_balance,
       channelBalance: channelsBalances.balance,
       channelBalancePending: channelsBalances.pending_open_balance,
+      totalBalance: new BN(chainBalances.confirmed_balance).add(
+        new BN(channelsBalances.balance)
+      ).toString(),
+      totalBalancePending: new BN(chainBalances.total_balance).add(
+        new BN(channelsBalances.pending_open_balance)
+      ).toString(),
     };
     yield put({
       type: types.GET_ACCOUNT_INFO_SUCCESS,

@@ -98,7 +98,13 @@ export class LndHttpClient {
       '/v1/transactions',
       undefined,
       { transactions: [] },
-    );
+    ).then(res => {
+      res.transactions = res.transactions.map(tx => ({
+        total_fees: '0',
+        ...tx,
+      }));
+      return res;
+    });
   };
 
   getPayments = () => {
@@ -109,8 +115,8 @@ export class LndHttpClient {
       { payments: [] },
     ).then(res => {
       res.payments = res.payments.map(t => ({
-        ...t,
         fee: '0',
+        ...t,
       }));
       return res;
     });;
