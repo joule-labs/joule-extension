@@ -63,7 +63,7 @@ class SelectNode extends React.Component<Props, State> {
     let content: React.ReactNode;
     let title: React.ReactNode;
     if (nodeType) {
-      if (isCheckingNode || isCheckingAuth) {
+      if (isCheckingAuth) {
         content = <Spin />;
       }
       else if (nodeInfo) {
@@ -86,6 +86,7 @@ class SelectNode extends React.Component<Props, State> {
           <InputAddress
             submitUrl={this.setUrl}
             error={checkNodeError}
+            isCheckingNode={isCheckingNode}
           />
         );
       }

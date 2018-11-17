@@ -149,5 +149,6 @@ module.exports = {
           ? '[name].chunk.css'
           : '[name].[chunkhash:8].chunk.css',
     }),
+    new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
   ],
 };
