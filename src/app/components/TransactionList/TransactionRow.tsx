@@ -4,6 +4,7 @@ import moment from 'moment';
 import classnames from 'classnames';
 import { Tooltip, Icon } from 'antd';
 import Identicon from 'components/Identicon';
+import Unit from 'components/Unit';
 import { AnyTransaction } from 'modules/account/types';
 import { isInvoice, isBitcoinTx } from 'utils/typeguards';
 import BitcoinLogo from 'static/images/bitcoin.svg';
@@ -63,7 +64,7 @@ export default class TransactionRow extends React.Component<Props> {
           <div className={
             classnames(`TransactionRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`)
           }>
-            {delta.gtn(0) && '+'}{delta.toString()} sats
+            {delta.gtn(0) && '+'}<Unit value={delta.toString()} />
           </div>
         }
       </div>

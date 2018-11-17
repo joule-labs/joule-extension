@@ -20,10 +20,12 @@ export interface Account {
   pubKey: string;
   alias: string;
   color: string;
-  blockchainBalance: number;
-  blockchainBalancePending: number;
-  channelBalance: number;
-  channelBalancePending: number;
+  blockchainBalance: string;
+  blockchainBalancePending: string;
+  channelBalance: string;
+  channelBalancePending: string;
+  totalBalance: string;
+  totalBalancePending: string;
 }
 
 export interface LightningPaymentWithToNode extends LightningPayment {

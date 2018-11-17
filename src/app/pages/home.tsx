@@ -6,7 +6,7 @@ import TransactionList from 'components/TransactionList';
 import SendForm from 'components/SendForm';
 import InvoiceForm from 'components/InvoiceForm';
 import TransactionInfo from 'components/TransactionInfo';
-import { ChannelWithNode } from 'modules/channels/types';
+// import { ChannelWithNode } from 'modules/channels/types';
 import { AnyTransaction } from 'modules/account/types';
 import './home.less';
 
@@ -38,7 +38,7 @@ export default class HomePage extends React.Component<{}, State> {
             tab={<><Icon type="fork"/> Channels</>}
             key="channels"
           >
-            <ChannelList onClick={this.handleChannelClick} />
+            <ChannelList /*onClick={this.handleChannelClick}*/ />
           </Tabs.TabPane>
           <Tabs.TabPane
             tab={<><Icon type="shopping"/> Transactions</>}
@@ -92,9 +92,9 @@ export default class HomePage extends React.Component<{}, State> {
     this.openDrawer(<InvoiceForm close={this.closeDrawer} />, 'Create Invoice');
   };
 
-  private handleChannelClick = (channel: ChannelWithNode) => {
-    this.openDrawer(<h1>{channel.node.alias}</h1>)
-  };
+  // private handleChannelClick = (channel: ChannelWithNode) => {
+  //   this.openDrawer(<h1>{channel.node.alias}</h1>)
+  // };
 
   private handleTransactionClick = (tx: AnyTransaction) => {
     this.openDrawer(<TransactionInfo tx={tx} />, 'Transaction Details');

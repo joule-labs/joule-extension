@@ -1,6 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
+import Unit from 'components/Unit';
 import { ChannelWithNode } from 'modules/channels/types';
 import './ChannelRow.less';
 
@@ -28,12 +29,10 @@ export default class ChannelRow extends React.Component<Props> {
           <div className="ChannelRow-info-pubkey">
             <code>{channel.node.pub_key}</code>
           </div>
-          <div className="ChannelRow-info-stuff">
-            {channel.capacity}
-            {' · '}
-            {channel.remote_balance}
-            {' · '}
-            {channel.local_balance}
+          <div className="ChannelRow-info-balance">
+            Balance: <Unit value={channel.local_balance} hideUnit />
+            {' / '}
+            <Unit value={channel.capacity} />
           </div>
         </div>
       </div>
