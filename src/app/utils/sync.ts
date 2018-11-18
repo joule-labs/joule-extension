@@ -1,6 +1,7 @@
 export function storageSyncSet(key: string, items: any) {
   return new Promise((resolve, reject) => {
     try {
+      console.log(key, items);
       chrome.storage.sync.set({ [key]: items }, () => {
         resolve();
       });

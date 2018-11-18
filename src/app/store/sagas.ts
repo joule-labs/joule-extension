@@ -5,6 +5,7 @@ import { nodeSagas } from 'modules/node';
 import { channelsSagas } from 'modules/channels';
 import { accountSagas } from 'modules/account';
 import { paymentSagas } from 'modules/payment';
+import { ratesSagas } from 'modules/rates';
 
 export default function* rootSaga() {
   yield fork(cryptoSagas);
@@ -13,4 +14,5 @@ export default function* rootSaga() {
   yield fork(channelsSagas);
   yield fork(accountSagas);
   yield fork(paymentSagas);
+  yield fork(ratesSagas);
 }

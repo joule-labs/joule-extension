@@ -64,7 +64,7 @@ export default class TransactionRow extends React.Component<Props> {
           <div className={
             classnames(`TransactionRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`)
           }>
-            {delta.gtn(0) && '+'}<Unit value={delta.toString()} />
+            <Unit value={delta.toString()} showPlus showFiat />
           </div>
         }
       </div>

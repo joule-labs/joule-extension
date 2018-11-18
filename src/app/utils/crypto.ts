@@ -13,7 +13,6 @@ import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
 import settingsTypes from 'modules/settings/types';
 import { AppState } from 'store/reducers';
-import { Dispatch } from 'redux';
 
 export const TEST_CIPHER_DATA = 'Howdy partner!';
 
@@ -67,7 +66,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     selector: selectSettings,
     action: changeSettings,
     triggerActions: [settingsTypes.CHANGE_SETTINGS],
-  }
+  },
 ];
 
 export function generateBackupData(state: AppState) {
@@ -83,25 +82,4 @@ export function generateBackupData(state: AppState) {
     a[sc.key] = data;
     return a;
   }, {});
-}
-
-export function injectBackupData(
-  data: string,
-  dispatch: Dispatch,
-  password: string,
-  salt: string,
-) {
-  const obj = JSON.parse(data);
-  syncConfigs.forEach(sc => {
-    if (obj[sc.key]) {
-      let value = obj[sc.key];
-      if (sc.encrypted) {
-        value = decryptData(value, password, salt);
-      }
-      dispatch(sc.action(value));
-    }
-  });
-  setTimeout(() => {
-    dispatch({ type: 'BACKUP_RESTORED' });
-  }, 50);
 }

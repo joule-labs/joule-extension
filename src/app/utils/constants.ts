@@ -7,8 +7,8 @@ export const LND_DIR = {
 
 export enum Denomination {
   SATOSHIS = 'SATOSHIS',
-  BITS = 'BITS',
   MILLIBITCOIN = 'MILLIBITCOIN',
+  BITS = 'BITS',
   BITCOIN = 'BITCOIN',
 }
 

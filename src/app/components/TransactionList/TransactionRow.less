@@ -104,12 +104,22 @@
   }
 
   &-delta {
-    &.is-positive {
+    font-size: 0.9rem;
+    text-align: right;
+
+    &.is-positive .Unit-primary {
       color: @success-color;
     }
 
-    &.is-negative {
+    &.is-negative .Unit-primary {
       color: @error-color;
+    }
+
+    .Unit-secondary {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.7rem;
+      opacity: 0.6;
     }
   }
 }
