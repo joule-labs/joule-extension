@@ -51,6 +51,7 @@ class Settings extends React.Component<Props> {
               <Select
                 size="large"
                 value={settings.denomination}
+                disabled={settings.isNoFiat && settings.isFiatPrimary}
                 onChange={v => this.handleChangeSelect('denomination', v)}
               >
                 {typedKeys(Denomination).map(d => (
@@ -63,7 +64,7 @@ class Settings extends React.Component<Props> {
             <Form.Item label="Currency">
               <Select
                 size="large"
-                disabled={settings.isNoFiat}
+                disabled={settings.isNoFiat && !settings.isFiatPrimary}
                 value={settings.fiat}
                 onChange={v => this.handleChangeSelect('fiat', v)}
               >
@@ -86,7 +87,7 @@ class Settings extends React.Component<Props> {
                 checked={settings.isNoFiat}
                 onChange={this.handleChangeCheckbox}
               >
-                Disable fiat equivalents
+                Disable {settings.isFiatPrimary ? 'bitcoin' : 'fiat'} equivalents
               </Checkbox>
             </Form.Item>
           </div>

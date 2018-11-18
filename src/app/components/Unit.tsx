@@ -41,25 +41,28 @@ class Unit extends React.Component<Props> {
     value = value.replace('-', '');
 
     const adjustedValue = fromBaseToUnit(value, denomination);
-    const bitcoinString = `${commaify(adjustedValue)} ${hideUnit ? '' : denominationSymbols[denomination]}`;
+    const bitcoinEl = <>
+      {commaify(adjustedValue)}
+      {!hideUnit && <small>{' '}{denominationSymbols[denomination]}</small>}
+    </>;
 
-    let fiatString = '';
+    let fiatEl = '';
     if (rates && rates[fiat]) {
       const btcValue = fromBaseToUnit(value, Denomination.BITCOIN);
       const fiatValue = parseFloat(btcValue) * rates[fiat];
-      fiatString = `${fiatSymbols[fiat]}${commaify(fiatValue.toFixed(2))}`;
+      fiatEl = `${fiatSymbols[fiat]}${commaify(fiatValue.toFixed(2))}`;
     }
 
     return (
       <span className="Unit">
         <span className="Unit-primary">
           {prefix}
-          {isFiatPrimary ? fiatString : bitcoinString}
+          {isFiatPrimary ? fiatEl : bitcoinEl}
         </span>
         {' '}
         {showFiat && !isNoFiat && (
           <span className="Unit-secondary">
-            {isFiatPrimary ? bitcoinString : fiatString}
+            {isFiatPrimary ? bitcoinEl : fiatEl}
           </span>
         )}
       </span>
