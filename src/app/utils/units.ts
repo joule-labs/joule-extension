@@ -19,14 +19,21 @@ function stripRightZeros(str: string) {
   const strippedStr = str.replace(/0+$/, '');
   return strippedStr === '' ? null : strippedStr;
 }
+function stripLeftZeros(str: string) {
+  const strippedStr = str.replace(/^0+/, '');
+  if (!strippedStr) {
+    return '0';
+  }
+  return strippedStr;
+}
 
 // Go from any unit to satoshis
 export function fromBaseToUnit(value: string, toUnit: Denomination) {
   if (toUnit === Denomination.SATOSHIS) {
-    return value;
+    return stripLeftZeros(value);
   }
   const paddedValue = value.padStart(decimals[toUnit] + 1, '0');
-  const integerPart = paddedValue.slice(0, -decimals[toUnit]) || '0';
+  const integerPart = stripLeftZeros(paddedValue.slice(0, -decimals[toUnit]));
   const fractionPart = stripRightZeros(paddedValue.slice(-decimals[toUnit]));
   return fractionPart ? `${integerPart}.${fractionPart}` : integerPart;
 }
@@ -36,4 +43,12 @@ export function fromUnitToBase(value: string, fromUnit: Denomination) {
   const [integerPart, fractionPart = ''] = value.split('.');
   const paddedFraction = fractionPart.padEnd(decimals[fromUnit], '0');
   return `${integerPart}${paddedFraction}`;
+}
+
+export function fromUnitToBitcoin(value: string, fromUnit: Denomination) {
+  return fromBaseToUnit(fromUnitToBase(value, fromUnit), Denomination.BITCOIN);
+}
+
+export function fromBitcoinToUnit(value: string, toUnit: Denomination) {
+  return fromBaseToUnit(fromUnitToBase(value, Denomination.BITCOIN), toUnit);
 }

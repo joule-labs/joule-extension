@@ -1,6 +1,43 @@
+@import '~style/variables.less';
+
 .InvoiceForm {
   &-buttons {
     margin-top: 0.5rem;
+  }
+
+  &-form {
+    &-values {
+      display: flex;
+      align-items: center;
+
+      &-divider {
+        padding: 0 0.5rem;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      // Ant overrides, use px values
+      .ant-input-group.ant-input-group-compact {
+        display: flex;
+        min-width: 160px;
+      }
+
+      .ant-select-selection-selected-value {
+        font-size: 11px;
+        padding-right: 12px;
+        font-family: @code-family;
+      }
+
+      .ant-select-selection__rendered {
+        margin: 0 7px;
+      }
+
+      .ant-select-arrow {
+        font-size: 8px;
+        right: 6px;
+        margin-top: -5px;
+      }
+    }
   }
 
   &-invoice {
