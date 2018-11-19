@@ -75,7 +75,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     encrypted: false,
     selector: selectRates,
     action: setRates,
-    triggerActions: [ratesTypes.SET_RATES],
+    triggerActions: [ratesTypes.FETCH_RATES_SUCCESS],
   }
 ];
 
