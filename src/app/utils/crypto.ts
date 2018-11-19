@@ -54,14 +54,20 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     encrypted: false,
     selector: selectSyncedUnencryptedNodeState,
     action: setSyncedUnencryptedNodeState,
-    triggerActions: [nodeTypes.SET_NODE],
+    triggerActions: [
+      nodeTypes.SET_NODE,
+      nodeTypes.RESET_NODE,
+    ],
   },
   {
     key: 'node-encryped',
     encrypted: true,
     selector: selectSyncedEncryptedNodeState,
     action: setSyncedEncryptedNodeState,
-    triggerActions: [nodeTypes.SET_NODE],
+    triggerActions: [
+      nodeTypes.SET_NODE,
+      nodeTypes.RESET_NODE,
+    ],
   },
   {
     key: 'settings',

@@ -32,6 +32,10 @@
     border-bottom: 1px solid rgba(#000, 0.15);
     z-index: 1000;
 
+    &.is-hidden {
+      display: none;
+    }
+
     &-icon {
       height: 1.5rem;
 
@@ -49,6 +53,7 @@
       font-size: 1.2rem;
       margin-bottom: 0;
       letter-spacing: 0.05rem;
+      transform: translateY(-1px);
     }
 
     &-alpha {
@@ -72,6 +77,10 @@
 
   &-headerPlaceholder {
     height: @header-height;
+
+    &.is-hidden {
+      display: none;
+    }
   }
 
   &-content {

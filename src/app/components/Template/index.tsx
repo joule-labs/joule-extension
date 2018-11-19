@@ -1,25 +1,28 @@
 import React from 'react';
+import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Icon } from 'antd';
 import SettingsMenu from 'components/SettingsMenu';
 import Logo from 'static/images/logo.png';
 import './style.less';
 
-interface Props {
+export interface Props {
+  title?: React.ReactNode;
+  showBack?: boolean;
+  hideHeader?: boolean;
   children: React.ReactNode;
 }
 
 export default class Template extends React.Component<Props> {
   render() {
-    const showBack = false;
-    const title = '';
+    const { title, showBack, hideHeader, children } = this.props;
 
     return (
       <div className="Template">
         <div className="Template-inner">
-          <div className="Template-header">
+          <div className={classnames('Template-header', hideHeader && 'is-hidden')}>
             {showBack ? (
-              <Link className="Template-header-back" to="/gwangkjawg">
+              <Link className="Template-header-back" to="/">
                 <Icon type="left" />
               </Link>
             ) : (
@@ -36,9 +39,12 @@ export default class Template extends React.Component<Props> {
               <SettingsMenu />
             </div>
           </div>
-          <div className="Template-headerPlaceholder" />
+          <div className={
+            classnames('Template-headerPlaceholder', hideHeader && 'is-hidden')
+          } />
+
           <div className="Template-content">
-            {this.props.children}
+            {children}
           </div>
         </div>
       </div>

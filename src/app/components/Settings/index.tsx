@@ -83,6 +83,7 @@ class Settings extends React.Component<Props> {
           </Form.Item>
         </div>
 
+        {/*
         <div className="Settings-section">
           <h3 className="Settings-section-title">
             Node
@@ -97,6 +98,7 @@ class Settings extends React.Component<Props> {
             Clear node connection settings
           </Button>
         </div>
+        */}
       </Form>
     );
   }
