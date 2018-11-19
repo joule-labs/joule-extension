@@ -12,6 +12,9 @@ import nodeTypes from 'modules/node/types';
 import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
 import settingsTypes from 'modules/settings/types';
+import { selectRates } from 'modules/rates/selectors';
+import { setRates } from 'modules/rates/actions';
+import ratesTypes from 'modules/rates/types';
 import { AppState } from 'store/reducers';
 
 export const TEST_CIPHER_DATA = 'Howdy partner!';
@@ -67,6 +70,13 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     action: changeSettings,
     triggerActions: [settingsTypes.CHANGE_SETTINGS],
   },
+  {
+    key: 'rates',
+    encrypted: false,
+    selector: selectRates,
+    action: setRates,
+    triggerActions: [ratesTypes.SET_RATES],
+  }
 ];
 
 export function generateBackupData(state: AppState) {

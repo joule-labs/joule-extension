@@ -38,6 +38,12 @@ export default function ratesReducer(
         fetchRatesError: action.payload,
         isFetchingRates: false,
       };
+
+    case types.SET_RATES:
+      return {
+        ...state,
+        rates: action.payload,
+      };
   }
 
   return state;
