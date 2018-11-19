@@ -64,7 +64,7 @@ class PaymentPrompt extends React.Component<Props> {
           <div className="PaymentPrompt-amount">
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
             <div className="PaymentPrompt-amount-value">
-              <Unit value={request.num_satoshis} />
+              <Unit value={request.num_satoshis} showFiat />
             </div>
           </div>
           <div className="PaymentPrompt-description">
@@ -79,10 +79,10 @@ class PaymentPrompt extends React.Component<Props> {
               <Tabs.TabPane key="basics" tab="Basics">
                 <DetailsTable rows={[{
                   label: 'Fee',
-                  value: <Unit value={route.total_fees} />,
+                  value: <Unit value={route.total_fees} showFiat />,
                 }, {
                   label: 'Total',
-                  value: <Unit value={route.total_amt} />,
+                  value: <Unit value={route.total_amt} showFiat />,
                 }]}/>
               </Tabs.TabPane>
               <Tabs.TabPane key="details" tab="Details">

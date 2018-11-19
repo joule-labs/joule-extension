@@ -8,7 +8,7 @@ import { Denomination } from './constants';
 // };
 
 const decimals: { [key in Denomination]: number } = {
-  [Denomination.SATOSHIS]: 1,
+  [Denomination.SATOSHIS]: 0,
   [Denomination.MILLIBITCOIN]: 3,
   [Denomination.BITS]: 6,
   [Denomination.BITCOIN]: 8,

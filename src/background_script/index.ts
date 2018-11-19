@@ -13,7 +13,7 @@ function openPrompt(request: PromptRequest): Promise<any> {
   const prompt = window.open(
     `${chrome.runtime.getURL('prompt.html')}?${urlParams}`,
     'joule_prompt',
-    'width=380,height=520,status=no,scrollbars=no,resizable=no',
+    'width=400,height=580,status=no,scrollbars=no,resizable=no',
   );
 
   return new Promise((resolve, reject) => {
