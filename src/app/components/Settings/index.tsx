@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Form, Select, Checkbox, Button, Icon, Modal } from 'antd';
+import { Form, Select, Checkbox } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { Link } from 'react-router-dom';
 import { changeSettings } from 'modules/settings/actions';
 import {
   Denomination,
@@ -113,7 +112,7 @@ class Settings extends React.Component<Props> {
     })
   };
 
-  private clearNode = () => {
+  /*private clearNode = () => {
     Modal.confirm({
       title: 'Are you sure?',
       content: `
@@ -125,7 +124,7 @@ class Settings extends React.Component<Props> {
         console.log('Cleared');
       },
     });
-  };
+  };*/
 }
 
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
