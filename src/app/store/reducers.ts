@@ -6,6 +6,8 @@ import node, { NodeState, INITIAL_STATE as nodeInitialState } from 'modules/node
 import channels, { ChannelsState, INITIAL_STATE as channelsInitialState } from 'modules/channels';
 import account, { AccountState, INITIAL_STATE as accountInitialState } from 'modules/account';
 import payment, { PaymentState, INITIAL_STATE as paymentInitialState } from 'modules/payment/reducers';
+import settings, { SettingsState, INITIAL_STATE as settingsInitialState } from 'modules/settings';
+import rates, { RatesState, INITIAL_STATE as ratesInitialState } from 'modules/rates';
 
 export interface AppState {
   crypto: CryptoState;
@@ -14,6 +16,8 @@ export interface AppState {
   channels: ChannelsState;
   account: AccountState;
   payment: PaymentState;
+  settings: SettingsState;
+  rates: RatesState;
 }
 
 export const combineInitialState: Partial<AppState> = {
@@ -23,6 +27,8 @@ export const combineInitialState: Partial<AppState> = {
   channels: channelsInitialState,
   account: accountInitialState,
   payment: paymentInitialState,
+  settings: settingsInitialState,
+  rates: ratesInitialState,
 };
 
 export default combineReducers<AppState>({
@@ -32,4 +38,6 @@ export default combineReducers<AppState>({
   channels,
   account,
   payment,
+  settings,
+  rates,
 });

@@ -68,7 +68,7 @@ class TransactionInfo extends React.Component<Props> {
       };
       details = [{
         label: 'Amount',
-        value: <Unit value={tx.value_sat} />,
+        value: <Unit value={tx.value_sat} showFiat />,
       }, {
         label: 'Fee',
         value: <Unit value={tx.fee} />,
@@ -109,7 +109,7 @@ class TransactionInfo extends React.Component<Props> {
       };
       details = [{
         label: 'Amount',
-        value: <Unit value={tx.value} />,
+        value: <Unit value={tx.value} showFiat />,
       }, {
         label: 'Memo',
         value: tx.memo || <em>N/A</em>,
@@ -125,7 +125,7 @@ class TransactionInfo extends React.Component<Props> {
     } else if (isBitcoinTx(tx)) {
       details = [{
         label: 'Amount',
-        value: <Unit value={tx.amount.replace('-', '')} />,
+        value: <Unit value={tx.amount.replace('-', '')} showFiat />,
       }, {
         label: 'Fee',
         value: <Unit value={tx.total_fees} />,

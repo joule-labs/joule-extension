@@ -1,15 +1,75 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route, withRouter, RouteComponentProps } from 'react-router';
-import { Link } from 'react-router-dom';
-import { Button } from 'antd';
-import Exception from 'ant-design-pro/lib/Exception';
+import {
+  Switch,
+  Route,
+  withRouter,
+  RouteComponentProps,
+  RouteProps,
+  matchPath,
+} from 'react-router';
 import { AppState } from 'store/reducers';
+import Loader from 'components/Loader';
 import HomePage from 'pages/home';
 import OnboardingPage from 'pages/onboarding';
-// import PasswordPage from 'pages/password';
 import SettingsPage from 'pages/settings';
-import Template from 'components/Template';
+import FourOhFourPage from 'pages/fourohfour';
+import Template, { Props as TemplateProps } from 'components/Template';
+
+interface RouteConfig extends RouteProps {
+  route: RouteProps;
+  template: Partial<TemplateProps>;
+}
+
+const routeConfigs: RouteConfig[] = [
+  {
+    // Initial loading
+    route: {
+      path: '/',
+      render: () => <Loader />,
+      exact: true,
+    },
+    template: {},
+  },
+  {
+    // Homepage
+    route: {
+      path: '/home',
+      component: HomePage,
+      exact: true,
+    },
+    template: {},
+  },
+  {
+    // Onboarding
+    route: {
+      path: '/onboarding',
+      component: OnboardingPage,
+    },
+    template: {
+      hideHeader: true,
+    },
+  },
+  {
+    // Settings
+    route: {
+      path: '/settings',
+      component: SettingsPage,
+    },
+    template: {
+      title: 'Settings',
+      showBack: true,
+    },
+  },
+  {
+    // 404
+    route: {
+      path: '/*',
+      component: FourOhFourPage,
+    },
+    template: {},
+  },
+];
 
 interface StateProps {
   password: AppState['crypto']['password'];
@@ -28,36 +88,17 @@ class Routes extends React.Component<Props> {
   }
 
   render() {
+    const { pathname } = this.props.location;
+    const currentRoute =
+      routeConfigs.find(config => !!matchPath(pathname, config.route)) ||
+      routeConfigs[routeConfigs.length - 1];
+    const routeComponents = routeConfigs.map(config =>
+      <Route key={config.route.path} {...config.route} />
+    );
+
     return (
-      <Template>
-        <Switch>
-          <Route path="/" exact render={() => 'loading'} />
-          <Route path="/home" exact component={HomePage} />
-          <Route path="/onboarding" exact component={OnboardingPage} />
-          {/* <Route path="/password" exact component={PasswordPage} /> */}
-          <Route path="/settings" exact component={SettingsPage} />
-          <Route path="/*" render={() => (
-            <Exception
-              type="404"
-              title="You look lost"
-              desc="We're not sure how you got here, but there's nothing good here!"
-              actions={(
-                <div>
-                  <Link to="/home">
-                    <Button type="primary" size="large">Back to home</Button>
-                  </Link>
-                  <a
-                    href="https://github.com/wbobeirne/joule-extension/issues"
-                    target="_blank"
-                    rel="noopener nofollow"
-                  >
-                    <Button size="large">Report an issue</Button>
-                  </a>
-                </div>
-              )}
-            />
-          )} />
-        </Switch>
+      <Template {...currentRoute.template}>
+        <Switch>{routeComponents}</Switch>
       </Template>
     );
   }

@@ -68,3 +68,9 @@ export function ellipsisSandwich(text: string, charsPerSide: number) {
   }
   return `${text.slice(0, charsPerSide)}...${text.slice(text.length - charsPerSide, text.length)}`;
 }
+
+export function commaify(text: string | number) {
+  const pieces = text.toString().split('.');
+  pieces[0] = pieces[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return pieces.join('.');
+}

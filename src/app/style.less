@@ -11,4 +11,42 @@ body {
   padding: 0;
   font-family: sans-serif;
   color: #4d4d4d;
+  background: #FBFBFB;
+
+  @media (min-width: 500px) {
+    background-image: url('~static/images/bg.png');
+    background-size: 65px 65px;
+    background-repeat: repeat;
+  }
+}
+
+// Ant overrides
+.antd-pro-exception-exception {
+  padding: 1rem;
+
+  .antd-pro-exception-content {
+    h1 {
+      font-size: 2rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .antd-pro-exception-desc {
+      font-size: 1.2rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+  }
+
+  .antd-pro-exception-imgEle {
+    height: 50vh;
+    max-height: 280px;
+    margin-bottom: 2rem;
+  }
+
+  .antd-pro-exception-actions {
+    .ant-btn {
+      margin: 0 0.25rem;
+    }
+  }
 }

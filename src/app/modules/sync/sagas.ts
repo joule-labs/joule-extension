@@ -55,6 +55,7 @@ export function* sync(): SagaIterator {
   }
 
   yield put(finishSync());
+  return;
 }
 
 export function* clearData(): SagaIterator {
@@ -89,7 +90,9 @@ export default function* cryptoSagas(): SagaIterator {
   yield takeEvery(types.CLEAR_DATA, clearData);
   
   // First fetch sync'd data and hydrate the store
-  yield call(sync);
+  yield fork(sync);
+  yield take(types.FINISH_SYNC);
+  console.log('Continuing');
 
   // Then start watching for sync opportunities
   for (const syncConfig of syncConfigs) {

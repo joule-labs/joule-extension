@@ -1,22 +1,28 @@
 .Settings {
   width: 100%;
+  padding: 1rem;
 
-  & h2 {
-    text-align: center;
-  }
+  &-section {
+    margin-bottom: 3rem;
 
-  &-back {
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 0.2rem 0.5rem;
-  }
+    &-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+    }
 
-  &-backup {
-    margin: 2rem;
+    // Ant overrides
+    .ant-form-item {
+      margin-bottom: 0.5rem;
+    }
 
-    & button {
-      width: 100%;
+    .ant-form-item-label label {
+      font-weight: 600;
+      opacity: 0.7;
+    }
+
+    .ant-checkbox-wrapper {
+      display: block;
+      margin: 0.5rem 0 0 0;
     }
   }
 }

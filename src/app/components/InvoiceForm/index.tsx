@@ -1,16 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Form, Input, Button, Row, Col, Alert } from 'antd';
+import { Form, Input, Select, Button, Row, Col, Alert } from 'antd';
 import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
+import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
+import { fromUnitToBitcoin, fromBitcoinToUnit, fromUnitToBase } from 'utils/units';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { typedKeys } from 'utils/ts';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
   isCreatingInvoice: AppState['payment']['isCreatingInvoice'];
   invoiceError: AppState['payment']['invoiceError'];
+  denomination: AppState['settings']['denomination'];
+  fiat: AppState['settings']['fiat'];
+  isNoFiat: AppState['settings']['isNoFiat'];
+  rates: AppState['rates']['rates'];
 }
 
 interface DispatchProps {
@@ -26,28 +33,34 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   value: string;
+  valueFiat: string;
+  denomination: Denomination;
   memo: string;
   fallbackAddress: string;
   expiry: string;
 }
 
-const INITIAL_STATE: State = {
+const INITIAL_STATE = {
   value: '',
+  valueFiat: '',
   memo: '',
   fallbackAddress: '',
   expiry: '24',
 };
 
 class InvoiceForm extends React.Component<Props, State> {
-  state: State = { ...INITIAL_STATE };
+  state: State = {
+    ...INITIAL_STATE,
+    denomination: this.props.denomination,
+  };
 
   componentWillUnmount() {
     this.props.resetCreateInvoice();
   }
 
   render() {
-    const { invoice, isCreatingInvoice, invoiceError, close } = this.props;
-    const { value, memo, expiry, fallbackAddress } = this.state;
+    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates } = this.props;
+    const { value, valueFiat, memo, expiry, fallbackAddress, denomination } = this.state;
     const disabled = !value || !parseInt(expiry, 10);
 
     let content;
@@ -79,18 +92,51 @@ class InvoiceForm extends React.Component<Props, State> {
       );
     } else {
       content = (
-        <Form layout="vertical" onSubmit={this.handleSubmit}>
+        <Form
+          className="InvoiceForm-form"
+          layout="vertical"
+          onSubmit={this.handleSubmit}
+        >
           <Form.Item label="Amount" required>
-            <Input
-              type="number"
-              name="value"
-              size="large"
-              value={value}
-              onChange={this.handleChange}
-              addonAfter="sats"
-              autoFocus
-              placeholder="25000"
-            />
+            <div className="InvoiceForm-form-values">
+              <Input.Group compact>
+                <Input
+                  type="number"
+                  name="value"
+                  value={value}
+                  onChange={this.handleChangeValue}
+                  autoFocus
+                  placeholder="1000"
+                />
+                <Select
+                  onChange={this.handleChangeDenomination}
+                  value={denomination}
+                  dropdownMatchSelectWidth={false}
+                >
+                  {typedKeys(Denomination).map(d => (
+                    <Select.Option key={d} value={d}>
+                      {denominationSymbols[d]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Input.Group>
+              {!isNoFiat && (
+                <>
+                  <div className="InvoiceForm-form-values-divider">
+                    or
+                  </div>
+                  <Input
+                    type="number"
+                    name="valueFiat"
+                    value={valueFiat}
+                    onChange={this.handleChangeValue}
+                    addonBefore={fiatSymbols[fiat]}
+                    placeholder="1.00"
+                    disabled={!rates}
+                  />
+                </>
+              )}
+            </div>
           </Form.Item>
           <Form.Item label="Memo">
             <Input
@@ -162,9 +208,44 @@ class InvoiceForm extends React.Component<Props, State> {
     this.setState({ [name]: value } as any);
   };
 
+  private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = ev.currentTarget;
+    this.updateBothValues(name, value);
+  };
+
+  private handleChangeDenomination = (value: any) => {
+    this.setState({ denomination: value as Denomination }, () => {
+      this.updateBothValues('value', this.state.value);
+    });
+  };
+
+  private updateBothValues = (name: string, val: string) => {
+    const { fiat, rates } = this.props;
+    const { denomination } = this.state;
+    let { value, valueFiat } = this.state;
+  
+    if (name === 'value') {
+      value = val;
+      if (rates) {
+        const btc = fromUnitToBitcoin(value, denomination);
+        valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
+      }
+    }
+    else {
+      valueFiat = val;
+      if (rates) {
+        const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
+        value = fromBitcoinToUnit(btc, denomination);
+      }
+    }
+
+    this.setState({ value, valueFiat });
+  };
+
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
-    const { value, memo, fallbackAddress, expiry } = this.state;
     ev.preventDefault();
+    const { memo, fallbackAddress, expiry, denomination } = this.state;
+    const value = fromUnitToBase(this.state.value, denomination);
     this.props.createInvoice({
       value,
       memo,
@@ -184,6 +265,10 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     invoice: state.payment.invoice,
     isCreatingInvoice: state.payment.isCreatingInvoice,
     invoiceError: state.payment.invoiceError,
+    denomination: state.settings.denomination,
+    fiat: state.settings.fiat,
+    isNoFiat: state.settings.isNoFiat,
+    rates: state.rates.rates,
   }),
   {
     createInvoice,

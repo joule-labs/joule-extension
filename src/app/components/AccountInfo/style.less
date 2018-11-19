@@ -1,5 +1,6 @@
 .AccountInfo {
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.25rem 0.75rem;
+  position: relative;
 
   &-top {
     display: flex;
@@ -26,13 +27,18 @@
 
       &-balance {
         font-size: 1rem;
-        margin-bottom: 0.1rem;
+        margin-bottom: 0.2rem;
+
+        .Unit-secondary {
+          padding-left: 0.3rem;
+          opacity: 0.7;
+        }
       }
 
       &-balances {
         display: flex;
         font-size: 0.7rem;
-        opacity: 0.8;
+        opacity: 0.6;
         
         > * {
           margin-right: 0.75rem;

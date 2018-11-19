@@ -67,7 +67,7 @@ class AccountInfo extends React.Component<Props, State> {
             <div className="AccountInfo-top-info">
               <div className="AccountInfo-top-info-alias">{account.alias}</div>
               <div className="AccountInfo-top-info-balance">
-                <Unit value={account.totalBalance} />
+                <Unit value={account.totalBalance} showFiat />
               </div>
               <div className="AccountInfo-top-info-balances">
                 <span>Channels: <Unit value={account.channelBalance} /></span>

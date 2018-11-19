@@ -9,8 +9,13 @@ import cryptoTypes from 'modules/crypto/types';
 import { selectSyncedEncryptedNodeState, selectSyncedUnencryptedNodeState } from 'modules/node/selectors';
 import { setSyncedEncryptedNodeState, setSyncedUnencryptedNodeState } from 'modules/node/actions';
 import nodeTypes from 'modules/node/types';
+import { selectSettings } from 'modules/settings/selectors';
+import { changeSettings } from 'modules/settings/actions';
+import settingsTypes from 'modules/settings/types';
+import { selectRates } from 'modules/rates/selectors';
+import { setRates } from 'modules/rates/actions';
+import ratesTypes from 'modules/rates/types';
 import { AppState } from 'store/reducers';
-import { Dispatch } from 'redux';
 
 export const TEST_CIPHER_DATA = 'Howdy partner!';
 
@@ -42,22 +47,42 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     selector: selectSyncedCryptoState,
     action: setSyncedCryptoState,
     // TODO: Add triggers for when they reset account, import account
-    triggerActions: [cryptoTypes.SET_PASSWORD, 'BACKUP_RESTORED'],
+    triggerActions: [cryptoTypes.SET_PASSWORD],
   },
   {
     key: 'node-unencrypted',
     encrypted: false,
     selector: selectSyncedUnencryptedNodeState,
     action: setSyncedUnencryptedNodeState,
-    triggerActions: [nodeTypes.SET_NODE, 'BACKUP_RESTORED'],
+    triggerActions: [
+      nodeTypes.SET_NODE,
+      nodeTypes.RESET_NODE,
+    ],
   },
   {
     key: 'node-encryped',
     encrypted: true,
     selector: selectSyncedEncryptedNodeState,
     action: setSyncedEncryptedNodeState,
-    triggerActions: [nodeTypes.SET_NODE, 'BACKUP_RESTORED'],
+    triggerActions: [
+      nodeTypes.SET_NODE,
+      nodeTypes.RESET_NODE,
+    ],
   },
+  {
+    key: 'settings',
+    encrypted: false,
+    selector: selectSettings,
+    action: changeSettings,
+    triggerActions: [settingsTypes.CHANGE_SETTINGS],
+  },
+  {
+    key: 'rates',
+    encrypted: false,
+    selector: selectRates,
+    action: setRates,
+    triggerActions: [ratesTypes.FETCH_RATES_SUCCESS],
+  }
 ];
 
 export function generateBackupData(state: AppState) {
@@ -73,25 +98,4 @@ export function generateBackupData(state: AppState) {
     a[sc.key] = data;
     return a;
   }, {});
-}
-
-export function injectBackupData(
-  data: string,
-  dispatch: Dispatch,
-  password: string,
-  salt: string,
-) {
-  const obj = JSON.parse(data);
-  syncConfigs.forEach(sc => {
-    if (obj[sc.key]) {
-      let value = obj[sc.key];
-      if (sc.encrypted) {
-        value = decryptData(value, password, salt);
-      }
-      dispatch(sc.action(value));
-    }
-  });
-  setTimeout(() => {
-    dispatch({ type: 'BACKUP_RESTORED' });
-  }, 50);
 }
