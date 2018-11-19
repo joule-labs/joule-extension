@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tabs, Icon, Drawer } from 'antd';
+import Header from 'components/Header';
 import AccountInfo from 'components/AccountInfo';
 import ChannelList from 'components/ChannelList';
 import TransactionList from 'components/TransactionList';

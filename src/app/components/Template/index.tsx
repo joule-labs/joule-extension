@@ -1,4 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Icon } from 'antd';
+import SettingsMenu from 'components/SettingsMenu';
 import Logo from 'static/images/logo.png';
 import './style.less';
 
@@ -8,25 +11,33 @@ interface Props {
 
 export default class Template extends React.Component<Props> {
   render() {
+    const showBack = false;
+    const title = '';
+
     return (
       <div className="Template">
-        <div className="Template-header">
-          <div className="Template-header-inner">
-            <div className="Template-header-branding">
-              <div className="Template-header-branding-logo">
+        <div className="Template-inner">
+          <div className="Template-header">
+            {showBack ? (
+              <Link className="Template-header-back" to="/gwangkjawg">
+                <Icon type="left" />
+              </Link>
+            ) : (
+              <div className="Template-header-icon">
                 <img src={Logo} />
               </div>
-              <div className="Template-header-branding-title">
-                Joule
-              </div>
-              <div className="Template-header-branding-alpha">
-                Alpha
-              </div>
+            )}
+            {title ? (
+              <h1 className="Template-header-title">{title}</h1>
+            ) : (
+              <div className="Template-header-alpha">A L P H A</div>
+            )}
+            <div className="Template-header-menu">
+              <SettingsMenu />
             </div>
           </div>
-        </div>
-        <div className="Template-content">
-          <div className="Template-content-inner">
+          <div className="Template-headerPlaceholder" />
+          <div className="Template-content">
             {this.props.children}
           </div>
         </div>

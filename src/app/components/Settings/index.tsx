@@ -33,81 +33,71 @@ class Settings extends React.Component<Props> {
     const { settings } = this.props;
 
     return (
-      <div className="Settings">
-        <div className="Settings-top">
-          <Link className="Settings-top-back" to="/">
-            <Icon type="left" />
-          </Link>
-          <h2 className="Settings-top-title">
-            Settings
-          </h2>
-        </div>
-        <Form className="Settings-form" layout="vertical">
-          <div className="Settings-form-section">
-            <h3 className="Settings-form-section-title">
-              Units & Currencies
-            </h3>
-            <Form.Item label="Bitcoin unit">
-              <Select
-                size="large"
-                value={settings.denomination}
-                disabled={settings.isNoFiat && settings.isFiatPrimary}
-                onChange={v => this.handleChangeSelect('denomination', v)}
-              >
-                {typedKeys(Denomination).map(d => (
-                  <Select.Option key={d} value={d}>
-                    {denominationNames[d]} ({denominationSymbols[d]})
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item label="Currency">
-              <Select
-                size="large"
-                disabled={settings.isNoFiat && !settings.isFiatPrimary}
-                value={settings.fiat}
-                onChange={v => this.handleChangeSelect('fiat', v)}
-              >
-                {typedKeys(Fiat).map(f => (
-                  <Select.Option key={f} value={f}>
-                    {f} ({fiatSymbols[f]})
-                  </Select.Option>
-                ))}
-              </Select>
-
-              <Checkbox
-                name="isFiatPrimary"
-                checked={settings.isFiatPrimary}
-                onChange={this.handleChangeCheckbox}
-              >
-                Show fiat as primary currency
-              </Checkbox>
-              <Checkbox
-                name="isNoFiat"
-                checked={settings.isNoFiat}
-                onChange={this.handleChangeCheckbox}
-              >
-                Disable {settings.isFiatPrimary ? 'bitcoin' : 'fiat'} equivalents
-              </Checkbox>
-            </Form.Item>
-          </div>
-
-          <div className="Settings-form-section">
-            <h3 className="Settings-form-section-title">
-              Node
-            </h3>
-            <Button
-              type="danger"
+      <Form className="Settings" layout="vertical">
+        <div className="Settings-section">
+          <h3 className="Settings-section-title">
+            Units & Currencies
+          </h3>
+          <Form.Item label="Bitcoin unit">
+            <Select
               size="large"
-              block
-              ghost
-              onClick={this.clearNode}
+              value={settings.denomination}
+              disabled={settings.isNoFiat && settings.isFiatPrimary}
+              onChange={v => this.handleChangeSelect('denomination', v)}
             >
-              Clear node connection settings
-            </Button>
-          </div>
-        </Form>
-      </div>
+              {typedKeys(Denomination).map(d => (
+                <Select.Option key={d} value={d}>
+                  {denominationNames[d]} ({denominationSymbols[d]})
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Currency">
+            <Select
+              size="large"
+              disabled={settings.isNoFiat && !settings.isFiatPrimary}
+              value={settings.fiat}
+              onChange={v => this.handleChangeSelect('fiat', v)}
+            >
+              {typedKeys(Fiat).map(f => (
+                <Select.Option key={f} value={f}>
+                  {f} ({fiatSymbols[f]})
+                </Select.Option>
+              ))}
+            </Select>
+
+            <Checkbox
+              name="isFiatPrimary"
+              checked={settings.isFiatPrimary}
+              onChange={this.handleChangeCheckbox}
+            >
+              Show fiat as primary currency
+            </Checkbox>
+            <Checkbox
+              name="isNoFiat"
+              checked={settings.isNoFiat}
+              onChange={this.handleChangeCheckbox}
+            >
+              Disable {settings.isFiatPrimary ? 'bitcoin' : 'fiat'} equivalents
+            </Checkbox>
+          </Form.Item>
+        </div>
+
+        <div className="Settings-section">
+          <h3 className="Settings-section-title">
+            Node
+          </h3>
+          <Button
+            type="danger"
+            size="large"
+            block
+            ghost
+            onClick={this.clearNode}
+          >
+            Clear node connection settings
+          </Button>
+        </div>
+      </Form>
     );
   }
 

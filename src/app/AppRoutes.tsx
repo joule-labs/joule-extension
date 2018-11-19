@@ -7,7 +7,6 @@ import Exception from 'ant-design-pro/lib/Exception';
 import { AppState } from 'store/reducers';
 import HomePage from 'pages/home';
 import OnboardingPage from 'pages/onboarding';
-// import PasswordPage from 'pages/password';
 import SettingsPage from 'pages/settings';
 import Template from 'components/Template';
 
@@ -34,7 +33,6 @@ class Routes extends React.Component<Props> {
           <Route path="/" exact render={() => 'loading'} />
           <Route path="/home" exact component={HomePage} />
           <Route path="/onboarding" exact component={OnboardingPage} />
-          {/* <Route path="/password" exact component={PasswordPage} /> */}
           <Route path="/settings" exact component={SettingsPage} />
           <Route path="/*" render={() => (
             <Exception

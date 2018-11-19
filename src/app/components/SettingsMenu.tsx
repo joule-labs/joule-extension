@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Menu, Dropdown, Icon } from 'antd';
+import MenuIcon from 'static/images/menu.svg';
+import './SettingsMenu.less';
 
 export default class SettingsMenu extends React.Component {
   render() {
@@ -20,8 +22,15 @@ export default class SettingsMenu extends React.Component {
     );
 
     return (
-      <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
-        <Button icon="ellipsis" />
+      <Dropdown
+        className="SettingsMenu"
+        overlay={menu}
+        placement="bottomRight"
+        trigger={['click']}
+      >
+        <Button className="SettingsMenu-button" shape="circle">
+          <Icon component={MenuIcon} />
+        </Button>
       </Dropdown>
     );
   }
