@@ -5,12 +5,16 @@ export function changeSettings(changes: Partial<SettingsState>) {
   return {
     type: types.CHANGE_SETTINGS,
     payload: changes,
-  }
+  };
 }
 
 export function loadSettings(settings: Partial<SettingsState>) {
   return {
     type: types.LOAD_SETTINGS,
     payload: settings,
-  }
+  };
+}
+
+export function clearSettings() {
+  return { type: types.CLEAR_SETTINGS };
 }
