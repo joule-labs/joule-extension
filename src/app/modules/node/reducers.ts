@@ -1,5 +1,6 @@
 import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
 import types from './types';
+import settingsTypes from 'modules/settings/types';
 
 export interface NodeState {
   lib: LndHttpClient | null;
@@ -111,6 +112,15 @@ export default function cryptoReducers(
 
     case types.RESET_NODE:
       return { ...INITIAL_STATE };
+    
+    case settingsTypes.CLEAR_SETTINGS:
+      return {
+        ...state,
+        lib: null,
+        url: null,
+        readonlyMacaroon: null,
+        adminMacaroon: null,
+      };
   }
 
   return state;

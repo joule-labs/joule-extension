@@ -46,8 +46,10 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     encrypted: false,
     selector: selectSyncedCryptoState,
     action: setSyncedCryptoState,
-    // TODO: Add triggers for when they reset account, import account
-    triggerActions: [cryptoTypes.SET_PASSWORD],
+    triggerActions: [
+      cryptoTypes.SET_PASSWORD,
+      settingsTypes.CLEAR_SETTINGS,
+    ],
   },
   {
     key: 'node-unencrypted',
@@ -57,6 +59,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     triggerActions: [
       nodeTypes.SET_NODE,
       nodeTypes.RESET_NODE,
+      settingsTypes.CLEAR_SETTINGS,
     ],
   },
   {
@@ -67,6 +70,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     triggerActions: [
       nodeTypes.SET_NODE,
       nodeTypes.RESET_NODE,
+      settingsTypes.CLEAR_SETTINGS,
     ],
   },
   {

@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Form, Select, Checkbox } from 'antd';
+import { withRouter, RouteComponentProps } from 'react-router';
+import { Form, Select, Checkbox, Button, Modal } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { changeSettings } from 'modules/settings/actions';
+import { changeSettings, clearSettings } from 'modules/settings/actions';
 import {
   Denomination,
   Fiat,
@@ -23,9 +24,10 @@ interface StateProps {
 
 interface DispatchProps {
   changeSettings: typeof changeSettings;
+  clearSettings: typeof clearSettings;
 }
 
-type Props = StateProps & DispatchProps;
+type Props = StateProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
   render() {
@@ -82,7 +84,6 @@ class Settings extends React.Component<Props> {
           </Form.Item>
         </div>
 
-        {/*
         <div className="Settings-section">
           <h3 className="Settings-section-title">
             Node
@@ -92,12 +93,11 @@ class Settings extends React.Component<Props> {
             size="large"
             block
             ghost
-            onClick={this.clearNode}
+            onClick={this.clearSettings}
           >
-            Clear node connection settings
+            Reset password and connection settings
           </Button>
         </div>
-        */}
       </Form>
     );
   }
@@ -112,26 +112,29 @@ class Settings extends React.Component<Props> {
     })
   };
 
-  /*private clearNode = () => {
+  private clearSettings = () => {
     Modal.confirm({
       title: 'Are you sure?',
       content: `
         You will be returned to the starting screen and be required to
-        re-enter your node connection settings to return. All other settings
-        will remain unchanged.
+        re-enter your node connection settings and a new password to return.
+        All other settings will remain unchanged.
       `,
-      onOk() {
-        console.log('Cleared');
+      onOk: () => {
+        this.props.clearSettings();
       },
     });
-  };*/
+  };
 }
 
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
   }),
-  { changeSettings },
+  {
+    changeSettings,
+    clearSettings,
+  },
 )(Settings);
 
-export default ConnectedSettings;
+export default withRouter(ConnectedSettings);

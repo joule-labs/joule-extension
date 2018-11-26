@@ -1,4 +1,5 @@
 import types from './types';
+import settingsTypes from 'modules/settings/types';
 
 export interface CryptoState {
   salt: null | string;
@@ -70,6 +71,15 @@ export default function cryptoReducers(
         ...state,
         ...action.payload,
       };
+    
+    case settingsTypes.CLEAR_SETTINGS:
+      return {
+        ...state,
+        salt: null,
+        hasSetPassword: false,
+        password: null,
+        testCipher: null,
+      }
   }
 
   return state;
