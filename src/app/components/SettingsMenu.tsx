@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Menu, Dropdown, Icon } from 'antd';
+import { browser } from 'webextension-polyfill-ts';
 import MenuIcon from 'static/images/menu.svg';
 import './SettingsMenu.less';
 
@@ -36,6 +37,6 @@ export default class SettingsMenu extends React.Component {
   }
 
   private openFullPage = () => {
-    chrome.runtime.openOptionsPage();
+    browser.runtime.openOptionsPage();
   };
 }

@@ -1,17 +1,18 @@
 import qs from 'query-string';
+import { browser } from 'webextension-polyfill-ts';
 
 export function confirmPrompt(data?: any) {
-  window.postMessage({
+  browser.runtime.sendMessage({
     application: 'Joule',
     data,
-  }, window.location.origin);
+  });
 }
 
 export function rejectPrompt(message?: string) {
-  window.postMessage({
+  browser.runtime.sendMessage({
     application: 'Joule',
     error: message || 'User rejected prompt',
-  }, window.location.origin);
+  });
 }
 
 export function getPromptType(): string {

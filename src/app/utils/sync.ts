@@ -1,24 +1,17 @@
+import { browser } from 'webextension-polyfill-ts';
+
 export function storageSyncSet(key: string, items: any) {
-  return new Promise((resolve, reject) => {
-    try {
-      console.log(key, items);
-      chrome.storage.sync.set({ [key]: items }, () => {
-        resolve();
-      });
-    } catch(err) {
-      reject(err);
-    }
-  });
+  try {
+    return browser.storage.sync.set({ [key]: items });
+  } catch(err) {
+    Promise.reject(err);
+  }
 }
 
 export function storageSyncGet(key: string[]) {
-  return new Promise((resolve, reject) => {
-    try {
-      chrome.storage.sync.get(key, items => {
-        resolve(items);
-      });
-    } catch(err) {
-      reject(err);
-    }
-  });
+  try {
+    return browser.storage.sync.get(key);
+  } catch(err) {
+    Promise.reject(err);
+  }
 }

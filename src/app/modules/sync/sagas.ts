@@ -1,5 +1,6 @@
 import { SagaIterator, delay } from 'redux-saga';
 import { takeLatest, takeEvery, call, put, select, take, fork } from 'redux-saga/effects';
+import { browser } from 'webextension-polyfill-ts';
 import {
   selectSalt,
   selectPassword,
@@ -59,7 +60,7 @@ export function* sync(): SagaIterator {
 }
 
 export function* clearData(): SagaIterator {
-  yield call(chrome.storage.sync.clear);
+  yield call(browser.storage.sync.clear);
   window.close();
 }
 
