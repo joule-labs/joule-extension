@@ -16,6 +16,13 @@
     padding: 0.6rem 0 0.4rem;
     margin-bottom: 1rem;
 
+    // Must target these specifically due to table shenanigans in firefox
+    .ant-upload-drag-icon,
+    .ant-upload-text,
+    .ant-upload-hint {
+      text-align: center;
+    }
+
     .ant-upload-btn {
       padding: 0;
     }

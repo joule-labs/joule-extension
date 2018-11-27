@@ -1,5 +1,5 @@
 import qs from 'query-string';
-import { browser, MessageSender } from 'webextension-polyfill-ts';
+import { browser, Runtime } from 'webextension-polyfill-ts';
 
 interface PromptRequest {
   type: string;
@@ -21,7 +21,7 @@ function openPrompt(request: PromptRequest): Promise<any> {
     }).then(window => {
       const tabId = window.tabs![0].id;
 
-      const onMessageListener = (message: any, sender: MessageSender) => {
+      const onMessageListener = (message: any, sender: Runtime.MessageSender) => {
         if (sender.tab && sender.tab.id === tabId) {
           chrome.tabs.onRemoved.removeListener(onRemovedListener);
           if (message.error) {
@@ -29,18 +29,18 @@ function openPrompt(request: PromptRequest): Promise<any> {
           } else {
             resolve(message.data);
           }
-          chrome.windows.remove(sender.tab.windowId);
+          chrome.windows.remove(sender.tab.windowId as number);
         }
       };
 
       const onRemovedListener = (tid: number) => {
         if (tabId === tid) {
-          chrome.runtime.onMessage.removeListener(onMessageListener);
+          chrome.runtime.onMessage.removeListener(onMessageListener as any);
           reject(new Error('Prompt was closed'));
         }
       };
 
-      chrome.runtime.onMessage.addListener(onMessageListener);
+      chrome.runtime.onMessage.addListener(onMessageListener as any);
       chrome.tabs.onRemoved.addListener(onRemovedListener);
     });
   });
