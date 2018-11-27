@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Joule",
   "description": "Make payments and use your Lightning identity in the browser",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
