@@ -142,6 +142,7 @@ class InvoiceForm extends React.Component<Props, State> {
             <Input
               name="memo"
               value={memo}
+              autoComplete="off"
               onChange={this.handleChange}
               placeholder="Optional"
             />
