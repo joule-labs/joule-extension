@@ -9,21 +9,31 @@ the ability to pay and use your node as an identity on the web.
 
 ## Development
 
-Beyond the typical `npm install / yarn` dependencies, Joule relies on the
-unpublished [webln](https://github.com/wbobeirne/webln) package, so you'll
-need to clone and build that repository, run `yarn link` in it,
-and then run `yarn link webln` in this one. After that, you're good to go!
-
-1. `yarn start`
+1. Run `yarn start`
 2. Open Chrome -> More Tools -> Extensions -> Load Unpacked
-3. Select the `joule-extension/dist` folder you created
+3. Select the `joule-extension/dist-dev` folder you created
 4. Get to work!
+
+If you're also working on [`webln`](https://github.com/wbobeirne/webln), you'll
+want to clone and build that repository, and run `yarn link`. Then come back
+to the joule folder and run `yarn link webln`.
 
 NOTE: After making changes, you'll need to close and re-open the extension to load the latest build.
 
-## Deploying
+## Building
 
-TBD
+To make a production build, follow these steps
+
+1. Run `yarn build`
+2. Raw files and a zip of them will be output to `dist-prod`
+
+## Releasing
+
+1. Bump the version number in `package.json` and `static/manifest.json`
+2. Create a git tag called `v${version}` and push it
+3. Run a build
+4. Make a new Github release, upload the build assets, write a changelog
+5. Upload the built zip to the Chrome developer dashboard, Firefox addons site, and Opera addons site
 
 ## Testing
 
