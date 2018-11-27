@@ -1,4 +1,5 @@
 import qs from 'query-string';
+import { browser, Runtime } from 'webextension-polyfill-ts';
 
 interface PromptRequest {
   type: string;
@@ -10,41 +11,51 @@ function openPrompt(request: PromptRequest): Promise<any> {
     type: request.type,
     args: JSON.stringify(request.args),
   });
-  const prompt = window.open(
-    `${chrome.runtime.getURL('prompt.html')}?${urlParams}`,
-    'joule_prompt',
-    'width=400,height=580,status=no,scrollbars=no,resizable=no',
-  );
 
   return new Promise((resolve, reject) => {
-    if (!prompt) {
-      return reject(new Error('Joule prompt was blocked'));
-    }
-    prompt.focus();
-    prompt.onclose = () => reject(new Error('Prompt was closed'));
-    prompt.onmessage = (ev) => {
-      if (ev.data.error) {
-        reject(new Error(ev.data.error));
-      }
-      else {
-        resolve(ev.data.data);
-      }
-      prompt.close();
-    };
+    browser.windows.create({
+      url: `${browser.runtime.getURL('prompt.html')}?${urlParams}`,
+      type: 'popup',
+      width: 400,
+      height: 580,
+    }).then(window => {
+      const tabId = window.tabs![0].id;
+
+      const onMessageListener = (message: any, sender: Runtime.MessageSender) => {
+        if (sender.tab && sender.tab.id === tabId) {
+          chrome.tabs.onRemoved.removeListener(onRemovedListener);
+          if (message.error) {
+            reject(new Error(message.error));
+          } else {
+            resolve(message.data);
+          }
+          chrome.windows.remove(sender.tab.windowId as number);
+        }
+      };
+
+      const onRemovedListener = (tid: number) => {
+        if (tabId === tid) {
+          chrome.runtime.onMessage.removeListener(onMessageListener as any);
+          reject(new Error('Prompt was closed'));
+        }
+      };
+
+      chrome.runtime.onMessage.addListener(onMessageListener as any);
+      chrome.tabs.onRemoved.addListener(onRemovedListener);
+    });
   });
 }
 
 // Background manages communication between page and its windows
-chrome.runtime.onMessage.addListener((request, _, respond) => {
+browser.runtime.onMessage.addListener((request: any) => {
   if (request && request.application === 'Joule' && request.prompt) {
     // WebLNProvider request, will require window open
-    openPrompt(request)
+    return openPrompt(request)
       .then(data => {
-        respond({ data });
+        return { data };
       })
       .catch(err => {
-        respond({ error: err.message });
+        return { error: err.message };
       });
-    return true;
   }
 });

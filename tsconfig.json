@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "target": "esnext",
+    "target": "es5",
     "jsx": "preserve",
     "moduleResolution": "node",
     "outDir": "dist/tsc_output",
@@ -31,43 +31,4 @@
     }
   },
   "include": ["src", "webpack.config.ts"]
-
-  // {
-  //   "compileOnSave": false,
-  //   "compilerOptions": {
-  //     "target": "esnext",
-  //     "module": "esnext",
-  //     "outDir": "dist",
-  //     "jsx": "preserve",
-  //     "allowJs": true,
-  //     "moduleResolution": "node",
-  //     "allowSyntheticDefaultImports": true,
-  //     "noUnusedLocals": true,
-  //     "noUnusedParameters": true,
-  //     "noImplicitAny": true,
-  //     "removeComments": false,
-  //     "preserveConstEnums": true,
-  //     "sourceMap": true,
-  //     "skipLibCheck": true,
-  //     "baseUrl": ".",
-  //     "lib": ["dom", "es2017"],
-  //     "paths": {
-  //       "contracts/*": ["../contract/build/contracts/*"],
-  //       "api/*": ["./client/api/*"],
-  //       "components/*": ["./client/components/*"],
-  //       "lib/*": ["./client/lib/*"],
-  //       "modules/*": ["./client/modules/*"],
-  //       "pages/*": ["./client/pages/*"],
-  //       "static/*": ["./client/static/*"],
-  //       "store/*": ["./client/store/*"],
-  //       "styles/*": ["./client/styles/*"],
-  //       "typings/*": ["./client/typings/*"],
-  //       "types/*": ["./types/*"],
-  //       "utils/*": ["./client/utils/*"],
-  //       "web3interact/*": ["./client/web3interact/*"]
-  //     }
-  //   },
-  //   "include": ["./client/**/*", "./server/**/*", "./stories/**/*", "./types/**/*"],
-  //   "exclude": ["./client/static"]
-  // }
 }

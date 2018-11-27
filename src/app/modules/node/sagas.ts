@@ -11,7 +11,12 @@ export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): 
   try {
     yield call(client.getInfo);
   } catch(err) {
-    if (err.constructor !== MacaroonAuthError) {
+    console.log(err);
+    console.log(err.constructor);
+    console.log(err.constructor === MacaroonAuthError);
+    console.log(err.name);
+    console.log(err instanceof MacaroonAuthError);
+    if (!(err instanceof MacaroonAuthError)) {
       yield put({ type: types.CHECK_NODE_FAILURE, payload: err });
       return;
     }

@@ -1,4 +1,4 @@
-import 'babel-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import shouldInject from './shouldInject';
 import injectScript from './injectScript';
 import { PROMPT_TYPE } from '../webln/types';
@@ -13,7 +13,7 @@ if (shouldInject()) {
     }
 
     if (ev.data && ev.data.application === 'Joule' && !ev.data.response) {
-      chrome.runtime.sendMessage(ev.data, response => {
+      browser.runtime.sendMessage(ev.data).then(response => {
         window.postMessage({
           application: 'Joule',
           response: true,
@@ -38,7 +38,7 @@ if (document && document.body) {
     if (lightningLink) {
       const href = lightningLink.getAttribute('href') as string;
       const paymentRequest = href.replace('lightning:', '');
-      chrome.runtime.sendMessage({
+      browser.runtime.sendMessage({
         application: 'Joule',
         prompt: true,
         type: PROMPT_TYPE.PAYMENT,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
+import { browser } from 'webextension-polyfill-ts';
 import './style.less';
 
 interface Props {
@@ -33,7 +34,7 @@ export default class Splash extends React.Component<Props> {
     if (process.env.APP_CONTAINER === 'page') {
       this.props.handleContinue();
     } else {
-      chrome.runtime.openOptionsPage();
+      browser.runtime.openOptionsPage();
     }
   };
 }
