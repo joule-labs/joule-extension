@@ -1,11 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
+const packageJson = require('./package.json');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // webpack plugins
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ZipPlugin = require('zip-webpack-plugin');
 
 // postcss plugins
 const autoprefixer = require('autoprefixer');
@@ -92,7 +94,7 @@ module.exports = {
     prompt: path.join(__dirname, 'src/prompt/index.tsx'),
   },
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, isDev ? 'dist-dev' : 'dist-prod'),
     filename: '[name].js',
     publicPath: '/',
     chunkFilename: isDev ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js',
@@ -166,5 +168,8 @@ module.exports = {
       inject: true,
     }),
     new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
-  ],
+    !isDev && new ZipPlugin({
+      filename: `joule-v${packageJson.version}.zip`,
+    }),
+  ].filter(p => !!p),
 };
