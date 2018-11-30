@@ -9,7 +9,7 @@ the ability to pay and use your node as an identity on the web.
 
 ## Development
 
-1. Run `yarn install && yarn run build:dev`
+1. Run `yarn install && yarn run dev`
 2. Open Chrome -> More Tools -> Extensions
 3. Toggle "Developer mode" (if such a toggle exists)
 4. Click "Load unpacked"
