@@ -27,24 +27,26 @@ if (shouldInject()) {
 
 // Intercept any `lightning:{paymentReqest}` requests
 // TODO: Get ts to type this function
-if (document && document.body) {
-  document.body.addEventListener('click', (ev) => {
-    const target = ev.target as HTMLElement;
-    if (!target || !target.closest) {
-      return;
-    }
-
-    const lightningLink = target.closest('[href^="lightning:"]');
-    if (lightningLink) {
-      const href = lightningLink.getAttribute('href') as string;
-      const paymentRequest = href.replace('lightning:', '');
-      browser.runtime.sendMessage({
-        application: 'Joule',
-        prompt: true,
-        type: PROMPT_TYPE.PAYMENT,
-        args: { paymentRequest },
-      });
-      ev.preventDefault();
-    }
+if (document) {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', (ev) => {
+      const target = ev.target as HTMLElement;
+      if (!target || !target.closest) {
+        return;
+      }
+  
+      const lightningLink = target.closest('[href^="lightning:"]');
+      if (lightningLink) {
+        const href = lightningLink.getAttribute('href') as string;
+        const paymentRequest = href.replace('lightning:', '');
+        browser.runtime.sendMessage({
+          application: 'Joule',
+          prompt: true,
+          type: PROMPT_TYPE.PAYMENT,
+          args: { paymentRequest },
+        });
+        ev.preventDefault();
+      }
+    });
   });
 }
