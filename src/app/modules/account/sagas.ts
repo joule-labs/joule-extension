@@ -53,7 +53,7 @@ export function* handleGetTransactions(): SagaIterator {
       Yielded<typeof nodeLib.getTransactions>
     ] = yield all([
       call(nodeLib.getPayments),
-      call(nodeLib.getInvoices, { num_max_invoices: 30 }),
+      call(nodeLib.getInvoices, { num_max_invoices: 30, reversed: true }),
       call(nodeLib.getTransactions),
     ]);
 
