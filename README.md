@@ -9,10 +9,12 @@ the ability to pay and use your node as an identity on the web.
 
 ## Development
 
-1. Run `yarn start`
-2. Open Chrome -> More Tools -> Extensions -> Load Unpacked
-3. Select the `joule-extension/dist-dev` folder you created
-4. Get to work!
+1. Run `yarn install && yarn run dev`
+2. Open Chrome -> More Tools -> Extensions
+3. Toggle "Developer mode" (if such a toggle exists)
+4. Click "Load unpacked"
+5. Select the `joule-extension/dist-dev` folder you created
+6. Get to work!
 
 If you're also working on [`webln`](https://github.com/wbobeirne/webln), you'll
 want to clone and build that repository, and run `yarn link`. Then come back
