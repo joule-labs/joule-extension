@@ -6,6 +6,8 @@ export interface SettingsState {
   denomination: Denomination;
   isNoFiat: boolean;
   isFiatPrimary: boolean;
+  enabledDomains: string[];
+  rejectedDomains: string[];
 }
 
 export const INITIAL_STATE: SettingsState = {
@@ -13,6 +15,8 @@ export const INITIAL_STATE: SettingsState = {
   denomination: Denomination.SATOSHIS,
   isNoFiat: false,
   isFiatPrimary: false,
+  enabledDomains: [],
+  rejectedDomains: [],
 };
 
 export default function settingsReducer(
@@ -26,6 +30,40 @@ export default function settingsReducer(
         ...state,
         ...action.payload,
       };
+    
+    case types.ADD_ENABLED_DOMAIN:
+      return {
+        ...state,
+        enabledDomains: [
+          ...state.enabledDomains,
+          action.payload,
+        ].filter((domain, idx, arr) => arr.indexOf(domain) === idx),
+      };
+    
+    case types.REMOVE_ENABLED_DOMAIN:
+      return {
+        ...state,
+        enabledDomains: state.enabledDomains
+          .filter(d => d !== action.payload),
+      };
+    
+    case types.ADD_REJECTED_DOMAIN:
+      return {
+        ...state,
+        rejectedDomains: [
+          ...state.rejectedDomains,
+          action.payload,
+        ].filter((domain, idx, arr) => arr.indexOf(domain) === idx),
+      };
+    
+    case types.REMOVE_REJECTED_DOMAIN:
+      return {
+        ...state,
+        rejectedDomains: state.rejectedDomains
+          .filter(d => d !== action.payload),
+      };
+    
+    
   }
 
   return state;

@@ -1,15 +1,18 @@
 import qs from 'query-string';
 import { browser, Runtime } from 'webextension-polyfill-ts';
+import { OriginData } from 'utils/prompt';
 
 interface PromptRequest {
   type: string;
   args: any;
+  origin: OriginData;
 }
 
 function openPrompt(request: PromptRequest): Promise<any> {
   const urlParams = qs.stringify({
     type: request.type,
     args: JSON.stringify(request.args),
+    origin: JSON.stringify(request.origin),
   });
 
   return new Promise((resolve, reject) => {
