@@ -1,19 +1,32 @@
 import { browser } from 'webextension-polyfill-ts';
 import shouldInject from './shouldInject';
 import injectScript from './injectScript';
+import respondWithoutPrompt from './respondWithoutPrompt';
 import { PROMPT_TYPE } from '../webln/types';
+import { getOriginData } from 'utils/prompt';
 
 if (shouldInject()) {
   injectScript();
 
-  window.addEventListener('message', ev => {
+  window.addEventListener('message', async (ev) => {
     // Only accept messages from the current window
     if (ev.source !== window) {
       return;
     }
 
     if (ev.data && ev.data.application === 'Joule' && !ev.data.response) {
-      browser.runtime.sendMessage(ev.data).then(response => {
+      const messageWithOrigin = {
+        ...ev.data,
+        origin: getOriginData(),
+      };
+
+      // Some prompt requests can be responded to immediately
+      const didRespond = await respondWithoutPrompt(messageWithOrigin);
+      if (didRespond) {
+        return;
+      }
+
+      browser.runtime.sendMessage(messageWithOrigin).then(response => {
         window.postMessage({
           application: 'Joule',
           response: true,

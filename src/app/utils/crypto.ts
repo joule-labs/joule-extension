@@ -78,7 +78,14 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     encrypted: false,
     selector: selectSettings,
     action: changeSettings,
-    triggerActions: [settingsTypes.CHANGE_SETTINGS],
+    triggerActions: [
+      settingsTypes.CHANGE_SETTINGS,
+      settingsTypes.CLEAR_SETTINGS,
+      settingsTypes.ADD_ENABLED_DOMAIN,
+      settingsTypes.REMOVE_ENABLED_DOMAIN,
+      settingsTypes.ADD_REJECTED_DOMAIN,
+      settingsTypes.REMOVE_REJECTED_DOMAIN,
+    ],
   },
   {
     key: 'rates',
