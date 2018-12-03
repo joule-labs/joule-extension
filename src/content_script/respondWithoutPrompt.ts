@@ -22,13 +22,23 @@ async function handleAuthorizePrompt(data: any) {
     ...store && store.settings || {},
   };
 
-  if (domain && settings.enabledDomains.includes(domain)) {
-    window.postMessage({
-      application: 'Joule',
-      response: true,
-      data: undefined,
-    }, '*');
-    return true;
+  if (domain) {
+    if (settings.enabledDomains.includes(domain)) {
+      window.postMessage({
+        application: 'Joule',
+        response: true,
+        data: undefined,
+      }, '*');
+      return true;
+    }
+    else if (settings.rejectedDomains.includes(domain)) {
+      window.postMessage({
+        application: 'Joule',
+        response: true,
+        error: 'User rejected prompt',
+      }, '*');
+      return true;
+    }
   }
 
   return false;
