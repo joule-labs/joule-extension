@@ -53,7 +53,11 @@ class AuthorizePrompt extends React.Component<Props, State> {
               <img src={Logo} />
             </div>
           </div>
-          <h2>{this.origin.name} wants to connect</h2>
+          <h2>
+            <strong>{this.origin.name}</strong>
+            {' '}
+            wants to connect
+          </h2>
           <h3>They want to know</h3>
           <ul>
             <li>Your node's alias & color</li>
