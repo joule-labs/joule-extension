@@ -4,7 +4,15 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import { Form, Select, Checkbox, Button, Modal } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { changeSettings, clearSettings } from 'modules/settings/actions';
+import DomainLists from './DomainLists';
+import {
+  changeSettings,
+  clearSettings,
+  addEnabledDomain,
+  addRejectedDomain,
+  removeEnabledDomain,
+  removeRejectedDomain,
+} from 'modules/settings/actions';
 import {
   Denomination,
   Fiat,
@@ -25,6 +33,10 @@ interface StateProps {
 interface DispatchProps {
   changeSettings: typeof changeSettings;
   clearSettings: typeof clearSettings;
+  addEnabledDomain: typeof addEnabledDomain;
+  addRejectedDomain: typeof addRejectedDomain;
+  removeEnabledDomain: typeof removeEnabledDomain;
+  removeRejectedDomain: typeof removeRejectedDomain;
 }
 
 type Props = StateProps & DispatchProps & RouteComponentProps;
@@ -35,7 +47,7 @@ class Settings extends React.Component<Props> {
 
     return (
       <Form className="Settings" layout="vertical">
-        <div className="Settings-section">
+        <div className="Settings-section Settings-currencies">
           <h3 className="Settings-section-title">
             Units & Currencies
           </h3>
@@ -82,6 +94,25 @@ class Settings extends React.Component<Props> {
               Disable {settings.isFiatPrimary ? 'bitcoin' : 'fiat'} equivalents
             </Checkbox>
           </Form.Item>
+        </div>
+
+        <div className="Settings-section">
+          <h3 className="Settings-section-title">
+            Approved & Rejected Domains
+          </h3>
+          <p className="Settings-section-help">
+            Approved domains will be able to prompt you, and have access
+            to your node info. Rejected domains will automatically be
+            rejected without a prompt.
+          </p>
+          <DomainLists
+            enabled={settings.enabledDomains}
+            rejected={settings.rejectedDomains}
+            removeEnabledDomain={this.props.removeEnabledDomain}
+            removeRejectedDomain={this.props.removeRejectedDomain}
+            addEnabledDomain={this.props.addEnabledDomain}
+            addRejectedDomain={this.props.addRejectedDomain}
+          />
         </div>
 
         <div className="Settings-section">
@@ -134,6 +165,10 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   {
     changeSettings,
     clearSettings,
+    addEnabledDomain,
+    addRejectedDomain,
+    removeEnabledDomain,
+    removeRejectedDomain,
   },
 )(Settings);
 
