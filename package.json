@@ -1,11 +1,13 @@
 {
   "name": "joule-extension",
-  "version": "0.1.0",
-  "description": "safu",
+  "version": "0.2.0",
+  "description": "Lightning charge your browser by connecting your lightning node",
   "keywords": [
     "typescript",
     "react",
-    "chrome-extension"
+    "chrome-extension",
+    "lightning",
+    "bitcoin"
   ],
   "scripts": {
     "dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack -w",
