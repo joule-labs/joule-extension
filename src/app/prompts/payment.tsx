@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Tabs } from 'antd';
+import { SendPaymentResponse } from 'webln/lib/provider';
 import PromptTemplate from 'components/PromptTemplate';
 import Loader from 'components/Loader';
 import BigMessage from 'components/BigMessage';
@@ -45,7 +46,6 @@ class PaymentPrompt extends React.Component<Props> {
     let content;
     if (pr.data) {
       const { node, request, route } = pr.data;
-      console.log(request);
       content = (
         <div className="PaymentPrompt">
           <div className="PaymentPrompt-to">
@@ -133,7 +133,7 @@ class PaymentPrompt extends React.Component<Props> {
     );
   }
 
-  private handleSend = async () => {
+  private handleSend = async (): Promise<SendPaymentResponse> => {
     this.props.sendPayment({ payment_request: this.paymentRequest });
 
     const receipt = await watchUntilPropChange(

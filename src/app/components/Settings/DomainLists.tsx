@@ -2,6 +2,7 @@
 import React from 'react';
 import { Transfer, Button } from 'antd';
 import { TransferListProps } from 'antd/lib/transfer';
+import { removeDomainPrefix } from 'utils/formatters';
 import './DomainLists.less';
 
 interface Props {
@@ -31,7 +32,7 @@ export default class DomainLists extends React.Component<Props> {
         titles={[APPROVED, REJECTED]}
         dataSource={data}
         targetKeys={rejected}
-        render={item => this.removeDomainPrefix(item.title)}
+        render={item => removeDomainPrefix(item.title)}
         footer={this.renderFooter}
         locale={{
           itemUnit: 'site',
@@ -92,8 +93,4 @@ export default class DomainLists extends React.Component<Props> {
   private removeDomainsFromRejected = (domains: string[]) => {
     domains.forEach(domain => this.props.removeRejectedDomain(domain));
   };
-
-  private removeDomainPrefix(domain: string) {
-    return domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
-  }
 }

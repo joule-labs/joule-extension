@@ -5,10 +5,10 @@ import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
 import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
 import { fromUnitToBitcoin, fromBitcoinToUnit, fromUnitToBase } from 'utils/units';
+import { typedKeys } from 'utils/ts';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
-import { typedKeys } from 'utils/ts';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];

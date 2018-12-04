@@ -74,3 +74,7 @@ export function commaify(text: string | number) {
   pieces[0] = pieces[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return pieces.join('.');
 }
+
+export function removeDomainPrefix(domain: string) {
+  return domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
+}

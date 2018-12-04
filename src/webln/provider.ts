@@ -1,4 +1,9 @@
-import { WebLNProvider } from 'webln/lib/provider';
+import {
+  WebLNProvider,
+  SendPaymentResponse,
+  RequestInvoiceArgs,
+  RequestInvoiceResponse,
+} from 'webln/lib/provider';
 import { PROMPT_TYPE } from './types';
 
 export default class JouleWebLNProvider implements WebLNProvider {
@@ -26,18 +31,27 @@ export default class JouleWebLNProvider implements WebLNProvider {
     if (!this.isEnabled) {
       throw new Error('Provider must be enabled before calling sendPayment');
     }
-    return this.promptUser<{ preimage: string }, { paymentRequest: string }>(
+    return this.promptUser<SendPaymentResponse, { paymentRequest: string }>(
       PROMPT_TYPE.PAYMENT,
       { paymentRequest },
     );
   }
 
-  async makeInvoice(_: string) {
+  async makeInvoice(args: string | number | RequestInvoiceArgs) {
     if (!this.isEnabled) {
       throw new Error('Provider must be enabled before calling makeInvoice');
     }
-    throw new Error('Not yet implemented');
-    return { paymentRequest: '' };
+
+    // Force into RequestInvoiceArgs format for strings (or bozos
+    // who send numbers despite being typed otherwise!)
+    if (typeof args !== 'object') {
+      args = { amount: args };
+    }
+
+    return this.promptUser<RequestInvoiceResponse, RequestInvoiceArgs>(
+      PROMPT_TYPE.INVOICE,
+      args,
+    );
   }
 
   async signMessage(_: string) {
