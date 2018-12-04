@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { denominationSymbols, Denomination, fiatSymbols } from 'utils/constants';
-import { fromBaseToUnit } from 'utils/units';
+import { fromBaseToUnit, fromUnitToFiat } from 'utils/units';
 import { commaify } from 'utils/formatters';
 import { AppState } from 'store/reducers';
 
@@ -48,9 +48,12 @@ class Unit extends React.Component<Props> {
 
     let fiatEl = '';
     if (rates && rates[fiat]) {
-      const btcValue = fromBaseToUnit(value, Denomination.BITCOIN);
-      const fiatValue = parseFloat(btcValue) * rates[fiat];
-      fiatEl = `${fiatSymbols[fiat]}${commaify(fiatValue.toFixed(2))}`;
+      fiatEl = fromUnitToFiat(
+        value,
+        Denomination.SATOSHIS,
+        rates[fiat],
+        fiatSymbols[fiat],
+      );
     }
 
     return (

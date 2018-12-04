@@ -1,4 +1,5 @@
 import { Denomination } from './constants';
+import { commaify } from './formatters';
 
 // const multipliers: { [key in Denomination]: number } = {
 //   [Denomination.SATOSHIS]: 1,
@@ -27,7 +28,7 @@ function stripLeftZeros(str: string) {
   return strippedStr;
 }
 
-// Go from any unit to satoshis
+// Go from satoshis to another unit
 export function fromBaseToUnit(value: string, toUnit: Denomination) {
   if (toUnit === Denomination.SATOSHIS) {
     return stripLeftZeros(value);
@@ -38,11 +39,11 @@ export function fromBaseToUnit(value: string, toUnit: Denomination) {
   return fractionPart ? `${integerPart}.${fractionPart}` : integerPart;
 }
 
-// Go from satoshis to another unit
+// Go from any unit to satoshis
 export function fromUnitToBase(value: string, fromUnit: Denomination) {
   const [integerPart, fractionPart = ''] = value.split('.');
   const paddedFraction = fractionPart.padEnd(decimals[fromUnit], '0');
-  return `${integerPart}${paddedFraction}`;
+  return stripLeftZeros(`${integerPart}${paddedFraction}`);
 }
 
 export function fromUnitToBitcoin(value: string, fromUnit: Denomination) {
@@ -51,4 +52,15 @@ export function fromUnitToBitcoin(value: string, fromUnit: Denomination) {
 
 export function fromBitcoinToUnit(value: string, toUnit: Denomination) {
   return fromBaseToUnit(fromUnitToBase(value, Denomination.BITCOIN), toUnit);
+}
+
+export function fromUnitToFiat(
+  value: string,
+  fromUnit: Denomination,
+  rate: number,
+  symbol: string,
+) {
+  const btcValue = fromBaseToUnit(fromUnitToBase(value, fromUnit), Denomination.BITCOIN);
+  const fiatValue = parseFloat(btcValue) * rate;
+  return `${symbol}${commaify(fiatValue.toFixed(2))}`;
 }
