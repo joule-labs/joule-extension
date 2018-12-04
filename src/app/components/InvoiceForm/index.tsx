@@ -107,6 +107,7 @@ class InvoiceForm extends React.Component<Props, State> {
                   onChange={this.handleChangeValue}
                   autoFocus
                   placeholder="1000"
+                  step="any"
                 />
                 <Select
                   onChange={this.handleChangeDenomination}
@@ -133,6 +134,7 @@ class InvoiceForm extends React.Component<Props, State> {
                     addonBefore={fiatSymbols[fiat]}
                     placeholder="1.00"
                     disabled={!rates}
+                    step="any"
                   />
                 </>
               )}

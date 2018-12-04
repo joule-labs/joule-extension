@@ -94,11 +94,11 @@ class InvoicePrompt extends React.Component<Props, State> {
               <Input.Group size="large" compact>
                 <Input
                   size="large"
-                  type="number"
                   value={value}
                   onChange={this.handleChangeValue}
                   placeholder="Enter an amount"
                   disabled={isValueDisabled}
+                  step="any"
                   autoFocus
                 />
                 <Select
