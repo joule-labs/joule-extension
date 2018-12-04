@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, Icon, Alert, Button } from 'antd';
+import { Upload, Icon, Alert, Button, Form, Input } from 'antd';
 import { blobToHex } from 'utils/file';
 import { LND_DIR } from 'utils/constants';
 import './UploadMacaroons.less';
@@ -12,6 +12,7 @@ interface Props {
 interface State {
   admin: string;
   readonly: string;
+  isShowingHexInputs: boolean;
   error?: string;
 }
 
@@ -19,6 +20,7 @@ export default class UploadMacaroon extends React.Component<Props, State> {
   state: State = {
     admin: '',
     readonly: '',
+    isShowingHexInputs: false,
     error: this.props.error,
   };
 
@@ -29,49 +31,80 @@ export default class UploadMacaroon extends React.Component<Props, State> {
   }
 
   render() {
-    const { error, admin, readonly } = this.state;
+    const { error, admin, readonly, isShowingHexInputs } = this.state;
     return (
-      <div className="UploadMacaroons">
+      <Form layout="vertical" className="UploadMacaroons">
         <div className="UploadMacaroons-description">
           We need to authenticate with your node using macaroons. Your admin
           macaroon will be encrypted, and payments will <em>never</em> be made
           without your explicit approval.
         </div>
-        <Upload.Dragger
-          accept=".macaroon"
-          showUploadList={false}
-          beforeUpload={
-            (file) => this.handleMacaroonUpload('admin', file)
-          }
-        >
-          <p className="ant-upload-drag-icon">
-            <Icon type={admin ? 'check-circle' : 'inbox'} />
-          </p>
-          <p className="ant-upload-text">
-            Upload <code>admin.macaroon</code>
-          </p>
-          <p className="ant-upload-hint">
-            Click or drag to upload macaroon
-          </p>
-        </Upload.Dragger>
 
-        <Upload.Dragger
-          accept=".macaroon"
-          showUploadList={false}
-          beforeUpload={
-            (file) => this.handleMacaroonUpload('readonly', file)
-          }
-        >
-          <p className="ant-upload-drag-icon">
-            <Icon type={readonly ? 'check-circle' : 'inbox'} />
-          </p>
-          <p className="ant-upload-text">
-            Upload <code>readonly.macaroon</code>
-          </p>
-          <p className="ant-upload-hint">
-            Click or drag to upload
-          </p>
-        </Upload.Dragger>
+        {isShowingHexInputs ? (
+          <>
+            <Form.Item label="Admin macaroon">
+              <Input
+                name="admin"
+                value={admin}
+                onChange={this.handleChangeMacaroonHex}
+                placeholder="Paste hex string here"
+              />
+            </Form.Item>
+            <Form.Item label="Readonly macaroon">
+              <Input
+                name="readonly"
+                value={readonly}
+                onChange={this.handleChangeMacaroonHex}
+                placeholder="Paste hex string here"
+              />
+            </Form.Item>
+          </>
+        ) : (
+          <>
+            <Upload.Dragger
+              accept=".macaroon"
+              showUploadList={false}
+              beforeUpload={
+                (file) => this.handleMacaroonUpload('admin', file)
+              }
+            >
+              <p className="ant-upload-drag-icon">
+                <Icon type={admin ? 'check-circle' : 'inbox'} />
+              </p>
+              <p className="ant-upload-text">
+                Upload <code>admin.macaroon</code>
+              </p>
+              <p className="ant-upload-hint">
+                Click or drag to upload macaroon
+              </p>
+            </Upload.Dragger>
+
+            <Upload.Dragger
+              accept=".macaroon"
+              showUploadList={false}
+              beforeUpload={
+                (file) => this.handleMacaroonUpload('readonly', file)
+              }
+            >
+              <p className="ant-upload-drag-icon">
+                <Icon type={readonly ? 'check-circle' : 'inbox'} />
+              </p>
+              <p className="ant-upload-text">
+                Upload <code>readonly.macaroon</code>
+              </p>
+              <p className="ant-upload-hint">
+                Click or drag to upload
+              </p>
+            </Upload.Dragger>
+
+            <div className="UploadMacaroons-hint">
+              Macaroons are usually located in either{' '}
+              <code>{LND_DIR.MACOS}</code> on macOS, or{' '}
+              <code>{LND_DIR.LINUX}</code> on Linux if you’re running LND.
+              Other clients may differ.
+            </div>
+          </>
+        )}
 
         {error &&
           <Alert
@@ -83,11 +116,10 @@ export default class UploadMacaroon extends React.Component<Props, State> {
           />
         }
 
-        <div className="UploadMacaroons-hint">
-          Macaroons are usually located in either{' '}
-          <code>{LND_DIR.MACOS}</code> on macOS, or{' '}
-          <code>{LND_DIR.LINUX}</code> on Linux if you’re running LND.
-          Other clients may differ.
+        <div className="UploadMacaroons-toggle">
+          {isShowingHexInputs ? 'Have macaroon files instead?' : 'Have hex strings instead?'}
+          {' '}
+          <a onClick={this.toggleHexInputs}>Click here to switch</a>.
         </div>
 
         <Button
@@ -99,7 +131,7 @@ export default class UploadMacaroon extends React.Component<Props, State> {
         >
           Continue
         </Button>
-      </div>
+      </Form>
     );
   }
 
@@ -111,6 +143,14 @@ export default class UploadMacaroon extends React.Component<Props, State> {
         .catch(err => this.setState({ error: err.message }));
     }
     return false;
+  };
+
+  private handleChangeMacaroonHex = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ [ev.target.name]: ev.target.value } as any);
+  };
+
+  private toggleHexInputs = () => {
+    this.setState({ isShowingHexInputs: !this.state.isShowingHexInputs });
   };
 
   private handleSubmit = () => {
