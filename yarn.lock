@@ -11612,10 +11612,10 @@ webidl-conversions@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
 
-webln@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/webln/-/webln-0.0.2.tgz#6e0a7f4481ad73ec968d5412e686f6618d42d67c"
-  integrity sha512-9o+W2Z8xZAaOXzYnkwnE7xTTFEMhg/UULkAW5Q7vKSkAQ6yyiu5pw6ToMOaG6ZIbvt9wvAZsY+MYQc/7lpnHdA==
+webln@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/webln/-/webln-0.0.3.tgz#d8bd43accfb2f85216441a3f67f58349835c9aa9"
+  integrity sha512-wfB5smWIJO0Gkd3cH96TTNQDamYRXcVFrnsJz84t73TrZXVL7oa9jkQ7r8jbwVUzdFHOGc2lkVBsD4PyoBvqBQ==
   dependencies:
     "@types/chrome" "0.0.74"
 
