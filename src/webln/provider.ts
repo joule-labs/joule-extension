@@ -1,5 +1,6 @@
 import {
   WebLNProvider,
+  GetInfoResponse,
   SendPaymentResponse,
   RequestInvoiceArgs,
   RequestInvoiceResponse,
@@ -23,8 +24,7 @@ export default class JouleWebLNProvider implements WebLNProvider {
     if (!this.isEnabled) {
       throw new Error('Provider must be enabled before calling getInfo');
     }
-    throw new Error('Not yet implemented');
-    return { node: { alias: '', color: '', pubkey: '' } };
+    return this.promptUser<GetInfoResponse>(PROMPT_TYPE.INFO);
   }
 
   async sendPayment(paymentRequest: string) {

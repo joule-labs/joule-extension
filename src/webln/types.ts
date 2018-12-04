@@ -1,5 +1,6 @@
 export enum PROMPT_TYPE {
   AUTHORIZE = 'AUTHORIZE',
+  INFO = 'INFO',
   PAYMENT = 'PAYMENT',
   INVOICE = 'INVOICE',
   SIGN = 'SIGN',
