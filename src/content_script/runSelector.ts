@@ -6,12 +6,16 @@ type Selector<T> = (s: AppState) => T;
 export default async function runSelector<T>(
   selector: Selector<T>,
   storageKey: string,
-  stateKey: string,
+  stateKey: keyof AppState,
 ): Promise<T> {
   const storageData = await browser.storage.sync.get(storageKey);
+  const keyData = storageData[storageKey] || {};
   const state = {
     ...combineInitialState,
-    ...{ [stateKey]: storageData[storageKey] },
+    [stateKey]: {
+      ...combineInitialState[stateKey],
+      ...keyData,
+    },
   } as AppState;
   return selector(state);
 }
