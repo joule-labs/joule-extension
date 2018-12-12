@@ -1,21 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Spin, Collapse, message } from 'antd';
+import { Spin, message } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import UploadMacaroons from './UploadMacaroons';
 import ConfirmNode from './ConfirmNode';
-import { DEFAULT_LOCAL_NODE_URL } from 'utils/constants';
-import { checkNode, checkAuth, setNode, resetNode } from 'modules/node/actions';
+import SelectType, { NODE_TYPE } from './SelectType';
+import { DEFAULT_LOCAL_NODE_URLS } from 'utils/constants';
+import { checkNode, checkNodes, checkAuth, setNode, resetNode } from 'modules/node/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
 import InputAddress from './InputAddress';
 
-enum NODE_TYPE {
-  LOCAL = 'LOCAL',
-  REMOTE = 'REMOTE',
-}
-
 interface StateProps {
+  url: AppState['node']['url'];
   isNodeChecked: AppState['node']['isNodeChecked'];
   nodeInfo: AppState['node']['nodeInfo'];
   isCheckingNode: AppState['node']['isCheckingNode'];
@@ -25,6 +22,7 @@ interface StateProps {
 
 interface DispatchProps {
   checkNode: typeof checkNode;
+  checkNodes: typeof checkNodes;
   checkAuth: typeof checkAuth;
   setNode: typeof setNode;
   resetNode: typeof resetNode;
@@ -37,18 +35,18 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
-  url: string;
   adminMacaroon: string;
   readonlyMacaroon: string;
   nodeType: null | NODE_TYPE;
+  isRequestingPermission: boolean;
 }
 
 class SelectNode extends React.Component<Props, State> {
   state: State = {
-    url: '',
     adminMacaroon: '',
     readonlyMacaroon: '',
     nodeType: null,
+    isRequestingPermission: false,
   };
 
   render() {
@@ -59,12 +57,12 @@ class SelectNode extends React.Component<Props, State> {
       checkNodeError,
       nodeInfo,
     } = this.props;
-    const { nodeType } = this.state;
+    const { nodeType, isRequestingPermission } = this.state;
 
     let content: React.ReactNode;
     let title: React.ReactNode;
     if (nodeType) {
-      if (isCheckingAuth) {
+      if (isCheckingAuth || isRequestingPermission) {
         content = <Spin />;
       }
       else if (nodeInfo) {
@@ -93,75 +91,7 @@ class SelectNode extends React.Component<Props, State> {
       }
     } else {
       title = 'Where is your node?';
-      content = (
-        <div className="SelectNode-buttons">
-          <Button
-            size="large"
-            icon="laptop"
-            block
-            onClick={() => this.setNodeType(NODE_TYPE.LOCAL)}
-          >
-            Local node
-          </Button>
-          <Button
-            size="large"
-            icon="global"
-            block
-            onClick={() => this.setNodeType(NODE_TYPE.REMOTE)}
-          >
-            Remote node
-          </Button>
-          <Collapse>
-            <Collapse.Panel header="Need help? Click here" key="help">
-              <p>
-                In order to run Joule, you must run your own LND node (other
-                node types coming soon). You can use one of the following for example:
-              </p>
-              <ul>
-                <li>
-                  <a
-                    href="https://github.com/lightninglabs/lightning-app"
-                    target="_blank"
-                    rel="noopener nofollow"
-                  >
-                    The official Lightning desktop application
-                  </a>{' '}
-                  <small>(Testnet only)</small>
-                </li>
-                <li>
-                  <a
-                    href="https://zap.jackmallers.com/"
-                    target="_blank"
-                    rel="noopener nofollow"
-                  >
-                    The Zap desktop client
-                  </a>{' '}
-                  <small>(Testnet only)</small>
-                </li>
-                <li>
-                  <a
-                    href="https://dev.lightning.community/guides/installation/"
-                    target="_blank"
-                    rel="noopener nofollow"
-                  >
-                    The LND command line tool
-                  </a>
-                </li>
-              </ul>
-              <p>
-                All of these will start up a local node. Alternatively, you can
-                run LND on a server to be able to connect remotely from any
-                computer.
-              </p>
-              <p>
-                Once you've set up the node, you'll need to find where it
-                stores the macaroons for access. This will depend on which
-                client you're running. Refer to their documentation.
-              </p>
-            </Collapse.Panel>
-          </Collapse>
-        </div>
-      );
+      content = <SelectType onSelectNodeType={this.setNodeType} />;
     }
 
     return (
@@ -175,31 +105,39 @@ class SelectNode extends React.Component<Props, State> {
   private setNodeType = (nodeType: null | NODE_TYPE) => {
     this.setState({ nodeType });
     if (nodeType === NODE_TYPE.LOCAL) {
+      this.setState({ isRequestingPermission: true });
       // Instantly check the default local node
       browser.permissions.request({
-        origins: [`${DEFAULT_LOCAL_NODE_URL}/`]
+        origins: DEFAULT_LOCAL_NODE_URLS.map(url => `${url}/`)
       }).then(accepted => {
         if (!accepted) {
           message.warn('Permission denied, connection may fail');
         }
-        this.setState({ url: DEFAULT_LOCAL_NODE_URL });
-        this.props.checkNode(DEFAULT_LOCAL_NODE_URL);
+        this.props.checkNodes(DEFAULT_LOCAL_NODE_URLS);
+        this.setState({ isRequestingPermission: false });
       });
     }
   };
 
   private setUrl = (url: string) => {
-    this.setState({ url });
     this.props.checkNode(url);
   };
 
   private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
+    const { url } = this.props;
     this.setState({ adminMacaroon, readonlyMacaroon });
-    this.props.checkAuth(this.state.url, adminMacaroon, readonlyMacaroon);
+    if (url) {
+      this.props.checkAuth(url, adminMacaroon, readonlyMacaroon);
+    }
   };
 
   private confirmNode = () => {
-    const { url, adminMacaroon, readonlyMacaroon } = this.state;
+    const { url } = this.props;
+    const { adminMacaroon, readonlyMacaroon } = this.state;
+    if (!url || !adminMacaroon || !readonlyMacaroon) {
+      console.warn('Invalid credentials:', { url, adminMacaroon, readonlyMacaroon });
+      return;
+    }
     this.props.setNode(url, adminMacaroon, readonlyMacaroon);
     this.props.onConfirmNode();
   }
@@ -211,6 +149,7 @@ class SelectNode extends React.Component<Props, State> {
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
+    url: state.node.url,
     isNodeChecked: state.node.isNodeChecked,
     nodeInfo: state.node.nodeInfo,
     isCheckingNode: state.node.isCheckingNode,
@@ -219,6 +158,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   }),
   {
     checkNode,
+    checkNodes,
     checkAuth,
     setNode,
     resetNode,
