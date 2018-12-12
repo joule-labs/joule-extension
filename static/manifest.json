@@ -36,11 +36,13 @@
   ],
   "permissions": [
     "storage",
+    "activeTab"
+  ],
+  "optional_permissions": [
     "notifications",
-    "webRequest",
     "http://*/",
     "https://*/",
-    "file://*/*"
+    "file://*/"
   ],
   "applications": {
     "gecko": {

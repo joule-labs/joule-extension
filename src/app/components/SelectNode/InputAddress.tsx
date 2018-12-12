@@ -1,5 +1,6 @@
 import React from 'react';
-import { Form, Input, Button, Alert } from 'antd';
+import { browser } from 'webextension-polyfill-ts';
+import { Form, Input, Button, Alert, message } from 'antd';
 import './InputAddress.less';
 
 interface Props {
@@ -93,7 +94,15 @@ export default class InputAddress extends React.Component<Props, State> {
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    this.props.submitUrl(this.state.url);
-    this.setState({ submittedUrl: this.state.url });
+    const url = new URL(this.state.url);
+    browser.permissions.request({
+      origins: [`${url.origin}/`]
+    }).then(accepted => {
+      if (!accepted) {
+        message.warn('Permission denied, connection may fail');
+      }
+      this.props.submitUrl(this.state.url);
+      this.setState({ submittedUrl: this.state.url });
+    });
   };
 }
