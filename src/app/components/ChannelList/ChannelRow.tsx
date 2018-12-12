@@ -34,6 +34,9 @@ export default class ChannelRow extends React.Component<Props> {
             {' / '}
             <Unit value={channel.capacity} />
           </div>
+          <div className="ChannelRow-info-progress-bar-background">
+            <div className="ChannelRow-info-progress-bar" style={{width: Math.round(parseFloat(channel.local_balance) / parseFloat(channel.capacity) * 100) + '%'}}></div>
+          </div>
         </div>
       </div>
     );
