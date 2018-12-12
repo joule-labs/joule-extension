@@ -36,13 +36,13 @@
   ],
   "permissions": [
     "storage",
+    "clipboardWrite",
     "activeTab"
   ],
   "optional_permissions": [
     "notifications",
     "http://*/",
-    "https://*/",
-    "file://*/"
+    "https://*/"
   ],
   "applications": {
     "gecko": {
