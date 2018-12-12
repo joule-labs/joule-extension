@@ -12,7 +12,8 @@ export class LndHttpClient {
   macaroon: undefined | T.Macaroon;
   
   constructor(url: string, macaroon?: T.Macaroon) {
-    this.url = url;
+    // Remove trailing slash for consistency
+    this.url = url.replace(/\/$/, '');
     this.macaroon = macaroon;
   }
 

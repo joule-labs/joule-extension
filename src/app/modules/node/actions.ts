@@ -51,7 +51,9 @@ export function setSyncedUnencryptedNodeState(payload: ReturnType<typeof selectS
     payload: {
       url,
       readonlyMacaroon,
-      lib: new LndHttpClient(url as string, readonlyMacaroon as string),
+      lib: url
+        ? new LndHttpClient(url as string, readonlyMacaroon as string)
+        : null,
     },
   }
 }
@@ -63,7 +65,9 @@ export function setSyncedEncryptedNodeState(payload: ReturnType<typeof selectSyn
     payload: {
       url,
       adminMacaroon,
-      lib: new LndHttpClient(url as string, adminMacaroon as string),
+      lib: url
+        ? new LndHttpClient(url as string, adminMacaroon as string)
+        : null,
     },
   }
 }
