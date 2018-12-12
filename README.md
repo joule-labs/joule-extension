@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://camo.githubusercontent.com/ff4a641fba4f90ea2a24413d8874bb464883685d/68747470733a2f2f692e696d6775722e636f6d2f595968594335652e706e67" alt="" data-canonical-src="https://i.imgur.com/YYhYC5e.png" style="max-width:100%;" width="400">
+<img src="https://camo.githubusercontent.com/ff4a641fba4f90ea2a24413d8874bb464883685d/68747470733a2f2f692e696d6775722e636f6d2f595968594335652e706e67" alt="Joule, get it now at lightningjoule.com" data-canonical-src="https://i.imgur.com/YYhYC5e.png" style="max-width:100%;" width="400">
 </p>
 
 ## Overview
