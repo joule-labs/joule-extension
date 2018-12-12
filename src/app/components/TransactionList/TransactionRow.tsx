@@ -57,7 +57,7 @@ export default class TransactionRow extends React.Component<Props> {
         <div className="TransactionRow-info">
           <div className="TransactionRow-info-title">{title}</div>
           <div className="TransactionRow-info-time">
-            {moment.unix(timestamp).format('MMM Mo, LT')}
+            {moment.unix(timestamp).format('MMM Do, LT')}
           </div>
         </div>
         {delta &&
