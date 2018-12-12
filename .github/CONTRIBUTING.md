@@ -1,0 +1,1 @@
+Please see the [Contributor Guidelines on the Wiki](https://github.com/wbobeirne/joule-extension/wiki/Contributor-Guidelines).
