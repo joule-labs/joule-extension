@@ -14,32 +14,20 @@ interface Props {
 }
 
 interface State {
-  countdown: number;
   isConfirming: boolean;
   isRejecting: boolean;
 }
 
 export default class PromptTemplate extends React.Component<Props, State> {
   state: State = {
-    countdown: 3,
     isConfirming: false,
     isRejecting: false,
   };
 
-  componentDidMount() {
-    const interval = setInterval(() => {
-      const countdown = this.state.countdown - 1;
-      this.setState({ countdown });
-      if (countdown <= 0) {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
-
   render() {
     const { children, isConfirmDisabled, isContentCentered } = this.props;
-    const { countdown, isConfirming, isRejecting } = this.state;
-    const confirmDisabled = isConfirmDisabled || countdown > 0 || isRejecting;
+    const { isConfirming, isRejecting } = this.state;
+    const confirmDisabled = isConfirmDisabled || isRejecting;
 
     return (
       <div className="PromptTemplate">
@@ -60,7 +48,7 @@ export default class PromptTemplate extends React.Component<Props, State> {
             disabled={confirmDisabled}
             loading={isConfirming}
           >
-            Confirm {!!countdown && `(${countdown})`}
+            Confirm
           </Button>
         </div>
       </div>
