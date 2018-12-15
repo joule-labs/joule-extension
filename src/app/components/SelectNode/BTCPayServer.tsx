@@ -41,7 +41,7 @@ export default class BTCPayServer extends React.Component<Props, State> {
 
     return (
       <div className="BTCPayServer">
-        <p className="BTCPayServer-help">
+        <p>
           Follow these steps to connect your BTCPay Server to Joule. Your node
           must be fully synced in order to get connection details.
         </p>
@@ -76,6 +76,17 @@ export default class BTCPayServer extends React.Component<Props, State> {
             Submit
           </Button>
         </Form>
+        <div className="BTCPayServer-help">
+          Want to learn more about BTCPay Server?
+          {' '}
+          <a
+            href="https://github.com/btcpayserver/btcpayserver"
+            target="_blank"
+            rel="noopener nofollow"
+          >
+            Click here
+          </a>.
+        </div>
       </div>
     );
   }
