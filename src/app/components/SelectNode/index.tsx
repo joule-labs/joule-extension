@@ -39,6 +39,7 @@ interface State {
   readonlyMacaroon: string;
   nodeType: null | NODE_TYPE;
   isRequestingPermission: boolean;
+  isScanningLocal: boolean;
 }
 
 class SelectNode extends React.Component<Props, State> {
@@ -47,7 +48,20 @@ class SelectNode extends React.Component<Props, State> {
     readonlyMacaroon: '',
     nodeType: null,
     isRequestingPermission: false,
+    isScanningLocal: false,
   };
+
+  componentWillUpdate(nextProps: Props) {
+    const finishedCheck = nextProps.url !== this.props.url ||
+      nextProps.checkNodeError !== this.props.checkNodeError;
+    if (finishedCheck) {
+      this.setState({ isScanningLocal: false });
+    }
+
+    if (nextProps.url && nextProps.url !== this.props.url) {
+      message.success(`Connected to ${nextProps.url}`, 2);
+    }
+  }
 
   render() {
     const {
@@ -57,12 +71,12 @@ class SelectNode extends React.Component<Props, State> {
       checkNodeError,
       nodeInfo,
     } = this.props;
-    const { nodeType, isRequestingPermission } = this.state;
+    const { nodeType, isRequestingPermission, isScanningLocal } = this.state;
 
     let content: React.ReactNode;
     let title: React.ReactNode;
     if (nodeType) {
-      if (isCheckingAuth || isRequestingPermission) {
+      if (isCheckingAuth || isRequestingPermission || isScanningLocal) {
         content = <Spin />;
       }
       else if (nodeInfo) {
@@ -105,7 +119,10 @@ class SelectNode extends React.Component<Props, State> {
   private setNodeType = (nodeType: null | NODE_TYPE) => {
     this.setState({ nodeType });
     if (nodeType === NODE_TYPE.LOCAL) {
-      this.setState({ isRequestingPermission: true });
+      this.setState({
+        isRequestingPermission: true,
+        isScanningLocal: true,
+      });
       // Instantly check the default local node
       browser.permissions.request({
         origins: DEFAULT_LOCAL_NODE_URLS.map(url => `${url}/`)
