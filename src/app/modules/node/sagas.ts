@@ -11,17 +11,42 @@ export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): 
   try {
     yield call(client.getInfo);
   } catch(err) {
-    console.log(err);
-    console.log(err.constructor);
-    console.log(err.constructor === MacaroonAuthError);
-    console.log(err.name);
-    console.log(err instanceof MacaroonAuthError);
     if (!(err instanceof MacaroonAuthError)) {
       yield put({ type: types.CHECK_NODE_FAILURE, payload: err });
       return;
     }
   }
   yield put({ type: types.CHECK_NODE_SUCCESS, payload: url });
+}
+
+export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>): SagaIterator {
+  const urls = action.payload;
+  try {
+    // Use Promise.all with custom catch here, because we expect some
+    // of the requests to fail, we only need one succeed
+    const requests = urls.map((url) => {
+      return new Promise<string | null>(async (resolve) => {
+        try {
+          const client = new LndHttpClient(url);
+          await client.getInfo();
+          resolve(url);
+        } catch(err) {
+          if (err instanceof MacaroonAuthError) {
+            resolve(url)
+          }
+          resolve(null);
+        }
+      });
+    });
+    const validUrls: Array<string | null> = yield call(Promise.all.bind(Promise), requests);
+    const validUrl = validUrls.find(url => !!url);
+    if (!validUrl) {
+      throw new Error('None of the checked nodes were available');
+    }
+    yield put({ type: types.CHECK_NODE_SUCCESS, payload: validUrl });
+  } catch(err) {
+    yield put({ type: types.CHECK_NODE_FAILURE, payload: err });
+  }
 }
 
 export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): SagaIterator {
@@ -96,6 +121,7 @@ export function* getNodePubKey(): SagaIterator {
 
 export default function* nodeSagas(): SagaIterator {
   yield takeLatest(types.CHECK_NODE, handleCheckNode);
+  yield takeLatest(types.CHECK_NODES, handleCheckNodes);
   yield takeLatest(types.CHECK_AUTH, handleCheckAuth);
   yield takeLatest(types.GET_NODE_INFO, handleGetNodeInfo);
 }

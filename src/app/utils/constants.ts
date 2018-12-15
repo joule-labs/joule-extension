@@ -1,4 +1,7 @@
-export const DEFAULT_LOCAL_NODE_URL = 'https://localhost:8080';
+export const DEFAULT_LOCAL_NODE_URLS = [
+  'https://localhost:8080',
+  'https://localhost:8086'
+];
 
 export const LND_DIR = {
   MACOS: '~/Library/Application Support/Lnd/data/chain/bitcoin/*',

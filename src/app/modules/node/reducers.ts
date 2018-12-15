@@ -40,6 +40,7 @@ export default function cryptoReducers(
 ): NodeState {
   switch (action.type) {
     case types.CHECK_NODE:
+    case types.CHECK_NODES:
       return {
         ...state,
         url: null,

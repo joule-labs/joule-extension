@@ -9,6 +9,13 @@ export function checkNode(url: string) {
   };
 }
 
+export function checkNodes(urls: string[]) {
+  return {
+    type: types.CHECK_NODES,
+    payload: urls,
+  };
+}
+
 export function checkAuth(url: string, admin: Macaroon, readonly: Macaroon) {
   return {
     type: types.CHECK_AUTH,
