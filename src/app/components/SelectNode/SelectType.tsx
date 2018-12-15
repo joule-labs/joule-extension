@@ -1,10 +1,12 @@
 import React from 'react';
-import { Button, Collapse } from 'antd';
+import { Button, Collapse, Icon } from 'antd';
+import BTCPayServerIcon from 'static/images/btcpayserver.svg';
 import './SelectType.less';
 
 export enum NODE_TYPE {
   LOCAL = 'LOCAL',
   REMOTE = 'REMOTE',
+  BTCPAY_SERVER = 'BTCPAY_SERVER',
 }
 
 interface Props {
@@ -32,6 +34,13 @@ export default class SelectType extends React.Component<Props> {
           onClick={() => onSelectNodeType(NODE_TYPE.REMOTE)}
         >
           Remote node
+        </Button>
+        <Button
+          size="large"
+          block
+          onClick={() => onSelectNodeType(NODE_TYPE.BTCPAY_SERVER)}
+        >
+          <Icon component={BTCPayServerIcon} /> BTCPay Server
         </Button>
         <Collapse>
           <Collapse.Panel header="Need help? Click here" key="help">

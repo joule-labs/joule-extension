@@ -4,6 +4,7 @@ import { Spin, message } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import UploadMacaroons from './UploadMacaroons';
 import ConfirmNode from './ConfirmNode';
+import BTCPayServer, { BTCPayServerConfig } from './BTCPayServer';
 import SelectType, { NODE_TYPE } from './SelectType';
 import { DEFAULT_LOCAL_NODE_URLS } from 'utils/constants';
 import { checkNode, checkNodes, checkAuth, setNode, resetNode } from 'modules/node/actions';
@@ -18,6 +19,7 @@ interface StateProps {
   isCheckingNode: AppState['node']['isCheckingNode'];
   isCheckingAuth: AppState['node']['isCheckingAuth'];
   checkNodeError: AppState['node']['checkNodeError'];
+  checkAuthError: AppState['node']['checkAuthError'];
 }
 
 interface DispatchProps {
@@ -69,6 +71,7 @@ class SelectNode extends React.Component<Props, State> {
       isCheckingAuth,
       isNodeChecked,
       checkNodeError,
+      checkAuthError,
       nodeInfo,
     } = this.props;
     const { nodeType, isRequestingPermission, isScanningLocal } = this.state;
@@ -93,6 +96,15 @@ class SelectNode extends React.Component<Props, State> {
         title = 'Upload Macaroons';
         content = <UploadMacaroons onUploaded={this.handleMacaroons} />;
       }
+      else if (nodeType === NODE_TYPE.BTCPAY_SERVER) {
+        title = 'Connect to your BTCPay Server';
+        content = (
+          <BTCPayServer
+            submitConfig={this.handleBTCPayServerConfig}
+            error={checkAuthError}
+          />
+        );
+      }
       else {
         title = 'Provide a URL'
         content = (
@@ -104,7 +116,7 @@ class SelectNode extends React.Component<Props, State> {
         );
       }
     } else {
-      title = 'Where is your node?';
+      title = 'What kind of node do you have?';
       content = <SelectType onSelectNodeType={this.setNodeType} />;
     }
 
@@ -128,7 +140,7 @@ class SelectNode extends React.Component<Props, State> {
         origins: DEFAULT_LOCAL_NODE_URLS.map(url => `${url}/`)
       }).then(accepted => {
         if (!accepted) {
-          message.warn('Permission denied, connection may fail');
+          message.warn('Permission denied, connection may fail', 2);
         }
         this.props.checkNodes(DEFAULT_LOCAL_NODE_URLS);
         this.setState({ isRequestingPermission: false });
@@ -146,6 +158,20 @@ class SelectNode extends React.Component<Props, State> {
     if (url) {
       this.props.checkAuth(url, adminMacaroon, readonlyMacaroon);
     }
+  };
+
+  private handleBTCPayServerConfig = (config: BTCPayServerConfig) => {
+    const macaroons = {
+      adminMacaroon: config.macaroon,
+      readonlyMacaroon: config.restrictedMacaroon || config.macaroon,
+    };
+    this.setState(macaroons, () => {
+      this.props.checkAuth(
+        config.uri,
+        macaroons.adminMacaroon,
+        macaroons.readonlyMacaroon,
+      );
+    });
   };
 
   private confirmNode = () => {
@@ -172,6 +198,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     isCheckingNode: state.node.isCheckingNode,
     isCheckingAuth: state.node.isCheckingAuth,
     checkNodeError: state.node.checkNodeError,
+    checkAuthError: state.node.checkAuthError,
   }),
   {
     checkNode,
