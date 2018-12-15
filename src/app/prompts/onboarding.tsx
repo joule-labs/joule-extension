@@ -46,6 +46,9 @@ export default class OnboardingPrompt extends React.Component {
           >
             Get started
           </Button>
+          <a className="OnboardingPrompt-cancel" onClick={this.cancel}>
+            Set up Joule later
+          </a>
         </div>
       </PromptTemplate>
     );
@@ -53,6 +56,10 @@ export default class OnboardingPrompt extends React.Component {
 
   private startOnboarding = () => {
     browser.runtime.openOptionsPage();
+    window.close();
+  };
+
+  private cancel = () => {
     window.close();
   };
 }
