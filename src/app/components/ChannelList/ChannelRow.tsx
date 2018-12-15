@@ -1,4 +1,5 @@
 import React from 'react';
+import BN from 'bn.js';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
@@ -13,6 +14,11 @@ interface Props {
 export default class ChannelRow extends React.Component<Props> {
   render() {
     const { channel, onClick } = this.props;
+    const capacityPct = new BN(channel.local_balance)
+      .muln(100)
+      .div(new BN(channel.capacity))
+      .toString();
+
     return (
       <div
         className={classnames("ChannelRow", onClick && 'is-clickable')}
@@ -33,6 +39,9 @@ export default class ChannelRow extends React.Component<Props> {
             Balance: <Unit value={channel.local_balance} hideUnit />
             {' / '}
             <Unit value={channel.capacity} />
+          </div>
+          <div className="ChannelRow-info-progress">
+            <div className="ChannelRow-info-progress-inner" style={{ width: `${capacityPct}%` }}/>
           </div>
         </div>
       </div>
