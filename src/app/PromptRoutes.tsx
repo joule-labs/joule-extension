@@ -1,16 +1,32 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Switch, Route, withRouter, RouteComponentProps } from 'react-router';
 import Loader from 'components/Loader';
+import OnboardingPrompt from 'prompts/onboarding';
 import AuthorizePrompt from 'prompts/authorize';
 import PaymentPrompt from 'prompts/payment';
 import InvoicePrompt from 'prompts/invoice';
 import SignPrompt from 'prompts/sign';
 import VerifyPrompt from 'prompts/verify';
 import { getPromptType } from 'utils/prompt';
+import { AppState } from 'store/reducers';
 
+interface StateProps {
+  hasSetPassword: AppState['crypto']['hasSetPassword'];
+}
 
-class Routes extends React.Component<RouteComponentProps> {
+type Props = StateProps & RouteComponentProps;
+
+class Routes extends React.Component<Props> {
   componentWillMount() {
+    const { hasSetPassword, history, location } = this.props;
+    if (!hasSetPassword) {
+      if (location.pathname !== '/onboarding') {
+        history.replace('/onboarding');
+        return;
+      }
+    }
+
     const type = getPromptType();
     this.props.history.replace(`/${type}`);
   }
@@ -19,6 +35,7 @@ class Routes extends React.Component<RouteComponentProps> {
     return (
       <Switch>
         <Route path="/" exact render={() => <Loader />} />
+        <Route path="/onboarding" exact component={OnboardingPrompt} />
         <Route path="/authorize" exact component={AuthorizePrompt} />
         <Route path="/payment" exact component={PaymentPrompt} />
         <Route path="/invoice" exact component={InvoicePrompt} />
@@ -30,4 +47,10 @@ class Routes extends React.Component<RouteComponentProps> {
   }
 }
 
-export default withRouter(Routes);
+const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(
+  state => ({
+    hasSetPassword: state.crypto.hasSetPassword,
+  }),
+)(Routes);
+
+export default withRouter(ConnectedRoutes);

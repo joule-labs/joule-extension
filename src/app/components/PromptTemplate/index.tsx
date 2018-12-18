@@ -8,6 +8,7 @@ interface Props {
   children: React.ReactNode;
   isContentCentered?: boolean;
   isConfirmDisabled?: boolean;
+  hasNoButtons?: boolean;
   beforeReject?(): any;
   beforeConfirm?(): any;
   getConfirmData?(): any;
@@ -25,7 +26,7 @@ export default class PromptTemplate extends React.Component<Props, State> {
   };
 
   render() {
-    const { children, isConfirmDisabled, isContentCentered } = this.props;
+    const { children, isConfirmDisabled, isContentCentered, hasNoButtons } = this.props;
     const { isConfirming, isRejecting } = this.state;
     const confirmDisabled = isConfirmDisabled || isRejecting;
 
@@ -34,23 +35,25 @@ export default class PromptTemplate extends React.Component<Props, State> {
         <div className={classnames('PromptTemplate-content', isContentCentered && 'is-centered')}>
           {children}
         </div>
-        <div className="PromptTemplate-buttons">
-          <Button
-            onClick={this.handleReject}
-            disabled={isConfirming}
-            loading={isRejecting}
-          >
-            Reject
-          </Button>
-          <Button
-            type="primary"
-            onClick={this.handleConfirm}
-            disabled={confirmDisabled}
-            loading={isConfirming}
-          >
-            Confirm
-          </Button>
-        </div>
+        {!hasNoButtons &&
+          <div className="PromptTemplate-buttons">
+            <Button
+              onClick={this.handleReject}
+              disabled={isConfirming}
+              loading={isRejecting}
+            >
+              Reject
+            </Button>
+            <Button
+              type="primary"
+              onClick={this.handleConfirm}
+              disabled={confirmDisabled}
+              loading={isConfirming}
+            >
+              Confirm
+            </Button>
+          </div>
+        }
       </div>
     )
   }

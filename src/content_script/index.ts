@@ -56,6 +56,7 @@ if (document) {
           application: 'Joule',
           prompt: true,
           type: PROMPT_TYPE.PAYMENT,
+          origin: getOriginData(),
           args: { paymentRequest },
         });
         ev.preventDefault();
