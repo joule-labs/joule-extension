@@ -163,7 +163,7 @@ class SelectNode extends React.Component<Props, State> {
   private handleBTCPayServerConfig = (config: BTCPayServerConfig) => {
     const macaroons = {
       adminMacaroon: config.macaroon,
-      readonlyMacaroon: config.restrictedMacaroon || config.macaroon,
+      readonlyMacaroon: config.readonlyMacaroon || config.macaroon,
     };
     this.setState(macaroons, () => {
       this.props.checkAuth(

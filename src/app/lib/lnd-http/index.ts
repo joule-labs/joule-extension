@@ -5,7 +5,7 @@ import * as T from './types';
 export * from './errors';
 export * from './types';
 
-type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export class LndHttpClient {
   url: string;
@@ -217,9 +217,10 @@ export class LndHttpClient {
   };
 
   // Internal fetch function
-  private request<R extends object, A extends object | undefined = undefined>(
+  protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,
-    path: string, args?: A,
+    path: string,
+    args?: A,
     defaultValues?: Partial<R>,
   ): T.Response<R> {
     let body = null;

@@ -9,7 +9,7 @@ export interface BTCPayServerConfig {
   cryptoCode: string;
   uri: string;
   macaroon: string;
-  restrictedMacaroon?: string;
+  readonlyMacaroon?: string;
 }
 
 interface Props {
