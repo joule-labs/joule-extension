@@ -26,6 +26,7 @@ export default class InputAddress extends React.Component<Props, State> {
     const { error, isCheckingNode } = this.props;
     const { validation, url, submittedUrl } = this.state;
     const validateStatus = url ? validation ? 'error' : 'success' : undefined;
+    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
     const help = (url && validation) || (
       <>
         You must provide the REST API address. Must begin with{' '}
@@ -46,6 +47,26 @@ export default class InputAddress extends React.Component<Props, State> {
           />
         </Form.Item>
 
+        {error && isFirefox &&
+          <Alert
+            type="warning"
+            message="Attention Firefox user"
+            description={<>
+              <p>
+                Firefox has an issue where addons cannot bypass cross-origin
+                request prevention. If you are running lnd or the Lightning App,
+                you will be unable to connect to your node.
+              </p>
+              <p>
+                You will either have to setup a proxy server for your node that
+                has CORS headers configured, or you will have to use another
+                supported browser such as Chrome or Opera.
+              </p>
+            </>}
+            showIcon
+            closable
+          />
+        }
         {error &&
           <Alert
             type="error"
