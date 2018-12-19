@@ -58,9 +58,9 @@ export default class InputAddress extends React.Component<Props, State> {
                 you will be unable to connect to your node.
               </p>
               <p>
-                You will either have to setup a proxy server for your node, or
-                you will have to use another supported browser such as Chrome
-                or Opera.
+                You will either have to setup a proxy server for your node that
+                has CORS headers configured, or you will have to use another
+                supported browser such as Chrome or Opera.
               </p>
             </>}
             showIcon
