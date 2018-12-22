@@ -63,4 +63,21 @@ if (document) {
       }
     });
   });
+
+  // Listen for right-click events to show the context menu item
+  // when a potential lightning invoice is selected
+  document.addEventListener("mousedown", (event) => {
+    // 2 = right mouse button. may be better to store in a constant
+    if (event.button == 2) {
+      const selection = window.getSelection().toString();
+      if (selection) {
+        browser.runtime.sendMessage({
+          application: 'Joule',
+          prompt: false,
+          type: PROMPT_TYPE.CONTEXT_MENU,
+          args: { selection },
+        });
+      }
+    }
+  }, true);
 }

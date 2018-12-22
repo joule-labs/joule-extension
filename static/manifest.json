@@ -37,7 +37,8 @@
   "permissions": [
     "storage",
     "clipboardWrite",
-    "activeTab"
+    "activeTab",
+    "contextMenus"
   ],
   "optional_permissions": [
     "notifications",

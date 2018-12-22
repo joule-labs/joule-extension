@@ -1,6 +1,7 @@
 import qs from 'query-string';
-import { browser, Runtime } from 'webextension-polyfill-ts';
-import { OriginData } from 'utils/prompt';
+import { browser, Runtime, Menus } from 'webextension-polyfill-ts';
+import { getOriginData, OriginData } from 'utils/prompt';
+import { isValidPaymentReq } from 'utils/validators';
 import { PROMPT_TYPE } from '../webln/types';
 import getNodeInfo from './getNodeInfo';
 
@@ -53,13 +54,11 @@ function openPrompt(request: PromptRequest): Promise<any> {
 
 // Background manages communication between page and its windows
 browser.runtime.onMessage.addListener((request: any) => {
-  if (request && request.application === 'Joule' && request.prompt) {
-    // Special case -- get info requires no prompt, just respond
-    if (request.type === PROMPT_TYPE.INFO) {
-      return getNodeInfo().then(data => ({ data }));
-    }
+  // abort early for other extensions
+  if (!request || request.application !== 'Joule') return;
 
-    // WebLNProvider request, will require window open
+  // WebLNProvider request, will require window open
+  if (request.prompt) {
     return openPrompt(request)
       .then(data => {
         return { data };
@@ -67,5 +66,37 @@ browser.runtime.onMessage.addListener((request: any) => {
       .catch(err => {
         return { error: err.message };
       });
+  }
+
+  // Special cases
+  switch (request.type) {
+    case PROMPT_TYPE.INFO:
+      // get info requires no prompt, just respond
+      return getNodeInfo().then(data => ({ data }));
+    case PROMPT_TYPE.CONTEXT_MENU:
+      // context menu updates based on selected text
+      const visible = isValidPaymentReq(request.args.selection.trim());
+      browser.contextMenus.update('pay-with-joule', { visible });
+      break;
+  }
+});
+
+// Add an entry to the right-click menu
+browser.contextMenus.create({
+  id: 'pay-with-joule',
+  title: 'Pay Lightning Invoice',
+  contexts: ["selection"],
+  visible: false
+});
+
+// listen for when the context menu item is clicked
+browser.contextMenus.onClicked.addListener((info: Menus.OnClickData) => {
+  if (info.menuItemId === 'pay-with-joule') {
+    // open the payment prompt
+    openPrompt({
+      type: PROMPT_TYPE.PAYMENT,
+      args: { paymentRequest: info.selectionText },
+      origin: getOriginData()
+    });
   }
 });
