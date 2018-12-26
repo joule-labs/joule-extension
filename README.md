@@ -11,6 +11,14 @@ the ability to pay and use your node as an identity on the web.
 **WARNING: Joule is in early alpha, and should not be used for large mainnet funds**
 
 
+<p align="center">
+  <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/joule/aejmoogjdllanidlpfjmmmmimfaficio"><img src="https://camo.githubusercontent.com/03f42faaa039db4a737c86efffa8fb51160b1c3e/68747470733a2f2f692e696d6775722e636f6d2f6b5742515539512e706e67" alt="Install for Chrome" data-canonical-src="https://i.imgur.com/kWBQU9Q.png" width="215" style="max-width:100%;"></a>
+  <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/joule/aejmoogjdllanidlpfjmmmmimfaficio"><img src="https://camo.githubusercontent.com/28cdbccd978c68df21b742fb5d0122a49977d3ba/68747470733a2f2f692e696d6775722e636f6d2f6c6f71443433312e706e67" alt="Install for Brave" data-canonical-src="https://i.imgur.com/loqD431.png" width="215" style="max-width:100%;"></a>
+  <a target="_blank" rel="noopener noreferrer" href="https://addons.mozilla.org/en-US/firefox/addon/lightning-joule/"><img src="https://camo.githubusercontent.com/0ab15bdbdfebab96bdb03d184f60eb0e28169a21/68747470733a2f2f692e696d6775722e636f6d2f614e4342324c472e706e67" alt="Install for Firefox" data-canonical-src="https://i.imgur.com/aNCB2LG.png" width="215" style="max-width:100%;"></a>
+  <img src="https://camo.githubusercontent.com/53d25f16497948c065a7570b0075b0eebd795aca/68747470733a2f2f692e696d6775722e636f6d2f7a346c4e6843362e706e67" alt="Opera coming soon" data-canonical-src="https://i.imgur.com/z4lNhC6.png" width="215" style="max-width:100%;">
+</p>
+
+
 ## Project Layout
 
 ```bash
