@@ -1,5 +1,5 @@
 import qs from 'query-string';
-import { browser, Runtime, Menus } from 'webextension-polyfill-ts';
+import { browser, Runtime, Menus, Tabs } from 'webextension-polyfill-ts';
 import { getOriginData, OriginData } from 'utils/prompt';
 import { isValidPaymentReq } from 'utils/validators';
 import { PROMPT_TYPE } from '../webln/types';
@@ -52,6 +52,13 @@ function openPrompt(request: PromptRequest): Promise<any> {
   });
 }
 
+// Need to store the payment request string in a background variable
+// to support the case where the user right-clicks on text without
+// selecting it first. In this situation, the background script does
+// not have access to the page dom to pull the string in the context
+// menu onclick habdler.
+let currentPaymentRequest: string;
+
 // Background manages communication between page and its windows
 browser.runtime.onMessage.addListener((request: any) => {
   // abort early for other extensions
@@ -74,8 +81,9 @@ browser.runtime.onMessage.addListener((request: any) => {
       // get info requires no prompt, just respond
       return getNodeInfo().then(data => ({ data }));
     case PROMPT_TYPE.CONTEXT_MENU:
-      // context menu updates based on selected text
-      const visible = isValidPaymentReq(request.args.selection.trim());
+      // set context menu visibility based on right-clicked text
+      currentPaymentRequest = request.args.paymentRequest.trim();
+      const visible = isValidPaymentReq(currentPaymentRequest);
       browser.contextMenus.update('pay-with-joule', { visible });
       break;
   }
@@ -85,18 +93,17 @@ browser.runtime.onMessage.addListener((request: any) => {
 browser.contextMenus.create({
   id: 'pay-with-joule',
   title: 'Pay Lightning Invoice',
-  contexts: ["selection"],
-  visible: false
-});
-
-// listen for when the context menu item is clicked
-browser.contextMenus.onClicked.addListener((info: Menus.OnClickData) => {
-  if (info.menuItemId === 'pay-with-joule') {
-    // open the payment prompt
-    openPrompt({
-      type: PROMPT_TYPE.PAYMENT,
-      args: { paymentRequest: info.selectionText },
-      origin: getOriginData()
-    });
+  contexts: ["selection", "page"],
+  visible: false,
+  onclick: (info: Menus.OnClickData) => {
+    if (info.menuItemId === 'pay-with-joule') {
+      // open the payment prompt
+      openPrompt({
+        type: PROMPT_TYPE.PAYMENT,
+        args: { paymentRequest: currentPaymentRequest },
+        origin: getOriginData()
+      });
+    }
   }
 });
+
