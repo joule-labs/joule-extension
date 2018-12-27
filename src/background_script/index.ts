@@ -56,7 +56,7 @@ function openPrompt(request: PromptRequest): Promise<any> {
 // to support the case where the user right-clicks on text without
 // selecting it first. In this situation, the background script does
 // not have access to the page dom to pull the string in the context
-// menu onclick habdler.
+// menu onclick handler.
 let currentPaymentRequest: string;
 
 // Background manages communication between page and its windows
