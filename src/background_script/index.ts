@@ -1,5 +1,5 @@
 import qs from 'query-string';
-import { browser, Runtime, Menus, Tabs } from 'webextension-polyfill-ts';
+import { browser, Runtime, Menus } from 'webextension-polyfill-ts';
 import { getOriginData, OriginData } from 'utils/prompt';
 import { isValidPaymentReq } from 'utils/validators';
 import { PROMPT_TYPE } from '../webln/types';
