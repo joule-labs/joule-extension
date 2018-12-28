@@ -64,17 +64,6 @@ browser.runtime.onMessage.addListener((request: any) => {
   // abort early for other extensions
   if (!request || request.application !== 'Joule') return;
 
-  // WebLNProvider request, will require window open
-  if (request.prompt) {
-    return openPrompt(request)
-      .then(data => {
-        return { data };
-      })
-      .catch(err => {
-        return { error: err.message };
-      });
-  }
-
   // Special cases
   switch (request.type) {
     case PROMPT_TYPE.INFO:
@@ -85,7 +74,18 @@ browser.runtime.onMessage.addListener((request: any) => {
       currentPaymentRequest = request.args.paymentRequest.trim();
       const visible = isValidPaymentReq(currentPaymentRequest);
       browser.contextMenus.update('pay-with-joule', { visible });
-      break;
+      return;
+  }
+
+  // WebLNProvider request, will require window open
+  if (request.prompt) {
+    return openPrompt(request)
+      .then(data => {
+        return { data };
+      })
+      .catch(err => {
+        return { error: err.message };
+      });
   }
 });
 
