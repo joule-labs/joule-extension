@@ -1,6 +1,7 @@
 import qs from 'query-string';
-import { browser, Runtime } from 'webextension-polyfill-ts';
-import { OriginData } from 'utils/prompt';
+import { browser, Runtime, Menus } from 'webextension-polyfill-ts';
+import { getOriginData, OriginData } from 'utils/prompt';
+import { isValidPaymentReq } from 'utils/validators';
 import { PROMPT_TYPE } from '../webln/types';
 import getNodeInfo from './getNodeInfo';
 
@@ -51,15 +52,33 @@ function openPrompt(request: PromptRequest): Promise<any> {
   });
 }
 
+// Need to store the payment request string in a background variable
+// to support the case where the user right-clicks on text without
+// selecting it first. In this situation, the background script does
+// not have access to the page dom to pull the string in the context
+// menu onclick handler.
+let currentPaymentRequest: string;
+
 // Background manages communication between page and its windows
 browser.runtime.onMessage.addListener((request: any) => {
-  if (request && request.application === 'Joule' && request.prompt) {
-    // Special case -- get info requires no prompt, just respond
-    if (request.type === PROMPT_TYPE.INFO) {
-      return getNodeInfo().then(data => ({ data }));
-    }
+  // abort early for other extensions
+  if (!request || request.application !== 'Joule') return;
 
-    // WebLNProvider request, will require window open
+  // Special cases
+  switch (request.type) {
+    case PROMPT_TYPE.INFO:
+      // get info requires no prompt, just respond
+      return getNodeInfo().then(data => ({ data }));
+    case PROMPT_TYPE.CONTEXT_MENU:
+      // set context menu visibility based on right-clicked text
+      currentPaymentRequest = request.args.paymentRequest.trim();
+      const visible = isValidPaymentReq(currentPaymentRequest);
+      browser.contextMenus.update('pay-with-joule', { visible });
+      return;
+  }
+
+  // WebLNProvider request, will require window open
+  if (request.prompt) {
     return openPrompt(request)
       .then(data => {
         return { data };
@@ -69,3 +88,22 @@ browser.runtime.onMessage.addListener((request: any) => {
       });
   }
 });
+
+// Add an entry to the right-click menu
+browser.contextMenus.create({
+  id: 'pay-with-joule',
+  title: 'Pay Lightning Invoice',
+  contexts: ["selection", "page"],
+  visible: false,
+  onclick: (info: Menus.OnClickData) => {
+    if (info.menuItemId === 'pay-with-joule') {
+      // open the payment prompt
+      openPrompt({
+        type: PROMPT_TYPE.PAYMENT,
+        args: { paymentRequest: currentPaymentRequest },
+        origin: getOriginData()
+      });
+    }
+  }
+});
+
