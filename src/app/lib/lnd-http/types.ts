@@ -107,9 +107,9 @@ export interface LightningInvoice {
   creation_date: string;
   settle_date: string;
   expiry: string;
-  value: string;
-  amt_paid_sat: string;
-  amt_paid_msat: string;
+  value?: string;
+  amt_paid_sat?: string;
+  amt_paid_msat?: string;
   settle_index: string;
   add_index: string;
   payment_request: string;
@@ -118,7 +118,7 @@ export interface LightningInvoice {
   cltv_expiry: number;
   receipt: number;
   description_hash: string;
-  memo: string;
+  memo?: string;
   fallback_addr: string;
   private: boolean;
   r_hash: string;

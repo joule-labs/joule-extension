@@ -109,7 +109,7 @@ class TransactionInfo extends React.Component<Props> {
       };
       details = [{
         label: 'Amount',
-        value: <Unit value={tx.value} showFiat />,
+        value: tx.value ? <Unit value={tx.value} showFiat /> : <em>N/A</em>,
       }, {
         label: 'Memo',
         value: tx.memo || <em>N/A</em>,
