@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Form, Input, Select, Button, Row, Col, Alert } from 'antd';
+import { Form, Input, Select, Button, Row, Col, Alert, Checkbox } from 'antd';
 import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
 import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
@@ -9,6 +9,7 @@ import { typedKeys } from 'utils/ts';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -34,6 +35,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 interface State {
   value: string;
   valueFiat: string;
+  isAnyValue: boolean;
   denomination: Denomination;
   memo: string;
   fallbackAddress: string;
@@ -43,6 +45,7 @@ interface State {
 const INITIAL_STATE = {
   value: '',
   valueFiat: '',
+  isAnyValue: false,
   memo: '',
   fallbackAddress: '',
   expiry: '24',
@@ -60,8 +63,8 @@ class InvoiceForm extends React.Component<Props, State> {
 
   render() {
     const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates } = this.props;
-    const { value, valueFiat, memo, expiry, fallbackAddress, denomination } = this.state;
-    const disabled = !value || !parseInt(expiry, 10);
+    const { value, valueFiat, isAnyValue, memo, expiry, fallbackAddress, denomination } = this.state;
+    const disabled = (!value && !isAnyValue) || !parseInt(expiry, 10);
 
     let content;
     if (invoice) {
@@ -97,7 +100,7 @@ class InvoiceForm extends React.Component<Props, State> {
           layout="vertical"
           onSubmit={this.handleSubmit}
         >
-          <Form.Item label="Amount" required>
+          <Form.Item label="Amount" required={!isAnyValue}>
             <div className="InvoiceForm-form-values">
               <Input.Group compact>
                 <Input
@@ -108,11 +111,13 @@ class InvoiceForm extends React.Component<Props, State> {
                   autoFocus
                   placeholder="1000"
                   step="any"
+                  disabled={isAnyValue}
                 />
                 <Select
                   onChange={this.handleChangeDenomination}
                   value={denomination}
                   dropdownMatchSelectWidth={false}
+                  disabled={isAnyValue}
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
@@ -133,11 +138,16 @@ class InvoiceForm extends React.Component<Props, State> {
                     onChange={this.handleChangeValue}
                     addonBefore={fiatSymbols[fiat]}
                     placeholder="1.00"
-                    disabled={!rates}
+                    disabled={!rates || isAnyValue}
                     step="any"
                   />
                 </>
               )}
+            </div>
+            <div className="InvoiceForm-form-anyValue">
+              <Checkbox onChange={this.handleChangeAnyValue} checked={isAnyValue}>
+                Allow any value to be sent
+              </Checkbox>
             </div>
           </Form.Item>
           <Form.Item label="Memo">
@@ -216,6 +226,14 @@ class InvoiceForm extends React.Component<Props, State> {
     this.updateBothValues(name, value);
   };
 
+  private handleChangeAnyValue = (ev: CheckboxChangeEvent) => {
+    this.setState({
+      isAnyValue: ev.target.checked,
+      value: '',
+      valueFiat: '',
+    });
+  }
+
   private handleChangeDenomination = (value: any) => {
     this.setState({ denomination: value as Denomination }, () => {
       this.updateBothValues('value', this.state.value);
@@ -247,8 +265,8 @@ class InvoiceForm extends React.Component<Props, State> {
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    const { memo, fallbackAddress, expiry, denomination } = this.state;
-    const value = fromUnitToBase(this.state.value, denomination);
+    const { memo, fallbackAddress, expiry, denomination, isAnyValue } = this.state;
+    const value = isAnyValue ? undefined : fromUnitToBase(this.state.value, denomination);
     this.props.createInvoice({
       value,
       memo,

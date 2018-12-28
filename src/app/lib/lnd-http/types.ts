@@ -228,7 +228,7 @@ export interface SendPaymentResponse {
 };
 
 export interface CreateInvoiceArguments {
-  value: string;
+  value?: string;
   memo?: string;
   expiry?: string | number;
   fallback_addr?: string;
