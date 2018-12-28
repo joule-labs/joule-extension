@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Menu, Dropdown, Icon, message } from 'antd';
+import { Button, Menu, Dropdown, Icon } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import { clearPasswordCache } from 'utils/background';
 import MenuIcon from 'static/images/menu.svg';
