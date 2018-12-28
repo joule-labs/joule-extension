@@ -56,6 +56,31 @@
         opacity: 0.7;
       }
     }
+
+    // Ant overrides
+    .ant-input-group.ant-input-group-compact {
+      display: flex;
+    }
+
+    .ant-select-selection-selected-value {
+      font-size: 0.85rem;
+    }
+
+    .ant-form-explain {
+      display: flex;
+      font-size: 0.75rem;
+      margin: 0.2rem 0 1rem;
+
+      > span {
+        margin-right: 0.5rem;
+      }
+
+      > .is-fiat {
+        flex: 1;
+        text-align: right;
+        font-size: 0.85rem;
+      }
+    }
   }
 
   &-description {
@@ -90,6 +115,11 @@
 
   &-row {
     border-bottom: 1px solid rgba(#000, 0.05);
+
+    &.is-large {
+      // tr height behaves like min-height
+      height: 4.2rem;
+    }
 
     &:last-child {
       border: none;

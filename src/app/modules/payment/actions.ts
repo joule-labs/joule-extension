@@ -1,10 +1,13 @@
 import { SendPaymentArguments, CreateInvoiceArguments } from 'lib/lnd-http';
 import types from './types';
 
-export function checkPaymentRequest(payload: string) {
+export function checkPaymentRequest(paymentRequest: string, amount?: string) {
   return {
     type: types.CHECK_PAYMENT_REQUEST,
-    payload,
+    payload: {
+      paymentRequest,
+      amount,
+    },
   };
 }
 

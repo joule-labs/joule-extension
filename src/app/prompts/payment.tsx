@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Tabs } from 'antd';
+import { Tabs, Input, Select } from 'antd';
 import { SendPaymentResponse } from 'webln/lib/provider';
 import PromptTemplate from 'components/PromptTemplate';
 import Loader from 'components/Loader';
@@ -10,15 +10,20 @@ import Unit from 'components/Unit';
 import Identicon from 'components/Identicon';
 import { getPromptArgs, watchUntilPropChange } from 'utils/prompt';
 import { unixMoment, SHORT_FORMAT } from 'utils/time';
+import { fromBaseToUnit, fromUnitToBase } from 'utils/units';
+import { Denomination, denominationSymbols } from 'utils/constants';
+import { typedKeys } from 'utils/ts';
 import { sendPayment, checkPaymentRequest } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './payment.less';
+import { PaymentRequestData } from 'modules/payment/types';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
   sendReceipt: AppState['payment']['sendReceipt'];
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
+  denomination: AppState['settings']['denomination'];
 }
 
 interface DispatchProps {
@@ -28,24 +33,69 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps;
 
-class PaymentPrompt extends React.Component<Props> {
+interface State {
+  value: string;
+  denomination: Denomination;
+  routedRequest: PaymentRequestData | null;
+  isLatestRoute: boolean;
+}
+
+class PaymentPrompt extends React.Component<Props, State> {
   paymentRequest: string;
+  checkRequestTimeout: any;
+
   constructor(props: Props) {
     super(props);
     const args = getPromptArgs<{ paymentRequest: string }>();
     this.paymentRequest = args.paymentRequest;
+    this.state = {
+      value: '',
+      denomination: props.denomination,
+      routedRequest: null,
+      isLatestRoute: false,
+    };
   }
 
   componentWillMount() {
     this.props.checkPaymentRequest(this.paymentRequest);
   }
 
+  componentWillUpdate(nextProps: Props) {
+    const { denomination } = this.state;
+    const oldPr = this.props.paymentRequests[this.paymentRequest];
+    const newPr = nextProps.paymentRequests[this.paymentRequest];
+
+    if (newPr && newPr.data && newPr !== oldPr) {
+      this.setState({
+        routedRequest: newPr.data,
+        // Only consider latest route if we're replacing one...
+        isLatestRoute: !!this.state.routedRequest,
+      });
+      
+      if (newPr.data.request.num_satoshis) {
+        const value = fromBaseToUnit(newPr.data.request.num_satoshis, denomination).toString();
+        this.setState({
+          value,
+          // ...but if a payment came with the request, it's a latest route
+          isLatestRoute: true,
+        });
+      }
+    }
+  }
+
   render() {
+    const { routedRequest } = this.state;
     const pr = this.props.paymentRequests[this.paymentRequest] || {};
+    let isConfirmDisabled = true;
 
     let content;
-    if (pr.data) {
-      const { node, request, route } = pr.data;
+    if (routedRequest) {
+      const { node, request, route } = routedRequest;
+      const { value, denomination, isLatestRoute } = this.state;
+      if (value || request.num_satoshis) {
+        isConfirmDisabled = false;
+      }
+
       content = (
         <div className="PaymentPrompt">
           <div className="PaymentPrompt-to">
@@ -63,9 +113,34 @@ class PaymentPrompt extends React.Component<Props> {
           </div>
           <div className="PaymentPrompt-amount">
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
-            <div className="PaymentPrompt-amount-value">
-              <Unit value={request.num_satoshis} showFiat />
-            </div>
+            {request.num_satoshis ? (
+              <div className="PaymentPrompt-amount-value">
+                <Unit value={request.num_satoshis} showFiat />
+              </div>
+            ) : (
+              <Input.Group size="large" compact>
+                <Input
+                  size="large"
+                  value={value}
+                  onChange={this.handleChangeValue}
+                  placeholder="Enter an amount"
+                  step="any"
+                  autoFocus
+                />
+                <Select
+                  size="large"
+                  onChange={this.handleChangeDenomination}
+                  value={denomination}
+                  dropdownMatchSelectWidth={false}
+                >
+                  {typedKeys(Denomination).map(d => (
+                    <Select.Option key={d} value={d}>
+                      {denominationSymbols[d]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Input.Group>
+            )}
           </div>
           <div className="PaymentPrompt-description">
             <h4 className="PaymentPrompt-description-label">Description</h4>
@@ -79,16 +154,24 @@ class PaymentPrompt extends React.Component<Props> {
               <Tabs.TabPane key="basics" tab="Basics">
                 <DetailsTable rows={[{
                   label: 'Fee',
-                  value: <Unit value={route.total_fees} showFiat />,
+                  isLarge: true,
+                  value: isLatestRoute ?
+                    <Unit value={route.total_fees} showFiat /> :
+                    <Loader inline size="1.3rem" />,
                 }, {
                   label: 'Total',
-                  value: <Unit value={route.total_amt} showFiat />,
+                  isLarge: true,
+                  value: isLatestRoute ?
+                    <Unit value={route.total_amt} showFiat /> :
+                    <Loader inline size="1.3rem" />,
                 }]}/>
               </Tabs.TabPane>
               <Tabs.TabPane key="details" tab="Details">
                 <DetailsTable rows={[{
                   label: 'Hops',
-                  value: `${route.hops.length} node(s)`,
+                  value: isLatestRoute ?
+                    `${route.hops.length} node(s)` :
+                    <Loader inline size="1.3rem" />,
                 }, {
                   label: 'Time lock',
                   value: moment().add(route.total_time_lock, 'seconds').fromNow(true),
@@ -127,14 +210,48 @@ class PaymentPrompt extends React.Component<Props> {
     }
 
     return (
-      <PromptTemplate getConfirmData={this.handleSend}>
+      <PromptTemplate
+        isConfirmDisabled={isConfirmDisabled}
+        getConfirmData={this.handleSend}
+      >
         {content}
       </PromptTemplate>
     );
   }
 
+  private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      value: ev.target.value,
+      isLatestRoute: false,
+    });
+    clearTimeout(this.checkRequestTimeout);
+    if (ev.target.value) {
+      this.checkRequestTimeout = setTimeout(() => {
+        this.props.checkPaymentRequest(
+          this.paymentRequest,
+          fromUnitToBase(this.state.value, this.state.denomination),
+        );
+      }, 300);
+    }
+  };
+
+  private handleChangeDenomination = (val: any) => {
+    const denomination = val as Denomination;
+    const value = fromBaseToUnit(
+      fromUnitToBase(this.state.value, this.state.denomination),
+      denomination,
+    );
+    this.setState({
+      denomination,
+      value,
+    });
+  };
+
   private handleSend = async (): Promise<SendPaymentResponse> => {
-    this.props.sendPayment({ payment_request: this.paymentRequest });
+    this.props.sendPayment({
+      payment_request: this.paymentRequest,
+      amt: fromUnitToBase(this.state.value, this.state.denomination),
+    });
 
     const receipt = await watchUntilPropChange(
       () => this.props.sendReceipt,
@@ -149,14 +266,18 @@ class PaymentPrompt extends React.Component<Props> {
 }
 
 interface DetailsTableProps {
-  rows: Array<{ label: React.ReactNode; value: React.ReactNode; }>;
+  rows: Array<{
+    label: React.ReactNode;
+    value: React.ReactNode;
+    isLarge?: boolean;
+  }>;
 }
 
 const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
   <table className="DetailsTable">
     <tbody>
       {rows.map(r => (
-        <tr className="DetailsTable-row">
+        <tr className={`DetailsTable-row ${r.isLarge ? 'is-large' : ''}`}>
           <td className="DetailsTable-row-label">{r.label}</td>
           <td className="DetailsTable-row-value">{r.value}</td>
         </tr>
@@ -171,6 +292,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     sendReceipt: state.payment.sendReceipt,
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
+    denomination: state.settings.denomination,
   }),
   {
     checkPaymentRequest,

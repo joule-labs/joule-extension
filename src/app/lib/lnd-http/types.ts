@@ -195,7 +195,7 @@ export interface DecodePaymentRequestResponse {
   description_hash: string;
   route_hints: RouteHint[];
   destination: string;
-  num_satoshis: string;
+  num_satoshis?: string;
   cltv_expiry: string;
   fallback_addr: string;
 }
