@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Menu, Dropdown, Icon } from 'antd';
+import { Button, Menu, Dropdown, Icon, message } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
+import { clearPasswordCache } from 'utils/background';
 import MenuIcon from 'static/images/menu.svg';
 import './SettingsMenu.less';
 
@@ -17,6 +18,11 @@ export default class SettingsMenu extends React.Component {
         <Menu.Item key="full" onClick={this.openFullPage}>
           <a>
             <Icon type="fullscreen" /> Full page
+          </a>
+        </Menu.Item>
+        <Menu.Item key="clear" onClick={this.clearAuth}>
+          <a>
+            <Icon type="lock" /> Lock account
           </a>
         </Menu.Item>
       </Menu>
@@ -38,5 +44,11 @@ export default class SettingsMenu extends React.Component {
 
   private openFullPage = () => {
     browser.runtime.openOptionsPage();
+    setTimeout(window.close, 100);
+  };
+
+  private clearAuth = () => {
+    clearPasswordCache();
+    setTimeout(window.close, 100);
   };
 }

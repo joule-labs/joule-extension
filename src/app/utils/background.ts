@@ -31,3 +31,10 @@ export function getPasswordCache() {
     });
   });
 }
+
+export function clearPasswordCache() {
+  browser.runtime.sendMessage({
+    application: 'Joule',
+    clearPassword: true,
+  });
+}
