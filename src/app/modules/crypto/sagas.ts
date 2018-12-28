@@ -15,7 +15,9 @@ export function* generateTestCipher(): SagaIterator {
 }
 
 export function* cachePassword(action: ReturnType<typeof enterPassword>): SagaIterator {
-  yield call(setPasswordCache, action.payload);
+  if (action.payload.save) {
+    yield call(setPasswordCache, action.payload.password);
+  }
 }
 
 export function* requirePassword(): SagaIterator {

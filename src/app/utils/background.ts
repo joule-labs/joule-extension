@@ -4,7 +4,6 @@ export function setPasswordCache(password: string) {
   browser.runtime.sendMessage({
     application: 'Joule',
     setPassword: true,
-    // TODO: Add info about how long to cache password for
     data: { password },
   });
 }
