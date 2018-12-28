@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
-import { Form, Select, Checkbox, Button, Modal } from 'antd';
+import { Form, Select, Checkbox, Input, Button, Modal, Icon, Drawer, message } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import DomainLists from './DomainLists';
+import { updateNodeUrl, editNodeField } from 'modules/node/actions';
 import {
   changeSettings,
   clearSettings,
@@ -22,12 +23,20 @@ import {
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
+import InputAddress from '../SelectNode/InputAddress';
 import './style.less';
 
 type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
+  url: AppState['node']['url'];
+  readonlyMacaroon: AppState['node']['readonlyMacaroon'];
+  adminMacaroon: AppState['node']['adminMacaroon'];
+  isNodeChecked: AppState['node']['isNodeChecked'];
+  isUpdatingNodeUrl: AppState['node']['isUpdatingNodeUrl'];
+  updateNodeUrlError: AppState['node']['updateNodeUrlError'];
+  editingNodeField: AppState['node']['editingNodeField'];
 }
 
 interface DispatchProps {
@@ -37,13 +46,23 @@ interface DispatchProps {
   addRejectedDomain: typeof addRejectedDomain;
   removeEnabledDomain: typeof removeEnabledDomain;
   removeRejectedDomain: typeof removeRejectedDomain;
+  editNodeField: typeof editNodeField;
+  updateNodeUrl: typeof updateNodeUrl;
 }
 
 type Props = StateProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
+
+  componentWillUpdate(nextProps: Props) {
+    if (this.props.isNodeChecked !== nextProps.isNodeChecked
+        && nextProps.isNodeChecked) {
+          message.success(`Connected to ${nextProps.url}`, 2);
+    }
+  }
+
   render() {
-    const { settings } = this.props;
+    const { settings, url, readonlyMacaroon, adminMacaroon } = this.props;
 
     return (
       <Form className="Settings" layout="vertical">
@@ -119,18 +138,105 @@ class Settings extends React.Component<Props> {
           <h3 className="Settings-section-title">
             Node
           </h3>
-          <Button
-            type="danger"
-            size="large"
-            block
-            ghost
-            onClick={this.clearSettings}
-          >
-            Reset password and connection settings
-          </Button>
+          <Form.Item label="REST API URL">
+            <Input.Group compact className="Settings-input-group">
+              <Input
+                value={url as string}
+                disabled
+              />
+                <Button onClick={this.editNodeUrl}>
+                  <Icon type="edit" />
+                </Button>
+            </Input.Group>
+          </Form.Item>
+          <Form.Item label="Readonly Macaroon">
+            <Input.Group compact className="Settings-input-group">
+              <Input
+                value={readonlyMacaroon as string}
+                disabled
+              />
+              <Button>
+                <Icon type="edit" />
+              </Button>
+            </Input.Group>
+          </Form.Item>
+          <Form.Item label="Admin Macaroon">
+            <Input.Group compact className="Settings-input-group">
+              <Input
+                value={adminMacaroon as string || '<encrypted>'}
+                disabled
+              />
+              <Button>
+                <Icon type="edit" />
+              </Button>
+            </Input.Group>
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="default"
+              size="large"
+              block
+              onClick={this.clearSettings}
+            >
+              Change Password
+            </Button>
+          </Form.Item>
         </div>
+        <div className="Settings-section">
+          <h3 className="Settings-section-title">
+            Reset
+          </h3>
+          <Form.Item>
+            <Button
+              type="danger"
+              size="large"
+              block
+              ghost
+              onClick={this.clearSettings}
+              >
+              Reset All Connection Settings
+            </Button>
+          </Form.Item>
+        </div>
+
+        {this.renderDrawer()}
       </Form>
     );
+  }
+
+  private renderDrawer = () => {
+    const { url, editingNodeField, isUpdatingNodeUrl, updateNodeUrlError } = this.props
+
+    let title, cmp;
+
+    switch (editingNodeField) {
+      case 'url':
+        title = 'Provide a URL';
+        cmp = (
+          <InputAddress
+            initialUrl={url as string}
+            error={updateNodeUrlError}
+            isCheckingNode={isUpdatingNodeUrl}
+            submitUrl={this.props.updateNodeUrl}
+          />      
+        );
+        break;
+      case 'readonly':
+      case 'admin':
+          return null;
+    }
+
+    return (
+      <Drawer
+        visible={!!editingNodeField}
+        placement="right"
+        onClose={this.hideDrawer}
+        width="92%"
+        title={title}
+      >
+        {cmp}
+      </Drawer>      
+    )
   }
 
   private handleChangeSelect = (key: SettingsKey, value: SelectValue) => {
@@ -142,6 +248,9 @@ class Settings extends React.Component<Props> {
       [ev.target.name as SettingsKey]: ev.target.checked
     })
   };
+
+  private editNodeUrl = () => this.props.editNodeField('url');
+  private hideDrawer = () => this.props.editNodeField(null);
 
   private clearSettings = () => {
     Modal.confirm({
@@ -161,6 +270,13 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
+    url: state.node.url,
+    readonlyMacaroon: state.node.readonlyMacaroon,
+    adminMacaroon: state.node.adminMacaroon,
+    isNodeChecked: state.node.isNodeChecked,
+    isUpdatingNodeUrl: state.node.isUpdatingNodeUrl,
+    updateNodeUrlError: state.node.updateNodeUrlError,
+    editingNodeField: state.node.editingNodeField,
   }),
   {
     changeSettings,
@@ -169,6 +285,8 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
     addRejectedDomain,
     removeEnabledDomain,
     removeRejectedDomain,
+    editNodeField,
+    updateNodeUrl,
   },
 )(Settings);
 

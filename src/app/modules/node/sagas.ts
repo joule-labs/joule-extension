@@ -1,7 +1,13 @@
 import { SagaIterator } from 'redux-saga';
-import { takeLatest, call, put, select } from 'redux-saga/effects';
+import { take, takeLatest, call, put, select } from 'redux-saga/effects';
 import * as actions from './actions';
-import { selectNodeLibOrThrow, selectNodeInfo } from './selectors';
+import { 
+  selectNodeLibOrThrow,
+  selectNodeInfo,
+  selectSyncedEncryptedNodeState,
+  selectSyncedUnencryptedNodeState,
+} from './selectors';
+import { requirePassword } from 'modules/crypto/sagas';
 import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
 import types from './types';
 
@@ -92,6 +98,40 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): 
   });
 }
 
+export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNodeUrl>): SagaIterator {
+  try {
+    const newUrl = action.payload;
+    
+    // passowrd is needed to decrypt the admin macaroon
+    yield call(requirePassword);
+
+    // get current macaroons from state as its needed to store the new url
+    let { readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
+    let { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
+
+    // connect to the url to test if it's working
+    yield put(actions.checkNode(newUrl));
+    const checkNodeResp = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
+
+    // check for an error connecting to the node
+    if (checkNodeResp.type === types.CHECK_NODE_FAILURE) {
+      throw checkNodeResp.payload;
+    }
+
+    // save the new info in storage
+    yield put(actions.setNode(newUrl, adminMacaroon, readonlyMacaroon));
+
+    yield put({
+      type: types.UPDATE_NODE_URL_SUCCESS,
+    });
+  } catch(err) {
+    yield put({
+      type: types.UPDATE_NODE_URL_FAILURE,
+      payload: err
+    })
+  }
+}
+
 export function* handleGetNodeInfo(): SagaIterator {
   try {
     const nodeLib = yield select(selectNodeLibOrThrow);
@@ -122,6 +162,7 @@ export function* getNodePubKey(): SagaIterator {
 export default function* nodeSagas(): SagaIterator {
   yield takeLatest(types.CHECK_NODE, handleCheckNode);
   yield takeLatest(types.CHECK_NODES, handleCheckNodes);
+  yield takeLatest(types.UPDATE_NODE_URL, handleUpdateNodeUrl);
   yield takeLatest(types.CHECK_AUTH, handleCheckAuth);
   yield takeLatest(types.GET_NODE_INFO, handleGetNodeInfo);
 }

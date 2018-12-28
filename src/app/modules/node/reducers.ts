@@ -1,5 +1,5 @@
 import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
-import types from './types';
+import types, { EditingNodeField } from './types';
 import settingsTypes from 'modules/settings/types';
 
 export interface NodeState {
@@ -14,6 +14,9 @@ export interface NodeState {
   checkNodeError: null | Error;
   isCheckingAuth: boolean;
   checkAuthError: null | Error;
+  isUpdatingNodeUrl: boolean;
+  updateNodeUrlError: null | Error;
+  editingNodeField: EditingNodeField;
   isFetchingNodeInfo: boolean;
   fetchNodeInfoError: null | Error;
 }
@@ -30,6 +33,9 @@ export const INITIAL_STATE: NodeState = {
   checkNodeError: null,
   isCheckingAuth: false,
   checkAuthError: null,
+  isUpdatingNodeUrl: false,
+  updateNodeUrlError: null,
+  editingNodeField: null,
   isFetchingNodeInfo: false,
   fetchNodeInfoError: null,
 };
@@ -81,6 +87,30 @@ export default function cryptoReducers(
         ...state,
         isCheckingAuth: false,
         checkAuthError: action.payload,
+      };
+    
+    case types.SET_EDITING_NODE_FIELD:
+      return {
+        ...state,
+        editingNodeField: action.payload
+      };
+    case types.UPDATE_NODE_URL:
+      return {
+        ...state,
+        isUpdatingNodeUrl: true,
+        updateNodeUrlError: null,
+      };
+    case types.UPDATE_NODE_URL_SUCCESS:
+      return {
+        ...state,
+        isUpdatingNodeUrl: false,
+        editingNodeField: null
+      };
+    case types.UPDATE_NODE_URL_FAILURE:
+      return {
+        ...state,
+        isUpdatingNodeUrl: false,
+        updateNodeUrlError: action.payload,
       };
     
     case types.GET_NODE_INFO:

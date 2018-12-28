@@ -1,6 +1,6 @@
 import LndHttpClient, { Macaroon } from 'lib/lnd-http';
 import { selectSyncedUnencryptedNodeState, selectSyncedEncryptedNodeState } from './selectors';
-import types from './types';
+import types, { EditingNodeField } from './types';
 
 export function checkNode(url: string) {
   return {
@@ -24,6 +24,20 @@ export function checkAuth(url: string, admin: Macaroon, readonly: Macaroon) {
       admin,
       readonly,
     },
+  };
+}
+
+export function updateNodeUrl(url: string) {
+  return {
+    type: types.UPDATE_NODE_URL,
+    payload: url,
+  };
+}
+
+export function editNodeField(field: EditingNodeField) {
+  return {
+    type: types.SET_EDITING_NODE_FIELD,
+    payload: field,
   };
 }
 
