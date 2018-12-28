@@ -10,7 +10,7 @@ interface PromptRequest {
   origin: OriginData;
 }
 
-function openPrompt(request: PromptRequest): Promise<any> {
+export function openPrompt(request: PromptRequest): Promise<any> {
   const urlParams = qs.stringify({
     type: request.type,
     args: JSON.stringify(request.args),
@@ -54,20 +54,22 @@ function openPrompt(request: PromptRequest): Promise<any> {
 export default function handlePrompts() {
   // Background manages communication between page and its windows
   browser.runtime.onMessage.addListener((request: any) => {
-    if (request && request.application === 'Joule' && request.prompt) {
-      // Special case -- get info requires no prompt, just respond
-      if (request.type === PROMPT_TYPE.INFO) {
-        return getNodeInfo().then(data => ({ data }));
-      }
-
-      // WebLNProvider request, will require window open
-      return openPrompt(request)
-        .then(data => {
-          return { data };
-        })
-        .catch(err => {
-          return { error: err.message };
-        });
+    if (!request || request.application !== 'Joule' || !request.prompt) {
+      return;
     }
+
+    // Special case -- get info requires no prompt, just respond
+    if (request.type === PROMPT_TYPE.INFO) {
+      return getNodeInfo().then(data => ({ data }));
+    }
+
+    // WebLNProvider request, will require window open
+    return openPrompt(request)
+      .then(data => {
+        return { data };
+      })
+      .catch(err => {
+        return { error: err.message };
+      });
   });
 }
