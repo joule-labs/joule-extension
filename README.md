@@ -65,6 +65,18 @@ to the joule folder and run `yarn link webln`.
 
 NOTE: After making changes, you'll need to close and re-open the extension to load the latest build.
 
+Redux DevTools:
+1. Open the extension popup or full page
+2. Right click on the background
+3. Choose Redux Devtools -> Open Remote DevTools
+4. A new window will open displaying the Redux actions list
+
+React DevTools:
+1. Run `npm install -g react-devtools`
+2. Be sure to use `yarn run dev` to build the app
+2. Run `react-devtools` in a new Terminal
+3. A new window will open displaying the React vdom inspector
+
 ## Building
 
 To make a production build, follow these steps
