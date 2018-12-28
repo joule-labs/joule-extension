@@ -146,7 +146,7 @@ class InvoiceForm extends React.Component<Props, State> {
             </div>
             <div className="InvoiceForm-form-anyValue">
               <Checkbox onChange={this.handleChangeAnyValue} checked={isAnyValue}>
-                Allow any value to be sent
+                Allow any amount to be sent
               </Checkbox>
             </div>
           </Form.Item>
