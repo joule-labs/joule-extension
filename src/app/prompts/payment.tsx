@@ -14,9 +14,9 @@ import { fromBaseToUnit, fromUnitToBase } from 'utils/units';
 import { Denomination, denominationSymbols } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { sendPayment, checkPaymentRequest } from 'modules/payment/actions';
+import { PaymentRequestData } from 'modules/payment/types';
 import { AppState } from 'store/reducers';
 import './payment.less';
-import { PaymentRequestData } from 'modules/payment/types';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
