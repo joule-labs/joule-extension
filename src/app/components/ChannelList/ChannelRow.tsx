@@ -5,6 +5,8 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { ChannelWithNode } from 'modules/channels/types';
 import './ChannelRow.less';
+import Active from '../Assets/active.jpeg';
+import Inactive from '../Assets/inactive.jpeg';
 
 interface Props {
   channel: ChannelWithNode;
@@ -31,6 +33,10 @@ export default class ChannelRow extends React.Component<Props> {
         <div className="ChannelRow-info">
           <div className="ChannelRow-info-alias">
             {channel.node.alias}
+            {channel.active === true ?
+              <img className="ChannelRow-status" src={Active}/>
+              : <img className="ChannelRow-status" src={Inactive}/>
+            }
           </div>
           <div className="ChannelRow-info-pubkey">
             <code>{channel.node.pub_key}</code>
