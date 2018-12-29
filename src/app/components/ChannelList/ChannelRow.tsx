@@ -5,8 +5,8 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { ChannelWithNode } from 'modules/channels/types';
 import './ChannelRow.less';
-import Active from '../Assets/active.jpeg';
-import Inactive from '../Assets/inactive.jpeg';
+import Active from '../../static/images/active.jpeg';
+import Inactive from '../../static/images/active.jpeg';
 
 interface Props {
   channel: ChannelWithNode;
