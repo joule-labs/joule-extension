@@ -6,7 +6,7 @@ import Unit from 'components/Unit';
 import { ChannelWithNode } from 'modules/channels/types';
 import './ChannelRow.less';
 import Active from '../../static/images/active.jpeg';
-import Inactive from '../../static/images/active.jpeg';
+import Inactive from '../../static/images/inactive.jpeg';
 
 interface Props {
   channel: ChannelWithNode;
