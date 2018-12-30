@@ -122,7 +122,11 @@ class TransactionList extends React.Component<Props> {
               type="lightning"
               timestamp={timestamp}
               status={status}
-              delta={status === 'complete' && new BN(invoice.amt_paid_sat)}
+              delta={
+                status === 'complete' &&
+                !!invoice.amt_paid_sat &&
+                new BN(invoice.amt_paid_sat)
+              }
               onClick={onClick}
             />
           ),

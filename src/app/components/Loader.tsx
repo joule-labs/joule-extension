@@ -1,17 +1,22 @@
 import React from 'react';
 import { Icon } from 'antd';
 
-const Loader: React.SFC = () => (
+interface Props {
+  inline?: boolean;
+  size?: string;
+}
+
+const Loader: React.SFC<Props> = ({ inline, size }) => (
   <Icon
     type="loading"
     theme="outlined"
     style={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
       color: '#8E44AD',
-      fontSize: '2rem',
+      fontSize: size || '2rem',
+      position: inline ? undefined : 'absolute',
+      top: inline ? undefined : '50%',
+      left: inline ? undefined : '50%',
+      transform: inline ? undefined : 'translate(-50%, -50%)',
     }}
   />
 );

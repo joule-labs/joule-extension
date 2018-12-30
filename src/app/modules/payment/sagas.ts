@@ -40,7 +40,7 @@ export function* handleCreateInvoice(action: ReturnType<typeof createInvoice>): 
 }
 
 export function* handleCheckPaymentRequest(action: ReturnType<typeof checkPaymentRequest>): SagaIterator {
-  const paymentRequest = action.payload;
+  const { paymentRequest, amount } = action.payload;
   try {
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
     const decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest> = yield call(nodeLib.decodePaymentRequest, paymentRequest);
@@ -49,7 +49,7 @@ export function* handleCheckPaymentRequest(action: ReturnType<typeof checkPaymen
       call(
         nodeLib.queryRoutes,
         decodedRequest.destination,
-        decodedRequest.num_satoshis,
+        amount || decodedRequest.num_satoshis || '1',
         { num_routes: 1 },
       ),
     ]);

@@ -93,7 +93,7 @@ export default function channelsReducers(
         ...state,
         paymentRequests: {
           ...state.paymentRequests,
-          [action.payload]: {
+          [action.payload.paymentRequest]: {
             data: null,
             error: null,
             isLoading: true,

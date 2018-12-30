@@ -107,9 +107,9 @@ export interface LightningInvoice {
   creation_date: string;
   settle_date: string;
   expiry: string;
-  value: string;
-  amt_paid_sat: string;
-  amt_paid_msat: string;
+  value?: string;
+  amt_paid_sat?: string;
+  amt_paid_msat?: string;
   settle_index: string;
   add_index: string;
   payment_request: string;
@@ -118,7 +118,7 @@ export interface LightningInvoice {
   cltv_expiry: number;
   receipt: number;
   description_hash: string;
-  memo: string;
+  memo?: string;
   fallback_addr: string;
   private: boolean;
   r_hash: string;
@@ -195,7 +195,7 @@ export interface DecodePaymentRequestResponse {
   description_hash: string;
   route_hints: RouteHint[];
   destination: string;
-  num_satoshis: string;
+  num_satoshis?: string;
   cltv_expiry: string;
   fallback_addr: string;
 }
@@ -228,7 +228,7 @@ export interface SendPaymentResponse {
 };
 
 export interface CreateInvoiceArguments {
-  value: string;
+  value?: string;
   memo?: string;
   expiry?: string | number;
   fallback_addr?: string;
