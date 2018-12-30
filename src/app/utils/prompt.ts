@@ -10,6 +10,7 @@ export interface OriginData {
 export function confirmPrompt(data?: any) {
   browser.runtime.sendMessage({
     application: 'Joule',
+    response: true,
     data,
   });
 }
@@ -17,6 +18,7 @@ export function confirmPrompt(data?: any) {
 export function rejectPrompt(message?: string) {
   browser.runtime.sendMessage({
     application: 'Joule',
+    response: true,
     error: message || 'User rejected prompt',
   });
 }

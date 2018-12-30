@@ -82,8 +82,7 @@ if (document) {
         // based on the content of the right-clicked text
         browser.runtime.sendMessage({
           application: 'Joule',
-          prompt: false,
-          type: PROMPT_TYPE.CONTEXT_MENU,
+          contextMenu: true,
           args: { paymentRequest },
         });
       }

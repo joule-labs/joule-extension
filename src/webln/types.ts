@@ -5,5 +5,4 @@ export enum PROMPT_TYPE {
   INVOICE = 'INVOICE',
   SIGN = 'SIGN',
   VERIFY = 'VERIFY',
-  CONTEXT_MENU = 'CONTEXT_MENU',
 };
