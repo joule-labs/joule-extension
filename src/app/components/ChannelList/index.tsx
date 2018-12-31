@@ -62,11 +62,27 @@ class ChannelList extends React.Component<Props> {
     if (isFetchingChannels) {
       content = <Loader />;
     } else if (channels && channels.length) {
-        content = channels.map(c => (
-          <ChannelRow key={c.chan_id} status={c.active===true?"active":"inactive"} 
-          pubkey={c.node.pub_key} channel={c} onClick={onClick} />
+      content = channels.map(c => (
+        <ChannelRow key={c.chan_id} status={c.active===true?"active":"inactive"} 
+        pubkey={c.node.pub_key} channel={c} onClick={onClick} />
+      ));
+    } if (forceClosingChannels && forceClosingChannels.length>0) {
+      pfcContent = forceClosingChannels.map(c => (
+        <ForceClosingChannelRow key={c.closing_txid} 
+        status="closing" pubkey={c.channel.remote_node_pub} forceClosingChannel={c} onClick={onClick} />
+      ));
+    }
+      if (waitClosingChannels && waitClosingChannels.length>0) {
+        pwcContent = waitClosingChannels.map(c => (
+          <WaitClosingChannelRow key={c.channel.channel_point} 
+          status="closing" pubkey={c.channel.remote_node_pub} waitClosingChannel={c} onClick={onClick} />
         ));
-      } else if (fetchChannelsError) {
+      } if (pendingOpenChannels && pendingOpenChannels.length>0) {
+          pocContent = pendingOpenChannels.map(c => (
+            <PendingOpenChannelRow key={c.channel.channel_point} 
+            status="opening" pubkey={c.channel.remote_node_pub} pendingOpenChannel={c} onClick={onClick} />
+          ));
+    } else if (fetchChannelsError) {
       content = (
         <BigMessage
           type="error"
