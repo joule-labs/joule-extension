@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
 
 // postcss plugins
@@ -180,10 +181,11 @@ module.exports = {
       transform: (content) => {
         return JSON.stringify({
           ...JSON.parse(content),
-          content_security_policy: `script-src 'self' ${reactDevToolsUrl};`
+          content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl};`
         }, null, 2);
       }
     }]),
+    isDev && new WriteFilePlugin(),
     !isDev && new ZipPlugin({
       filename: `joule-v${packageJson.version}.zip`,
     }),

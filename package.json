@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack -w",
+    "hot": "rimraf dist-dev && cross-env NODE_ENV=development node src/util/hotserver.js",
     "build": "npm run build:prod",
     "build:dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack",
     "build:prod": "rimraf dist-prod && cross-env NODE_ENV=production webpack",
@@ -108,8 +109,11 @@
     "@types/remote-redux-devtools": "0.5.3",
     "@types/zxcvbn": "4.4.0",
     "cross-env": "5.2.0",
+    "react-hot-loader": "^4.6.3",
     "rimraf": "2.6.2",
     "webextension-polyfill-ts": "0.8.9",
-    "webpack-bundle-analyzer": "3.0.3"
+    "webpack-bundle-analyzer": "3.0.3",
+    "webpack-dev-server": "3.1.10",
+    "write-file-webpack-plugin": "^4.5.0"
   }
 }
