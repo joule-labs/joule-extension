@@ -9,7 +9,7 @@ import { Tooltip }from 'antd';
 
 interface Props {
   forceClosingChannel: PendingChannelWithNode;
-  status: "closing" | "opening";
+  status: "closing";
   pubkey: string;
   onClick?(forceClosingChannel: PendingChannelWithNode): void;
 }
