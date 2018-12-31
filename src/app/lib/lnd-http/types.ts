@@ -50,6 +50,44 @@ export interface Channel {
   total_satoshis_sent: string;
 }
 
+export interface PendingForceClosingChannel {
+  blocks_til_maturity: number
+  channel: {
+    capacity: string
+    channel_point: string,
+    local_balance: string,
+    remote_node_pub: string
+  },
+  closing_txid: string,
+  limbo_balance: string,
+  maturity_height: string
+}
+
+export interface WaitingCloseChannel {
+  channel: {
+    remote_node_pub: string,
+    channel_point: string,
+    capacity: string,
+    local_balance: string,
+    remote_balance: string,
+  },
+    limbo_balance: string
+}
+
+export interface PendingOpenChannel {
+  channel: {
+    remote_node_pub: string,
+    channel_point: string,
+    capacity: string,
+    local_balance: string,
+    remote_balance: string
+  },
+  confirmation_height: number,
+  commit_fee: string,
+  commit_weight: string,
+  fee_per_kw: string
+}
+
 export interface HopHint {
   chan_id: string;
   citv_expiry_delta: string;
@@ -151,6 +189,9 @@ export interface GetNodeInfoResponse {
 
 export interface GetChannelsResponse {
   channels: Channel[];
+  pending_force_closing_channels: PendingForceClosingChannel[];
+  waiting_close_channels: WaitingCloseChannel[];
+  pending_open_channels: PendingOpenChannel[];
 }
 
 export interface GetBlockchainBalanceResponse {
