@@ -46,9 +46,6 @@ export default class WaitClosingChannelRow extends React.Component<Props> {
             {' / '}
             <Unit value={waitClosingChannel.channel.capacity} />
           </div>
-          <div className="ChannelRow-info-balance">
-            <code>Blocks Until Maturity: {waitClosingChannel.blocks_til_maturity}</code>
-          </div>
           <div className="ChannelRow-info-progress">
             <div className="ChannelRow-info-progress-inner" style={{ width: `${capacityPct}%` }}/>
           </div>
