@@ -46,9 +46,6 @@ export default class PendginOpenChannelRow extends React.Component<Props> {
             {' / '}
             <Unit value={pendingOpenChannel.channel.capacity} />
           </div>
-          <div className="ChannelRow-info-balance">
-            <code>Blocks Until Maturity: {pendingOpenChannel.blocks_til_maturity}</code>
-          </div>
           <div className="ChannelRow-info-progress">
             <div className="ChannelRow-info-progress-inner" style={{ width: `${capacityPct}%` }}/>
           </div>
