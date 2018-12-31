@@ -3,33 +3,32 @@ import BN from 'bn.js';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
-import { Tooltip }from 'antd';
-import { ChannelWithNode } from 'modules/channels/types';
+import { PendingChannelWithNode } from 'modules/pending-channels/types';
 import './ChannelRow.less';
+import { Tooltip }from 'antd';
 
 interface Props {
-  channel: ChannelWithNode;
-  status: "active" | "inactive";
+  waitClosingChannel: PendingChannelWithNode;
+  status: "closing";
   pubkey: string;
-  onClick?(channel: ChannelWithNode): void;
+  onClick?(waitClosingChannel: PendingChannelWithNode): void;
 }
 
-export default class ChannelRow extends React.Component<Props> {
+export default class WaitClosingChannelRow extends React.Component<Props> {
   render() {
-    const { pubkey,  status, channel, onClick } = this.props;
+    const { pubkey,  status, waitClosingChannel, onClick } = this.props;
     const icon = <Identicon className="ChannelRow-avatar-img" pubkey={pubkey} />
-    const capacityPct = new BN(channel.local_balance)
+    const capacityPct = new BN(waitClosingChannel.channel.local_balance)
       .muln(100)
-      .div(new BN(channel.capacity))
+      .div(new BN(waitClosingChannel.channel.capacity))
       .toString();
-
 
     return (
       <div
         className={classnames("ChannelRow", onClick && 'is-clickable')}
         onClick={this.handleClick}
       >
-     <div className="ChannelRow-avatar">
+        <div className="ChannelRow-avatar">
           {icon}
           <Tooltip title={status}>
             <div className={`ChannelRow-avatar-status is-${status}`} />
@@ -37,15 +36,18 @@ export default class ChannelRow extends React.Component<Props> {
         </div>
         <div className="ChannelRow-info">
           <div className="ChannelRow-info-alias">
-            {channel.node.alias}
+          {waitClosingChannel.node.alias}
           </div>
           <div className="ChannelRow-info-pubkey">
-            <code>{channel.node.pub_key}</code>
+            <code>{waitClosingChannel.channel.remote_node_pub}</code>
           </div>
           <div className="ChannelRow-info-balance">
-            Balance: <Unit value={channel.local_balance} hideUnit />
+            Balance: <Unit value={waitClosingChannel.channel.local_balance} hideUnit />
             {' / '}
-            <Unit value={channel.capacity} />
+            <Unit value={waitClosingChannel.channel.capacity} />
+          </div>
+          <div className="ChannelRow-info-balance">
+            <code>Blocks Until Maturity: {waitClosingChannel.blocks_til_maturity}</code>
           </div>
           <div className="ChannelRow-info-progress">
             <div className="ChannelRow-info-progress-inner" style={{ width: `${capacityPct}%` }}/>
@@ -57,7 +59,7 @@ export default class ChannelRow extends React.Component<Props> {
 
   private handleClick = () => {
     if (this.props.onClick) {
-      this.props.onClick(this.props.channel);
+      this.props.onClick(this.props.waitClosingChannel);
     }
   };
 }
