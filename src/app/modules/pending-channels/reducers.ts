@@ -1,5 +1,4 @@
 import types, { PendingChannelWithNode } from './types';
-import { PendingOpenChannel } from 'lib/lnd-http';
 
 export interface PendingChannelsState {
   forceClosingChannels: null | PendingChannelWithNode[];
