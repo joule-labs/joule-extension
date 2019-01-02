@@ -11,6 +11,7 @@ import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  password: AppState['crypto']['password'];
   modal: AppState['crypto']['depositModal'];
 }
 
@@ -104,10 +105,16 @@ class AccountInfo extends React.Component<Props, State> {
     re-opening the application.
   */
   private openDepositModal = () => {
+   const password = this.props.password;
     this.setState({
       isDepositModalOpen: true
     })
     setTimeout(()=>{
+      password === null ?
+        this.setState({
+      isDepositModalOpen: false
+    })
+    :
       this.setState({
         isDepositModalOpen: this.props.modal
       });
@@ -119,6 +126,7 @@ class AccountInfo extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
+    password: state.crypto.password,
     modal: state.crypto.depositModal
   }),
   {
