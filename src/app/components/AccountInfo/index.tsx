@@ -98,12 +98,7 @@ class AccountInfo extends React.Component<Props, State> {
       </div>
     );
   }
-  /*
-    Use store modal state until user successfully enters
-    password. Deposit modal can be reopened with a
-    subsequent double tap instead of closing and
-    re-opening the application.
-  */
+
   private openDepositModal = () => {
    const password = this.props.password;
     this.setState({
