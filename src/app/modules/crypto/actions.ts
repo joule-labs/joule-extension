@@ -28,10 +28,13 @@ export function setTestCipher(payload: string) {
   };
 }
 
-export function enterPassword(payload: string) {
+export function enterPassword(password: string, save: boolean = false) {
   return {
     type: types.ENTER_PASSWORD,
-    payload,
+    payload: {
+      password,
+      save,
+    },
   };
 }
 

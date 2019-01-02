@@ -46,7 +46,7 @@ export default function cryptoReducers(
     case types.ENTER_PASSWORD:
       return {
         ...state,
-        password: action.payload,
+        password: action.payload.password,
         isRequestingPassword: false,
       };
     
