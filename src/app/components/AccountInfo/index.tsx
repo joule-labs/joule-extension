@@ -11,6 +11,7 @@ import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  modal: AppState['crypto']['depositModal'];
 }
 
 interface DispatchProps {
@@ -96,14 +97,29 @@ class AccountInfo extends React.Component<Props, State> {
       </div>
     );
   }
-
-  private openDepositModal = () => this.setState({ isDepositModalOpen: true });
+  /*
+    Use store modal state until user successfully enters
+    password. Deposit modal can be reopened with a
+    subsequent double tap instead of closing and
+    re-opening the application.
+  */
+  private openDepositModal = () => {
+    this.setState({
+      isDepositModalOpen: true
+    })
+    setTimeout(()=>{
+      this.setState({
+        isDepositModalOpen: this.props.modal
+      });
+    },0)
+  }
   private closeDepositModal = () => this.setState({ isDepositModalOpen: false });
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
+    modal: state.crypto.depositModal
   }),
   {
     getAccountInfo,
