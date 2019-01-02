@@ -16,7 +16,7 @@ export const INITIAL_STATE: CryptoState = {
   password: null,
   testCipher: null,
   isRequestingPassword: false,
-  depositModal: false
+  depositModal: true,
 };
 
 export default function cryptoReducers(
