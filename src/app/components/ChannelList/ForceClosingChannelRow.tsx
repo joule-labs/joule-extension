@@ -3,15 +3,15 @@ import BN from 'bn.js';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
-import { PendingChannelWithNode } from 'modules/pending-channels/types';
 import './ChannelRow.less';
 import { Tooltip }from 'antd';
+import { ForceClosingChannelWithNode } from 'modules/channels/types';
 
 interface Props {
-  forceClosingChannel: PendingChannelWithNode;
+  forceClosingChannel: ForceClosingChannelWithNode;
   status: "closing";
   pubkey: string;
-  onClick?(forceClosingChannel: PendingChannelWithNode): void;
+  onClick?(channel: ForceClosingChannelWithNode): void;
 }
 
 export default class ForceClosingChannelRow extends React.Component<Props> {

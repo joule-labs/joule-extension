@@ -4,26 +4,23 @@ import ChannelRow from './ChannelRow';
 import Loader from 'components/Loader';
 import BigMessage from 'components/BigMessage';
 import { getChannels } from 'modules/channels/actions';
-import { getPendingChannels } from 'modules/pending-channels/actions';
 import { AppState } from 'store/reducers';
-import { ChannelWithNode } from 'modules/channels/types';
-import { PendingChannelWithNode } from 'modules/pending-channels/types';
+import { ChannelWithNode, PendingOpenChannelWithNode, WaitClosingChannelWithNode, ForceClosingChannelWithNode } from 'modules/channels/types';
 import ForceClosingChannelRow from './ForceClosingChannelRow';
 import WaitClosingChannelRow from './WaitClosingChannelRow';
 import PendingOpenChannelRow from './PendingOpenChannelRow';
 
 interface StateProps {
   channels: AppState['channels']['channels'];
-  forceClosingChannels: AppState['pendingChannels']['forceClosingChannels'];
-  waitClosingChannels: AppState['pendingChannels']['waitClosingChannels'];
-  pendingOpenChannels: AppState['pendingChannels']['pendingOpenChannels'];
+  forceClosingChannels: AppState['channels']['forceClosingChannels'];
+  waitClosingChannels: AppState['channels']['waitClosingChannels'];
+  pendingOpenChannels: AppState['channels']['pendingOpenChannels'];
   isFetchingChannels: AppState['channels']['isFetchingChannels'];
   fetchChannelsError: AppState['channels']['fetchChannelsError'];
 }
 
 interface DispatchProps {
   getChannels: typeof getChannels;
-  getPendingChannels: typeof getPendingChannels;
 }
 
 interface OwnProps {
@@ -31,23 +28,23 @@ interface OwnProps {
 }
 
 interface OwnProps {
-  onClick?(forceClosingChannels: PendingChannelWithNode): void;
+  onClick?(channel: PendingOpenChannelWithNode): void;
 }
 
 interface OwnProps {
-  onClick?(waitClosingChannels: PendingChannelWithNode): void;
+  onClick?(channel: WaitClosingChannelWithNode): void;
 }
 
 interface OwnProps {
-  onClick?(pendingOpenChannels: PendingChannelWithNode): void;
+  onClick?(channel: ForceClosingChannelWithNode): void;
 }
+
 type Props = StateProps & DispatchProps & OwnProps;
 
 class ChannelList extends React.Component<Props> {
   componentWillMount() {
     if (!this.props.channels) {
       this.props.getChannels();
-      this.props.getPendingChannels();
     }
   }
 
@@ -120,13 +117,13 @@ class ChannelList extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     channels: state.channels.channels,
-    forceClosingChannels: state.pendingChannels.forceClosingChannels,
-    waitClosingChannels: state.pendingChannels.waitClosingChannels,
-    pendingOpenChannels: state.pendingChannels.pendingOpenChannels,
+    forceClosingChannels: state.channels.forceClosingChannels,
+    waitClosingChannels: state.channels.waitClosingChannels,
+    pendingOpenChannels: state.channels.pendingOpenChannels,
     isFetchingChannels: state.channels.isFetchingChannels,
     fetchChannelsError: state.channels.fetchChannelsError,
   }),
   {
-    getChannels, getPendingChannels
+    getChannels,
   },
 )(ChannelList);

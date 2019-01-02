@@ -3,15 +3,15 @@ import BN from 'bn.js';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
-import { PendingChannelWithNode } from 'modules/pending-channels/types';
 import './ChannelRow.less';
 import { Tooltip }from 'antd';
+import { PendingOpenChannelWithNode } from 'modules/channels/types';
 
 interface Props {
-  pendingOpenChannel: PendingChannelWithNode;
+  pendingOpenChannel: PendingOpenChannelWithNode;
   status: "opening";
   pubkey: string;
-  onClick?(pendingOpenChannel: PendingChannelWithNode): void;
+  onClick?(channel: PendingOpenChannelWithNode): void;
 }
 
 export default class PendginOpenChannelRow extends React.Component<Props> {

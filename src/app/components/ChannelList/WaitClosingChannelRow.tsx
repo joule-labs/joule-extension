@@ -3,15 +3,16 @@ import BN from 'bn.js';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
-import { PendingChannelWithNode } from 'modules/pending-channels/types';
+import { WaitClosingChannelWithNode } from 'modules/channels/types';
+
 import './ChannelRow.less';
 import { Tooltip }from 'antd';
 
 interface Props {
-  waitClosingChannel: PendingChannelWithNode;
+  waitClosingChannel: WaitClosingChannelWithNode;
   status: "closing";
   pubkey: string;
-  onClick?(waitClosingChannel: PendingChannelWithNode): void;
+  onClick?(channel: WaitClosingChannelWithNode): void;
 }
 
 export default class WaitClosingChannelRow extends React.Component<Props> {
