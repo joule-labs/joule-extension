@@ -1,13 +1,18 @@
 import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Form, Input, Button, Icon, Alert } from 'antd';
+import { Form, Input, Select, Button, Icon, Alert } from 'antd';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
+import Loader from 'components/Loader';
 import SendState from './SendState';
-import { checkPaymentRequest, sendPayment, resetSendPayment } from 'modules/payment/actions';
-import { AppState } from 'store/reducers';
 import { unixMoment, SHORT_FORMAT } from 'utils/time';
+import { Denomination, denominationSymbols } from 'utils/constants';
+import { fromUnitToBase, fromBaseToUnit } from 'utils/units';
+import { typedKeys } from 'utils/ts';
+import { checkPaymentRequest, sendPayment, resetSendPayment } from 'modules/payment/actions';
+import { PaymentRequestData } from 'modules/payment/types';
+import { AppState } from 'store/reducers';
 import './LightningSend.less';
 
 interface StateProps {
@@ -15,6 +20,7 @@ interface StateProps {
   sendReceipt: AppState['payment']['sendReceipt'];
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
+  denomination: AppState['settings']['denomination'];
 }
 
 interface DispatchProps {
@@ -32,18 +38,41 @@ type Props = StateProps & DispatchProps & OwnProps;
 interface State {
   paymentRequestValue: string;
   showMoreInfo: boolean;
+  routedRequest: PaymentRequestData | null;
+  value: string;
+  denomination: Denomination;
 }
 
-const INITIAL_STATE: State = {
+const INITIAL_STATE = {
   paymentRequestValue: '',
   showMoreInfo: false,
+  routedRequest: null,
+  value: '',
 };
 
 class LightningSend extends React.Component<Props, State> {
-  state = { ...INITIAL_STATE };
+  private checkRequestTimeout: any;
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      ...INITIAL_STATE,
+      denomination: props.denomination,
+    }
+  }
 
   componentWillUnmount() {
     this.props.resetSendPayment();
+  }
+
+  componentWillUpdate(nextProps: Props) {
+    const { paymentRequestValue } = this.state;
+    const oldPr = this.props.paymentRequests[paymentRequestValue];
+    const newPr = nextProps.paymentRequests[paymentRequestValue];
+
+    if (newPr && newPr.data && newPr !== oldPr) {
+      this.setState({ routedRequest: newPr.data });
+    }
   }
 
   render() {
@@ -67,10 +96,7 @@ class LightningSend extends React.Component<Props, State> {
       );
     }
 
-    const {
-      paymentRequestValue,
-      showMoreInfo,
-    } = this.state;
+    const { paymentRequestValue, showMoreInfo, value, denomination, routedRequest } = this.state;
     const requestData = this.props.paymentRequests[paymentRequestValue] || {};
     const prStatus = requestData.isLoading ? 'validating' :
       requestData.error ? 'error' :
@@ -79,6 +105,8 @@ class LightningSend extends React.Component<Props, State> {
     const expiry = requestData.data && unixMoment(requestData.data.request.timestamp)
       .add(requestData.data.request.expiry, 'seconds');
     const hasExpired = expiry && expiry.isBefore(moment.now());
+    const disabled = !requestData.data || !!hasExpired ||
+      (!requestData.data.request.num_satoshis && !value);
 
     return (
       <Form className="LightningSend" onSubmit={this.handleSubmit}>
@@ -116,48 +144,89 @@ class LightningSend extends React.Component<Props, State> {
           />
         }
 
-        {requestData.data ? (
+        {routedRequest ? (
           <div className="LightningSend-payment">
             <div className="LightningSend-payment-node">
               <Identicon
-                pubkey={requestData.data.node.pub_key}
+                pubkey={routedRequest.node.pub_key}
                 className="LightningSend-payment-node-avatar"
               />
               <div className="LightningSend-payment-node-info">
                 <div className="LightningSend-payment-node-info-alias">
-                  {requestData.data.node.alias}
+                  {routedRequest.node.alias}
                 </div>
                 <code className="LightningSend-payment-node-info-pubkey">
-                  {requestData.data.node.pub_key}
+                  {routedRequest.node.pub_key}
                 </code>
               </div>
             </div>
-            {requestData.data.route ? (
+            {!routedRequest.request.num_satoshis && (
+              <div className="LightningSend-payment-value">
+                <Input.Group compact>
+                  <Input
+                    type="number"
+                    name="value"
+                    value={value}
+                    onChange={this.handleChangeValue}
+                    autoFocus
+                    placeholder="1000"
+                    step="any"
+                  />
+                  <Select
+                    onChange={this.handleChangeDenomination}
+                    value={denomination}
+                    dropdownMatchSelectWidth={false}
+                  >
+                    {typedKeys(Denomination).map(d => (
+                      <Select.Option key={d} value={d}>
+                        {denominationSymbols[d]}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Input.Group>
+              </div>
+            )}
+            {routedRequest.route ? (
               <div className="LightningSend-payment-details">
                 <table><tbody>
-                  <tr>
-                    <td>Amount</td>
-                    <td><Unit value={requestData.data.request.num_satoshis} /></td>
-                  </tr>
+                  {routedRequest.request.num_satoshis && (
+                    <tr>
+                      <td>Amount</td>
+                      <td>
+                        <Unit value={routedRequest.request.num_satoshis} />
+                      </td>
+                    </tr>
+                  )}
                   <tr>
                     <td>Fee</td>
-                    <td><Unit value={requestData.data.route.total_fees} /></td>
+                    <td>
+                      {requestData.isLoading ?
+                        <Loader inline size="1rem" /> :
+                        <Unit value={routedRequest.route.total_fees} />
+                      }
+                    </td>
                   </tr>
                   <tr>
                     <td>Total</td>
-                    <td><Unit value={requestData.data.route.total_amt} /></td>
+                    <td>
+                      {requestData.isLoading ?
+                        <Loader inline size="1rem" /> :
+                        <Unit value={routedRequest.route.total_amt} />
+                      }
+                      
+                    </td>
                   </tr>
                   {showMoreInfo &&
                     <>
                       <tr>
                         <td>Hops</td>
-                        <td>{requestData.data.route.hops.length} node(s)</td>
+                        <td>{routedRequest.route.hops.length} node(s)</td>
                       </tr>
                       <tr>
                         <td>Time lock</td>
                         <td>{
                           moment()
-                          .add(requestData.data.route.total_time_lock, 'seconds')
+                          .add(routedRequest.route.total_time_lock, 'seconds')
                           .fromNow(true)
                         }</td>
                       </tr>
@@ -203,7 +272,7 @@ class LightningSend extends React.Component<Props, State> {
             htmlType="submit"
             type="primary"
             size="large"
-            disabled={!requestData.data || !!hasExpired}
+            disabled={disabled}
           >
             Send
           </Button>
@@ -224,9 +293,35 @@ class LightningSend extends React.Component<Props, State> {
     });
   };
 
+  private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ value: ev.target.value });
+    clearTimeout(this.checkRequestTimeout);
+    if (ev.target.value) {
+      this.checkRequestTimeout = setTimeout(() => {
+        this.props.checkPaymentRequest(
+          this.state.paymentRequestValue,
+          fromUnitToBase(this.state.value, this.state.denomination),
+        );
+      }, 300);
+    }
+  };
+
+  private handleChangeDenomination = (val: any) => {
+    const denomination = val as Denomination;
+    const value = fromBaseToUnit(
+      fromUnitToBase(this.state.value, this.state.denomination),
+      denomination,
+    );
+    this.setState({
+      denomination,
+      value,
+    });
+  };
+  
   private handleSubmit = () => {
     this.props.sendPayment({
-      payment_request: this.state.paymentRequestValue
+      payment_request: this.state.paymentRequestValue,
+      amt: !!this.state.value ? this.state.value : undefined,
     });
   };
 
@@ -242,6 +337,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     sendReceipt: state.payment.sendReceipt,
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
+    denomination: state.settings.denomination,
   }),
   {
     checkPaymentRequest,

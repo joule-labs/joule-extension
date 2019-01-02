@@ -1,24 +1,39 @@
-import { LndHttpClient, ApiMethod } from 'lib/lnd-http';
-import * as T from 'lib/lnd-http/types';
+import { browser } from 'webextension-polyfill-ts';
 
-// An API-compatible proxy to the background script that does the actual
-// request using credentials stored in memory.
-export class BackgroundProxy extends LndHttpClient {
-  constructor() {
-    // Send in blank info, it'll go unused
-    super('', '');
-  }
-
-  // Override the request method that all other methods use
-  protected request<R extends object, A extends object | undefined = undefined>(
-    method: ApiMethod,
-    path: string,
-    args?: A,
-    defaultValues?: Partial<R>,
-  ): T.Response<R> {
-    console.log(method, path, args, defaultValues);
-    return Promise.reject(Error('Sup'));
-  }
+export function setPasswordCache(password: string) {
+  browser.runtime.sendMessage({
+    application: 'Joule',
+    setPassword: true,
+    data: { password },
+  });
 }
 
-export const backgroundProxy = new BackgroundProxy();
+export function getPasswordCache() {
+  return new Promise(resolve => {
+    const onMessage = (request: any) => {
+      if (request && request.application === 'Joule' && request.cachedPassword) {
+        resolve(request.data);
+      }
+    };
+
+    // Setup listener for message & timeout for if we don't hear back
+    browser.runtime.onMessage.addListener(onMessage);
+    setTimeout(() => {
+      browser.runtime.onMessage.removeListener(onMessage);
+      resolve(undefined);
+    }, 100);
+
+    // Trigger the message
+    browser.runtime.sendMessage({
+      application: 'Joule',
+      getPassword: true,
+    });
+  });
+}
+
+export function clearPasswordCache() {
+  browser.runtime.sendMessage({
+    application: 'Joule',
+    clearPassword: true,
+  });
+}

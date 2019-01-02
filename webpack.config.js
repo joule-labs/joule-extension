@@ -14,6 +14,9 @@ const autoprefixer = require('autoprefixer');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// url for standalone react-devtools inspector
+const reactDevToolsUrl = isDev ? 'http://localhost:8097' : '';
+
 const src = path.join(__dirname, 'src');
 const srcApp = path.join(src, 'app');
 
@@ -154,20 +157,33 @@ module.exports = {
       chunks: ['options'],
       filename: 'options.html',
       inject: true,
+      reactDevToolsUrl,
     }),
     new HtmlWebpackPlugin({
       template: `${src}/popup/template.html`,
       chunks: ['popup'],
       filename: 'popup.html',
       inject: true,
+      reactDevToolsUrl,
     }),
     new HtmlWebpackPlugin({
       template: `${src}/prompt/template.html`,
       chunks: ['prompt'],
       filename: 'prompt.html',
       inject: true,
+      reactDevToolsUrl,
     }),
     new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
+    isDev && new CopyWebpackPlugin([{
+      from: 'static/manifest.json',
+      force: true,
+      transform: (content) => {
+        return JSON.stringify({
+          ...JSON.parse(content),
+          content_security_policy: `script-src 'self' ${reactDevToolsUrl};`
+        }, null, 2);
+      }
+    }]),
     !isDev && new ZipPlugin({
       filename: `joule-v${packageJson.version}.zip`,
     }),
