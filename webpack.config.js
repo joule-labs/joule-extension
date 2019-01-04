@@ -181,7 +181,7 @@ module.exports = {
       transform: (content) => {
         return JSON.stringify({
           ...JSON.parse(content),
-          content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl};`
+          content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`
         }, null, 2);
       }
     }]),
