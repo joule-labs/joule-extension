@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route, withRouter, RouteComponentProps } from 'react-router';
+import { hot } from 'react-hot-loader/root';
 import Loader from 'components/Loader';
 import OnboardingPrompt from 'prompts/onboarding';
 import AuthorizePrompt from 'prompts/authorize';
@@ -53,4 +54,4 @@ const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(
   }),
 )(Routes);
 
-export default withRouter(ConnectedRoutes);
+export default withRouter(hot(ConnectedRoutes));
