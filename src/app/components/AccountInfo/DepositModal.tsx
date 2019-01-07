@@ -27,8 +27,8 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps;
 
 class DepositModal extends React.Component<Props> {
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.isOpen && !prevProps.isOpen) {
+  componentWillUpdate(nextProps: Props) {
+    if (!this.props.isOpen && nextProps.isOpen) {
       // Fire even if depositAddress is in store in case we need to cycle
       this.props.getDepositAddress();
     }
@@ -42,6 +42,7 @@ class DepositModal extends React.Component<Props> {
       onClose,
       hasPassword,
     } = this.props;
+    const isVisible = !!isOpen && !!(hasPassword || fetchDepositAddressError);
 
     let content;
     if (depositAddress) {
@@ -86,7 +87,7 @@ class DepositModal extends React.Component<Props> {
     return (
       <Modal
         title="BTC Address"
-        visible={isOpen && hasPassword}
+        visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
         centered
