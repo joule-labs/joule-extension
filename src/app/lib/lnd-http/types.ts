@@ -126,6 +126,17 @@ export interface LightningInvoice {
 
 type FeeLimit = { percent: string } | { fixed: string };
 
+export interface Peer {
+  ping_time: string;
+  sat_sent: string;
+  address: string;
+  bytes_sent: string;
+  sat_recv: string;
+  inbound: boolean;
+  pub_key: string;
+  bytes_recv: string;
+}
+
 // Argument & Response Types
 export interface GetInfoResponse {
   identity_pubkey: string;
@@ -245,4 +256,8 @@ export interface NewAddressArguments {
 
 export interface NewAddressResponse {
   address: string;
+}
+
+export interface GetPeersResponse {
+  peers: Peer[];
 }

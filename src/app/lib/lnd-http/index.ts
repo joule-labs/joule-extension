@@ -216,6 +216,10 @@ export class LndHttpClient {
     );
   };
 
+  getPeers = () => {
+    return this.request<T.GetPeersResponse>('GET', '/v1/peers');
+  }
+
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,
