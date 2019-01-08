@@ -4,12 +4,16 @@ export interface PeersState {
   peers: null | PeerWithNode[];
   isFetchingPeers: boolean;
   fetchPeersError: null | Error;
+  isAddingPeer: boolean;
+  addPeerError: null | Error;
 }
 
 export const INITIAL_STATE: PeersState = {
   peers: null,
   isFetchingPeers: false,
   fetchPeersError: null,
+  isAddingPeer: false,
+  addPeerError: null,
 };
 
 export default function peersReducers(
@@ -36,6 +40,24 @@ export default function peersReducers(
         fetchPeersError: action.payload,
         isFetchingPeers: false,
       }
+
+    case types.ADD_PEER:
+      return {
+        ...state,
+        isAddingPeer: true,
+        addPeerError: null,
+      };
+    case types.ADD_PEER_SUCCESS:
+      return {
+        ...state,
+        isAddingPeer: false,
+      };
+    case types.ADD_PEER_FAILURE:
+      return {
+        ...state,
+        isAddingPeer: false,
+        addPeerError: action.payload,
+      };
   }
 
   return state;

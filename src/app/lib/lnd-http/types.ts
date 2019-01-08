@@ -137,6 +137,11 @@ export interface Peer {
   bytes_recv: string;
 }
 
+interface LightningAddress {
+  pubkey: string;
+  host: string;
+}
+
 // Argument & Response Types
 export interface GetInfoResponse {
   identity_pubkey: string;
@@ -260,4 +265,9 @@ export interface NewAddressResponse {
 
 export interface GetPeersResponse {
   peers: Peer[];
+}
+
+export interface ConnectPeerArguments {
+  addr: LightningAddress;
+  perm?: boolean;
 }

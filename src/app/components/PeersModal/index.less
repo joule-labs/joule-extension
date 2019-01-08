@@ -1,37 +1,26 @@
 .PeersModal {
-  min-height: 380px;
   min-width: 360px;
+  min-height: 380px;
 
-  &-peer {
-    padding: 0.75rem;
+  &-peers {
+    max-height: 330px;
+    overflow: auto;
+  }
+
+  &-form {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid rgba(#000, 0.08);
+    // Taken from antd to match footer styles
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #e8e8e8;
 
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &-avatar {
-      flex-shrink: 0;
-      width: 2.8rem;
-      height: 2.8rem;
-      margin-right: 0.75rem;
-    }
-
-    &-info {
+    &-address.ant-form-item {
       flex: 1;
-      min-width: 0;
-  
-      &-alias {
-        font-weight: 500;
-        font-size: 0.85rem;
-        margin-bottom: 0.1rem;
-      }
+      margin-right: 0.5rem;
 
-      &-address {
-        font-size: 0.75rem;
-        opacity: 0.7;
+      // Override inline-block
+      .ant-form-inline & .ant-form-item-control-wrapper {
+        width: 100%;
       }
     }
   }
@@ -39,5 +28,39 @@
   // Antd overrides
   .ant-modal-body {
     padding: 0;
+  }
+}
+
+.PeerRow {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(#000, 0.08);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &-avatar {
+    flex-shrink: 0;
+    width: 2.8rem;
+    height: 2.8rem;
+    margin-right: 0.75rem;
+  }
+
+  &-info {
+    flex: 1;
+    min-width: 0;
+
+    &-alias {
+      font-weight: 500;
+      font-size: 0.85rem;
+      margin-bottom: 0.1rem;
+    }
+
+    &-address {
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
   }
 }

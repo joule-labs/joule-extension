@@ -25,3 +25,7 @@ export function isValidPaymentReq(paymentReq: string) {
   // check if the invoice starts with one of the prefixes
   return prefixes.some(p => chain.substring(0, p.length) === p);
 }
+
+export function isValidConnectAddress(address: string) {
+  return !!address.match(/^[0-9a-gA-G]*@.*$/);
+}
