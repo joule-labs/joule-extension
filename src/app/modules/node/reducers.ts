@@ -16,6 +16,8 @@ export interface NodeState {
   checkAuthError: null | Error;
   isUpdatingNodeUrl: boolean;
   updateNodeUrlError: null | Error;
+  isUpdatingMacaroons: boolean;
+  updateMacaroonsError: null | Error;
   editingNodeField: EditingNodeField;
   isFetchingNodeInfo: boolean;
   fetchNodeInfoError: null | Error;
@@ -35,6 +37,8 @@ export const INITIAL_STATE: NodeState = {
   checkAuthError: null,
   isUpdatingNodeUrl: false,
   updateNodeUrlError: null,
+  isUpdatingMacaroons: false,
+  updateMacaroonsError: null,
   editingNodeField: null,
   isFetchingNodeInfo: false,
   fetchNodeInfoError: null,
@@ -111,6 +115,25 @@ export default function cryptoReducers(
         ...state,
         isUpdatingNodeUrl: false,
         updateNodeUrlError: action.payload,
+      };
+    
+    case types.UPDATE_MACAROONS:
+      return {
+        ...state,
+        isUpdatingMacaroons: true,
+        updateMacaroonsError: null,
+      };
+    case types.UPDATE_MACAROONS_SUCCESS:
+      return {
+        ...state,
+        isUpdatingMacaroons: false,
+        editingNodeField: null
+      };
+    case types.UPDATE_MACAROONS_FAILURE:
+      return {
+        ...state,
+        isUpdatingMacaroons: false,
+        updateMacaroonsError: action.payload,
       };
     
     case types.GET_NODE_INFO:

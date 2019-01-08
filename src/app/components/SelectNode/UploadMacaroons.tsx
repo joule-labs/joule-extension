@@ -6,6 +6,9 @@ import './UploadMacaroons.less';
 
 interface Props {
   error?: string;
+  isSaving?: boolean;
+  initialAdmin?: string;
+  initialReadonly?: string;
   onUploaded(admin: string, readOnly: string): void;
 }
 
@@ -18,8 +21,8 @@ interface State {
 
 export default class UploadMacaroon extends React.Component<Props, State> {
   state: State = {
-    admin: '',
-    readonly: '',
+    admin: this.props.initialAdmin || '',
+    readonly: this.props.initialReadonly || '',
     isShowingHexInputs: false,
     error: this.props.error,
   };
@@ -127,6 +130,7 @@ export default class UploadMacaroon extends React.Component<Props, State> {
           type="primary"
           onClick={this.handleSubmit}
           size="large"
+          loading={this.props.isSaving}
           block
         >
           Continue

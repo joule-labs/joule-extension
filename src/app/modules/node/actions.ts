@@ -27,6 +27,13 @@ export function checkAuth(url: string, admin: Macaroon, readonly: Macaroon) {
   };
 }
 
+export function editNodeField(field: EditingNodeField) {
+  return {
+    type: types.SET_EDITING_NODE_FIELD,
+    payload: field,
+  };
+}
+
 export function updateNodeUrl(url: string) {
   return {
     type: types.UPDATE_NODE_URL,
@@ -34,10 +41,14 @@ export function updateNodeUrl(url: string) {
   };
 }
 
-export function editNodeField(field: EditingNodeField) {
+export function updateMacaroons(url: string, admin: Macaroon, readonly: Macaroon) {
   return {
-    type: types.SET_EDITING_NODE_FIELD,
-    payload: field,
+    type: types.UPDATE_MACAROONS,
+    payload: {
+      url,
+      admin,
+      readonly,
+    },
   };
 }
 

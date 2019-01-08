@@ -5,7 +5,7 @@ import { Form, Select, Checkbox, Input, Button, Modal, Icon, Drawer, message } f
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import DomainLists from './DomainLists';
-import { updateNodeUrl, editNodeField } from 'modules/node/actions';
+import { editNodeField, updateNodeUrl, updateMacaroons } from 'modules/node/actions';
 import {
   changeSettings,
   clearSettings,
@@ -23,7 +23,8 @@ import {
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
-import InputAddress from '../SelectNode/InputAddress';
+import InputAddress from 'components/SelectNode/InputAddress';
+import UploadMacaroons from 'components/SelectNode/UploadMacaroons';
 import './style.less';
 
 type SettingsKey = keyof AppState['settings'];
@@ -36,6 +37,8 @@ interface StateProps {
   isNodeChecked: AppState['node']['isNodeChecked'];
   isUpdatingNodeUrl: AppState['node']['isUpdatingNodeUrl'];
   updateNodeUrlError: AppState['node']['updateNodeUrlError'];
+  isUpdatingMacaroons: AppState['node']['isUpdatingMacaroons'];
+  updateMacaroonsError: AppState['node']['updateMacaroonsError'];
   editingNodeField: AppState['node']['editingNodeField'];
 }
 
@@ -48,6 +51,7 @@ interface DispatchProps {
   removeRejectedDomain: typeof removeRejectedDomain;
   editNodeField: typeof editNodeField;
   updateNodeUrl: typeof updateNodeUrl;
+  updateMacaroons: typeof updateMacaroons;
 }
 
 type Props = StateProps & DispatchProps & RouteComponentProps;
@@ -155,7 +159,7 @@ class Settings extends React.Component<Props> {
                 value={readonlyMacaroon as string}
                 disabled
               />
-              <Button>
+              <Button onClick={this.editMacaroons}>
                 <Icon type="edit" />
               </Button>
             </Input.Group>
@@ -166,7 +170,7 @@ class Settings extends React.Component<Props> {
                 value={adminMacaroon as string || '<encrypted>'}
                 disabled
               />
-              <Button>
+              <Button onClick={this.editMacaroons}>
                 <Icon type="edit" />
               </Button>
             </Input.Group>
@@ -205,7 +209,16 @@ class Settings extends React.Component<Props> {
   }
 
   private renderDrawer = () => {
-    const { url, editingNodeField, isUpdatingNodeUrl, updateNodeUrlError } = this.props
+    const { 
+      url,
+      adminMacaroon,
+      readonlyMacaroon,
+      editingNodeField, 
+      isUpdatingNodeUrl, 
+      updateNodeUrlError,
+      isUpdatingMacaroons,
+      updateMacaroonsError,
+    } = this.props
 
     let title, cmp;
 
@@ -222,6 +235,17 @@ class Settings extends React.Component<Props> {
         );
         break;
       case 'readonly':
+        title = 'Upload Macaroons';
+        cmp = (
+          <UploadMacaroons
+            onUploaded={this.handleMacaroons}
+            isSaving={isUpdatingMacaroons}
+            initialAdmin={adminMacaroon || undefined}
+            initialReadonly={readonlyMacaroon || undefined}
+            error={updateMacaroonsError ? updateMacaroonsError.message : undefined}
+          />
+        );
+        break;
       case 'admin':
           return null;
     }
@@ -249,7 +273,13 @@ class Settings extends React.Component<Props> {
     })
   };
 
+  private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
+    const { url, updateMacaroons } = this.props;
+    updateMacaroons(url as string, adminMacaroon, readonlyMacaroon);
+  };
+
   private editNodeUrl = () => this.props.editNodeField('url');
+  private editMacaroons = () => this.props.editNodeField('readonly');
   private hideDrawer = () => this.props.editNodeField(null);
 
   private clearSettings = () => {
@@ -276,6 +306,8 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
     isNodeChecked: state.node.isNodeChecked,
     isUpdatingNodeUrl: state.node.isUpdatingNodeUrl,
     updateNodeUrlError: state.node.updateNodeUrlError,
+    isUpdatingMacaroons: state.node.isUpdatingMacaroons,
+    updateMacaroonsError: state.node.updateMacaroonsError,
     editingNodeField: state.node.editingNodeField,
   }),
   {
@@ -287,6 +319,7 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
     removeRejectedDomain,
     editNodeField,
     updateNodeUrl,
+    updateMacaroons,
   },
 )(Settings);
 

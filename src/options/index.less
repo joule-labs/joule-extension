@@ -10,3 +10,8 @@ html {
 .is-page .ant-drawer-content-wrapper {
   max-width: 440px;
 }
+
+// ensure modals display above drawers
+.ant-modal-mask, .ant-modal-wrap {
+  z-index: 1001;
+}
