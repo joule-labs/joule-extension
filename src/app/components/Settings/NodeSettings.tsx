@@ -108,8 +108,8 @@ class NodeSettings extends React.Component<Props> {
   }
 
   private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
-    const { url, updateMacaroons } = this.props;
-    updateMacaroons(url as string, adminMacaroon, readonlyMacaroon);
+    const { url } = this.props;
+    this.props.updateMacaroons(url as string, adminMacaroon, readonlyMacaroon);
   };
 
   private renderDrawer = () => {
@@ -125,7 +125,8 @@ class NodeSettings extends React.Component<Props> {
       isChangingPassword,
     } = this.props
 
-    let title, cmp;
+    let title;
+    let cmp;
 
     if (isChangingPassword) {
       title = 'Change your password';

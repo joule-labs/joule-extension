@@ -108,8 +108,8 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
     yield call(requirePassword);
 
     // get current macaroons from state as its needed to store the new url
-    let { readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
-    let { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
+    const { readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
+    const { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
 
     // connect to the url to test if it's working
     yield put(actions.checkNode(newUrl));
