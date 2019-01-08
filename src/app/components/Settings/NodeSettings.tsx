@@ -50,13 +50,13 @@ class NodeSettings extends React.Component<Props> {
           // isNodeChecked false -> true
           message.success(`Connected to ${nextProps.url}`, 2);
     }
-    if (isChangingPassword != nextProps.isChangingPassword && !isChangingPassword
+    if (isChangingPassword !== nextProps.isChangingPassword && !isChangingPassword
         && password !== nextProps.password) {
           // isChangingPassword true -> false and password changed
           message.success('Password Updated', 2);
     }
     const macaroonsChanged = adminMacaroon !== nextProps.adminMacaroon
-      || readonlyMacaroon != nextProps.readonlyMacaroon;
+      || readonlyMacaroon !== nextProps.readonlyMacaroon;
     if (isUpdatingMacaroons && macaroonsChanged) {
         // isUpdatingMacaroons is true and a macaroon changed
         message.success('Macaroons Updated', 2);
