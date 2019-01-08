@@ -113,11 +113,11 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
 
     // connect to the url to test if it's working
     yield put(actions.checkNode(newUrl));
-    const checkNodeResp = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
+    const action = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
 
     // check for an error connecting to the node
-    if (checkNodeResp.type === types.CHECK_NODE_FAILURE) {
-      throw checkNodeResp.payload;
+    if (action.type === types.CHECK_NODE_FAILURE) {
+      throw action.payload;
     }
 
     // save the new info in state & storage

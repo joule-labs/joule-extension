@@ -14,13 +14,14 @@ export interface NodeState {
   checkNodeError: null | Error;
   isCheckingAuth: boolean;
   checkAuthError: null | Error;
+  isFetchingNodeInfo: boolean;
+  fetchNodeInfoError: null | Error;
+  
+  editingNodeField: EditingNodeField;
   isUpdatingNodeUrl: boolean;
   updateNodeUrlError: null | Error;
   isUpdatingMacaroons: boolean;
   updateMacaroonsError: null | Error;
-  editingNodeField: EditingNodeField;
-  isFetchingNodeInfo: boolean;
-  fetchNodeInfoError: null | Error;
 }
 
 export const INITIAL_STATE: NodeState = {
@@ -35,13 +36,14 @@ export const INITIAL_STATE: NodeState = {
   checkNodeError: null,
   isCheckingAuth: false,
   checkAuthError: null,
+  isFetchingNodeInfo: false,
+  fetchNodeInfoError: null,
+
   isUpdatingNodeUrl: false,
   updateNodeUrlError: null,
   isUpdatingMacaroons: false,
   updateMacaroonsError: null,
   editingNodeField: null,
-  isFetchingNodeInfo: false,
-  fetchNodeInfoError: null,
 };
 
 export default function cryptoReducers(
@@ -98,6 +100,7 @@ export default function cryptoReducers(
         ...state,
         editingNodeField: action.payload
       };
+
     case types.UPDATE_NODE_URL:
       return {
         ...state,

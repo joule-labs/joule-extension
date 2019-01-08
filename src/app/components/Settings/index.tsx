@@ -170,16 +170,6 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
-    url: state.node.url,
-    readonlyMacaroon: state.node.readonlyMacaroon,
-    adminMacaroon: state.node.adminMacaroon,
-    isNodeChecked: state.node.isNodeChecked,
-    isUpdatingNodeUrl: state.node.isUpdatingNodeUrl,
-    updateNodeUrlError: state.node.updateNodeUrlError,
-    isUpdatingMacaroons: state.node.isUpdatingMacaroons,
-    updateMacaroonsError: state.node.updateMacaroonsError,
-    editingNodeField: state.node.editingNodeField,
-    isChangingPassword: state.crypto.isChangingPassword,
   }),
   {
     changeSettings,
