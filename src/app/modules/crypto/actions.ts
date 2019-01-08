@@ -46,6 +46,14 @@ export function cancelPassword() {
   return { type: types.CANCEL_PASSWORD };
 }
 
+export function changePassword() {
+  return { type: types.CHANGE_PASSWORD };
+}
+
+export function cancelChangePassword() {
+  return { type: types.CANCEL_CHANGE_PASSWORD };
+}
+
 export function logout() {
   return { type: types.LOGOUT };
 }

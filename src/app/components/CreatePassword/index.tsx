@@ -4,6 +4,7 @@ import zxcvbn from 'zxcvbn';
 import './style.less';
 
 interface Props {
+  title?: string;
   onCreatePassword(password: string): void;
 }
 
@@ -15,6 +16,10 @@ interface State {
 }
 
 export default class CreatePassword extends React.Component<Props, State> {
+  static defaultProps = {
+    title: 'Create a Password'
+  }
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -48,6 +53,7 @@ export default class CreatePassword extends React.Component<Props, State> {
 
   render() {
     const { password1, password2, isReady, strength } = this.state;
+    const { title } = this.props;
     const p2status = password2.length > 0 ?
       password1 === password2 ?
         'success' :
@@ -55,7 +61,7 @@ export default class CreatePassword extends React.Component<Props, State> {
       : undefined;
     return (
       <Form className="CreatePassword" onSubmit={this.handleSubmit} layout="vertical">
-        <h2 className="CreatePassword-title">Create a Password</h2>
+        {title && <h2 className="CreatePassword-title">{title}</h2>}
 
         <Form.Item label="Password">
           <Input

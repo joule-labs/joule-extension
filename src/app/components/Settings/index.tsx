@@ -6,6 +6,7 @@ import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import DomainLists from './DomainLists';
 import { editNodeField, updateNodeUrl, updateMacaroons } from 'modules/node/actions';
+import { changePassword, setPassword, cancelChangePassword } from 'modules/crypto/actions';
 import {
   changeSettings,
   clearSettings,
@@ -25,6 +26,7 @@ import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
 import InputAddress from 'components/SelectNode/InputAddress';
 import UploadMacaroons from 'components/SelectNode/UploadMacaroons';
+import CreatePassword from 'components/CreatePassword'
 import './style.less';
 
 type SettingsKey = keyof AppState['settings'];
@@ -40,6 +42,7 @@ interface StateProps {
   isUpdatingMacaroons: AppState['node']['isUpdatingMacaroons'];
   updateMacaroonsError: AppState['node']['updateMacaroonsError'];
   editingNodeField: AppState['node']['editingNodeField'];
+  isChangingPassword: AppState['crypto']['isChangingPassword'];
 }
 
 interface DispatchProps {
@@ -52,6 +55,9 @@ interface DispatchProps {
   editNodeField: typeof editNodeField;
   updateNodeUrl: typeof updateNodeUrl;
   updateMacaroons: typeof updateMacaroons;
+  changePassword: typeof changePassword;
+  cancelChangePassword: typeof cancelChangePassword;
+  setPassword: typeof setPassword;
 }
 
 type Props = StateProps & DispatchProps & RouteComponentProps;
@@ -66,7 +72,7 @@ class Settings extends React.Component<Props> {
   }
 
   render() {
-    const { settings, url, readonlyMacaroon, adminMacaroon } = this.props;
+    const { settings, url, readonlyMacaroon, adminMacaroon, isChangingPassword } = this.props;
 
     return (
       <Form className="Settings" layout="vertical">
@@ -180,7 +186,7 @@ class Settings extends React.Component<Props> {
               type="default"
               size="large"
               block
-              onClick={this.clearSettings}
+              onClick={this.props.changePassword}
             >
               Change Password
             </Button>
@@ -202,6 +208,26 @@ class Settings extends React.Component<Props> {
             </Button>
           </Form.Item>
         </div>
+
+        <Drawer
+          visible={isChangingPassword}
+          placement="right"
+          onClose={this.props.cancelChangePassword}
+          width="92%"
+          title="Change your password"
+        >
+          <CreatePassword onCreatePassword={this.props.setPassword} title="" />
+        </Drawer> 
+
+        <Modal
+          title="Change your password"
+          visible={false}
+          footer={null}
+          onCancel={this.props.cancelChangePassword}
+          closable
+        >
+          <CreatePassword onCreatePassword={this.props.setPassword} title="" />
+        </Modal>
 
         {this.renderDrawer()}
       </Form>
@@ -246,7 +272,7 @@ class Settings extends React.Component<Props> {
           />
         );
         break;
-      case 'admin':
+      case 'fixme':
           return null;
     }
 
@@ -309,6 +335,7 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
     isUpdatingMacaroons: state.node.isUpdatingMacaroons,
     updateMacaroonsError: state.node.updateMacaroonsError,
     editingNodeField: state.node.editingNodeField,
+    isChangingPassword: state.crypto.isChangingPassword,
   }),
   {
     changeSettings,
@@ -320,6 +347,9 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
     editNodeField,
     updateNodeUrl,
     updateMacaroons,
+    changePassword,
+    cancelChangePassword,
+    setPassword,
   },
 )(Settings);
 

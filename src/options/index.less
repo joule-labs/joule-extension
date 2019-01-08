@@ -1,3 +1,5 @@
+@import "~style/variables.less";
+
 html {
   font-size: 16px;
 
@@ -9,6 +11,10 @@ html {
 // Ant overrides
 .is-page .ant-drawer-content-wrapper {
   max-width: 440px;
+  
+  .ant-drawer-body {
+    height: calc(100vh - @drawer-header-height);
+  }
 }
 
 // ensure modals display above drawers
