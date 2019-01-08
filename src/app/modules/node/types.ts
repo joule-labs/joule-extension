@@ -30,6 +30,6 @@ enum NodeTypes {
   SYNC_ENCRYPTED_NODE_STATE = 'SYNC_ENCRYPTED_NODE_STATE',
 }
 
-export type EditingNodeField = null | 'url' | 'readonly' | 'admin';
+export type EditingNodeField = null | 'url' | 'macaroons';
 
 export default NodeTypes;

@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
-import { Form, Select, Checkbox, Input, Button, Modal, Icon, Drawer, message } from 'antd';
+import { Form, Select, Checkbox, Button, Modal } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import DomainLists from './DomainLists';
-import { editNodeField, updateNodeUrl, updateMacaroons } from 'modules/node/actions';
-import { changePassword, setPassword, cancelChangePassword } from 'modules/crypto/actions';
+import NodeSettings from './NodeSettings';
 import {
   changeSettings,
   clearSettings,
@@ -24,25 +23,12 @@ import {
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
-import InputAddress from 'components/SelectNode/InputAddress';
-import UploadMacaroons from 'components/SelectNode/UploadMacaroons';
-import CreatePassword from 'components/CreatePassword'
 import './style.less';
 
 type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
-  url: AppState['node']['url'];
-  readonlyMacaroon: AppState['node']['readonlyMacaroon'];
-  adminMacaroon: AppState['node']['adminMacaroon'];
-  isNodeChecked: AppState['node']['isNodeChecked'];
-  isUpdatingNodeUrl: AppState['node']['isUpdatingNodeUrl'];
-  updateNodeUrlError: AppState['node']['updateNodeUrlError'];
-  isUpdatingMacaroons: AppState['node']['isUpdatingMacaroons'];
-  updateMacaroonsError: AppState['node']['updateMacaroonsError'];
-  editingNodeField: AppState['node']['editingNodeField'];
-  isChangingPassword: AppState['crypto']['isChangingPassword'];
 }
 
 interface DispatchProps {
@@ -52,27 +38,13 @@ interface DispatchProps {
   addRejectedDomain: typeof addRejectedDomain;
   removeEnabledDomain: typeof removeEnabledDomain;
   removeRejectedDomain: typeof removeRejectedDomain;
-  editNodeField: typeof editNodeField;
-  updateNodeUrl: typeof updateNodeUrl;
-  updateMacaroons: typeof updateMacaroons;
-  changePassword: typeof changePassword;
-  cancelChangePassword: typeof cancelChangePassword;
-  setPassword: typeof setPassword;
 }
 
 type Props = StateProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
-
-  componentWillUpdate(nextProps: Props) {
-    if (this.props.isNodeChecked !== nextProps.isNodeChecked
-        && nextProps.isNodeChecked) {
-          message.success(`Connected to ${nextProps.url}`, 2);
-    }
-  }
-
   render() {
-    const { settings, url, readonlyMacaroon, adminMacaroon, isChangingPassword } = this.props;
+    const { settings } = this.props;
 
     return (
       <Form className="Settings" layout="vertical">
@@ -148,49 +120,7 @@ class Settings extends React.Component<Props> {
           <h3 className="Settings-section-title">
             Node
           </h3>
-          <Form.Item label="REST API URL">
-            <Input.Group compact className="Settings-input-group">
-              <Input
-                value={url as string}
-                disabled
-              />
-                <Button onClick={this.editNodeUrl}>
-                  <Icon type="edit" />
-                </Button>
-            </Input.Group>
-          </Form.Item>
-          <Form.Item label="Readonly Macaroon">
-            <Input.Group compact className="Settings-input-group">
-              <Input
-                value={readonlyMacaroon as string}
-                disabled
-              />
-              <Button onClick={this.editMacaroons}>
-                <Icon type="edit" />
-              </Button>
-            </Input.Group>
-          </Form.Item>
-          <Form.Item label="Admin Macaroon">
-            <Input.Group compact className="Settings-input-group">
-              <Input
-                value={adminMacaroon as string || '<encrypted>'}
-                disabled
-              />
-              <Button onClick={this.editMacaroons}>
-                <Icon type="edit" />
-              </Button>
-            </Input.Group>
-          </Form.Item>
-          <Form.Item>
-            <Button
-              type="default"
-              size="large"
-              block
-              onClick={this.props.changePassword}
-            >
-              Change Password
-            </Button>
-          </Form.Item>
+          <NodeSettings />
         </div>
         <div className="Settings-section">
           <h3 className="Settings-section-title">
@@ -208,85 +138,8 @@ class Settings extends React.Component<Props> {
             </Button>
           </Form.Item>
         </div>
-
-        <Drawer
-          visible={isChangingPassword}
-          placement="right"
-          onClose={this.props.cancelChangePassword}
-          width="92%"
-          title="Change your password"
-        >
-          <CreatePassword onCreatePassword={this.props.setPassword} title="" />
-        </Drawer> 
-
-        <Modal
-          title="Change your password"
-          visible={false}
-          footer={null}
-          onCancel={this.props.cancelChangePassword}
-          closable
-        >
-          <CreatePassword onCreatePassword={this.props.setPassword} title="" />
-        </Modal>
-
-        {this.renderDrawer()}
       </Form>
     );
-  }
-
-  private renderDrawer = () => {
-    const { 
-      url,
-      adminMacaroon,
-      readonlyMacaroon,
-      editingNodeField, 
-      isUpdatingNodeUrl, 
-      updateNodeUrlError,
-      isUpdatingMacaroons,
-      updateMacaroonsError,
-    } = this.props
-
-    let title, cmp;
-
-    switch (editingNodeField) {
-      case 'url':
-        title = 'Provide a URL';
-        cmp = (
-          <InputAddress
-            initialUrl={url as string}
-            error={updateNodeUrlError}
-            isCheckingNode={isUpdatingNodeUrl}
-            submitUrl={this.props.updateNodeUrl}
-          />      
-        );
-        break;
-      case 'readonly':
-        title = 'Upload Macaroons';
-        cmp = (
-          <UploadMacaroons
-            onUploaded={this.handleMacaroons}
-            isSaving={isUpdatingMacaroons}
-            initialAdmin={adminMacaroon || undefined}
-            initialReadonly={readonlyMacaroon || undefined}
-            error={updateMacaroonsError ? updateMacaroonsError.message : undefined}
-          />
-        );
-        break;
-      case 'fixme':
-          return null;
-    }
-
-    return (
-      <Drawer
-        visible={!!editingNodeField}
-        placement="right"
-        onClose={this.hideDrawer}
-        width="92%"
-        title={title}
-      >
-        {cmp}
-      </Drawer>      
-    )
   }
 
   private handleChangeSelect = (key: SettingsKey, value: SelectValue) => {
@@ -298,15 +151,6 @@ class Settings extends React.Component<Props> {
       [ev.target.name as SettingsKey]: ev.target.checked
     })
   };
-
-  private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
-    const { url, updateMacaroons } = this.props;
-    updateMacaroons(url as string, adminMacaroon, readonlyMacaroon);
-  };
-
-  private editNodeUrl = () => this.props.editNodeField('url');
-  private editMacaroons = () => this.props.editNodeField('readonly');
-  private hideDrawer = () => this.props.editNodeField(null);
 
   private clearSettings = () => {
     Modal.confirm({
@@ -344,12 +188,6 @@ const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
     addRejectedDomain,
     removeEnabledDomain,
     removeRejectedDomain,
-    editNodeField,
-    updateNodeUrl,
-    updateMacaroons,
-    changePassword,
-    cancelChangePassword,
-    setPassword,
   },
 )(Settings);
 
