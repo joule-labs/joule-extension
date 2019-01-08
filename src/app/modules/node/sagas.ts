@@ -113,11 +113,11 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
 
     // connect to the url to test if it's working
     yield put(actions.checkNode(newUrl));
-    const action = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
+    const checkAction = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
 
     // check for an error connecting to the node
-    if (action.type === types.CHECK_NODE_FAILURE) {
-      throw action.payload;
+    if (checkAction.type === types.CHECK_NODE_FAILURE) {
+      throw checkAction.payload;
     }
 
     // save the new info in state & storage
@@ -138,16 +138,16 @@ export function* handleUpdateMacaroons(action: ReturnType<typeof actions.updateM
   try {
     const { url, admin, readonly } = action.payload;
 
-    // passowrd is needed to decrypt the admin macaroon
+    // password is needed to decrypt the admin macaroon
     yield call(requirePassword);
 
     // connect to the url to test if it's working
     yield put(actions.checkAuth(url, admin, readonly));
-    const authNodeResp = yield take([types.CHECK_AUTH_SUCCESS, types.CHECK_AUTH_FAILURE]);
+    const checkAction = yield take([types.CHECK_AUTH_SUCCESS, types.CHECK_AUTH_FAILURE]);
 
     // check for an error connecting to the node
-    if (authNodeResp.type === types.CHECK_AUTH_FAILURE) {
-      throw authNodeResp.payload;
+    if (checkAction.type === types.CHECK_AUTH_FAILURE) {
+      throw checkAction.payload;
     }
     
     // save the new info in state & storage

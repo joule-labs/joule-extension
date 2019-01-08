@@ -20,6 +20,7 @@ interface StateProps {
   isUpdatingMacaroons: AppState['node']['isUpdatingMacaroons'];
   updateMacaroonsError: AppState['node']['updateMacaroonsError'];
   isChangingPassword: AppState['crypto']['isChangingPassword'];
+  password: AppState['crypto']['password'];
 }
 
 interface DispatchProps {
@@ -36,14 +37,34 @@ type Props = StateProps & DispatchProps;
 class NodeSettings extends React.Component<Props> {
 
   componentWillUpdate(nextProps: Props) {
-    if (this.props.isNodeChecked !== nextProps.isNodeChecked
-        && nextProps.isNodeChecked) {
+    const { 
+      isNodeChecked, 
+      isChangingPassword, 
+      password, 
+      isUpdatingMacaroons, 
+      adminMacaroon, 
+      readonlyMacaroon 
+    } = this.props;
+
+    if (isNodeChecked !== nextProps.isNodeChecked && nextProps.isNodeChecked) {
+          // isNodeChecked false -> true
           message.success(`Connected to ${nextProps.url}`, 2);
+    }
+    if (isChangingPassword != nextProps.isChangingPassword && !isChangingPassword
+        && password !== nextProps.password) {
+          // isChangingPassword true -> false and password changed
+          message.success('Password Updated', 2);
+    }
+    const macaroonsChanged = adminMacaroon !== nextProps.adminMacaroon
+      || readonlyMacaroon != nextProps.readonlyMacaroon;
+    if (isUpdatingMacaroons && macaroonsChanged) {
+        // isUpdatingMacaroons is true and a macaroon changed
+        message.success('Macaroons Updated', 2);
     }
   }
 
   render() {
-    const { url, readonlyMacaroon, adminMacaroon, isChangingPassword } = this.props;
+    const { url, readonlyMacaroon, adminMacaroon } = this.props;
 
     return (
       <>
@@ -58,10 +79,10 @@ class NodeSettings extends React.Component<Props> {
               </Button>
           </Input.Group>
         </Form.Item>
-        <Form.Item label="Readonly Macaroon">
+        <Form.Item label="Admin Macaroon">
           <Input.Group compact className="Settings-input-group">
             <Input
-              value={readonlyMacaroon as string}
+              value={adminMacaroon as string || '<encrypted>'}
               disabled
             />
             <Button onClick={this.editMacaroons}>
@@ -69,10 +90,10 @@ class NodeSettings extends React.Component<Props> {
             </Button>
           </Input.Group>
         </Form.Item>
-        <Form.Item label="Admin Macaroon">
+        <Form.Item label="Readonly Macaroon">
           <Input.Group compact className="Settings-input-group">
             <Input
-              value={adminMacaroon as string || '<encrypted>'}
+              value={readonlyMacaroon as string}
               disabled
             />
             <Button onClick={this.editMacaroons}>
@@ -91,18 +112,7 @@ class NodeSettings extends React.Component<Props> {
           </Button>
         </Form.Item>
 
-        <Drawer
-          visible={isChangingPassword}
-          placement="right"
-          onClose={this.props.cancelChangePassword}
-          width="92%"
-          title="Change your password"
-        >
-          <CreatePassword onCreatePassword={this.props.setPassword} title="" />
-        </Drawer> 
-
         {this.renderDrawer()}
-      
       </>
     )
   }
@@ -152,13 +162,11 @@ class NodeSettings extends React.Component<Props> {
           error={updateMacaroonsError ? updateMacaroonsError.message : undefined}
         />
       );
-    } else {
-      return null;
     }
 
     return (
       <Drawer
-        visible={!!editingNodeField}
+        visible={!!cmp}
         placement="right"
         onClose={this.hideDrawer}
         width="92%"
@@ -172,13 +180,12 @@ class NodeSettings extends React.Component<Props> {
   private editNodeUrl = () => this.props.editNodeField('url');
   private editMacaroons = () => this.props.editNodeField('macaroons');
   private hideDrawer = () => this.props.isChangingPassword 
-    ? this.props.cancelChangePassword : this.props.editNodeField(null);
+    ? this.props.cancelChangePassword() : this.props.editNodeField(null);
 
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
-    settings: state.settings,
     url: state.node.url,
     readonlyMacaroon: state.node.readonlyMacaroon,
     adminMacaroon: state.node.adminMacaroon,
@@ -189,6 +196,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     updateMacaroonsError: state.node.updateMacaroonsError,
     editingNodeField: state.node.editingNodeField,
     isChangingPassword: state.crypto.isChangingPassword,
+    password: state.crypto.password,
   }),
   {
     editNodeField,
