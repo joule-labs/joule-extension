@@ -3,23 +3,38 @@ import { Radio, Icon } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import LightningSend from './LightningSend';
 import BigMessage from 'components/BigMessage';
+import { AppState } from 'store/reducers';
 import './style.less';
+import { connect } from 'react-redux';
 
-interface Props {
+interface StateProps {
+  nodeInfo: AppState['node']['nodeInfo'];
+}
+
+interface OwnProps {
   close?(): void;
 }
+
+type Props = StateProps & OwnProps;
 
 interface State {
   type: 'lightning' | 'bitcoin';
 }
 
-export default class SendForm extends React.Component<Props, State> {
+class SendForm extends React.Component<Props, State> {
   state: State = {
     type: 'lightning',
   };
 
   render() {
     const { type } = this.state;
+    const { nodeInfo } = this.props;
+
+    let blockchain = "Bitcoin";
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      blockchain = "Litecoin"
+    }
+
     const form = type === 'lightning' ? (
       <LightningSend close={this.props.close} />
     ) : (
@@ -37,7 +52,7 @@ export default class SendForm extends React.Component<Props, State> {
               <Icon type="thunderbolt" /> Lighting
             </Radio.Button>
             <Radio.Button>
-            <Icon type="link" /> Bitcoin
+            <Icon type="link" /> {blockchain}
             </Radio.Button>
           </Radio.Group>
         </div>
@@ -52,3 +67,7 @@ export default class SendForm extends React.Component<Props, State> {
     this.setState({ type: ev.target.value });
   };
 }
+
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+  nodeInfo: state.node.nodeInfo,
+}))(SendForm);

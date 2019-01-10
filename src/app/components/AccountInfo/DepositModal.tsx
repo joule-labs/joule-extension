@@ -13,6 +13,7 @@ interface StateProps {
   isFetchingDepositAddress: AppState['account']['isFetchingDepositAddress'];
   fetchDepositAddressError: AppState['account']['fetchDepositAddressError'];
   hasPassword: boolean;
+  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -41,8 +42,14 @@ class DepositModal extends React.Component<Props> {
       isOpen,
       onClose,
       hasPassword,
+      nodeInfo,
     } = this.props;
     const isVisible = !!isOpen && !!(hasPassword || fetchDepositAddressError);
+
+    let blockchain = "Bitcoin";
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      blockchain = "Litecoin"
+    }
 
     let content;
     if (depositAddress) {
@@ -86,7 +93,7 @@ class DepositModal extends React.Component<Props> {
 
     return (
       <Modal
-        title="BTC Address"
+        title={blockchain + " Address"}
         visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
@@ -106,6 +113,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     isFetchingDepositAddress: state.account.isFetchingDepositAddress,
     fetchDepositAddressError: state.account.fetchDepositAddressError,
     hasPassword: !!state.crypto.password,
+    nodeInfo: state.node.nodeInfo,
   }),
   { getDepositAddress },
 )(DepositModal);

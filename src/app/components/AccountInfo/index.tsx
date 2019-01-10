@@ -11,6 +11,7 @@ import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -40,8 +41,14 @@ class AccountInfo extends React.Component<Props, State> {
   }
 
   render() {
-    const { account } = this.props;
+    const { account, nodeInfo } = this.props;
     const { isDepositModalOpen } = this.state;
+
+    let blockchain = "Bitcoin";
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      blockchain = "Litecoin"
+    }
+
     const actions: ButtonProps[] = [{
       children: 'Deposit',
       icon: 'qrcode',
@@ -71,7 +78,7 @@ class AccountInfo extends React.Component<Props, State> {
               </div>
               <div className="AccountInfo-top-info-balances">
                 <span>Channels: <Unit value={account.channelBalance} /></span>
-                <span>Bitcoin: <Unit value={account.blockchainBalance} /></span>
+                <span>{blockchain} <Unit value={account.blockchainBalance} /></span>
               </div>
             </div>
           </div>
@@ -104,6 +111,7 @@ class AccountInfo extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
+    nodeInfo: state.node.nodeInfo,
   }),
   {
     getAccountInfo,

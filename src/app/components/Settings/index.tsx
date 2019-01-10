@@ -28,6 +28,7 @@ type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
+  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -43,7 +44,14 @@ type Props = StateProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
   render() {
-    const { settings } = this.props;
+    const { settings, nodeInfo } = this.props;
+
+    let blockchain = "Bitcoin";
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      blockchain = "Litecoin"
+    } else {
+      blockchain = 'Bitcoin'
+    }
 
     return (
       <Form className="Settings" layout="vertical">
@@ -51,7 +59,7 @@ class Settings extends React.Component<Props> {
           <h3 className="Settings-section-title">
             Units & Currencies
           </h3>
-          <Form.Item label="Bitcoin unit">
+          <Form.Item label={blockchain + " unit"}>
             <Select
               size="large"
               value={settings.denomination}
@@ -161,6 +169,7 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
+    nodeInfo: state.node.nodeInfo,
   }),
   {
     changeSettings,
