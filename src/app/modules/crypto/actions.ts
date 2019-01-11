@@ -46,12 +46,11 @@ export function cancelPassword() {
   return { type: types.CANCEL_PASSWORD };
 }
 
-export function changePassword() {
-  return { type: types.CHANGE_PASSWORD };
-}
-
-export function cancelChangePassword() {
-  return { type: types.CANCEL_CHANGE_PASSWORD };
+export function changePassword(password: string) {
+  return { 
+    type: types.CHANGE_PASSWORD,
+    payload: password,
+  };
 }
 
 export function logout() {

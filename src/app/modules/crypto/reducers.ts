@@ -7,7 +7,6 @@ export interface CryptoState {
   password: null | string;
   testCipher: null | string;
   isRequestingPassword: boolean;
-  isChangingPassword: boolean;
 }
 
 export const INITIAL_STATE: CryptoState = {
@@ -16,7 +15,6 @@ export const INITIAL_STATE: CryptoState = {
   password: null,
   testCipher: null,
   isRequestingPassword: false,
-  isChangingPassword: false,
 };
 
 export default function cryptoReducers(
@@ -62,19 +60,6 @@ export default function cryptoReducers(
         isRequestingPassword: false,
       };
     
-    case types.CHANGING_PASSWORD:
-      return {
-        ...state,
-        isChangingPassword: true,
-      }
-
-    case types.CHANGE_PASSWORD_SUCCESS:
-    case types.CANCEL_CHANGE_PASSWORD:
-      return {
-        ...state,
-        isChangingPassword: false,
-      };
-
     case types.LOGOUT:
       return {
         ...state,
