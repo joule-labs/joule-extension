@@ -1,7 +1,4 @@
-import { Fiat } from 'utils/constants';
-import types from './types';
-
-type RatesMap = { [key in Fiat]: number };
+import types, { RatesMap } from './types';
 
 export interface RatesState {
   rates: null | RatesMap;
