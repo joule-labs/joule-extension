@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Form, Input, Select, Button, Row, Col, Alert, Checkbox } from 'antd';
 import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
-import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
+import { Denomination, denominationSymbols, denominationSymbolsLTC, fiatSymbols } from 'utils/constants';
 import { fromUnitToBitcoin, fromBitcoinToUnit, fromUnitToBase } from 'utils/units';
 import { typedKeys } from 'utils/ts';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
@@ -19,6 +19,7 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
+  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -62,9 +63,14 @@ class InvoiceForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates } = this.props;
+    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates, nodeInfo } = this.props;
     const { value, valueFiat, isAnyValue, memo, expiry, fallbackAddress, denomination } = this.state;
     const disabled = (!value && !isAnyValue) || !parseInt(expiry, 10);
+
+    let symbols = denominationSymbols;
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      symbols = denominationSymbolsLTC;
+    }
 
     let content;
     if (invoice) {
@@ -121,7 +127,7 @@ class InvoiceForm extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {denominationSymbols[d]}
+                      {symbols[d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -290,6 +296,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
+    nodeInfo: state.node.nodeInfo,
   }),
   {
     createInvoice,
