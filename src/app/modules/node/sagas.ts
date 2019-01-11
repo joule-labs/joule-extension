@@ -108,7 +108,7 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
     yield call(requirePassword);
 
     // get current macaroons from state as its needed to store the new url
-    const { readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
+    const { url, readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
     const { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
 
     // connect to the url to test if it's working
@@ -117,6 +117,8 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
 
     // check for an error connecting to the node
     if (checkAction.type === types.CHECK_NODE_FAILURE) {
+      // reset url in redux because checkNode will set it to null before checking
+      yield put(actions.setNode(url, adminMacaroon, readonlyMacaroon));
       throw checkAction.payload;
     }
 
