@@ -23,7 +23,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  // editNodeField: typeof editNodeField;
   updateNodeUrl: typeof updateNodeUrl;
   updateMacaroons: typeof updateMacaroons;
   changePassword: typeof changePassword;
@@ -56,22 +55,22 @@ class NodeSettings extends React.Component<Props, State> {
     } = this.props;
 
     if (isNodeChecked !== nextProps.isNodeChecked && nextProps.isNodeChecked) {
-          // isNodeChecked false -> true
-          message.success(`Connected to ${nextProps.url}`, 2);
-          this.hideDrawer();
+      // isNodeChecked false -> true
+      message.success(`Connected to ${nextProps.url}`, 2);
+      this.hideDrawer();
     }
     if (isChangingPassword !== nextProps.isChangingPassword && !isChangingPassword
         && password !== nextProps.password) {
-          // isChangingPassword true -> false and password changed
-          message.success('Password Updated', 2);
+      // isChangingPassword true -> false and password changed
+      message.success('Password Updated', 2);
     }
     const macaroonsChanged = adminMacaroon !== nextProps.adminMacaroon
       || readonlyMacaroon !== nextProps.readonlyMacaroon;
     if (isUpdatingMacaroons && macaroonsChanged) {
-        // isUpdatingMacaroons is true and a macaroon changed
-        message.success('Macaroons Updated', 2);
-        this.hideDrawer();
-      }
+      // isUpdatingMacaroons is true and a macaroon changed
+      message.success('Macaroons Updated', 2);
+      this.hideDrawer();
+    }
   }
 
   render() {
