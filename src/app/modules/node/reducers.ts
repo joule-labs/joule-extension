@@ -1,5 +1,5 @@
 import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
-import types, { EditingNodeField } from './types';
+import types from './types';
 import settingsTypes from 'modules/settings/types';
 
 export interface NodeState {
@@ -17,7 +17,6 @@ export interface NodeState {
   isFetchingNodeInfo: boolean;
   fetchNodeInfoError: null | Error;
   
-  editingNodeField: EditingNodeField;
   isUpdatingNodeUrl: boolean;
   updateNodeUrlError: null | Error;
   isUpdatingMacaroons: boolean;
@@ -43,7 +42,6 @@ export const INITIAL_STATE: NodeState = {
   updateNodeUrlError: null,
   isUpdatingMacaroons: false,
   updateMacaroonsError: null,
-  editingNodeField: null,
 };
 
 export default function cryptoReducers(
@@ -94,12 +92,6 @@ export default function cryptoReducers(
         isCheckingAuth: false,
         checkAuthError: action.payload,
       };
-    
-    case types.SET_EDITING_NODE_FIELD:
-      return {
-        ...state,
-        editingNodeField: action.payload
-      };
 
     case types.UPDATE_NODE_URL:
       return {
@@ -111,7 +103,6 @@ export default function cryptoReducers(
       return {
         ...state,
         isUpdatingNodeUrl: false,
-        editingNodeField: null
       };
     case types.UPDATE_NODE_URL_FAILURE:
       return {
@@ -130,7 +121,6 @@ export default function cryptoReducers(
       return {
         ...state,
         isUpdatingMacaroons: false,
-        editingNodeField: null
       };
     case types.UPDATE_MACAROONS_FAILURE:
       return {

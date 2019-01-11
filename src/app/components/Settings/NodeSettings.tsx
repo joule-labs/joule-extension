@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, Input, Button, Icon, Drawer, message } from 'antd';
-import { editNodeField, updateNodeUrl, updateMacaroons } from 'modules/node/actions';
+import { updateNodeUrl, updateMacaroons } from 'modules/node/actions';
 import { changePassword, setPassword, cancelChangePassword } from 'modules/crypto/actions';
 import CreatePassword from 'components/CreatePassword';
 import InputAddress from 'components/SelectNode/InputAddress';
@@ -14,7 +14,6 @@ interface StateProps {
   readonlyMacaroon: AppState['node']['readonlyMacaroon'];
   adminMacaroon: AppState['node']['adminMacaroon'];
   isNodeChecked: AppState['node']['isNodeChecked'];
-  editingNodeField: AppState['node']['editingNodeField'];
   isUpdatingNodeUrl: AppState['node']['isUpdatingNodeUrl'];
   updateNodeUrlError: AppState['node']['updateNodeUrlError'];
   isUpdatingMacaroons: AppState['node']['isUpdatingMacaroons'];
@@ -24,7 +23,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  editNodeField: typeof editNodeField;
+  // editNodeField: typeof editNodeField;
   updateNodeUrl: typeof updateNodeUrl;
   updateMacaroons: typeof updateMacaroons;
   changePassword: typeof changePassword;
@@ -34,7 +33,17 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps;
 
-class NodeSettings extends React.Component<Props> {
+interface State {
+  editingNodeField: null | 'url' | 'macaroons',
+}
+
+class NodeSettings extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      editingNodeField: null
+    };
+  }
 
   componentWillUpdate(nextProps: Props) {
     const { 
@@ -49,6 +58,7 @@ class NodeSettings extends React.Component<Props> {
     if (isNodeChecked !== nextProps.isNodeChecked && nextProps.isNodeChecked) {
           // isNodeChecked false -> true
           message.success(`Connected to ${nextProps.url}`, 2);
+          this.hideDrawer();
     }
     if (isChangingPassword !== nextProps.isChangingPassword && !isChangingPassword
         && password !== nextProps.password) {
@@ -60,7 +70,8 @@ class NodeSettings extends React.Component<Props> {
     if (isUpdatingMacaroons && macaroonsChanged) {
         // isUpdatingMacaroons is true and a macaroon changed
         message.success('Macaroons Updated', 2);
-    }
+        this.hideDrawer();
+      }
   }
 
   render() {
@@ -127,13 +138,13 @@ class NodeSettings extends React.Component<Props> {
       url,
       adminMacaroon,
       readonlyMacaroon,
-      editingNodeField, 
       isUpdatingNodeUrl, 
       updateNodeUrlError,
       isUpdatingMacaroons,
       updateMacaroonsError,
       isChangingPassword,
     } = this.props
+    const { editingNodeField } = this.state;
 
     let title;
     let cmp;
@@ -177,10 +188,10 @@ class NodeSettings extends React.Component<Props> {
     )
   };
 
-  private editNodeUrl = () => this.props.editNodeField('url');
-  private editMacaroons = () => this.props.editNodeField('macaroons');
+  private editNodeUrl = () => this.setState({ editingNodeField: 'url' });
+  private editMacaroons = () => this.setState({ editingNodeField: 'macaroons' });
   private hideDrawer = () => this.props.isChangingPassword 
-    ? this.props.cancelChangePassword() : this.props.editNodeField(null);
+    ? this.props.cancelChangePassword() : this.setState({ editingNodeField: null });
 
 }
 
@@ -194,12 +205,10 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     updateNodeUrlError: state.node.updateNodeUrlError,
     isUpdatingMacaroons: state.node.isUpdatingMacaroons,
     updateMacaroonsError: state.node.updateMacaroonsError,
-    editingNodeField: state.node.editingNodeField,
     isChangingPassword: state.crypto.isChangingPassword,
     password: state.crypto.password,
   }),
   {
-    editNodeField,
     updateNodeUrl,
     updateMacaroons,
     changePassword,
