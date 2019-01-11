@@ -22,11 +22,25 @@ export const denominationSymbols: { [key in Denomination]: string } = {
   BITCOIN: 'BTC',
 };
 
+export const denominationSymbolsLTC: { [key in Denomination]: string } = {
+  SATOSHIS: 'lits',
+  BITS: 'phots',
+  MILLIBITCOIN: 'mLTC',
+  BITCOIN: 'LTC',
+};
+
 export const denominationNames: { [key in Denomination]: string } = {
   SATOSHIS: 'Satoshis',
   BITS: 'Microbitcoin',
   MILLIBITCOIN: 'Millibitcoin',
   BITCOIN: 'Bitcoin',
+};
+
+export const denominationNamesLTC: { [key in Denomination]: string } = {
+  SATOSHIS: 'litoshis',
+  BITS: 'photons',
+  MILLIBITCOIN: 'lites',
+  BITCOIN: 'Litecoin',
 };
 
 export enum Fiat {

@@ -18,6 +18,8 @@ import {
   Fiat,
   denominationNames,
   denominationSymbols,
+  denominationNamesLTC,
+  denominationSymbolsLTC,
   fiatSymbols,
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
@@ -47,10 +49,12 @@ class Settings extends React.Component<Props> {
     const { settings, nodeInfo } = this.props;
 
     let blockchain = "Bitcoin";
+    let names = denominationNames;
+    let symbols = denominationSymbols;
     if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      blockchain = "Litecoin"
-    } else {
-      blockchain = 'Bitcoin'
+      blockchain = "Litecoin";
+      names = denominationNamesLTC;
+      symbols = denominationSymbolsLTC
     }
 
     return (
@@ -68,7 +72,7 @@ class Settings extends React.Component<Props> {
             >
               {typedKeys(Denomination).map(d => (
                 <Select.Option key={d} value={d}>
-                  {denominationNames[d]} ({denominationSymbols[d]})
+                  {names[d]} ({symbols[d]})
                 </Select.Option>
               ))}
             </Select>
