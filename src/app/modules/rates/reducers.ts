@@ -3,8 +3,12 @@ import types from './types';
 
 type RatesMap = { [key in Fiat]: number };
 
+interface Rates {
+  [key: string]: RatesMap
+}
+
 export interface RatesState {
-  rates: null | RatesMap;
+  rates: null | Rates;
   isFetchingRates: boolean;
   fetchRatesError: Error | null;
 }

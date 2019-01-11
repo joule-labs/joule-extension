@@ -21,6 +21,7 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
+  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -168,9 +169,14 @@ class InvoicePrompt extends React.Component<Props, State> {
   }
 
   private renderHelp = () => {
-    const { rates, fiat, isNoFiat } = this.props;
+    const { rates, fiat, isNoFiat, nodeInfo } = this.props;
     const { value, denomination } = this.state;
     const helpPieces = [];
+
+    let rateSelector = 'btcRate';
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      rateSelector = 'ltcRate';
+    }
 
     if (this.args.amount) {
       helpPieces.push(
@@ -207,7 +213,7 @@ class InvoicePrompt extends React.Component<Props, State> {
       const fiatAmt = fromUnitToFiat(
         value,
         denomination,
-        rates[fiat],
+        rates[rateSelector][fiat],
         fiatSymbols[fiat],
       );
       helpPieces.push(
@@ -296,6 +302,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
+    nodeInfo: state.node.nodeInfo,
   }),
   { createInvoice },
 )(InvoicePrompt);

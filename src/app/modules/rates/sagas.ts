@@ -8,7 +8,9 @@ import types from './types';
 export function* handleFetchRates(): SagaIterator {
   try {
     const fiats = Object.keys(Fiat);
-    const rates = yield call(apiFetchRates, 'BTC', fiats);
+    const btcRate = yield call(apiFetchRates, 'BTC', fiats);
+    const ltcRate = yield call(apiFetchRates, 'LTC', fiats);
+    const rates = { btcRate, ltcRate }
     yield put({ type: types.FETCH_RATES_SUCCESS, payload: rates });
   } catch(err) {
     yield put({ type: types.FETCH_RATES_FAILURE, payload: err });

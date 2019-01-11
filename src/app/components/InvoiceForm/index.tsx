@@ -247,21 +247,26 @@ class InvoiceForm extends React.Component<Props, State> {
   };
 
   private updateBothValues = (name: string, val: string) => {
-    const { fiat, rates } = this.props;
+    const { fiat, rates, nodeInfo } = this.props;
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
+
+    let rateSelector = 'btcRate';
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      rateSelector = 'ltcRate';
+    }
   
     if (name === 'value') {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
-        valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
+        valueFiat = (rates[rateSelector][fiat] * parseFloat(btc)).toFixed(2);
       }
     }
     else {
       valueFiat = val;
       if (rates) {
-        const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
+        const btc = (parseFloat(valueFiat) / rates[rateSelector][fiat]).toFixed(8);
         value = fromBitcoinToUnit(btc, denomination);
       }
     }

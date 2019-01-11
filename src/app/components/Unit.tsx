@@ -1,6 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { denominationSymbols, Denomination, fiatSymbols } from 'utils/constants';
+import {
+  denominationSymbols,
+  Denomination,
+  fiatSymbols,
+  denominationSymbolsLTC,
+} from 'utils/constants';
 import { fromBaseToUnit, fromUnitToFiat } from 'utils/units';
 import { commaify } from 'utils/formatters';
 import { AppState } from 'store/reducers';
@@ -11,6 +16,7 @@ interface StateProps {
   denomination: AppState['settings']['denomination'];
   isFiatPrimary: AppState['settings']['isFiatPrimary'];
   isNoFiat: AppState['settings']['isNoFiat'];
+  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface OwnProps {
@@ -34,7 +40,15 @@ class Unit extends React.Component<Props> {
       denomination,
       isFiatPrimary,
       isNoFiat,
+      nodeInfo,
     } = this.props;
+
+    let rateSelector = 'btcRate';
+    let symbols = denominationSymbols;
+    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
+      rateSelector = 'ltcRate';
+      symbols = denominationSymbolsLTC;
+    }
 
     // Store & remove negative
     const prefix = value[0] === '-' ? '-' : showPlus ? '+' : '';
@@ -43,15 +57,15 @@ class Unit extends React.Component<Props> {
     const adjustedValue = fromBaseToUnit(value, denomination);
     const bitcoinEl = <>
       {commaify(adjustedValue)}
-      {!hideUnit && <small>{' '}{denominationSymbols[denomination]}</small>}
+      {!hideUnit && <small>{' '}{symbols[denomination]}</small>}
     </>;
 
     let fiatEl = '';
-    if (rates && rates[fiat]) {
+    if (rates && rates[rateSelector][fiat]) {
       fiatEl = fromUnitToFiat(
         value,
         Denomination.SATOSHIS,
-        rates[fiat],
+        rates[rateSelector][fiat],
         fiatSymbols[fiat],
       );
     }
@@ -79,4 +93,5 @@ export default connect<StateProps, {}, OwnProps, AppState>(state => ({
   denomination: state.settings.denomination,
   isFiatPrimary: state.settings.isFiatPrimary,
   isNoFiat: state.settings.isNoFiat,
+  nodeInfo: state.node.nodeInfo,
 }))(Unit);

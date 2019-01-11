@@ -24,9 +24,9 @@ export const denominationSymbols: { [key in Denomination]: string } = {
 
 export const denominationSymbolsLTC: { [key in Denomination]: string } = {
   SATOSHIS: 'lits',
-  BITS: 'phots',
-  MILLIBITCOIN: 'mLTC',
-  BITCOIN: 'LTC',
+  BITS: 'mł',
+  MILLIBITCOIN: 'ł',
+  BITCOIN: 'Ł',
 };
 
 export const denominationNames: { [key in Denomination]: string } = {
@@ -37,9 +37,9 @@ export const denominationNames: { [key in Denomination]: string } = {
 };
 
 export const denominationNamesLTC: { [key in Denomination]: string } = {
-  SATOSHIS: 'litoshis',
-  BITS: 'photons',
-  MILLIBITCOIN: 'lites',
+  SATOSHIS: 'Litoshis',
+  BITS: 'Photons',
+  MILLIBITCOIN: 'Lites',
   BITCOIN: 'Litecoin',
 };
 
