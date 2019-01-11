@@ -46,7 +46,7 @@ class AccountInfo extends React.Component<Props, State> {
 
     let blockchain = "Bitcoin";
     if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      blockchain = "Litecoin"
+      blockchain = "Litecoin";
     }
 
     const actions: ButtonProps[] = [{

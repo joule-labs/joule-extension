@@ -48,7 +48,7 @@ class DepositModal extends React.Component<Props> {
 
     let blockchain = "Bitcoin";
     if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      blockchain = "Litecoin"
+      blockchain = "Litecoin";
     }
 
     let content;

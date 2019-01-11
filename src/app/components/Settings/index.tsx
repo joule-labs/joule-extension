@@ -54,7 +54,7 @@ class Settings extends React.Component<Props> {
     if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
       blockchain = "Litecoin";
       names = denominationNamesLTC;
-      symbols = denominationSymbolsLTC
+      symbols = denominationSymbolsLTC;
     }
 
     return (
