@@ -59,7 +59,7 @@ export default function cryptoReducers(
         ...state,
         isRequestingPassword: false,
       };
-    
+
     case types.LOGOUT:
       return {
         ...state,
