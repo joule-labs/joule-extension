@@ -67,7 +67,6 @@ class InvoicePrompt extends React.Component<Props, State> {
     const isConfirmDisabled = !!amountError;
     const isValueDisabled = !!this.args.amount;
     const amountHelp = this.renderHelp();
-    console.log(amountError);
 
     return (
       <PromptTemplate
