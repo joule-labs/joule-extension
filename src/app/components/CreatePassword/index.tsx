@@ -9,7 +9,7 @@ interface Props {
   testCipher?: AppState['crypto']['testCipher'];
   salt?: AppState['crypto']['salt'];
   requestCurrentPassword?: boolean;
-  onCreatePassword(password: string): void;
+  onCreatePassword(newPassword: string, currPassword?: string): void;
 }
 
 interface State {
@@ -79,7 +79,7 @@ export default class CreatePassword extends React.Component<Props, State> {
       }
     }
     
-    this.props.onCreatePassword(password1);
+    this.props.onCreatePassword(password1, currPassword);
   };
 
   render() {
@@ -99,7 +99,12 @@ export default class CreatePassword extends React.Component<Props, State> {
         <h2 className="CreatePassword-title">{labels.title}</h2>
 
         {requestCurrentPassword && (
-          <Form.Item label="Current Password" validateStatus={currPassErr ? 'error' : undefined}>
+          <Form.Item
+            className="CreatePassword-current"
+            label="Current Password"
+            validateStatus={currPassErr ? 'error' : undefined}
+            help={currPassErr}
+          >
             <Input
               name="currentPass"
               value={currPassword}

@@ -46,26 +46,24 @@ class NodeSettings extends React.Component<Props, State> {
   componentWillUpdate(nextProps: Props) {
     const { 
       isNodeChecked, 
-      password, 
+      salt, 
       isUpdatingMacaroons, 
       adminMacaroon, 
       readonlyMacaroon 
     } = this.props;
+    const { editingNodeField } = this.state;
 
     if (isNodeChecked !== nextProps.isNodeChecked && nextProps.isNodeChecked) {
-      // isNodeChecked false -> true
       message.success(`Connected to ${nextProps.url}`, 2);
       this.hideDrawer();
     }
     const macaroonsChanged = adminMacaroon !== nextProps.adminMacaroon
                           || readonlyMacaroon !== nextProps.readonlyMacaroon;
     if (isUpdatingMacaroons && macaroonsChanged) {
-      // isUpdatingMacaroons is true and a macaroon changed
       message.success('Macaroons Updated', 2);
       this.hideDrawer();
     }
-    if (password !== nextProps.password) {
-      // isChangingPassword true -> false and password changed
+    if (editingNodeField === 'password' && salt !== nextProps.salt) {
       message.success('Password Updated', 2);
       this.hideDrawer();
     }

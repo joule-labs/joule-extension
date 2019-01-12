@@ -46,10 +46,13 @@ export function cancelPassword() {
   return { type: types.CANCEL_PASSWORD };
 }
 
-export function changePassword(password: string) {
+export function changePassword(newPassword: string, currPassword: string) {
   return { 
     type: types.CHANGE_PASSWORD,
-    payload: password,
+    payload: {
+      currPassword,
+      newPassword
+    },
   };
 }
 

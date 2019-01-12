@@ -31,14 +31,16 @@
   .ant-form-item {
     margin-bottom: 0.5rem;
   }
-
-  .ant-form-item-control.has-error {
-    animation: error-shake 400ms ease-out 1;
-  }
   
   &-title {
     font-size: 1.5rem;
     text-align: center;
+  }
+
+  &-current {
+    .ant-form-item-control.has-error {
+      animation: error-shake 400ms ease-out 1;
+    }
   }
 
   &-label {
