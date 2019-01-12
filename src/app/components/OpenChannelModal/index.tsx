@@ -201,6 +201,9 @@ class PeersModal extends React.Component<Props, State> {
         visible={isVisible}
         onCancel={handleClose}
         onOk={this.openChannel}
+        closable={!isOpeningChannel}
+        maskClosable={!isOpeningChannel}
+        cancelButtonDisabled={isOpeningChannel}
         confirmLoading={isOpeningChannel}
         className="OpenChannel"
         width={450}
