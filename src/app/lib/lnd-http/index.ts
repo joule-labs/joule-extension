@@ -1,5 +1,5 @@
 import { stringify } from 'query-string';
-import { parseNodeErrorResponse } from './utils';
+import { parseNodeErrorResponse, txIdBytesToHex } from './utils';
 import { NetworkError, SendTransactionError } from './errors';
 import * as T from './types';
 export * from './errors';
@@ -244,6 +244,20 @@ export class LndHttpClient {
       '/v1/peers',
       { addr, perm },
     );
+  };
+
+  openChannel = (params: T.OpenChannelParams) => {
+    return this.request<T.OpenChannelResponse, T.OpenChannelParams>(
+      'POST',
+      '/v1/channels',
+      params,
+    ).then(res => {
+      return {
+        output_index: '0',
+        funding_txid_str: txIdBytesToHex(res.funding_txid_bytes),
+        ...res,
+      }
+    });
   };
 
   // Internal fetch function

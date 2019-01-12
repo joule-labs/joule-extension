@@ -91,13 +91,13 @@ class AmountField extends React.Component<Props, State> {
       help,
     } = this.props;
     const { value, valueFiat, denomination } = this.state;
-    const amountError = this.getValueError();
+    const valueError = this.getValueError();
 
     return (
       <Form.Item
         label={label}
-        help={amountError || help}
-        validateStatus={value && amountError ? 'error' : undefined}
+        help={valueError || help}
+        validateStatus={value && valueError ? 'error' : undefined}
         className="AmountField"
         required={required}
       >
@@ -131,17 +131,19 @@ class AmountField extends React.Component<Props, State> {
               <div className="AmountField-divider">
                 or
               </div>
-              <Input
-                size={size}
-                type="number"
-                name="valueFiat"
-                value={valueFiat}
-                onChange={this.handleChangeValue}
-                addonBefore={fiatSymbols[fiat]}
-                placeholder="1.00"
-                disabled={!rates || disabled}
-                step="any"
-              />
+              <div className="AmountField-fiat">
+                <Input
+                  size={size}
+                  type="number"
+                  name="valueFiat"
+                  value={valueFiat}
+                  onChange={this.handleChangeValue}
+                  addonBefore={fiatSymbols[fiat]}
+                  placeholder="1.00"
+                  disabled={!rates || disabled}
+                  step="any"
+                />
+              </div>
             </>
           )}
         </div>
@@ -156,13 +158,15 @@ class AmountField extends React.Component<Props, State> {
     if (maximumSats) {
       const max = new BN(maximumSats);
       if (max.lt(valueBN)) {
-        return 'Amount exceeds maximum';
+        const maxAmount = `${fromBaseToUnit(max.toString(), denomination)} ${denominationSymbols[denomination]}`;
+        return `Amount exceeds maximum (${maxAmount})`;
       }
     }
     if (minimumSats) {
       const min = new BN(minimumSats);
       if (min.gte(valueBN)) {
-        return 'Amount is less than minimum';
+        const minAmount = `${fromBaseToUnit(min.toString(), denomination)} ${denominationSymbols[denomination]}`;
+        return `Amount is less than minimum (${minAmount})`;
       }
     }
   };

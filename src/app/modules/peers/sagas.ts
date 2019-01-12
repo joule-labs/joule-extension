@@ -2,7 +2,7 @@ import { SagaIterator } from 'redux-saga';
 import { takeLatest, select, call, all, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
-import { safeGetNodeInfo } from 'utils/misc';
+import { safeGetNodeInfo, safeConnectPeer } from 'utils/misc';
 import { addPeer } from './actions';
 import types from './types';
 
@@ -33,7 +33,7 @@ export function* handleAddPeer(action: ReturnType<typeof addPeer>): SagaIterator
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    yield call(nodeLib.connectPeer, action.payload);
+    yield call(safeConnectPeer, nodeLib, action.payload);
     yield call(handleGetPeers);
     yield put({ type: types.ADD_PEER_SUCCESS });
   } catch(err) {

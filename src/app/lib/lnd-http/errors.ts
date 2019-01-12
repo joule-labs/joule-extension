@@ -92,3 +92,10 @@ export class NoRouteError extends Error {
     fixError(this, new.target, NoRouteError);
   }
 }
+
+export class AlreadyConnectedError extends Error {
+  constructor(message: string) {
+    super(message);
+    fixError(this, new.target, AlreadyConnectedError);
+  }
+}

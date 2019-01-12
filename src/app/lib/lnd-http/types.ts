@@ -271,3 +271,22 @@ export interface ConnectPeerArguments {
   addr: LightningAddress;
   perm?: boolean;
 }
+
+export interface OpenChannelParams {
+  node_pubkey_string: string;
+  local_funding_amount: string;
+  remote_csv_delay?: string;
+  target_conf?: string;
+  min_confs?: number;
+  sat_per_byte?: string;
+  private?: boolean;
+  push_sat?: string;
+  min_htlc_msat?: string;
+  spend_unconfirmed?: boolean;
+}
+
+export interface OpenChannelResponse {
+  funding_txid_bytes: string;
+  funding_txid_str: string;
+  output_index: string;
+}

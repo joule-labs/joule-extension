@@ -30,7 +30,7 @@ export default class SettingsMenu extends React.Component<{}, State> {
         </Menu.Item>
         <Menu.Item key="peers" onClick={this.openPeersModal}>
           <a>
-            <Icon type="team" /> Peers
+            <Icon type="team" /> Manage peers
           </a>
         </Menu.Item>
         <Menu.Divider />
