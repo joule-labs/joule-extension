@@ -8,10 +8,11 @@ import DepositModal from './DepositModal';
 import { getAccountInfo } from 'modules/account/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { getNodeChain } from 'modules/node/selectors';
+import { blockchainDisplayName, CHAIN_TYPE } from 'utils/constants';
 
 interface StateProps {
   account: AppState['account']['account'];
-  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -19,6 +20,7 @@ interface DispatchProps {
 }
 
 interface OwnProps {
+  chain: CHAIN_TYPE;
   onSendClick(): void;
   onInvoiceClick(): void;
 }
@@ -41,13 +43,8 @@ class AccountInfo extends React.Component<Props, State> {
   }
 
   render() {
-    const { account, nodeInfo } = this.props;
+    const { account, chain } = this.props;
     const { isDepositModalOpen } = this.state;
-
-    let blockchain = "Bitcoin";
-    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      blockchain = "Litecoin";
-    }
 
     const actions: ButtonProps[] = [{
       children: 'Deposit',
@@ -74,11 +71,11 @@ class AccountInfo extends React.Component<Props, State> {
             <div className="AccountInfo-top-info">
               <div className="AccountInfo-top-info-alias">{account.alias}</div>
               <div className="AccountInfo-top-info-balance">
-                <Unit value={account.totalBalance} showFiat />
+                <Unit value={account.totalBalance} chain={chain} showFiat />
               </div>
               <div className="AccountInfo-top-info-balances">
-                <span>Channels: <Unit value={account.channelBalance} /></span>
-                <span>{blockchain} <Unit value={account.blockchainBalance} /></span>
+                <span>Channels: <Unit value={account.channelBalance} chain={chain} /></span>
+                <span>{blockchainDisplayName[chain]}: <Unit value={account.blockchainBalance} chain={chain} /></span>
               </div>
             </div>
           </div>
@@ -96,6 +93,7 @@ class AccountInfo extends React.Component<Props, State> {
 
         {account &&
           <DepositModal
+            chain={chain}
             isOpen={isDepositModalOpen}
             onClose={this.closeDepositModal}
           />
@@ -111,7 +109,7 @@ class AccountInfo extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
-    nodeInfo: state.node.nodeInfo,
+    chain: getNodeChain(state),
   }),
   {
     getAccountInfo,

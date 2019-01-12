@@ -18,19 +18,22 @@ import {
   Fiat,
   denominationNames,
   denominationSymbols,
-  denominationNamesLTC,
-  denominationSymbolsLTC,
   fiatSymbols,
+  blockchainDisplayName,
+  CHAIN_TYPE,
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
-  nodeInfo: AppState['node']['nodeInfo'];
+}
+interface OwnProps {
+  chain: CHAIN_TYPE;
 }
 
 interface DispatchProps {
@@ -42,20 +45,11 @@ interface DispatchProps {
   removeRejectedDomain: typeof removeRejectedDomain;
 }
 
-type Props = StateProps & DispatchProps & RouteComponentProps;
+type Props = StateProps & OwnProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
   render() {
-    const { settings, nodeInfo } = this.props;
-
-    let blockchain = "Bitcoin";
-    let names = denominationNames;
-    let symbols = denominationSymbols;
-    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      blockchain = "Litecoin";
-      names = denominationNamesLTC;
-      symbols = denominationSymbolsLTC;
-    }
+    const { settings, chain } = this.props;
 
     return (
       <Form className="Settings" layout="vertical">
@@ -63,7 +57,7 @@ class Settings extends React.Component<Props> {
           <h3 className="Settings-section-title">
             Units & Currencies
           </h3>
-          <Form.Item label={blockchain + " unit"}>
+          <Form.Item label={blockchainDisplayName[chain] + " unit"}>
             <Select
               size="large"
               value={settings.denomination}
@@ -72,7 +66,7 @@ class Settings extends React.Component<Props> {
             >
               {typedKeys(Denomination).map(d => (
                 <Select.Option key={d} value={d}>
-                  {names[d]} ({symbols[d]})
+                  {denominationNames[chain][d]} ({denominationSymbols[chain][d]})
                 </Select.Option>
               ))}
             </Select>
@@ -173,7 +167,7 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
-    nodeInfo: state.node.nodeInfo,
+    chain: getNodeChain(state),
   }),
   {
     changeSettings,

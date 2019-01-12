@@ -7,15 +7,11 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { AnyTransaction } from 'modules/account/types';
 import { isInvoice, isBitcoinTx } from 'utils/typeguards';
-import BitcoinLogo from 'static/images/bitcoin.svg';
-import LitecoinLogo from 'static/images/litecoin.svg';
 import './TransactionRow.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
-
-interface StateProps {
-  nodeInfo: AppState['node']['nodeInfo'];
-}
+import { blockchainLogos, CHAIN_TYPE } from 'utils/constants';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface OwnProps {
   source: AnyTransaction;
@@ -25,19 +21,15 @@ interface OwnProps {
   status: 'complete' | 'pending' | 'rejected' | 'expired';
   pubkey?: string;
   delta?: BN | false | null;
+  chain: CHAIN_TYPE;
   onClick?(source: AnyTransaction): void;
 }
 
-type Props = StateProps & OwnProps;
+type Props = OwnProps;
 
 class TransactionRow extends React.Component<Props> {
   render() {
-    const { pubkey, timestamp, status, delta, onClick, source, title, nodeInfo } = this.props;
-
-    let logo = BitcoinLogo;
-    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      logo = LitecoinLogo;
-    }
+    const { pubkey, timestamp, status, delta, onClick, source, title, chain } = this.props;
 
     let icon;
     if (pubkey) {
@@ -51,7 +43,7 @@ class TransactionRow extends React.Component<Props> {
     } else if (isBitcoinTx(source)) {
       icon = (
         <div className="TransactionRow-avatar-img is-icon is-bitcoin">
-          <Icon component={logo} />
+          <Icon component={blockchainLogos[chain]} />
         </div>
       );
     }
@@ -77,7 +69,7 @@ class TransactionRow extends React.Component<Props> {
           <div className={
             classnames(`TransactionRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`)
           }>
-            <Unit value={delta.toString()} showPlus showFiat />
+            <Unit value={delta.toString()} chain={chain} showPlus showFiat />
           </div>
         }
       </div>
@@ -91,6 +83,6 @@ class TransactionRow extends React.Component<Props> {
   };
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(state => ({
-  nodeInfo: state.node.nodeInfo,
+export default connect<{}, {}, OwnProps, AppState>(state => ({
+  chain: getNodeChain(state),
 }))(TransactionRow);

@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import { Form, Input, Select, Button, Row, Col, Alert, Checkbox } from 'antd';
 import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
-import { Denomination, denominationSymbols, denominationSymbolsLTC, fiatSymbols } from 'utils/constants';
+import { CHAIN_TYPE, Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
 import { fromUnitToBitcoin, fromBitcoinToUnit, fromUnitToBase } from 'utils/units';
 import { typedKeys } from 'utils/ts';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -19,7 +20,6 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
-  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -28,6 +28,7 @@ interface DispatchProps {
 }
 
 interface OwnProps {
+  chain: CHAIN_TYPE;
   close?(): void;
 }
 
@@ -63,14 +64,9 @@ class InvoiceForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates, nodeInfo } = this.props;
+    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates, chain } = this.props;
     const { value, valueFiat, isAnyValue, memo, expiry, fallbackAddress, denomination } = this.state;
     const disabled = (!value && !isAnyValue) || !parseInt(expiry, 10);
-
-    let symbols = denominationSymbols;
-    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      symbols = denominationSymbolsLTC;
-    }
 
     let content;
     if (invoice) {
@@ -127,7 +123,7 @@ class InvoiceForm extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {symbols[d]}
+                      {denominationSymbols[chain][d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -247,26 +243,21 @@ class InvoiceForm extends React.Component<Props, State> {
   };
 
   private updateBothValues = (name: string, val: string) => {
-    const { fiat, rates, nodeInfo } = this.props;
+    const { fiat, rates, chain } = this.props;
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
-
-    let rateSelector = 'btcRate';
-    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      rateSelector = 'ltcRate';
-    }
   
     if (name === 'value') {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
-        valueFiat = (rates[rateSelector][fiat] * parseFloat(btc)).toFixed(2);
+        valueFiat = (rates[chain][fiat] * parseFloat(btc)).toFixed(2);
       }
     }
     else {
       valueFiat = val;
       if (rates) {
-        const btc = (parseFloat(valueFiat) / rates[rateSelector][fiat]).toFixed(8);
+        const btc = (parseFloat(valueFiat) / rates[chain][fiat]).toFixed(8);
         value = fromBitcoinToUnit(btc, denomination);
       }
     }
@@ -301,7 +292,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
-    nodeInfo: state.node.nodeInfo,
+    chain: getNodeChain(state),
   }),
   {
     createInvoice,

@@ -4,11 +4,12 @@ import {
   denominationSymbols,
   Denomination,
   fiatSymbols,
-  denominationSymbolsLTC,
+  CHAIN_TYPE,
 } from 'utils/constants';
 import { fromBaseToUnit, fromUnitToFiat } from 'utils/units';
 import { commaify } from 'utils/formatters';
 import { AppState } from 'store/reducers';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   rates: AppState['rates']['rates'];
@@ -16,7 +17,6 @@ interface StateProps {
   denomination: AppState['settings']['denomination'];
   isFiatPrimary: AppState['settings']['isFiatPrimary'];
   isNoFiat: AppState['settings']['isNoFiat'];
-  nodeInfo: AppState['node']['nodeInfo'];
 }
 
 interface OwnProps {
@@ -24,6 +24,7 @@ interface OwnProps {
   hideUnit?: boolean;
   showFiat?: boolean;
   showPlus?: boolean;
+  chain: CHAIN_TYPE;
 }
 
 type Props = StateProps & OwnProps;
@@ -40,15 +41,8 @@ class Unit extends React.Component<Props> {
       denomination,
       isFiatPrimary,
       isNoFiat,
-      nodeInfo,
+      chain,
     } = this.props;
-
-    let rateSelector = 'btcRate';
-    let symbols = denominationSymbols;
-    if (nodeInfo && nodeInfo.chains[0] === 'litecoin') {
-      rateSelector = 'ltcRate';
-      symbols = denominationSymbolsLTC;
-    }
 
     // Store & remove negative
     const prefix = value[0] === '-' ? '-' : showPlus ? '+' : '';
@@ -57,15 +51,15 @@ class Unit extends React.Component<Props> {
     const adjustedValue = fromBaseToUnit(value, denomination);
     const bitcoinEl = <>
       {commaify(adjustedValue)}
-      {!hideUnit && <small>{' '}{symbols[denomination]}</small>}
+      {!hideUnit && <small>{' '}{denominationSymbols[chain][denomination]}</small>}
     </>;
 
     let fiatEl = '';
-    if (rates && rates[rateSelector][fiat]) {
+    if (rates && rates[chain][fiat]) {
       fiatEl = fromUnitToFiat(
         value,
         Denomination.SATOSHIS,
-        rates[rateSelector][fiat],
+        rates[chain][fiat],
         fiatSymbols[fiat],
       );
     }
@@ -93,5 +87,5 @@ export default connect<StateProps, {}, OwnProps, AppState>(state => ({
   denomination: state.settings.denomination,
   isFiatPrimary: state.settings.isFiatPrimary,
   isNoFiat: state.settings.isNoFiat,
-  nodeInfo: state.node.nodeInfo,
+  chain: getNodeChain(state),
 }))(Unit);

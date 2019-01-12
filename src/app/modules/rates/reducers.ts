@@ -1,10 +1,10 @@
-import { Fiat } from 'utils/constants';
+import { CHAIN_TYPE, Fiat } from 'utils/constants';
 import types from './types';
 
 type RatesMap = { [key in Fiat]: number };
 
-interface Rates {
-  [key: string]: RatesMap
+type Rates = {
+  [key in CHAIN_TYPE]: RatesMap
 }
 
 export interface RatesState {
