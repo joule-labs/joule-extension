@@ -49,7 +49,7 @@ const INITIAL_STATE: State = {
   error: null,
 };
 
-class PeersModal extends React.Component<Props, State> {
+class OpenChannelModal extends React.Component<Props, State> {
   state: State = { ...INITIAL_STATE };
 
   componentWillUpdate(nextProps: Props, nextState: State) {
@@ -200,14 +200,15 @@ class PeersModal extends React.Component<Props, State> {
         title="Open a New Channel"
         visible={isVisible}
         onCancel={handleClose}
+        okText={successfulTxId ? 'Done' : 'Open channel'}
         onOk={this.openChannel}
         closable={!isOpeningChannel}
         maskClosable={!isOpeningChannel}
         cancelButtonDisabled={isOpeningChannel}
         confirmLoading={isOpeningChannel}
+        footer={hideFooter ? '' : undefined}
         className="OpenChannel"
         width={450}
-        footer={hideFooter ? '' : undefined}
         centered
       >
         {content}
@@ -267,7 +268,7 @@ class PeersModal extends React.Component<Props, State> {
     });
   };
 
-  private resetForm() {
+  private resetForm = () => {
     this.setState({ ...INITIAL_STATE });
   }
 }
@@ -280,4 +281,4 @@ export default connect<StateProps, ActionProps, OwnProps, AppState>(
     account: state.account.account,
   }),
   { openChannel },
-)(PeersModal);
+)(OpenChannelModal);

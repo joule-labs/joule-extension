@@ -173,6 +173,9 @@ class AmountField extends React.Component<Props, State> {
         return `Amount is less than minimum (${minAmount})`;
       }
     }
+    if (valueBN.ltn(0)) {
+      return 'Amount cannot be negative';
+    }
   };
 
   private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
