@@ -1,7 +1,15 @@
 import { SagaIterator } from 'redux-saga';
-import { takeLatest, call, put, select } from 'redux-saga/effects';
+import { take, takeLatest, call, put, select, all } from 'redux-saga/effects';
 import * as actions from './actions';
-import { selectNodeLibOrThrow, selectNodeInfo } from './selectors';
+import { 
+  selectNodeLibOrThrow,
+  selectNodeInfo,
+  selectSyncedEncryptedNodeState,
+  selectSyncedUnencryptedNodeState,
+} from './selectors';
+import { requirePassword } from 'modules/crypto/sagas';
+import { accountTypes } from 'modules/account';
+import { channelsTypes } from 'modules/channels';
 import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
 import types from './types';
 
@@ -92,6 +100,82 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): 
   });
 }
 
+export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNodeUrl>): SagaIterator {
+  try {
+    const newUrl = action.payload;
+    
+    // passowrd is needed to decrypt the admin macaroon
+    yield call(requirePassword);
+
+    // get current macaroons from state as its needed to store the new url
+    const { url, readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
+    const { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
+
+    // connect to the url to test if it's working
+    yield put(actions.checkNode(newUrl));
+    const checkAction = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
+
+    // check for an error connecting to the node
+    if (checkAction.type === types.CHECK_NODE_FAILURE) {
+      // reset url in redux because checkNode will set it to null before checking
+      yield put(actions.setNode(url, adminMacaroon, readonlyMacaroon));
+      throw checkAction.payload;
+    }
+
+    // save the new info in state & storage
+    yield put(actions.setNode(newUrl, adminMacaroon, readonlyMacaroon));
+
+    yield put({
+      type: types.UPDATE_NODE_URL_SUCCESS,
+    });
+  } catch(err) {
+    yield put({
+      type: types.UPDATE_NODE_URL_FAILURE,
+      payload: err
+    });
+  }
+}
+
+export function* handleUpdateMacaroons(action: ReturnType<typeof actions.updateMacaroons>): SagaIterator {
+  try {
+    const { url, admin, readonly } = action.payload;
+
+    // password is needed to decrypt the admin macaroon
+    yield call(requirePassword);
+
+    // connect to the url to test if it's working
+    yield put(actions.checkAuth(url, admin, readonly));
+    const checkAction = yield take([types.CHECK_AUTH_SUCCESS, types.CHECK_AUTH_FAILURE]);
+
+    // check for an error connecting to the node
+    if (checkAction.type === types.CHECK_AUTH_FAILURE) {
+      throw checkAction.payload;
+    }
+    
+    // save the new info in state & storage
+    yield put(actions.setNode(url, admin, readonly));
+
+    // The existing data on the home screen may be for a different node
+    // so we need to fetch new data to ensure it is accurate
+    const updateActionsTypes = [
+      // fetch the new node info
+      accountTypes.GET_ACCOUNT_INFO,
+      // fetch updated channels
+      channelsTypes.GET_CHANNELS,
+      // fetch updated transactions
+      accountTypes.GET_TRANSACTIONS,
+    ]
+    yield all(updateActionsTypes.map(type => put({ type })));
+
+    yield put({ type: types.UPDATE_MACAROONS_SUCCESS });
+  } catch (err) {
+    yield put({
+      type: types.UPDATE_MACAROONS_FAILURE,
+      payload: err
+    });
+  }
+}
+
 export function* handleGetNodeInfo(): SagaIterator {
   try {
     const nodeLib = yield select(selectNodeLibOrThrow);
@@ -122,6 +206,8 @@ export function* getNodePubKey(): SagaIterator {
 export default function* nodeSagas(): SagaIterator {
   yield takeLatest(types.CHECK_NODE, handleCheckNode);
   yield takeLatest(types.CHECK_NODES, handleCheckNodes);
+  yield takeLatest(types.UPDATE_NODE_URL, handleUpdateNodeUrl);
+  yield takeLatest(types.UPDATE_MACAROONS, handleUpdateMacaroons);
   yield takeLatest(types.CHECK_AUTH, handleCheckAuth);
   yield takeLatest(types.GET_NODE_INFO, handleGetNodeInfo);
 }

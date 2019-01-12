@@ -4,6 +4,7 @@ import { Form, Input, Button, Alert, message } from 'antd';
 import './InputAddress.less';
 
 interface Props {
+  initialUrl?: string;
   error: Error | null;
   isCheckingNode?: boolean;
   submitUrl(url: string): void;
@@ -17,13 +18,13 @@ interface State {
 
 export default class InputAddress extends React.Component<Props, State> {
   state: State = {
-    url: '',
+    url: this.props.initialUrl || '',
     submittedUrl: 'https://localhost:8080',
     validation: '',
   };
 
   render() {
-    const { error, isCheckingNode } = this.props;
+    const { error, isCheckingNode, initialUrl } = this.props;
     const { validation, url, submittedUrl } = this.state;
     const validateStatus = url ? validation ? 'error' : 'success' : undefined;
     const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
@@ -91,7 +92,7 @@ export default class InputAddress extends React.Component<Props, State> {
           type="primary"
           size="large"
           htmlType="submit"
-          disabled={!url}
+          disabled={!url || url === initialUrl}
           loading={isCheckingNode}
           block
         >

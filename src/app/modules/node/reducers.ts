@@ -16,6 +16,11 @@ export interface NodeState {
   checkAuthError: null | Error;
   isFetchingNodeInfo: boolean;
   fetchNodeInfoError: null | Error;
+  
+  isUpdatingNodeUrl: boolean;
+  updateNodeUrlError: null | Error;
+  isUpdatingMacaroons: boolean;
+  updateMacaroonsError: null | Error;
 }
 
 export const INITIAL_STATE: NodeState = {
@@ -32,6 +37,11 @@ export const INITIAL_STATE: NodeState = {
   checkAuthError: null,
   isFetchingNodeInfo: false,
   fetchNodeInfoError: null,
+
+  isUpdatingNodeUrl: false,
+  updateNodeUrlError: null,
+  isUpdatingMacaroons: false,
+  updateMacaroonsError: null,
 };
 
 export default function cryptoReducers(
@@ -81,6 +91,42 @@ export default function cryptoReducers(
         ...state,
         isCheckingAuth: false,
         checkAuthError: action.payload,
+      };
+
+    case types.UPDATE_NODE_URL:
+      return {
+        ...state,
+        isUpdatingNodeUrl: true,
+        updateNodeUrlError: null,
+      };
+    case types.UPDATE_NODE_URL_SUCCESS:
+      return {
+        ...state,
+        isUpdatingNodeUrl: false,
+      };
+    case types.UPDATE_NODE_URL_FAILURE:
+      return {
+        ...state,
+        isUpdatingNodeUrl: false,
+        updateNodeUrlError: action.payload,
+      };
+    
+    case types.UPDATE_MACAROONS:
+      return {
+        ...state,
+        isUpdatingMacaroons: true,
+        updateMacaroonsError: null,
+      };
+    case types.UPDATE_MACAROONS_SUCCESS:
+      return {
+        ...state,
+        isUpdatingMacaroons: false,
+      };
+    case types.UPDATE_MACAROONS_FAILURE:
+      return {
+        ...state,
+        isUpdatingMacaroons: false,
+        updateMacaroonsError: action.payload,
       };
     
     case types.GET_NODE_INFO:
