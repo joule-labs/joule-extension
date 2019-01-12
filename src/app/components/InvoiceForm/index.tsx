@@ -1,11 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Form, Input, Select, Button, Row, Col, Alert, Checkbox } from 'antd';
+import { Form, Input, Button, Row, Col, Alert, Checkbox } from 'antd';
 import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
-import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
-import { fromUnitToBitcoin, fromBitcoinToUnit, fromUnitToBase } from 'utils/units';
-import { typedKeys } from 'utils/ts';
+import AmountField from 'components/AmountField';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
@@ -16,9 +14,6 @@ interface StateProps {
   isCreatingInvoice: AppState['payment']['isCreatingInvoice'];
   invoiceError: AppState['payment']['invoiceError'];
   denomination: AppState['settings']['denomination'];
-  fiat: AppState['settings']['fiat'];
-  isNoFiat: AppState['settings']['isNoFiat'];
-  rates: AppState['rates']['rates'];
 }
 
 interface DispatchProps {
@@ -33,18 +28,15 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
-  value: string;
-  valueFiat: string;
+  amount: string;
   isAnyValue: boolean;
-  denomination: Denomination;
   memo: string;
   fallbackAddress: string;
   expiry: string;
 }
 
 const INITIAL_STATE = {
-  value: '',
-  valueFiat: '',
+  amount: '',
   isAnyValue: false,
   memo: '',
   fallbackAddress: '',
@@ -52,19 +44,16 @@ const INITIAL_STATE = {
 };
 
 class InvoiceForm extends React.Component<Props, State> {
-  state: State = {
-    ...INITIAL_STATE,
-    denomination: this.props.denomination,
-  };
+  state: State = { ...INITIAL_STATE };
 
   componentWillUnmount() {
     this.props.resetCreateInvoice();
   }
 
   render() {
-    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates } = this.props;
-    const { value, valueFiat, isAnyValue, memo, expiry, fallbackAddress, denomination } = this.state;
-    const disabled = (!value && !isAnyValue) || !parseInt(expiry, 10);
+    const { invoice, isCreatingInvoice, invoiceError, close } = this.props;
+    const { isAnyValue, memo, expiry, fallbackAddress, amount } = this.state;
+    const disabled = (!amount && !isAnyValue) || !parseInt(expiry, 10);
 
     let content;
     if (invoice) {
@@ -100,56 +89,19 @@ class InvoiceForm extends React.Component<Props, State> {
           layout="vertical"
           onSubmit={this.handleSubmit}
         >
-          <Form.Item label="Amount" required={!isAnyValue}>
-            <div className="InvoiceForm-form-values">
-              <Input.Group compact>
-                <Input
-                  type="number"
-                  name="value"
-                  value={value}
-                  onChange={this.handleChangeValue}
-                  autoFocus
-                  placeholder="1000"
-                  step="any"
-                  disabled={isAnyValue}
-                />
-                <Select
-                  onChange={this.handleChangeDenomination}
-                  value={denomination}
-                  dropdownMatchSelectWidth={false}
-                  disabled={isAnyValue}
-                >
-                  {typedKeys(Denomination).map(d => (
-                    <Select.Option key={d} value={d}>
-                      {denominationSymbols[d]}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Input.Group>
-              {!isNoFiat && (
-                <>
-                  <div className="InvoiceForm-form-values-divider">
-                    or
-                  </div>
-                  <Input
-                    type="number"
-                    name="valueFiat"
-                    value={valueFiat}
-                    onChange={this.handleChangeValue}
-                    addonBefore={fiatSymbols[fiat]}
-                    placeholder="1.00"
-                    disabled={!rates || isAnyValue}
-                    step="any"
-                  />
-                </>
-              )}
-            </div>
-            <div className="InvoiceForm-form-anyValue">
-              <Checkbox onChange={this.handleChangeAnyValue} checked={isAnyValue}>
-                Allow any amount to be sent
-              </Checkbox>
-            </div>
-          </Form.Item>
+          <AmountField
+            label="Amount"
+            amount={amount}
+            required={!isAnyValue}
+            disabled={isAnyValue}
+            onChangeAmount={this.handleChangeAmount}
+            showFiat
+          />
+          <div className="InvoiceForm-form-anyValue">
+            <Checkbox onChange={this.handleChangeAnyValue} checked={isAnyValue}>
+              Allow any amount to be sent
+            </Checkbox>
+          </div>
           <Form.Item label="Memo">
             <Input
               name="memo"
@@ -221,54 +173,22 @@ class InvoiceForm extends React.Component<Props, State> {
     this.setState({ [name]: value } as any);
   };
 
-  private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = ev.currentTarget;
-    this.updateBothValues(name, value);
+  private handleChangeAmount = (amount: string) => {
+    this.setState({ amount });
   };
 
   private handleChangeAnyValue = (ev: CheckboxChangeEvent) => {
     this.setState({
       isAnyValue: ev.target.checked,
-      value: '',
-      valueFiat: '',
+      amount: '',
     });
   }
 
-  private handleChangeDenomination = (value: any) => {
-    this.setState({ denomination: value as Denomination }, () => {
-      this.updateBothValues('value', this.state.value);
-    });
-  };
-
-  private updateBothValues = (name: string, val: string) => {
-    const { fiat, rates } = this.props;
-    const { denomination } = this.state;
-    let { value, valueFiat } = this.state;
-  
-    if (name === 'value') {
-      value = val;
-      if (rates) {
-        const btc = fromUnitToBitcoin(value, denomination);
-        valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
-      }
-    }
-    else {
-      valueFiat = val;
-      if (rates) {
-        const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
-        value = fromBitcoinToUnit(btc, denomination);
-      }
-    }
-
-    this.setState({ value, valueFiat });
-  };
-
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    const { memo, fallbackAddress, expiry, denomination, isAnyValue } = this.state;
-    const value = isAnyValue ? undefined : fromUnitToBase(this.state.value, denomination);
+    const { amount, memo, fallbackAddress, expiry, isAnyValue } = this.state;
     this.props.createInvoice({
-      value,
+      value: isAnyValue ? undefined : amount,
       memo,
       fallback_addr: fallbackAddress,
       expiry: parseInt(expiry, 10) * 3600,

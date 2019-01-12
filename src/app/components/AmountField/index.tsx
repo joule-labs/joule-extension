@@ -68,12 +68,16 @@ class AmountField extends React.Component<Props, State> {
 
     let newValue = value;
     if (amount !== prevProps.amount) {
-      newValue = fromBaseToUnit(amount.toString(), denomination).toString();;
+      if (amount) {
+        newValue = fromBaseToUnit(amount.toString(), denomination).toString();
+      } else {
+        newValue = '';
+      }
     }
 
     if (rates !== prevProps.rates || newValue !== value) {
       // Update both values if we just got rates, or amount prop changed
-      this.updateBothValues('value', value);
+      this.updateBothValues('value', newValue);
     }
   }
 
@@ -181,7 +185,11 @@ class AmountField extends React.Component<Props, State> {
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
   
-    if (name === 'value') {
+    if (!val) {
+      value = '';
+      valueFiat = '';
+    }
+    else if (name === 'value') {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
@@ -197,7 +205,7 @@ class AmountField extends React.Component<Props, State> {
     }
 
     this.setState({ value, valueFiat }, () => {
-      const sats = fromUnitToBase(value, denomination);
+      const sats = value ? fromUnitToBase(value, denomination) : '';
       this.props.onChangeAmount(sats);
     });
   };
