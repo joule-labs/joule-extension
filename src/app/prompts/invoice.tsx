@@ -6,12 +6,13 @@ import { RequestInvoiceArgs, RequestInvoiceResponse } from 'webln/lib/provider';
 import PromptTemplate from 'components/PromptTemplate';
 import { getPromptArgs, getPromptOrigin, watchUntilPropChange, OriginData } from 'utils/prompt';
 import { removeDomainPrefix } from 'utils/formatters';
-import { Denomination, fiatSymbols } from 'utils/constants';
+import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { fromBaseToUnit, fromUnitToBase, fromUnitToFiat } from 'utils/units';
 import { createInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './invoice.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -21,8 +22,7 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
-  chain: AppState['node']['chain'];
-  denominationSymbols: AppState['node']['denominationSymbols']
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -65,7 +65,7 @@ class InvoicePrompt extends React.Component<Props, State> {
 
   render() {
     const { value, denomination, memo, fallbackAddress, expiry, isShowingAdvanced } = this.state;
-    const { denominationSymbols } = this.props;
+    const { chain } = this.props;
     const amountError = this.getValueError();
     const isConfirmDisabled = !!amountError;
     const isValueDisabled = !!this.args.amount;
@@ -112,7 +112,7 @@ class InvoicePrompt extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {denominationSymbols[d]}
+                      {denominationSymbols[chain][d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -171,7 +171,7 @@ class InvoicePrompt extends React.Component<Props, State> {
   }
 
   private renderHelp = () => {
-    const { rates, fiat, isNoFiat, chain, denominationSymbols } = this.props;
+    const { rates, fiat, isNoFiat, chain } = this.props;
     const { value, denomination } = this.state;
     const helpPieces = [];
 
@@ -189,7 +189,7 @@ class InvoicePrompt extends React.Component<Props, State> {
             {' '}
             {fromBaseToUnit(this.args.minimumAmount.toString(), denomination)}
             {' '}
-            {denominationSymbols[denomination]}
+            {denominationSymbols[chain][denomination]}
           </span>
         );
       }
@@ -200,7 +200,7 @@ class InvoicePrompt extends React.Component<Props, State> {
             {' '}
             {fromBaseToUnit(this.args.maximumAmount.toString(), denomination)}
             {' '}
-            {denominationSymbols[denomination]}
+            {denominationSymbols[chain][denomination]}
           </span>
         );
       }
@@ -299,8 +299,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
-    chain: state.node.chain,
-    denominationSymbols: state.node.denominationSymbols,
+    chain: getNodeChain(state),
   }),
   { createInvoice },
 )(InvoicePrompt);

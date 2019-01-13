@@ -6,12 +6,14 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DepositModal from './DepositModal';
 import { getAccountInfo } from 'modules/account/actions';
+import { getNodeChain } from 'modules/node/selectors';
+import { blockchainDisplayName } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
-  blockchainDisplayName: AppState['node']['blockchainDisplayName'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -41,7 +43,7 @@ class AccountInfo extends React.Component<Props, State> {
   }
 
   render() {
-    const { account, blockchainDisplayName } = this.props;
+    const { account, chain } = this.props;
     const { isDepositModalOpen } = this.state;
 
     const actions: ButtonProps[] = [{
@@ -73,7 +75,7 @@ class AccountInfo extends React.Component<Props, State> {
               </div>
               <div className="AccountInfo-top-info-balances">
                 <span>Channels: <Unit value={account.channelBalance} /></span>
-                <span>{blockchainDisplayName}: <Unit value={account.blockchainBalance} /></span>
+                <span>{blockchainDisplayName[chain]}: <Unit value={account.blockchainBalance} /></span>
               </div>
             </div>
           </div>
@@ -106,7 +108,7 @@ class AccountInfo extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
-    blockchainDisplayName: state.node.blockchainDisplayName,
+    chain: getNodeChain(state),
   }),
   {
     getAccountInfo,

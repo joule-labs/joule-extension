@@ -2,11 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Denomination,
+  denominationSymbols,
   fiatSymbols,
 } from 'utils/constants';
 import { fromBaseToUnit, fromUnitToFiat } from 'utils/units';
 import { commaify } from 'utils/formatters';
 import { AppState } from 'store/reducers';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   rates: AppState['rates']['rates'];
@@ -14,8 +16,7 @@ interface StateProps {
   denomination: AppState['settings']['denomination'];
   isFiatPrimary: AppState['settings']['isFiatPrimary'];
   isNoFiat: AppState['settings']['isNoFiat'];
-  chain: AppState['node']['chain'];
-  denominationSymbols: AppState['node']['denominationSymbols'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface OwnProps {
@@ -39,8 +40,7 @@ class Unit extends React.Component<Props> {
       denomination,
       isFiatPrimary,
       isNoFiat,
-      chain,
-      denominationSymbols
+      chain
     } = this.props;
 
     // Store & remove negative
@@ -50,7 +50,7 @@ class Unit extends React.Component<Props> {
     const adjustedValue = fromBaseToUnit(value, denomination);
     const bitcoinEl = <>
       {commaify(adjustedValue)}
-      {!hideUnit && <small>{' '}{denominationSymbols[denomination]}</small>}
+      {!hideUnit && <small>{' '}{denominationSymbols[chain][denomination]}</small>}
     </>;
 
     let fiatEl = '';
@@ -86,6 +86,5 @@ export default connect<StateProps, {}, OwnProps, AppState>(state => ({
   denomination: state.settings.denomination,
   isFiatPrimary: state.settings.isFiatPrimary,
   isNoFiat: state.settings.isNoFiat,
-  chain: state.node.chain,
-  denominationSymbols: state.node.denominationSymbols,
+  chain: getNodeChain(state),
 }))(Unit);

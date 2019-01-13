@@ -7,12 +7,14 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { AnyTransaction } from 'modules/account/types';
 import { isInvoice, isBitcoinTx } from 'utils/typeguards';
+import { getNodeChain } from 'modules/node/selectors';
+import { blockchainLogos } from 'utils/constants';
 import './TransactionRow.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
 
 interface StateProps {
-  blockchainLogos: AppState['node']['blockchainLogos'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface OwnProps {
@@ -30,7 +32,7 @@ type Props = StateProps & OwnProps;
 
 class TransactionRow extends React.Component<Props> {
   render() {
-    const { pubkey, timestamp, status, delta, onClick, source, title, blockchainLogos } = this.props;
+    const { pubkey, timestamp, status, delta, onClick, source, title, chain } = this.props;
 
     let icon;
     if (pubkey) {
@@ -44,7 +46,7 @@ class TransactionRow extends React.Component<Props> {
     } else if (isBitcoinTx(source)) {
       icon = (
         <div className="TransactionRow-avatar-img is-icon is-bitcoin">
-          <Icon component={blockchainLogos} />
+          <Icon component={blockchainLogos[chain]} />
         </div>
       );
     }
@@ -85,5 +87,5 @@ class TransactionRow extends React.Component<Props> {
 }
 
 export default connect<StateProps, {}, OwnProps, AppState>(state => ({
-  blockchainLogos: state.node.blockchainLogos,
+  chain: getNodeChain(state),
 }))(TransactionRow);

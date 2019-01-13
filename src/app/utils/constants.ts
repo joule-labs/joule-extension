@@ -14,8 +14,8 @@ export const LND_DIR = {
 };
 
 export enum CHAIN_TYPE {
-  BTC = 'bitcoin',
-  LTC = 'litecoin',
+  BITCOIN = 'bitcoin',
+  LITECOIN = 'litecoin',
 }
 
 export const blockchainLogos: { [key in CHAIN_TYPE]: React.ComponentType<CustomIconComponentProps> } = {

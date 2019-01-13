@@ -5,6 +5,8 @@ import QRCode from 'qrcode.react';
 import Loader from 'components/Loader';
 import Copy from 'components/Copy';
 import { getDepositAddress } from 'modules/account/actions';
+import { getNodeChain } from 'modules/node/selectors';
+import { blockchainDisplayName } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './DepositModal.less';
 
@@ -12,7 +14,7 @@ interface StateProps {
   depositAddress: AppState['account']['depositAddress'];
   isFetchingDepositAddress: AppState['account']['isFetchingDepositAddress'];
   fetchDepositAddressError: AppState['account']['fetchDepositAddressError'];
-  blockchainDisplayName: AppState['node']['blockchainDisplayName'];
+  chain: ReturnType<typeof getNodeChain>;
   hasPassword: boolean;
 }
 
@@ -42,7 +44,7 @@ class DepositModal extends React.Component<Props> {
       isOpen,
       onClose,
       hasPassword,
-      blockchainDisplayName,
+      chain,
     } = this.props;
     const isVisible = !!isOpen && !!(hasPassword || fetchDepositAddressError);
 
@@ -88,7 +90,7 @@ class DepositModal extends React.Component<Props> {
 
     return (
       <Modal
-        title={blockchainDisplayName + " Address"}
+        title={blockchainDisplayName[chain] + " Address"}
         visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
@@ -108,8 +110,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     isFetchingDepositAddress: state.account.isFetchingDepositAddress,
     fetchDepositAddressError: state.account.fetchDepositAddressError,
     hasPassword: !!state.crypto.password,
-    nodeInfo: state.node.nodeInfo,
-    blockchainDisplayName: state.node.blockchainDisplayName,
+    chain: getNodeChain(state),
   }),
   { getDepositAddress },
 )(DepositModal);

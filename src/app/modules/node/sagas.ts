@@ -4,13 +4,6 @@ import * as actions from './actions';
 import { selectNodeLibOrThrow, selectNodeInfo } from './selectors';
 import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
 import types from './types';
-import {
-  blockchainDisplayName,
-  blockchainLogos,
-  CHAIN_TYPE,
-  denominationNames,
-  denominationSymbols,
-} from 'utils/constants';
 
 export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): SagaIterator {
   const url = action.payload;
@@ -103,14 +96,8 @@ export function* handleGetNodeInfo(): SagaIterator {
   try {
     const nodeLib = yield select(selectNodeLibOrThrow);
     const payload = yield call(nodeLib.getInfo);
-    const chain: CHAIN_TYPE = payload.chains[0];
     yield put({
-      blockchainDisplayName: blockchainDisplayName[chain],
-      blockchainLogos: blockchainLogos[chain],
-      denominationSymbols: denominationSymbols[chain],
-      denominationNames: denominationNames[chain],
       type: types.GET_NODE_INFO_SUCCESS,
-      chain,
       payload,
     });
   } catch(err) {

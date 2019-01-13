@@ -24,12 +24,13 @@ import {
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
-  chain: AppState['node']['chain'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -163,7 +164,7 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
-    chain: state.node.chain,
+    chain: getNodeChain(state),
   }),
   {
     changeSettings,
