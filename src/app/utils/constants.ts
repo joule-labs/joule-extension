@@ -14,8 +14,8 @@ export const LND_DIR = {
 };
 
 export enum CHAIN_TYPE {
-  BITCOIN = 'bitcoin',
-  LITECOIN = 'litecoin',
+  BTC = 'bitcoin',
+  LTC = 'litecoin',
 }
 
 export const blockchainLogos: { [key in CHAIN_TYPE]: React.ComponentType<CustomIconComponentProps> } = {
@@ -35,7 +35,7 @@ export enum Denomination {
   BITCOIN = 'BITCOIN',
 }
 
-type DenominationMap = { [key in Denomination]: string };
+export type DenominationMap = { [key in Denomination]: string };
 
 export const denominationSymbols: { [key in CHAIN_TYPE]: DenominationMap } = {
   bitcoin: {

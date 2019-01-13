@@ -1,6 +1,9 @@
 import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
 import types from './types';
 import settingsTypes from 'modules/settings/types';
+import { blockchainLogos, CHAIN_TYPE, DenominationMap } from 'utils/constants';
+import * as React from 'react';
+import { CustomIconComponentProps } from 'antd/lib/icon';
 
 export interface NodeState {
   lib: LndHttpClient | null;
@@ -9,6 +12,12 @@ export interface NodeState {
   adminMacaroon: Macaroon | null;
   readonlyMacaroon: Macaroon | null;
   nodeInfo: GetInfoResponse | null;
+
+  chain: CHAIN_TYPE;
+  blockchainDisplayName: string | null,
+  blockchainLogos: React.ComponentType<CustomIconComponentProps>,
+  denominationSymbols: DenominationMap,
+  denominationNames: string | null,
 
   isCheckingNode: boolean;
   checkNodeError: null | Error;
@@ -25,6 +34,16 @@ export const INITIAL_STATE: NodeState = {
   adminMacaroon: null,
   readonlyMacaroon: null,
   nodeInfo: null,
+  chain: CHAIN_TYPE.BTC,
+  blockchainDisplayName: null,
+  blockchainLogos: blockchainLogos.bitcoin,
+  denominationSymbols: {
+    SATOSHIS: 'sats',
+    BITS: 'bits',
+    MILLIBITCOIN: 'mBTC',
+    BITCOIN: 'BTC',
+  },
+  denominationNames: null,
 
   isCheckingNode: false,
   checkNodeError: null,
@@ -95,6 +114,11 @@ export default function cryptoReducers(
         ...state,
         isFetchingNodeInfo: false,
         nodeInfo: action.payload,
+        chain: action.chain,
+        blockchainDisplayName: action.blockchainDisplayName,
+        blockchainLogos: action.blockchainLogos,
+        denominationSymbols: action.denominationSymbols,
+        denominationNames: action.denominationNames,
       };
     case types.GET_NODE_INFO_FAILURE:
       return {

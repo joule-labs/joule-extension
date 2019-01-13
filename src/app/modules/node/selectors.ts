@@ -20,5 +20,3 @@ export const selectNodeLibOrThrow = (s: AppState) => {
 };
 
 export const selectNodeInfo = (s: AppState) => s.node.nodeInfo;
-
-export const getNodeChain = (s: AppState) => (s.node.nodeInfo && s.node.nodeInfo.chains[0]) || 'bitcoin';

@@ -20,20 +20,16 @@ import {
   denominationSymbols,
   fiatSymbols,
   blockchainDisplayName,
-  CHAIN_TYPE,
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
 import './style.less';
-import { getNodeChain } from 'modules/node/selectors';
 
 type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
-}
-interface OwnProps {
-  chain: CHAIN_TYPE;
+  chain: AppState['node']['chain'];
 }
 
 interface DispatchProps {
@@ -45,7 +41,7 @@ interface DispatchProps {
   removeRejectedDomain: typeof removeRejectedDomain;
 }
 
-type Props = StateProps & OwnProps & DispatchProps & RouteComponentProps;
+type Props = StateProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
   render() {
@@ -167,7 +163,7 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
-    chain: getNodeChain(state),
+    chain: state.node.chain,
   }),
   {
     changeSettings,

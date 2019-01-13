@@ -11,13 +11,12 @@ import Identicon from 'components/Identicon';
 import { getPromptArgs, watchUntilPropChange } from 'utils/prompt';
 import { unixMoment, SHORT_FORMAT } from 'utils/time';
 import { fromBaseToUnit, fromUnitToBase } from 'utils/units';
-import { CHAIN_TYPE, Denomination, denominationSymbols } from 'utils/constants';
+import { Denomination } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { sendPayment, checkPaymentRequest } from 'modules/payment/actions';
 import { PaymentRequestData } from 'modules/payment/types';
 import { AppState } from 'store/reducers';
 import './payment.less';
-import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
@@ -25,10 +24,7 @@ interface StateProps {
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
   denomination: AppState['settings']['denomination'];
-}
-
-interface OwnProps {
-  chain: CHAIN_TYPE;
+  denominationSymbols: AppState['node']['denominationSymbols']
 }
 
 interface DispatchProps {
@@ -36,7 +32,7 @@ interface DispatchProps {
   sendPayment: typeof sendPayment;
 }
 
-type Props = StateProps & OwnProps & DispatchProps;
+type Props = StateProps & DispatchProps;
 
 interface State {
   value: string;
@@ -90,7 +86,7 @@ class PaymentPrompt extends React.Component<Props, State> {
 
   render() {
     const { routedRequest } = this.state;
-    const { chain } = this.props;
+    const { denominationSymbols } = this.props;
     const pr = this.props.paymentRequests[this.paymentRequest] || {};
     let isConfirmDisabled = true;
 
@@ -121,7 +117,7 @@ class PaymentPrompt extends React.Component<Props, State> {
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
             {request.num_satoshis ? (
               <div className="PaymentPrompt-amount-value">
-                <Unit value={request.num_satoshis} chain={chain} showFiat />
+                <Unit value={request.num_satoshis} showFiat />
               </div>
             ) : (
               <Input.Group size="large" compact>
@@ -141,7 +137,7 @@ class PaymentPrompt extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {denominationSymbols[chain][d]}
+                      {denominationSymbols[d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -162,13 +158,13 @@ class PaymentPrompt extends React.Component<Props, State> {
                   label: 'Fee',
                   isLarge: true,
                   value: isLatestRoute ?
-                    <Unit value={route.total_fees} chain={chain} showFiat /> :
+                    <Unit value={route.total_fees} showFiat /> :
                     <Loader inline size="1.3rem" />,
                 }, {
                   label: 'Total',
                   isLarge: true,
                   value: isLatestRoute ?
-                    <Unit value={route.total_amt} chain={chain} showFiat /> :
+                    <Unit value={route.total_amt} showFiat /> :
                     <Loader inline size="1.3rem" />,
                 }]}/>
               </Tabs.TabPane>
@@ -299,7 +295,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
     denomination: state.settings.denomination,
-    chain: getNodeChain(state),
+    denominationSymbols: state.node.denominationSymbols,
   }),
   {
     checkPaymentRequest,

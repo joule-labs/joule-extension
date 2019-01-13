@@ -7,13 +7,12 @@ import Copy from 'components/Copy';
 import { getDepositAddress } from 'modules/account/actions';
 import { AppState } from 'store/reducers';
 import './DepositModal.less';
-import { blockchainDisplayName, CHAIN_TYPE } from 'utils/constants';
-import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   depositAddress: AppState['account']['depositAddress'];
   isFetchingDepositAddress: AppState['account']['isFetchingDepositAddress'];
   fetchDepositAddressError: AppState['account']['fetchDepositAddressError'];
+  blockchainDisplayName: AppState['node']['blockchainDisplayName'];
   hasPassword: boolean;
 }
 
@@ -22,7 +21,6 @@ interface DispatchProps {
 }
 
 interface OwnProps {
-  chain: CHAIN_TYPE;
   isOpen?: boolean;
   onClose(): void;
 }
@@ -44,7 +42,7 @@ class DepositModal extends React.Component<Props> {
       isOpen,
       onClose,
       hasPassword,
-      chain,
+      blockchainDisplayName,
     } = this.props;
     const isVisible = !!isOpen && !!(hasPassword || fetchDepositAddressError);
 
@@ -90,7 +88,7 @@ class DepositModal extends React.Component<Props> {
 
     return (
       <Modal
-        title={blockchainDisplayName[chain] + " Address"}
+        title={blockchainDisplayName + " Address"}
         visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
@@ -111,7 +109,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     fetchDepositAddressError: state.account.fetchDepositAddressError,
     hasPassword: !!state.crypto.password,
     nodeInfo: state.node.nodeInfo,
-    chain: getNodeChain(state),
+    blockchainDisplayName: state.node.blockchainDisplayName,
   }),
   { getDepositAddress },
 )(DepositModal);

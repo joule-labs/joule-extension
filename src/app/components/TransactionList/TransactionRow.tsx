@@ -10,8 +10,10 @@ import { isInvoice, isBitcoinTx } from 'utils/typeguards';
 import './TransactionRow.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
-import { blockchainLogos, CHAIN_TYPE } from 'utils/constants';
-import { getNodeChain } from 'modules/node/selectors';
+
+interface StateProps {
+  blockchainLogos: AppState['node']['blockchainLogos'];
+}
 
 interface OwnProps {
   source: AnyTransaction;
@@ -21,15 +23,14 @@ interface OwnProps {
   status: 'complete' | 'pending' | 'rejected' | 'expired';
   pubkey?: string;
   delta?: BN | false | null;
-  chain: CHAIN_TYPE;
   onClick?(source: AnyTransaction): void;
 }
 
-type Props = OwnProps;
+type Props = StateProps & OwnProps;
 
 class TransactionRow extends React.Component<Props> {
   render() {
-    const { pubkey, timestamp, status, delta, onClick, source, title, chain } = this.props;
+    const { pubkey, timestamp, status, delta, onClick, source, title, blockchainLogos } = this.props;
 
     let icon;
     if (pubkey) {
@@ -43,7 +44,7 @@ class TransactionRow extends React.Component<Props> {
     } else if (isBitcoinTx(source)) {
       icon = (
         <div className="TransactionRow-avatar-img is-icon is-bitcoin">
-          <Icon component={blockchainLogos[chain]} />
+          <Icon component={blockchainLogos} />
         </div>
       );
     }
@@ -69,7 +70,7 @@ class TransactionRow extends React.Component<Props> {
           <div className={
             classnames(`TransactionRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`)
           }>
-            <Unit value={delta.toString()} chain={chain} showPlus showFiat />
+            <Unit value={delta.toString()} showPlus showFiat />
           </div>
         }
       </div>
@@ -83,6 +84,6 @@ class TransactionRow extends React.Component<Props> {
   };
 }
 
-export default connect<{}, {}, OwnProps, AppState>(state => ({
-  chain: getNodeChain(state),
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+  blockchainLogos: state.node.blockchainLogos,
 }))(TransactionRow);
