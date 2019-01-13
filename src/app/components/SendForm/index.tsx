@@ -6,10 +6,11 @@ import BigMessage from 'components/BigMessage';
 import { AppState } from 'store/reducers';
 import './style.less';
 import { connect } from 'react-redux';
+import { blockchainDisplayName } from 'utils/constants';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
-  settings: AppState['settings'];
-  blockchainDisplayName: AppState['node']['blockchainDisplayName'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface OwnProps {
@@ -29,7 +30,7 @@ class SendForm extends React.Component<Props, State> {
 
   render() {
     const { type } = this.state;
-    const { blockchainDisplayName } = this.props;
+    const { chain } = this.props;
 
     const form = type === 'lightning' ? (
       <LightningSend close={this.props.close} />
@@ -48,7 +49,7 @@ class SendForm extends React.Component<Props, State> {
               <Icon type="thunderbolt" /> Lighting
             </Radio.Button>
             <Radio.Button>
-            <Icon type="link" /> {blockchainDisplayName}
+            <Icon type="link" /> {blockchainDisplayName[chain]}
             </Radio.Button>
           </Radio.Group>
         </div>
@@ -64,6 +65,6 @@ class SendForm extends React.Component<Props, State> {
   };
 }
 
-export default connect<{}, {}, OwnProps, AppState>(state => ({
-  blockchainDisplayName: state.node.blockchainDisplayName,
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+  chain: getNodeChain(state),
 }))(SendForm);
