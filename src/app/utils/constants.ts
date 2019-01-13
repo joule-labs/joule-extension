@@ -18,6 +18,11 @@ export enum CHAIN_TYPE {
   LITECOIN = 'litecoin',
 }
 
+export const coinSymbols: { [key in CHAIN_TYPE]: string } = {
+  bitcoin: 'BTC',
+  litecoin: 'LTC'
+};
+
 export const blockchainLogos: { [key in CHAIN_TYPE]: React.ComponentType<CustomIconComponentProps> } = {
   bitcoin: BitcoinLogo,
   litecoin: LitecoinLogo,

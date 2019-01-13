@@ -3,7 +3,7 @@ import types from './types';
 
 type RatesMap = { [key in Fiat]: number };
 
-type Rates = {
+export type Rates = {
   [key in CHAIN_TYPE]: RatesMap
 }
 
