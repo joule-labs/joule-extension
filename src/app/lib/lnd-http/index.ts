@@ -10,7 +10,7 @@ export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 export class LndHttpClient {
   url: string;
   macaroon: undefined | T.Macaroon;
-  
+
   constructor(url: string, macaroon?: T.Macaroon) {
     // Remove trailing slash for consistency
     this.url = url.replace(/\/$/, '');
@@ -69,29 +69,31 @@ export class LndHttpClient {
   };
 
   getPendingChannels = () => {
-    return this.request<T.GetChannelsResponse>(
+    return this.request<T.GetPendingChannelsResponse>(
       'GET',
       '/v1/channels/pending',
       undefined,
       { pending_force_closing_channels: [],
-      waiting_close_channels: [],
-      pending_open_channels: []}
+        waiting_close_channels: [],
+        pending_open_channels: []}
     ).then(res => {
       // Default attributes for channels
-      res.pending_force_closing_channels = res.pending_force_closing_channels.map(pending => ({
+      res.pending_force_closing_channels =
+      res.pending_force_closing_channels.map(pending => ({
         blocks_til_maturity: 0,
         channel: {
           capacity: '0',
           channel_point: '0',
           local_balance: '0',
           remote_node_pub: '0'
-        }, 
+        },
         closing_txid: '0',
         limbo_balance: '0',
         maturity_height: 0,
         ...pending,
       }));
-      res.waiting_close_channels = res.waiting_close_channels.map(pending => ({
+      res.waiting_close_channels =
+      res.waiting_close_channels.map(pending => ({
         channel: {
           capacity: '0',
           local_balance: '0',

@@ -5,16 +5,11 @@ import Loader from 'components/Loader';
 import BigMessage from 'components/BigMessage';
 import { getChannels } from 'modules/channels/actions';
 import { AppState } from 'store/reducers';
-import { ChannelWithNode, PendingOpenChannelWithNode, WaitClosingChannelWithNode, ForceClosingChannelWithNode } from 'modules/channels/types';
-import ForceClosingChannelRow from './ForceClosingChannelRow';
-import WaitClosingChannelRow from './WaitClosingChannelRow';
-import PendingOpenChannelRow from './PendingOpenChannelRow';
+import { ChannelWithNode } from 'modules/channels/types';
+
 
 interface StateProps {
   channels: AppState['channels']['channels'];
-  forceClosingChannels: AppState['channels']['forceClosingChannels'];
-  waitClosingChannels: AppState['channels']['waitClosingChannels'];
-  pendingOpenChannels: AppState['channels']['pendingOpenChannels'];
   isFetchingChannels: AppState['channels']['isFetchingChannels'];
   fetchChannelsError: AppState['channels']['fetchChannelsError'];
 }
@@ -27,17 +22,6 @@ interface OwnProps {
   onClick?(channel: ChannelWithNode): void;
 }
 
-interface OwnProps {
-  onClick?(channel: PendingOpenChannelWithNode): void;
-}
-
-interface OwnProps {
-  onClick?(channel: WaitClosingChannelWithNode): void;
-}
-
-interface OwnProps {
-  onClick?(channel: ForceClosingChannelWithNode): void;
-}
 
 type Props = StateProps & DispatchProps & OwnProps;
 
@@ -49,13 +33,10 @@ class ChannelList extends React.Component<Props> {
   }
 
   render() {
-    const { channels, forceClosingChannels, waitClosingChannels, pendingOpenChannels,
+    const { channels,
       isFetchingChannels, fetchChannelsError, onClick } = this.props;
 
     let content;
-    let pfcContent;
-    let pwcContent;
-    let pocContent;
     if (isFetchingChannels) {
       content = <Loader />;
     } else if (channels && channels.length) {
@@ -84,30 +65,8 @@ class ChannelList extends React.Component<Props> {
         />
       );
     }
-    if (forceClosingChannels && forceClosingChannels.length) {
-      pfcContent = forceClosingChannels.map(c => (
-        <ForceClosingChannelRow key={c.closing_txid}
-        status="closing" pubkey={c.channel.remote_node_pub} forceClosingChannel={c} onClick={onClick} />
-      ));
-    }
-    if (waitClosingChannels && waitClosingChannels.length) {
-        pwcContent = waitClosingChannels.map(c => (
-          <WaitClosingChannelRow key={c.channel.channel_point}
-          status="closing" pubkey={c.channel.remote_node_pub} waitClosingChannel={c} onClick={onClick} />
-        ));
-      }
-      if (pendingOpenChannels && pendingOpenChannels.length) {
-        pocContent = pendingOpenChannels.map(c => (
-          <PendingOpenChannelRow key={c.channel.channel_point} 
-          status="opening" pubkey={c.channel.remote_node_pub} pendingOpenChannel={c} onClick={onClick} />
-        ));
-      }
-
     return (
       <div className="ChannelList">
-        {pfcContent}
-        {pwcContent}
-        {pocContent}
         {content}
       </div>
     );

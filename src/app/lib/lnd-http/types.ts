@@ -48,6 +48,12 @@ export interface Channel {
   fee_per_kw: string;
   unsettled_balance: string;
   total_satoshis_sent: string;
+  blocks_til_maturity: number;
+  closing_txid: string;
+  limbo_balance: string;
+  maturity_height: string;
+  confirmation_height: number;
+  remote_node_pub: string;
 }
 
 export interface PendingForceClosingChannel {
@@ -189,9 +195,12 @@ export interface GetNodeInfoResponse {
 
 export interface GetChannelsResponse {
   channels: Channel[];
-  pending_force_closing_channels: PendingForceClosingChannel[];
-  waiting_close_channels: WaitingCloseChannel[];
-  pending_open_channels: PendingOpenChannel[];
+}
+
+export interface GetPendingChannelsResponse {
+  pending_force_closing_channels: Channel[];
+  waiting_close_channels: Channel[];
+  pending_open_channels: Channel[];
 }
 
 export interface GetBlockchainBalanceResponse {
