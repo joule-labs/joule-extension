@@ -1,6 +1,7 @@
 import BitcoinLogo from 'static/images/bitcoin.svg';
 import LitecoinLogo from 'static/images/litecoin.svg';
 import * as React from 'react';
+import { CustomIconComponentProps } from 'antd/lib/icon';
 
 export const DEFAULT_LOCAL_NODE_URLS = [
   'https://localhost:8080',
@@ -22,7 +23,7 @@ export const coinSymbols: { [key in CHAIN_TYPE]: string } = {
   litecoin: 'LTC'
 };
 
-export const blockchainLogos: { [key in CHAIN_TYPE]: React.ReactNode } = {
+export const blockchainLogos: { [key in CHAIN_TYPE]: React.ComponentType<CustomIconComponentProps> } = {
   bitcoin: BitcoinLogo,
   litecoin: LitecoinLogo,
 };
