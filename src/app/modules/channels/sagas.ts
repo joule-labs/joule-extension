@@ -38,7 +38,6 @@ export function* handleGetChannels(): SagaIterator {
       ...channel,
       node: channelsNodeInfo[i].node,
     }));
-    console.log(payload);
     yield put({
       type: types.GET_CHANNELS_SUCCESS,
       payload,
