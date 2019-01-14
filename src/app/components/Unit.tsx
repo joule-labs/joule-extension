@@ -40,7 +40,7 @@ class Unit extends React.Component<Props> {
       denomination,
       isFiatPrimary,
       isNoFiat,
-      chain
+      chain,
     } = this.props;
 
     // Store & remove negative

@@ -6,7 +6,7 @@ import Loader from 'components/Loader';
 import Copy from 'components/Copy';
 import { getDepositAddress } from 'modules/account/actions';
 import { getNodeChain } from 'modules/node/selectors';
-import { blockchainDisplayName } from 'utils/constants';
+import { coinSymbols } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './DepositModal.less';
 
@@ -90,7 +90,7 @@ class DepositModal extends React.Component<Props> {
 
     return (
       <Modal
-        title={blockchainDisplayName[chain] + " Address"}
+        title={coinSymbols[chain] + " Address"}
         visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
