@@ -241,6 +241,7 @@ class OpenChannelModal extends React.Component<Props, State> {
       ev.preventDefault();
     }
 
+    const { newChannelTxIds } = this.props;
     const { capacity, pushAmount, isPrivate } = this.state;
     const address = this.state.address.trim();
 
@@ -252,6 +253,9 @@ class OpenChannelModal extends React.Component<Props, State> {
     }
     if (!isValidConnectAddress(address)) {
       return message.error('Connection info is invalid');
+    }
+    if (newChannelTxIds[address]) {
+      return message.error('You just opened a channel with that node');
     }
 
     this.setState({
