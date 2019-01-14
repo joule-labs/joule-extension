@@ -10,6 +10,7 @@ import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -19,6 +20,7 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -62,7 +64,7 @@ class InvoiceForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates } = this.props;
+    const { invoice, isCreatingInvoice, invoiceError, close, fiat, isNoFiat, rates, chain } = this.props;
     const { value, valueFiat, isAnyValue, memo, expiry, fallbackAddress, denomination } = this.state;
     const disabled = (!value && !isAnyValue) || !parseInt(expiry, 10);
 
@@ -121,7 +123,7 @@ class InvoiceForm extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {denominationSymbols[d]}
+                      {denominationSymbols[chain][d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -241,7 +243,7 @@ class InvoiceForm extends React.Component<Props, State> {
   };
 
   private updateBothValues = (name: string, val: string) => {
-    const { fiat, rates } = this.props;
+    const { fiat, rates, chain } = this.props;
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
   
@@ -249,13 +251,13 @@ class InvoiceForm extends React.Component<Props, State> {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
-        valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
+        valueFiat = (rates[chain][fiat] * parseFloat(btc)).toFixed(2);
       }
     }
     else {
       valueFiat = val;
       if (rates) {
-        const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
+        const btc = (parseFloat(valueFiat) / rates[chain][fiat]).toFixed(8);
         value = fromBitcoinToUnit(btc, denomination);
       }
     }
@@ -290,6 +292,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
+    chain: getNodeChain(state),
   }),
   {
     createInvoice,

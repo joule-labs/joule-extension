@@ -14,6 +14,7 @@ import { checkPaymentRequest, sendPayment, resetSendPayment } from 'modules/paym
 import { PaymentRequestData } from 'modules/payment/types';
 import { AppState } from 'store/reducers';
 import './LightningSend.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
@@ -21,6 +22,7 @@ interface StateProps {
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
   denomination: AppState['settings']['denomination'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -77,7 +79,7 @@ class LightningSend extends React.Component<Props, State> {
 
   render() {
     // Early exit for send state
-    const { sendReceipt, isSending, sendError } = this.props;
+    const { sendReceipt, isSending, sendError, chain } = this.props;
     if (isSending || sendReceipt || sendError) {
       return (
         <SendState
@@ -179,7 +181,7 @@ class LightningSend extends React.Component<Props, State> {
                   >
                     {typedKeys(Denomination).map(d => (
                       <Select.Option key={d} value={d}>
-                        {denominationSymbols[d]}
+                        {denominationSymbols[chain][d]}
                       </Select.Option>
                     ))}
                   </Select>
@@ -338,6 +340,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
     denomination: state.settings.denomination,
+    chain: getNodeChain(state),
   }),
   {
     checkPaymentRequest,

@@ -1,10 +1,14 @@
-import { Fiat } from 'utils/constants';
+import { CHAIN_TYPE, Fiat } from 'utils/constants';
 import types from './types';
 
 type RatesMap = { [key in Fiat]: number };
 
+export type Rates = {
+  [key in CHAIN_TYPE]: RatesMap
+}
+
 export interface RatesState {
-  rates: null | RatesMap;
+  rates: null | Rates;
   isFetchingRates: boolean;
   fetchRatesError: Error | null;
 }

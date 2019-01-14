@@ -5,6 +5,8 @@ import QRCode from 'qrcode.react';
 import Loader from 'components/Loader';
 import Copy from 'components/Copy';
 import { getDepositAddress } from 'modules/account/actions';
+import { getNodeChain } from 'modules/node/selectors';
+import { coinSymbols } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './DepositModal.less';
 
@@ -12,6 +14,7 @@ interface StateProps {
   depositAddress: AppState['account']['depositAddress'];
   isFetchingDepositAddress: AppState['account']['isFetchingDepositAddress'];
   fetchDepositAddressError: AppState['account']['fetchDepositAddressError'];
+  chain: ReturnType<typeof getNodeChain>;
   hasPassword: boolean;
 }
 
@@ -41,6 +44,7 @@ class DepositModal extends React.Component<Props> {
       isOpen,
       onClose,
       hasPassword,
+      chain,
     } = this.props;
     const isVisible = !!isOpen && !!(hasPassword || fetchDepositAddressError);
 
@@ -86,7 +90,7 @@ class DepositModal extends React.Component<Props> {
 
     return (
       <Modal
-        title="BTC Address"
+        title={coinSymbols[chain] + " Address"}
         visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
@@ -106,6 +110,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     isFetchingDepositAddress: state.account.isFetchingDepositAddress,
     fetchDepositAddressError: state.account.fetchDepositAddressError,
     hasPassword: !!state.crypto.password,
+    chain: getNodeChain(state),
   }),
   { getDepositAddress },
 )(DepositModal);

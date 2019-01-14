@@ -12,6 +12,7 @@ import { fromBaseToUnit, fromUnitToBase, fromUnitToFiat } from 'utils/units';
 import { createInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './invoice.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -21,6 +22,7 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -63,6 +65,7 @@ class InvoicePrompt extends React.Component<Props, State> {
 
   render() {
     const { value, denomination, memo, fallbackAddress, expiry, isShowingAdvanced } = this.state;
+    const { chain } = this.props;
     const amountError = this.getValueError();
     const isConfirmDisabled = !!amountError;
     const isValueDisabled = !!this.args.amount;
@@ -109,7 +112,7 @@ class InvoicePrompt extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {denominationSymbols[d]}
+                      {denominationSymbols[chain][d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -168,7 +171,7 @@ class InvoicePrompt extends React.Component<Props, State> {
   }
 
   private renderHelp = () => {
-    const { rates, fiat, isNoFiat } = this.props;
+    const { rates, fiat, isNoFiat, chain } = this.props;
     const { value, denomination } = this.state;
     const helpPieces = [];
 
@@ -186,7 +189,7 @@ class InvoicePrompt extends React.Component<Props, State> {
             {' '}
             {fromBaseToUnit(this.args.minimumAmount.toString(), denomination)}
             {' '}
-            {denominationSymbols[denomination]}
+            {denominationSymbols[chain][denomination]}
           </span>
         );
       }
@@ -197,17 +200,17 @@ class InvoicePrompt extends React.Component<Props, State> {
             {' '}
             {fromBaseToUnit(this.args.maximumAmount.toString(), denomination)}
             {' '}
-            {denominationSymbols[denomination]}
+            {denominationSymbols[chain][denomination]}
           </span>
         );
       }
     }
 
-    if (rates && rates[fiat] && !isNoFiat) {
+    if (rates && rates[chain][fiat] && !isNoFiat) {
       const fiatAmt = fromUnitToFiat(
         value,
         denomination,
-        rates[fiat],
+        rates[chain][fiat],
         fiatSymbols[fiat],
       );
       helpPieces.push(
@@ -296,6 +299,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
+    chain: getNodeChain(state),
   }),
   { createInvoice },
 )(InvoicePrompt);

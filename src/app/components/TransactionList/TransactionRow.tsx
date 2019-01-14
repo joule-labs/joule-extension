@@ -7,10 +7,17 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { AnyTransaction } from 'modules/account/types';
 import { isInvoice, isBitcoinTx } from 'utils/typeguards';
-import BitcoinLogo from 'static/images/bitcoin.svg';
+import { getNodeChain } from 'modules/node/selectors';
+import { blockchainLogos } from 'utils/constants';
 import './TransactionRow.less';
+import { AppState } from 'store/reducers';
+import { connect } from 'react-redux';
 
-interface Props {
+interface StateProps {
+  chain: ReturnType<typeof getNodeChain>;
+}
+
+interface OwnProps {
   source: AnyTransaction;
   title: React.ReactNode;
   type: 'bitcoin' | 'lightning';
@@ -21,10 +28,11 @@ interface Props {
   onClick?(source: AnyTransaction): void;
 }
 
+type Props = StateProps & OwnProps;
 
-export default class TransactionRow extends React.Component<Props> {
+class TransactionRow extends React.Component<Props> {
   render() {
-    const { pubkey, timestamp, status, delta, onClick, source, title } = this.props;
+    const { pubkey, timestamp, status, delta, onClick, source, title, chain } = this.props;
 
     let icon;
     if (pubkey) {
@@ -38,7 +46,7 @@ export default class TransactionRow extends React.Component<Props> {
     } else if (isBitcoinTx(source)) {
       icon = (
         <div className="TransactionRow-avatar-img is-icon is-bitcoin">
-          <Icon component={BitcoinLogo} />
+          <Icon component={blockchainLogos[chain]} />
         </div>
       );
     }
@@ -77,3 +85,7 @@ export default class TransactionRow extends React.Component<Props> {
     }
   };
 }
+
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+  chain: getNodeChain(state),
+}))(TransactionRow);
