@@ -9,7 +9,7 @@ import './ChannelRow.less';
 
 interface Props {
   channel: ChannelWithNode;
-  status: "active" | "inactive";
+  status: "active" | "inactive" | "opening" | "closing";
   pubkey: string;
   onClick?(channel: ChannelWithNode): void;
 }
@@ -40,12 +40,20 @@ export default class ChannelRow extends React.Component<Props> {
             {channel.node.alias}
           </div>
           <div className="ChannelRow-info-pubkey">
-            <code>{channel.node.pub_key}</code>
+            <code>{channel.node.pub_key?channel.node.pub_key:
+                   channel.channel.remote_node_pub}</code>
           </div>
+
           <div className="ChannelRow-info-balance">
             Balance: <Unit value={channel.local_balance} hideUnit />
             {' / '}
-            <Unit value={channel.capacity} />
+            <Unit value={channel.capacity!=="1"? channel.capacity
+            :channel.channel.capacity}/>
+          </div>
+           <div className="ChannelRow-info-balance">
+           {channel.blocks_til_maturity>0&&
+            `Refund for ${channel.limbo_balance} satoshis in 
+            ${channel.blocks_til_maturity} blocks`}
           </div>
           <div className="ChannelRow-info-progress">
             <div className="ChannelRow-info-progress-inner" style={{ width: `${capacityPct}%` }}/>

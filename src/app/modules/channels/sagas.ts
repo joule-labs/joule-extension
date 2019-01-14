@@ -23,11 +23,11 @@ export function* handleGetChannels(): SagaIterator {
       channels.map(channel =>
         call(safeGetNodeInfo, nodeLib, channel.remote_pubkey))
         .concat(pending_force_closing_channels.map(channel =>
-          call(safeGetNodeInfo, nodeLib, channel.remote_node_pub)))
+          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
         .concat(waiting_close_channels.map(channel =>
-          call(safeGetNodeInfo, nodeLib, channel.remote_node_pub)))
+          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
         .concat(pending_open_channels.map(channel =>
-          call(safeGetNodeInfo, nodeLib, channel.remote_node_pub)))
+          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
     );
     // Map all channels together with node info
     const allChannels = channels
@@ -38,6 +38,7 @@ export function* handleGetChannels(): SagaIterator {
       ...channel,
       node: channelsNodeInfo[i].node,
     }));
+    console.log(payload);
     yield put({
       type: types.GET_CHANNELS_SUCCESS,
       payload,

@@ -17,11 +17,9 @@ interface StateProps {
 interface DispatchProps {
   getChannels: typeof getChannels;
 }
-
 interface OwnProps {
   onClick?(channel: ChannelWithNode): void;
 }
-
 
 type Props = StateProps & DispatchProps & OwnProps;
 
@@ -40,9 +38,22 @@ class ChannelList extends React.Component<Props> {
     if (isFetchingChannels) {
       content = <Loader />;
     } else if (channels && channels.length) {
-      content = channels.map(c => (
-        <ChannelRow key={c.chan_id} status={c.active===true?"active":"inactive"} 
-        pubkey={c.node.pub_key} channel={c} onClick={onClick} />
+      content = channels.map((c,i) => (
+        <ChannelRow key={i}
+        status={
+          c.blocks_til_maturity ? "closing" :
+          c.confirmation_height === 0 ? "opening" :
+          c.active===true ? "active" :
+          c.active===false ? "inactive" :
+          "closing"
+        }
+        pubkey={
+          c.node.pub_key === undefined
+          ? c.remote_node_pub :
+          c.node.pub_key
+        }
+        channel={c}
+        onClick={onClick} />
       ));
     } else if (fetchChannelsError) {
       content = (
@@ -76,9 +87,6 @@ class ChannelList extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     channels: state.channels.channels,
-    forceClosingChannels: state.channels.forceClosingChannels,
-    waitClosingChannels: state.channels.waitClosingChannels,
-    pendingOpenChannels: state.channels.pendingOpenChannels,
     isFetchingChannels: state.channels.isFetchingChannels,
     fetchChannelsError: state.channels.fetchChannelsError,
   }),

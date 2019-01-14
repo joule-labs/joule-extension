@@ -81,12 +81,10 @@ export class LndHttpClient {
       res.pending_force_closing_channels =
       res.pending_force_closing_channels.map(pending => ({
         blocks_til_maturity: 0,
-        channel: {
-          capacity: '0',
-          channel_point: '0',
-          local_balance: '0',
-          remote_node_pub: '0'
-        },
+        capacity: '1',
+        channel_point: '0',
+        local_balance: '0',
+        remote_node_pub: '0',
         closing_txid: '0',
         limbo_balance: '0',
         maturity_height: 0,
@@ -94,20 +92,16 @@ export class LndHttpClient {
       }));
       res.waiting_close_channels =
       res.waiting_close_channels.map(pending => ({
-        channel: {
-          capacity: '0',
+          capacity: '1',
           local_balance: '0',
           remote_balance: '0',
-        },
           limbo_balance: '0',
         ...pending,
       }));
       res.pending_open_channels = res.pending_open_channels.map(pending => ({
-        channel: {
-          capacity: '0',
-          local_balance: '0',
-          remote_balance: '0',
-        },
+        capacity: '1',
+        local_balance: '0',
+        remote_balance: '0',
         confirmation_height: 0,
         commit_fee: '0',
         commit_weight: '0',

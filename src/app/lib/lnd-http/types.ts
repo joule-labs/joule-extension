@@ -54,40 +54,40 @@ export interface Channel {
   maturity_height: string;
   confirmation_height: number;
   remote_node_pub: string;
+  channel:{
+    capacity: string,
+    channel_point: string,
+    local_balance: string,
+    remote_node_pub: string,
+  }
 }
 
 export interface PendingForceClosingChannel {
   blocks_til_maturity: number
-  channel: {
-    capacity: string
-    channel_point: string,
-    local_balance: string,
-    remote_node_pub: string
-  },
+  capacity: string
+  channel_point: string,
+  local_balance: string,
+  remote_node_pub: string
   closing_txid: string,
   limbo_balance: string,
   maturity_height: string
 }
 
 export interface WaitingCloseChannel {
-  channel: {
     remote_node_pub: string,
     channel_point: string,
     capacity: string,
     local_balance: string,
     remote_balance: string,
-  },
     limbo_balance: string
 }
 
 export interface PendingOpenChannel {
-  channel: {
-    remote_node_pub: string,
-    channel_point: string,
-    capacity: string,
-    local_balance: string,
-    remote_balance: string
-  },
+  remote_node_pub: string,
+  channel_point: string,
+  capacity: string,
+  local_balance: string,
+  remote_balance: string
   confirmation_height: number,
   commit_fee: string,
   commit_weight: string,
