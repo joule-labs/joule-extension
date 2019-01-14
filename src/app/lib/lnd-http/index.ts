@@ -260,6 +260,36 @@ export class LndHttpClient {
     );
   };
 
+  getPeers = () => {
+    return this.request<T.GetPeersResponse>(
+      'GET',
+      '/v1/peers',
+      undefined,
+      { peers: [] },
+    ).then(res => {
+      // Default attributes for peers
+      res.peers = res.peers.map(peer => ({
+        ping_time: '0',
+        sat_sent: '0',
+        sat_recv: '0',
+        bytes_sent: '0',
+        bytes_recv: '0',
+        ...peer,
+      }));
+      return res;
+    });
+  };
+
+  connectPeer = (address: string, perm?: boolean) => {
+    const pieces = address.split('@');
+    const addr = { pubkey: pieces[0], host: pieces[1] };
+    return this.request<any, T.ConnectPeerArguments>(
+      'POST',
+      '/v1/peers',
+      { addr, perm },
+    );
+  };
+
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,

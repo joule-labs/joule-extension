@@ -8,6 +8,7 @@ import {
   RouteProps,
   matchPath,
 } from 'react-router';
+import { hot } from 'react-hot-loader/root';
 import { AppState } from 'store/reducers';
 import Loader from 'components/Loader';
 import HomePage from 'pages/home';
@@ -122,4 +123,4 @@ const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(
   })
 )(Routes);
 
-export default withRouter(ConnectedRoutes);
+export default withRouter(hot(ConnectedRoutes));

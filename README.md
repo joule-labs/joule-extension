@@ -77,6 +77,9 @@ React DevTools:
 2. Run `react-devtools` in a new Terminal
 3. A new window will open displaying the React vdom inspector
 
+React Hot Reload:
+1. Run `yarn run hot` instead of `yarn run dev`
+
 ## Building
 
 To make a production build, follow these steps

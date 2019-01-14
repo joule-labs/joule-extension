@@ -71,6 +71,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
       nodeTypes.SET_NODE,
       nodeTypes.RESET_NODE,
       settingsTypes.CLEAR_SETTINGS,
+      cryptoTypes.CHANGE_PASSWORD_SUCCESS,
     ],
   },
   {
