@@ -31,6 +31,7 @@ export class LndHttpClient {
         block_height: 0,
         num_pending_channels: 0,
         testnet: false,
+        chains: [],
       },
     );
   };

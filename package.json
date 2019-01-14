@@ -7,7 +7,8 @@
     "react",
     "chrome-extension",
     "lightning",
-    "bitcoin"
+    "bitcoin",
+    "litecoin"
   ],
   "scripts": {
     "dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack -w",
@@ -19,6 +20,12 @@
     "lint": "tslint -p tsconfig.json",
     "tsc": "tsc --noEmit"
   },
+  "contributors": [
+    {
+      "name": "Michael Rodriguez",
+      "email": "michael@zulurepublic.io"
+    }
+  ],
   "dependencies": {
     "@babel/core": "^7.0.1",
     "@babel/plugin-proposal-class-properties": "^7.0.0",

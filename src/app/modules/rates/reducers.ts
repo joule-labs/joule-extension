@@ -1,7 +1,12 @@
+import { CHAIN_TYPE } from 'utils/constants';
 import types, { RatesMap } from './types';
 
+export type Rates = {
+  [key in CHAIN_TYPE]: RatesMap
+}
+
 export interface RatesState {
-  rates: null | RatesMap;
+  rates: null | Rates;
   isFetchingRates: boolean;
   fetchRatesError: Error | null;
 }

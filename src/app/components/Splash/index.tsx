@@ -8,6 +8,18 @@ interface Props {
 }
 
 export default class Splash extends React.Component<Props> {
+  componentDidMount() {
+    if (process.env.APP_CONTAINER === 'page') {
+      browser.storage.local.get('skipSplash').then(value => {
+        if (value && value.skipSplash) {
+          browser.storage.local.remove('skipSplash').then(() => {
+            this.handleContinue();
+          });
+        }
+      });
+    }
+  }
+
   render() {
     return (
       <div className="Splash">
@@ -34,7 +46,10 @@ export default class Splash extends React.Component<Props> {
     if (process.env.APP_CONTAINER === 'page') {
       this.props.handleContinue();
     } else {
-      browser.runtime.openOptionsPage();
+      browser.storage.local.set({ skipSplash: true }).then(() => {
+        browser.runtime.openOptionsPage();
+        setTimeout(window.close, 100);
+      });
     }
   };
 }

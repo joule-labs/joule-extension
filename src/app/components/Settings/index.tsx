@@ -5,6 +5,7 @@ import { Form, Select, Checkbox, Button, Modal } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import DomainLists from './DomainLists';
+import NodeSettings from './NodeSettings';
 import {
   changeSettings,
   clearSettings,
@@ -19,15 +20,18 @@ import {
   denominationNames,
   denominationSymbols,
   fiatSymbols,
+  blockchainDisplayName,
 } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 type SettingsKey = keyof AppState['settings'];
 
 interface StateProps {
   settings: AppState['settings'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -43,7 +47,7 @@ type Props = StateProps & DispatchProps & RouteComponentProps;
 
 class Settings extends React.Component<Props> {
   render() {
-    const { settings } = this.props;
+    const { settings, chain } = this.props;
 
     return (
       <Form className="Settings" layout="vertical">
@@ -51,7 +55,7 @@ class Settings extends React.Component<Props> {
           <h3 className="Settings-section-title">
             Units & Currencies
           </h3>
-          <Form.Item label="Bitcoin unit">
+          <Form.Item label={blockchainDisplayName[chain] + " unit"}>
             <Select
               size="large"
               value={settings.denomination}
@@ -60,7 +64,7 @@ class Settings extends React.Component<Props> {
             >
               {typedKeys(Denomination).map(d => (
                 <Select.Option key={d} value={d}>
-                  {denominationNames[d]} ({denominationSymbols[d]})
+                  {denominationNames[chain][d]} ({denominationSymbols[chain][d]})
                 </Select.Option>
               ))}
             </Select>
@@ -119,15 +123,23 @@ class Settings extends React.Component<Props> {
           <h3 className="Settings-section-title">
             Node
           </h3>
-          <Button
-            type="danger"
-            size="large"
-            block
-            ghost
-            onClick={this.clearSettings}
-          >
-            Reset password and connection settings
-          </Button>
+          <NodeSettings />
+        </div>
+        <div className="Settings-section">
+          <h3 className="Settings-section-title">
+            Reset
+          </h3>
+          <Form.Item>
+            <Button
+              type="danger"
+              size="large"
+              block
+              ghost
+              onClick={this.clearSettings}
+              >
+              Reset All Connection Settings
+            </Button>
+          </Form.Item>
         </div>
       </Form>
     );
@@ -161,6 +173,7 @@ class Settings extends React.Component<Props> {
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     settings: state.settings,
+    chain: getNodeChain(state),
   }),
   {
     changeSettings,

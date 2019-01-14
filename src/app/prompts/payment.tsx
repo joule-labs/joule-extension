@@ -17,6 +17,7 @@ import { sendPayment, checkPaymentRequest } from 'modules/payment/actions';
 import { PaymentRequestData } from 'modules/payment/types';
 import { AppState } from 'store/reducers';
 import './payment.less';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
@@ -24,6 +25,7 @@ interface StateProps {
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
   denomination: AppState['settings']['denomination'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -85,6 +87,7 @@ class PaymentPrompt extends React.Component<Props, State> {
 
   render() {
     const { routedRequest } = this.state;
+    const { chain } = this.props;
     const pr = this.props.paymentRequests[this.paymentRequest] || {};
     let isConfirmDisabled = true;
 
@@ -135,7 +138,7 @@ class PaymentPrompt extends React.Component<Props, State> {
                 >
                   {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
-                      {denominationSymbols[d]}
+                      {denominationSymbols[chain][d]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -293,6 +296,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
     denomination: state.settings.denomination,
+    chain: getNodeChain(state),
   }),
   {
     checkPaymentRequest,

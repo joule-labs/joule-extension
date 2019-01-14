@@ -1,4 +1,5 @@
 import { AppState } from 'store/reducers';
+import { CHAIN_TYPE } from 'utils/constants';
 
 export const selectSyncedUnencryptedNodeState = (s: AppState) => ({
   url: s.node.url,
@@ -20,3 +21,5 @@ export const selectNodeLibOrThrow = (s: AppState) => {
 };
 
 export const selectNodeInfo = (s: AppState) => s.node.nodeInfo;
+
+export const getNodeChain = (s: AppState) => ((s.node.nodeInfo && s.node.nodeInfo.chains[0]) || 'bitcoin') as CHAIN_TYPE;

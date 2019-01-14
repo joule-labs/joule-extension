@@ -9,9 +9,20 @@
   }
 }
 
+@keyframes error-shake {
+  0%   { transform: translateX(0); }
+  10%  { transform: translateX(-10px); }
+  25%  { transform: translateX(8px); }
+  40%  { transform: translateX(-6px); }
+  65%  { transform: translateX(4px); }
+  80%  { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
 .CreatePassword {
   padding: 1rem 1.5rem;
   position: relative;
+  min-height: 465px;
   height: 100%;
   max-width: 400px;
   margin: 0 auto;
@@ -24,6 +35,12 @@
   &-title {
     font-size: 1.5rem;
     text-align: center;
+  }
+
+  &-current {
+    .ant-form-item-control.has-error {
+      animation: error-shake 400ms ease-out 1;
+    }
   }
 
   &-label {

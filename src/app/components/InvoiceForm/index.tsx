@@ -8,6 +8,7 @@ import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -210,6 +211,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
+    chain: getNodeChain(state),
   }),
   {
     createInvoice,

@@ -10,7 +10,7 @@ import {
   fromUnitToBitcoin,
   fromBitcoinToUnit,
 } from 'utils/units';
-import { createInvoice } from 'modules/payment/actions';
+import { getNodeChain } from 'modules/node/selectors';
 import { AppState } from 'store/reducers';
 import './index.less';
 
@@ -33,6 +33,7 @@ interface StateProps {
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
   rates: AppState['rates']['rates'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 type Props = OwnProps & StateProps;
@@ -93,6 +94,7 @@ class AmountField extends React.Component<Props, State> {
       rates,
       required,
       help,
+      chain,
     } = this.props;
     const { value, valueFiat, denomination } = this.state;
     const valueError = this.getValueError();
@@ -125,7 +127,7 @@ class AmountField extends React.Component<Props, State> {
             >
               {typedKeys(Denomination).map(d => (
                 <Select.Option key={d} value={d}>
-                  {denominationSymbols[d]}
+                  {denominationSymbols[chain][d]}
                 </Select.Option>
               ))}
             </Select>
@@ -156,20 +158,24 @@ class AmountField extends React.Component<Props, State> {
   }
 
   private getValueError = () => {
-    const { minimumSats, maximumSats } = this.props;
+    const { minimumSats, maximumSats, chain } = this.props;
     const { value, denomination } = this.state;
     const valueBN = new BN(fromUnitToBase(value, denomination));
     if (maximumSats) {
       const max = new BN(maximumSats);
       if (max.lt(valueBN)) {
-        const maxAmount = `${fromBaseToUnit(max.toString(), denomination)} ${denominationSymbols[denomination]}`;
+        const maxAmount = `${
+          fromBaseToUnit(max.toString(), denomination)
+        } ${denominationSymbols[chain][denomination]}`;
         return `Amount exceeds maximum (${maxAmount})`;
       }
     }
     if (minimumSats) {
       const min = new BN(minimumSats);
       if (min.gte(valueBN)) {
-        const minAmount = `${fromBaseToUnit(min.toString(), denomination)} ${denominationSymbols[denomination]}`;
+        const minAmount = `${
+          fromBaseToUnit(min.toString(), denomination)
+        } ${denominationSymbols[chain][denomination]}`;
         return `Amount is less than minimum (${minAmount})`;
       }
     }
@@ -184,7 +190,7 @@ class AmountField extends React.Component<Props, State> {
   };
 
   private updateBothValues = (name: string, val: string) => {
-    const { fiat, rates } = this.props;
+    const { fiat, chain, rates } = this.props;
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
   
@@ -196,13 +202,13 @@ class AmountField extends React.Component<Props, State> {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
-        valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
+        valueFiat = (rates[chain][fiat] * parseFloat(btc)).toFixed(2);
       }
     }
     else {
       valueFiat = val;
       if (rates) {
-        const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
+        const btc = (parseFloat(valueFiat) / rates[chain][fiat]).toFixed(8);
         value = fromBitcoinToUnit(btc, denomination);
       }
     }
@@ -220,12 +226,12 @@ class AmountField extends React.Component<Props, State> {
   };
 }
 
-export default connect<StateProps, {}, {}, AppState>(
+export default connect<StateProps, {}, OwnProps, AppState>(
   state => ({
     denomination: state.settings.denomination,
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
     rates: state.rates.rates,
+    chain: getNodeChain(state),
   }),
-  { createInvoice },
 )(AmountField);

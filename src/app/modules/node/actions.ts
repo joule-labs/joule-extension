@@ -27,6 +27,24 @@ export function checkAuth(url: string, admin: Macaroon, readonly: Macaroon) {
   };
 }
 
+export function updateNodeUrl(url: string) {
+  return {
+    type: types.UPDATE_NODE_URL,
+    payload: url,
+  };
+}
+
+export function updateMacaroons(url: string, admin: Macaroon, readonly: Macaroon) {
+  return {
+    type: types.UPDATE_MACAROONS,
+    payload: {
+      url,
+      admin,
+      readonly,
+    },
+  };
+}
+
 export function getNodeInfo() {
   return { type: types.GET_NODE_INFO };
 }

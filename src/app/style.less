@@ -50,3 +50,12 @@ body {
     }
   }
 }
+
+.ant-drawer-body {
+  height: calc(100vh - @drawer-header-height);
+}
+
+// ensure modals display above drawers
+.ant-modal-mask, .ant-modal-wrap {
+  z-index: 1001;
+}
