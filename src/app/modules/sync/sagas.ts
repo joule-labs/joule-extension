@@ -82,7 +82,7 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): Saga
   }
 
   // Call their respective actions
-  const decryptedItem = decryptData(data, password, salt);
+  const decryptedItem = decryptData(data.data, password, salt);
   const payload = migrateSyncedData(syncConfig, decryptedItem);
   yield put(syncConfig.action(payload));
   yield put({ type: types.FINISH_DECRYPT});
