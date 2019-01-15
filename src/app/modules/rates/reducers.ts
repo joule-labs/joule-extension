@@ -1,7 +1,5 @@
-import { CHAIN_TYPE, Fiat } from 'utils/constants';
-import types from './types';
-
-type RatesMap = { [key in Fiat]: number };
+import { CHAIN_TYPE } from 'utils/constants';
+import types, { RatesMap } from './types';
 
 export type Rates = {
   [key in CHAIN_TYPE]: RatesMap

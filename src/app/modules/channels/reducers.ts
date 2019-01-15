@@ -4,12 +4,20 @@ export interface ChannelsState {
   channels: null | ChannelWithNode[];
   isFetchingChannels: boolean;
   fetchChannelsError: null | Error;
+
+  newChannelTxIds: { [address: string]: string };
+  isOpeningChannel: boolean;
+  openChannelError: null | Error;
 }
 
 export const INITIAL_STATE: ChannelsState = {
   channels: null,
   isFetchingChannels: false,
   fetchChannelsError: null,
+
+  newChannelTxIds: {},
+  isOpeningChannel: false,
+  openChannelError: null,
 };
 
 export default function channelsReducers(
@@ -35,6 +43,28 @@ export default function channelsReducers(
         ...state,
         fetchChannelsError: action.payload,
         isFetchingChannels: false,
+      }
+    
+    case types.OPEN_CHANNEL:
+      return {
+        ...state,
+        isOpeningChannel: true,
+        openChannelError: null,
+      };
+    case types.OPEN_CHANNEL_SUCCESS:
+      return {
+        ...state,
+        newChannelTxIds: {
+          ...state.newChannelTxIds,
+          [action.payload.address]: action.payload.txid,
+        },
+        isOpeningChannel: false,
+      };
+    case types.OPEN_CHANNEL_FAILURE:
+      return {
+        ...state,
+        openChannelError: action.payload,
+        isOpeningChannel: false,
       }
   }
 

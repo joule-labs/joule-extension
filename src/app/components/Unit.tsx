@@ -54,7 +54,7 @@ class Unit extends React.Component<Props> {
     </>;
 
     let fiatEl = '';
-    if (rates && rates[chain][fiat]) {
+    if (rates && rates[chain] && rates[chain][fiat]) {
       fiatEl = fromUnitToFiat(
         value,
         Denomination.SATOSHIS,

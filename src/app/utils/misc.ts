@@ -1,4 +1,8 @@
-import { LndHttpClient, GetNodeInfoResponse } from 'lib/lnd-http';
+import {
+  LndHttpClient,
+  GetNodeInfoResponse,
+  AlreadyConnectedError,
+} from 'lib/lnd-http';
 
 export function sleep(time: number) {
   return new Promise(resolve => {
@@ -14,7 +18,7 @@ export async function safeGetNodeInfo(
   try {
     const node = await lib.getNodeInfo(pubkey);
     return node;
-  } catch (err) {
+  } catch(err) {
     return {
       total_capacity: 0,
       num_channels: 0,
@@ -26,5 +30,20 @@ export async function safeGetNodeInfo(
         pub_key: pubkey,
       },
     };
+  }
+}
+
+// Run connectPeer, but if it fails due to duplicate, just ignore
+export async function safeConnectPeer(
+  lib: LndHttpClient,
+  address: string,
+): Promise<any> {
+  try {
+    lib.connectPeer(address);
+  } catch(err) {
+    if (err === AlreadyConnectedError) {
+      return;
+    }
+    throw err;
   }
 }
