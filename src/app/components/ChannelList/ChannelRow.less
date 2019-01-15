@@ -35,19 +35,19 @@
       border-radius: 100%;
       box-shadow: 0 0 0 3px #FFF;
 
-      &.is-active {
-        background: @success-color;
+      &.is-open {
+        &.is-active {
+          background: @success-color;
+        }
+        &.is-inactive {
+          background: @error-color;
+        }
       }
 
-      &.is-inactive {
-        background: @error-color;
-      }
-
-      &.is-opening {
-        background: rgb(247, 247, 9);
-      }
-
-      &.is-closing {
+      &.is-closing,
+      &.is-opening,
+      &.is-waiting,
+      &.is-force-closing, {
         background: @warning-color;
       }
     }

@@ -78,3 +78,7 @@ export function commaify(text: string | number) {
 export function removeDomainPrefix(domain: string) {
   return domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
 }
+
+export function enumToClassName(key: string) {
+  return key.toLowerCase().replace('_', '-');
+}

@@ -1,4 +1,11 @@
-import { Channel, LightningNode } from 'lib/lnd-http';
+import {
+  OpenChannel,
+  OpeningChannel,
+  ClosingChannel,
+  ForceClosingChannel,
+  WaitingChannel,
+  LightningNode,
+} from 'lib/lnd-http';
 
 enum ChannelsTypes {
   GET_CHANNELS = 'GET_CHANNELS',
@@ -10,9 +17,28 @@ enum ChannelsTypes {
   OPEN_CHANNEL_FAILURE = 'OPEN_CHANNEL_FAILURE',
 }
 
-export interface ChannelWithNode extends Channel {
+// Is there a better way to do this?
+export interface OpenChannelWithNode extends OpenChannel {
   node: LightningNode;
 }
+export interface OpeningChannelWithNode extends OpeningChannel {
+  node: LightningNode;
+}
+export interface ClosingChannelWithNode extends ClosingChannel {
+  node: LightningNode;
+}
+export interface ForceClosingChannelWithNode extends ForceClosingChannel {
+  node: LightningNode;
+}
+export interface WaitingChannelWithNode extends WaitingChannel {
+  node: LightningNode;
+}
+export type ChannelWithNode =
+  | OpenChannelWithNode
+  | OpeningChannelWithNode
+  | ClosingChannelWithNode
+  | ForceClosingChannelWithNode
+  | WaitingChannelWithNode;
 
 export interface OpenChannelPayload {
   address: string;
