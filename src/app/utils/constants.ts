@@ -2,6 +2,7 @@ import BitcoinLogo from 'static/images/bitcoin.svg';
 import LitecoinLogo from 'static/images/litecoin.svg';
 import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
+import { CHANNEL_STATUS } from 'lib/lnd-http';
 
 export const DEFAULT_LOCAL_NODE_URLS = [
   'https://localhost:8080',
@@ -84,4 +85,12 @@ export const fiatSymbols: { [key in Fiat]: string } = {
   EUR: '€',
   GBP: '£',
   JPY: '¥',
+};
+
+export const channelStatusText: { [key in CHANNEL_STATUS]: string } = {
+  [CHANNEL_STATUS.OPEN]: 'Open',
+  [CHANNEL_STATUS.OPENING]: 'Opening',
+  [CHANNEL_STATUS.CLOSING]: 'Closing',
+  [CHANNEL_STATUS.WAITING]: 'Closing',
+  [CHANNEL_STATUS.FORCE_CLOSING]: 'Closing',
 };

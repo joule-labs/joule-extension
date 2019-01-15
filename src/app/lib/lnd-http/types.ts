@@ -30,37 +30,71 @@ export interface HTLC {
   incoming: boolean;
 }
 
-export interface Channel {
+export enum CHANNEL_STATUS {
+  OPEN = 'OPEN',
+  OPENING = 'OPENING',
+  CLOSING = 'CLOSING',
+  WAITING = 'WAITING',
+  FORCE_CLOSING = 'FORCE_CLOSING',
+}
+
+export interface BaseChannel {
+  status: CHANNEL_STATUS;
+  channel_point: string;
+  remote_balance: string;
+  local_balance: string;
+  remote_node_pub: string;
+  capacity: string;
+}
+
+export interface OpenChannel extends BaseChannel {
+  status: CHANNEL_STATUS.OPEN;
+  commit_weight: string;
+  commit_fee: string;
   csv_delay: number;
   chan_id: string;
-  num_updates: number;
-  private: boolean;
-  pending_htlcs: HTLC[];
-  remote_balance: string;
-  commit_weight: string;
-  channel_point: string;
-  capacity: string;
-  local_balance: string;
+  fee_per_kw: string;
   total_satoshis_received: string;
+  pending_htlcs: HTLC[];
+  num_updates: number;
   active: boolean;
-  remote_pubkey: string;
+  private: boolean;
+}
+
+export interface OpeningChannel extends BaseChannel {
+  status: CHANNEL_STATUS.OPENING;
+  commit_weight: string;
   commit_fee: string;
   fee_per_kw: string;
-  unsettled_balance: string;
-  total_satoshis_sent: string;
-  blocks_til_maturity: number;
-  closing_txid: string;
-  limbo_balance: string;
-  maturity_height: string;
   confirmation_height: number;
-  remote_node_pub: string;
-  channel:{
-    capacity: string,
-    channel_point: string,
-    local_balance: string,
-    remote_node_pub: string,
-  }
 }
+
+export interface ClosingChannel extends BaseChannel {
+  status: CHANNEL_STATUS.CLOSING;
+  closing_txid: string;
+}
+
+export interface ForceClosingChannel extends BaseChannel {
+  status: CHANNEL_STATUS.FORCE_CLOSING;
+  maturity_height: string;
+  pending_htlcs: HTLC[];
+  closing_txid: string;
+  recovered_balance: string;
+  limbo_balance: string;
+  blocks_til_maturity: number;
+}
+
+export interface WaitingChannel extends BaseChannel {
+  status: CHANNEL_STATUS.WAITING;
+  limbo_balance: string;
+}
+
+export type Channel =
+  | OpenChannel
+  | OpeningChannel
+  | ClosingChannel
+  | ForceClosingChannel
+  | WaitingChannel;
 
 export interface HopHint {
   chan_id: string;
@@ -178,13 +212,14 @@ export interface GetNodeInfoResponse {
 }
 
 export interface GetChannelsResponse {
-  channels: Channel[];
+  channels: OpenChannel[];
 }
 
 export interface GetPendingChannelsResponse {
-  pending_force_closing_channels: Channel[];
-  waiting_close_channels: Channel[];
-  pending_open_channels: Channel[];
+  pending_open_channels: OpeningChannel[];
+  pending_closing_channels: ClosingChannel[];
+  pending_force_closing_channels: ForceClosingChannel[];
+  waiting_close_channels: WaitingChannel[];
 }
 
 export interface GetBlockchainBalanceResponse {

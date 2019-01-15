@@ -3,42 +3,52 @@ import { takeLatest, select, call, all, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, safeConnectPeer, sleep } from 'utils/misc';
-import { openChannel } from './actions';
+import { openChannel, getChannels } from './actions';
 import types from './types';
 
 export function* handleGetChannels(): SagaIterator {
   try {
     const nodeLib: Yielded<typeof selectNodeLibOrThrow>
       = yield select(selectNodeLibOrThrow);
-    // Destructure all channels for asynchronous calling
-    const [{ channels },
-    {pending_force_closing_channels,
-    pending_open_channels,
-    waiting_close_channels}] :
-    [Yielded <typeof nodeLib.getChannels>,
-    Yielded <typeof nodeLib.getPendingChannels>]
+    // Get open and pending channels in one go
+    const [
+      { channels },
+      {
+        pending_force_closing_channels,
+        pending_open_channels,
+        waiting_close_channels,
+      },
+    ] : [
+      Yielded <typeof nodeLib.getChannels>,
+      Yielded <typeof nodeLib.getPendingChannels>
+    ]
      = yield all([
        call(nodeLib.getChannels),
        call(nodeLib.getPendingChannels)]);
-    // Map all channels node info together
-    const channelsNodeInfo: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
-      channels.map(channel =>
-        call(safeGetNodeInfo, nodeLib, channel.remote_pubkey))
-        .concat(pending_force_closing_channels.map(channel =>
-          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
-        .concat(waiting_close_channels.map(channel =>
-          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
-        .concat(pending_open_channels.map(channel =>
-          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
+
+    // Map all channels' node info together
+    const allChannels = [
+      ...channels,
+      ...pending_force_closing_channels,
+      ...pending_open_channels,
+      ...waiting_close_channels,
+    ];
+    const nodePubKeys = allChannels.reduce((prev, c) => {
+      prev[c.remote_node_pub] = true;
+      return prev;
+    }, {} as { [pubkey: string]: boolean });
+    const nodeInfoResponses: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
+      Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk))
     );
+    const nodeInfoMap = nodeInfoResponses.reduce((prev, node) => {
+      prev[node.node.pub_key] = node;
+      return prev;
+    }, {} as { [pubkey: string]: Yielded<typeof nodeLib.getNodeInfo> });
+
     // Map all channels together with node info
-    const allChannels = channels
-      .concat(pending_force_closing_channels)
-      .concat(waiting_close_channels)
-      .concat(pending_open_channels)
-    const payload = allChannels.map((channel, i) => ({
+    const payload = allChannels.map(channel => ({
       ...channel,
-      node: channelsNodeInfo[i].node,
+      node: nodeInfoMap[channel.remote_node_pub].node,
     }));
     yield put({
       type: types.GET_CHANNELS_SUCCESS,
@@ -79,6 +89,10 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
         index: res.output_index,
       },
     });
+
+    // Refresh channels list
+    yield call(sleep, 300);
+    yield put(getChannels());
   } catch(err) {
     yield put({
       type: types.OPEN_CHANNEL_FAILURE,

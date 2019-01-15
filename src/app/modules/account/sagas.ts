@@ -26,11 +26,15 @@ export function* handleGetAccountInfo(): SagaIterator {
       blockchainBalance: chainBalances.confirmed_balance,
       blockchainBalancePending: chainBalances.total_balance,
       channelBalance: channelsBalances.balance,
-      channelBalancePending: channelsBalances.pending_open_balance,
+      channelBalancePending: new BN(channelsBalances.balance).add(
+        new BN(channelsBalances.pending_open_balance)
+      ).toString(),
       totalBalance: new BN(chainBalances.confirmed_balance).add(
         new BN(channelsBalances.balance)
       ).toString(),
       totalBalancePending: new BN(chainBalances.total_balance).add(
+        new BN(channelsBalances.balance)
+      ).add(
         new BN(channelsBalances.pending_open_balance)
       ).toString(),
     };

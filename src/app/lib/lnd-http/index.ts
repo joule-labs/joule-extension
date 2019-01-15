@@ -49,6 +49,7 @@ export class LndHttpClient {
     ).then(res => {
       // Default attributes for channels
       res.channels = res.channels.map(channel => ({
+        status: T.CHANNEL_STATUS.OPEN,
         csv_delay: 0,
         num_updates: 0,
         private: false,
@@ -63,6 +64,7 @@ export class LndHttpClient {
         fee_per_kw: '0',
         unsettled_balance: '0',
         total_satoshis_sent: '0',
+        remote_node_pub: (channel as any).remote_pubkey,
         ...channel,
       }));
       return res;
@@ -74,40 +76,51 @@ export class LndHttpClient {
       'GET',
       '/v1/channels/pending',
       undefined,
-      { pending_force_closing_channels: [],
+      {
+        pending_closing_channels: [],
+        pending_force_closing_channels: [],
         waiting_close_channels: [],
-        pending_open_channels: []}
+        pending_open_channels: [],
+      }
     ).then(res => {
-      // Default attributes for channels
-      res.pending_force_closing_channels =
-      res.pending_force_closing_channels.map(pending => ({
-        blocks_til_maturity: 0,
-        capacity: '1',
-        channel_point: '0',
-        local_balance: '0',
-        remote_node_pub: '0',
-        closing_txid: '0',
-        limbo_balance: '0',
-        maturity_height: 0,
-        ...pending,
-      }));
-      res.waiting_close_channels =
-      res.waiting_close_channels.map(pending => ({
-          capacity: '1',
-          local_balance: '0',
-          remote_balance: '0',
-          limbo_balance: '0',
-        ...pending,
-      }));
-      res.pending_open_channels = res.pending_open_channels.map(pending => ({
-        capacity: '1',
-        local_balance: '0',
-        remote_balance: '0',
-        confirmation_height: 0,
-        commit_fee: '0',
+      res.pending_open_channels = res.pending_open_channels.map(channel => ({
+        status: T.CHANNEL_STATUS.OPENING,
         commit_weight: '0',
+        confirmation_height: 0,
         fee_per_kw: '0',
-        ...pending,
+        commit_fee: '0',
+        remote_balance: '0',
+        local_balance: '0',
+        capacity: '0',
+        ...(channel as any).channel,
+      }));
+      res.pending_closing_channels = res.pending_closing_channels.map(channel => ({
+        status: T.CHANNEL_STATUS.CLOSING,
+        closing_txid: channel.closing_txid,
+        remote_balance: '0',
+        local_balance: '0',
+        capacity: '0',
+        ...(channel as any).channel,
+      }));
+      res.waiting_close_channels = res.waiting_close_channels.map(channel => ({
+        status: T.CHANNEL_STATUS.WAITING,
+        limbo_balance: '0',
+        remote_balance: '0',
+        local_balance: '0',
+        capacity: '0',
+        ...(channel as any).channel,
+      }));
+      res.pending_force_closing_channels = res.pending_force_closing_channels.map(channel => ({
+        status: T.CHANNEL_STATUS.FORCE_CLOSING,
+        maturity_height: '0',
+        pending_htlcs: [],
+        recovered_balance: '0',
+        limbo_balance: '0',
+        blocks_til_maturity: 0,
+        remote_balance: '0',
+        local_balance: '0',
+        capacity: '0',
+        ...(channel as any).channel,
       }));
       return res;
     });

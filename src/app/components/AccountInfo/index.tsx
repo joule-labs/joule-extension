@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Icon } from 'antd';
+import { Button, Icon, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
+import BN from 'bn.js';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DepositModal from './DepositModal';
@@ -59,7 +60,17 @@ class AccountInfo extends React.Component<Props, State> {
       type: 'primary' as any,
       onClick: this.props.onSendClick,
     }];
-    
+
+    let showPending = false;
+    let balanceDiff = '0';
+    if (account) {
+      const diff = new BN(account.totalBalancePending).sub(new BN(account.totalBalance));
+      if (!diff.isZero()) {
+        showPending = true;
+        balanceDiff = diff.toString();
+      }
+    }
+
     return (
       <div className="AccountInfo">
         {account ? (
@@ -71,7 +82,15 @@ class AccountInfo extends React.Component<Props, State> {
             <div className="AccountInfo-top-info">
               <div className="AccountInfo-top-info-alias">{account.alias}</div>
               <div className="AccountInfo-top-info-balance">
-                <Unit value={account.totalBalance} showFiat />
+                <Unit value={account.totalBalancePending} showFiat />
+                {showPending &&
+                  <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
+                    <Icon
+                      className="AccountInfo-top-info-balance-pending"
+                      type="clock-circle"
+                    />
+                  </Tooltip>
+                }
               </div>
               <div className="AccountInfo-top-info-balances">
                 <span>Channels: <Unit value={account.channelBalance} /></span>

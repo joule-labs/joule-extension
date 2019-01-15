@@ -31,29 +31,14 @@ class ChannelList extends React.Component<Props> {
   }
 
   render() {
-    const { channels,
-      isFetchingChannels, fetchChannelsError, onClick } = this.props;
+    const { channels, isFetchingChannels, fetchChannelsError, onClick } = this.props;
 
     let content;
     if (isFetchingChannels) {
       content = <Loader />;
     } else if (channels && channels.length) {
       content = channels.map((c,i) => (
-        <ChannelRow key={i}
-        status={
-          c.blocks_til_maturity ? "closing" :
-          c.confirmation_height === 0 ? "opening" :
-          c.active===true ? "active" :
-          c.active===false ? "inactive" :
-          "closing"
-        }
-        pubkey={
-          c.node.pub_key === undefined
-          ? c.remote_node_pub :
-          c.node.pub_key
-        }
-        channel={c}
-        onClick={onClick} />
+        <ChannelRow key={i} channel={c} onClick={onClick} />
       ));
     } else if (fetchChannelsError) {
       content = (
