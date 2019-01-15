@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { enumToClassName } from 'utils/formatters';
+import { channelStatusText } from 'utils/constants';
 import { ChannelWithNode } from 'modules/channels/types';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import './ChannelRow.less';
@@ -23,7 +24,7 @@ export default class ChannelRow extends React.Component<Props> {
       .div(new BN(capacity))
       .toString();
 
-    let tooltipText: string = channel.status.toLowerCase();
+    let tooltipText = channelStatusText[channel.status];
     if (channel.status === CHANNEL_STATUS.FORCE_CLOSING) {
       tooltipText = `${tooltipText} (in ${channel.blocks_til_maturity} blocks)`;
     }

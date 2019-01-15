@@ -1,3 +1,5 @@
+@import '~style/variables.less';
+
 .AccountInfo {
   padding: 1rem 1.25rem 0.75rem;
   position: relative;
@@ -32,6 +34,11 @@
         .Unit-secondary {
           padding-left: 0.3rem;
           opacity: 0.7;
+        }
+
+        &-pending {
+          margin-left: 0.5rem;
+          color: @warning-color;
         }
       }
 

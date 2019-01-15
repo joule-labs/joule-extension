@@ -3,7 +3,7 @@ import { takeLatest, select, call, all, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, safeConnectPeer, sleep } from 'utils/misc';
-import { openChannel } from './actions';
+import { openChannel, getChannels } from './actions';
 import types from './types';
 
 export function* handleGetChannels(): SagaIterator {
@@ -40,7 +40,6 @@ export function* handleGetChannels(): SagaIterator {
     const nodeInfoResponses: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
       Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk))
     );
-    console.log(nodeInfoResponses);
     const nodeInfoMap = nodeInfoResponses.reduce((prev, node) => {
       prev[node.node.pub_key] = node;
       return prev;
@@ -90,6 +89,10 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
         index: res.output_index,
       },
     });
+
+    // Refresh channels list
+    yield call(sleep, 300);
+    yield put(getChannels());
   } catch(err) {
     yield put({
       type: types.OPEN_CHANNEL_FAILURE,

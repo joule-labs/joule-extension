@@ -1,10 +1,14 @@
-@import "~style/variables.less";
+@import '~style/variables.less';
 
 .ChannelRow {
   padding: 0.75rem;
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(#000, 0.08);
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &.is-clickable:hover {
     cursor: pointer;
