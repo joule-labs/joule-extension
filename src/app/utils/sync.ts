@@ -13,9 +13,6 @@ import nodeTypes from 'modules/node/types';
 import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
 import settingsTypes from 'modules/settings/types';
-import { selectRates } from 'modules/rates/selectors';
-import { setRates } from 'modules/rates/actions';
-import ratesTypes from 'modules/rates/types';
 import { AppState } from 'store/reducers';
 
 export interface SyncConfig<T> {
