@@ -8,12 +8,35 @@ import types from './types';
 
 export function* handleGetChannels(): SagaIterator {
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    const { channels }: Yielded<typeof nodeLib.getChannels> = yield call(nodeLib.getChannels);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow>
+      = yield select(selectNodeLibOrThrow);
+    // Destructure all channels for asynchronous calling
+    const [{ channels },
+    {pending_force_closing_channels,
+    pending_open_channels,
+    waiting_close_channels}] :
+    [Yielded <typeof nodeLib.getChannels>,
+    Yielded <typeof nodeLib.getPendingChannels>]
+     = yield all([
+       call(nodeLib.getChannels),
+       call(nodeLib.getPendingChannels)]);
+    // Map all channels node info together
     const channelsNodeInfo: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
-      channels.map(channel => call(safeGetNodeInfo, nodeLib, channel.remote_pubkey))
+      channels.map(channel =>
+        call(safeGetNodeInfo, nodeLib, channel.remote_pubkey))
+        .concat(pending_force_closing_channels.map(channel =>
+          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
+        .concat(waiting_close_channels.map(channel =>
+          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
+        .concat(pending_open_channels.map(channel =>
+          call(safeGetNodeInfo, nodeLib, channel.channel.remote_node_pub)))
     );
-    const payload = channels.map((channel, i) => ({
+    // Map all channels together with node info
+    const allChannels = channels
+      .concat(pending_force_closing_channels)
+      .concat(waiting_close_channels)
+      .concat(pending_open_channels)
+    const payload = allChannels.map((channel, i) => ({
       ...channel,
       node: channelsNodeInfo[i].node,
     }));

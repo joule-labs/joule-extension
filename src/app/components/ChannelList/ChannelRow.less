@@ -11,10 +11,46 @@
   }
 
   &-avatar {
+    position: relative;
     flex-shrink: 0;
     width: 3.4rem;
     height: 3.4rem;
     margin-right: 1rem;
+
+    &-img {
+      width: 100%;
+      height: 100%;
+
+      .anticon {
+        font-size: 1.6rem;
+      }
+    }
+
+    &-status {
+      position: absolute;
+      bottom: 0.1rem;
+      right: 0.1rem;
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 100%;
+      box-shadow: 0 0 0 3px #FFF;
+
+      &.is-active {
+        background: @success-color;
+      }
+
+      &.is-inactive {
+        background: @error-color;
+      }
+
+      &.is-opening {
+        background: rgb(247, 247, 9);
+      }
+
+      &.is-closing {
+        background: @warning-color;
+      }
+    }
   }
 
   &-info {
