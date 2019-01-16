@@ -9,12 +9,16 @@ export default async function runSelector<T>(
   stateKey: keyof AppState,
 ): Promise<T> {
   const storageData = await browser.storage.sync.get(storageKey);
+  // storageData looks like { 'settings': { version: 1, data: {...} } }
   const keyData = storageData[storageKey] || {};
+  // keyData looks like { version: 1, data: {...} }
+  // we need to pluck out the inner data value
+  const dataWithoutVersion = keyData.data || {};
   const state = {
     ...combineInitialState,
     [stateKey]: {
       ...combineInitialState[stateKey],
-      ...keyData,
+      ...dataWithoutVersion,
     },
   } as AppState;
   return selector(state);
