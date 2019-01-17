@@ -1,5 +1,5 @@
-import { browser } from 'webextension-polyfill-ts';
 import { AppState, combineInitialState } from 'store/reducers';
+import { storageSyncGet } from 'utils/sync';
 
 type Selector<T> = (s: AppState) => T;
 
@@ -8,8 +8,8 @@ export default async function runSelector<T>(
   storageKey: string,
   stateKey: keyof AppState,
 ): Promise<T> {
-  const storageData = await browser.storage.sync.get(storageKey);
-  const keyData = storageData[storageKey] || {};
+  const storageData = await storageSyncGet([storageKey]);
+  const keyData = storageData && storageData[storageKey] || {};
   const state = {
     ...combineInitialState,
     [stateKey]: {
