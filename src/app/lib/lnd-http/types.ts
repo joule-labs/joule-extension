@@ -343,3 +343,10 @@ export interface OpenChannelResponse {
   funding_txid_str: string;
   output_index: string;
 }
+
+export interface SignMessageParams {
+  msg: string;
+} 
+export interface SignMessageResponse {
+  signedMessage?: string;
+}

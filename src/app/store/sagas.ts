@@ -7,6 +7,7 @@ import { accountSagas } from 'modules/account';
 import { paymentSagas } from 'modules/payment';
 import { ratesSagas } from 'modules/rates';
 import { peersSagas } from 'modules/peers';
+import { signSagas } from 'modules/sign';
 
 export default function* rootSaga() {
   yield fork(cryptoSagas);
@@ -17,4 +18,5 @@ export default function* rootSaga() {
   yield fork(paymentSagas);
   yield fork(ratesSagas);
   yield fork(peersSagas);
+  yield fork(signSagas);
 }

@@ -9,6 +9,7 @@ import payment, { PaymentState, INITIAL_STATE as paymentInitialState } from 'mod
 import settings, { SettingsState, INITIAL_STATE as settingsInitialState } from 'modules/settings';
 import rates, { RatesState, INITIAL_STATE as ratesInitialState } from 'modules/rates';
 import peers, { PeersState, INITIAL_STATE as peersInitialState } from 'modules/peers';
+import sign, { SignState, INITIAL_STATE as signInitialState } from 'modules/sign';
 
 export interface AppState {
   crypto: CryptoState;
@@ -20,6 +21,7 @@ export interface AppState {
   settings: SettingsState;
   rates: RatesState;
   peers: PeersState;
+  sign: SignState;
 }
 
 export const combineInitialState: Partial<AppState> = {
@@ -32,6 +34,7 @@ export const combineInitialState: Partial<AppState> = {
   settings: settingsInitialState,
   rates: ratesInitialState,
   peers: peersInitialState,
+  sign: signInitialState,
 };
 
 export default combineReducers<AppState>({
@@ -44,4 +47,5 @@ export default combineReducers<AppState>({
   settings,
   rates,
   peers,
+  sign,
 });
