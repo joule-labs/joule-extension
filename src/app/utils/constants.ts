@@ -4,15 +4,34 @@ import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 
-export const DEFAULT_LOCAL_NODE_URLS = [
-  'https://localhost:8080',
-  'https://localhost:8086'
-];
 
-export const LND_DIR = {
-  MACOS: '~/Library/Application Support/Lnd/data/chain/bitcoin/*',
-  LINUX: '~/.lnd/data/chain/bitcoin/*',
-};
+export enum NODE_TYPE {
+  LOCAL = 'LOCAL',
+  REMOTE = 'REMOTE',
+  LIGHTNING_APP = 'LIGHTNING_APP',
+  BTCPAY_SERVER = 'BTCPAY_SERVER',
+}
+
+export const DEFAULT_NODE_URLS = {
+  [NODE_TYPE.LOCAL]: 'https://localhost:8080',
+  [NODE_TYPE.LIGHTNING_APP]: 'https://localhost:8086',
+} as { [key in NODE_TYPE]: string | undefined };
+
+interface LndDirectories  {
+  MACOS: string;
+  LINUX: string;
+}
+
+export const DEFAULT_LND_DIRS = {
+  [NODE_TYPE.LOCAL]: {
+    MACOS: '~/Library/Application Support/Lnd/data/chain/*',
+    LINUX: '~/.lnd/data/chain/bitcoin/*',
+  },
+  [NODE_TYPE.LIGHTNING_APP]: {
+    MACOS: '~/Library/Application Support/lightning-app/lnd/data/chain/*',
+    LINUX: '~/.config/lightning-app/lnd/data/chain/*',
+  }
+} as { [key in NODE_TYPE]: LndDirectories | undefined };
 
 export enum CHAIN_TYPE {
   BITCOIN = 'bitcoin',
