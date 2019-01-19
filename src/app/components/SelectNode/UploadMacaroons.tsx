@@ -1,7 +1,7 @@
 import React from 'react';
 import { Upload, Icon, Alert, Button, Form, Input } from 'antd';
 import { blobToHex } from 'utils/file';
-import { LND_DIR } from 'utils/constants';
+import { DEFAULT_LND_DIRS, NODE_TYPE } from 'utils/constants';
 import './UploadMacaroons.less';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   isSaving?: boolean;
   initialAdmin?: string;
   initialReadonly?: string;
+  nodeType?: NODE_TYPE,
   onUploaded(admin: string, readOnly: string): void;
 }
 
@@ -34,7 +35,9 @@ export default class UploadMacaroon extends React.Component<Props, State> {
   }
 
   render() {
+    const { nodeType } = this.props;
     const { error, admin, readonly, isShowingHexInputs } = this.state;
+    const dirs = (nodeType && DEFAULT_LND_DIRS[nodeType]) || DEFAULT_LND_DIRS[NODE_TYPE.LOCAL];
     return (
       <Form layout="vertical" className="UploadMacaroons">
         <div className="UploadMacaroons-description">
@@ -100,12 +103,17 @@ export default class UploadMacaroon extends React.Component<Props, State> {
               </p>
             </Upload.Dragger>
 
-            <div className="UploadMacaroons-hint">
-              Macaroons are usually located in either{' '}
-              <code>{LND_DIR.MACOS}</code> on macOS, or{' '}
-              <code>{LND_DIR.LINUX}</code> on Linux if you’re running LND.
-              Other clients may differ.
-            </div>
+            {dirs &&
+              <div className="UploadMacaroons-hint">
+                Macaroons are usually located in the following places
+                <br/>
+                <strong>macOS</strong>: <code>{dirs.MACOS}</code>
+                <br/>
+                <strong>Windows</strong>: <code>{dirs.WINDOWS}</code>
+                <br/>
+                <strong>Linux</strong>: <code>{dirs.LINUX}</code>
+              </div>
+            }
           </>
         )}
 

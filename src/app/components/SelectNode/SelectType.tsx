@@ -1,13 +1,9 @@
 import React from 'react';
 import { Button, Collapse, Icon } from 'antd';
+import { NODE_TYPE } from 'utils/constants';
+import LightningAppIcon from 'static/images/lightningapp.svg';
 import BTCPayServerIcon from 'static/images/btcpayserver.svg';
 import './SelectType.less';
-
-export enum NODE_TYPE {
-  LOCAL = 'LOCAL',
-  REMOTE = 'REMOTE',
-  BTCPAY_SERVER = 'BTCPAY_SERVER',
-}
 
 interface Props {
   onSelectNodeType(type: NODE_TYPE): void;
@@ -34,6 +30,13 @@ export default class SelectType extends React.Component<Props> {
           onClick={() => onSelectNodeType(NODE_TYPE.REMOTE)}
         >
           Remote node
+        </Button>
+        <Button
+          size="large"
+          block
+          onClick={() => onSelectNodeType(NODE_TYPE.LIGHTNING_APP)}
+        >
+          <Icon component={LightningAppIcon} /> Lightning App
         </Button>
         <Button
           size="large"

@@ -111,7 +111,9 @@ export default class BTCPayServer extends React.Component<Props, State> {
 
     if (url) {
       try {
-        const accepted = await browser.permissions.request({ origins: [`${url.origin}/`] });
+        const accepted = await browser.permissions.request({
+          origins: [`${url.origin}/`],
+        });
         if (!accepted) {
           message.warn('Permission denied, connection may fail', 2);
         }
