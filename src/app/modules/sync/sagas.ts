@@ -71,7 +71,7 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): Saga
     return;
   }
 
-  // Get things needed for encryption
+  // Get things needed for decryption
   const salt = yield select(selectSalt);
   let password = yield select(selectPassword);
 
@@ -81,7 +81,7 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): Saga
     password = yield select(selectPassword);
   }
 
-  // Call their respective actions
+  // Migrate the data once it's decrypted & call the config action
   const decryptedItem = decryptData(data, password, salt);
   const payload = migrateSyncedData(syncConfig, decryptedItem);
   yield put(syncConfig.action(payload));
