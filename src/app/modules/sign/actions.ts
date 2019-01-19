@@ -6,3 +6,13 @@ export function signMessage(message: string) {
     payload: message
   };
 }
+
+export function verifyMessage(signature: string, msg: string) {
+  return { 
+    type: types.VERIFY_MESSAGE,
+    payload: {
+      signature,
+      msg,
+    }
+  };
+}

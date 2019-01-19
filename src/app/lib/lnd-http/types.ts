@@ -347,6 +347,18 @@ export interface OpenChannelResponse {
 export interface SignMessageParams {
   msg: string;
 } 
+
 export interface SignMessageResponse {
   signedMessage?: string;
 }
+
+export interface VerifyMessageParams {
+  signature: string;
+  msg: string;
+} 
+
+export interface VerifyMessageResponse {
+  valid: boolean;
+  pubkey: string;
+} 
+

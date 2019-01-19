@@ -331,6 +331,17 @@ export class LndHttpClient {
     });
   };
 
+  verifyMessage = (params: T.VerifyMessageParams) => {
+    return this.request<T.VerifyMessageResponse, T.VerifyMessageParams>(
+      'POST',
+      '/v1/verifymessage',
+      { 
+        ...params,
+        msg: new Buffer(params.msg).toString('base64')
+      },
+    );
+  };
+
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,

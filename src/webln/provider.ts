@@ -66,8 +66,18 @@ export default class JouleWebLNProvider implements WebLNProvider {
     );
   }
 
-  async verifyMessage(_: string) {
-    throw new Error('Not yet implemented');
+  async verifyMessage(signedMessage: string, rawMessage: string) {
+    if (!this.isEnabled) {
+      throw new Error('Provider must be enabled before calling verifyMessage');
+    }
+
+    return this.promptUser<void, { signature: string, message: string }>(
+      PROMPT_TYPE.VERIFY,
+      { 
+        signature: signedMessage,
+        message: rawMessage,
+      },
+    );
   }
 
   // Internal prompt handler

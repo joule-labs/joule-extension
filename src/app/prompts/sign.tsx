@@ -51,7 +51,6 @@ class SignPrompt extends React.Component<Props> {
           </div>
           <h2 className="SignPrompt-title">
             <strong>{this.origin.name}</strong>
-            {' '}
             wants your signature
           </h2>
           <p className="SignPrompt-text">
