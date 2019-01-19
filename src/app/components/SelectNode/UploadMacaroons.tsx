@@ -109,8 +109,9 @@ export default class UploadMacaroon extends React.Component<Props, State> {
                 <br/>
                 <strong>macOS</strong>: <code>{dirs.MACOS}</code>
                 <br/>
-                <strong>Linux</strong>: <code>{dirs.LINUX}</code>
+                <strong>Windows</strong>: <code>{dirs.WINDOWS}</code>
                 <br/>
+                <strong>Linux</strong>: <code>{dirs.LINUX}</code>
               </div>
             }
           </>

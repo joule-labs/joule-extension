@@ -20,16 +20,19 @@ export const DEFAULT_NODE_URLS = {
 interface LndDirectories  {
   MACOS: string;
   LINUX: string;
+  WINDOWS: string;
 }
 
 export const DEFAULT_LND_DIRS = {
   [NODE_TYPE.LOCAL]: {
     MACOS: '~/Library/Application Support/Lnd/data/chain/*',
-    LINUX: '~/.lnd/data/chain/bitcoin/*',
+    LINUX: '~/.lnd/data/chain/*',
+    WINDOWS: '%APPDATA%\\Lnd\\data\\chain\\*',
   },
   [NODE_TYPE.LIGHTNING_APP]: {
     MACOS: '~/Library/Application Support/lightning-app/lnd/data/chain/*',
     LINUX: '~/.config/lightning-app/lnd/data/chain/*',
+    WINDOWS: '%APPDATA%\\Roaming\\lightning-app\\lnd\\data\\chain\\*'
   }
 } as { [key in NODE_TYPE]: LndDirectories | undefined };
 
