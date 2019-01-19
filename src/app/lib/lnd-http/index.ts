@@ -33,7 +33,13 @@ export class LndHttpClient {
         testnet: false,
         chains: [],
       },
-    );
+    ).then(res => {
+      // API can return chain as { chain: 'bitcoin', network: 'testnet' }
+      res.chains = res.chains.map((chain: any) => {
+        return chain.chain || chain;
+      });
+      return res;
+    });
   };
 
   getNodeInfo = (pubKey: string) => {

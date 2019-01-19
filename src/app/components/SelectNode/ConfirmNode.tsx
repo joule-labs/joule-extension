@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { GetInfoResponse } from 'lib/lnd-http';
+import { blockchainDisplayName, CHAIN_TYPE } from 'utils/constants';
 import './ConfirmNode.less';
 
 interface Props {
@@ -12,12 +13,16 @@ interface Props {
 export default class ConfirmNode extends React.Component<Props> {
   render() {
     const { nodeInfo, onConfirm, onCancel } = this.props;
+    const chain = nodeInfo.chains[0] as CHAIN_TYPE;
     const rows = [{
       label: 'Alias',
       value: nodeInfo.alias,
     }, {
       label: 'Version',
       value: nodeInfo.version.split(' ')[0],
+    }, {
+      label: 'Chain',
+      value: blockchainDisplayName[chain],
     }, {
       label: 'Testnet',
       value: JSON.stringify(!!nodeInfo.testnet),
