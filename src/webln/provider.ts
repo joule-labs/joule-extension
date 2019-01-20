@@ -71,11 +71,11 @@ export default class JouleWebLNProvider implements WebLNProvider {
       throw new Error('Provider must be enabled before calling verifyMessage');
     }
 
-    return this.promptUser<void, { signature: string, message: string }>(
+    return this.promptUser<void, { signature: string, msg: string }>(
       PROMPT_TYPE.VERIFY,
       { 
         signature: signedMessage,
-        message: rawMessage,
+        msg: rawMessage,
       },
     );
   }

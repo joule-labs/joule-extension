@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button, Alert } from 'antd';
+import { Icon, Button, Alert, Tabs } from 'antd';
 import { AppState } from 'store/reducers';
 import PromptTemplate from 'components/PromptTemplate';
 import Logo from 'static/images/logo.png';
@@ -41,64 +41,69 @@ class VerifyPrompt extends React.Component<Props> {
         isContentCentered
         hasNoButtons
       >
-        <div className="VerifyPrompt">
-          <div className="VerifyPrompt-graphic">
-            <div className="VerifyPrompt-graphic-icon">
-              <img src={this.origin.icon || ''} />
+        <div className="VerifyPrompt-content">
+          <div className="VerifyPrompt">          
+            <div className="VerifyPrompt-graphic">
+              <div className="VerifyPrompt-graphic-icon">
+                <img src={this.origin.icon || ''} />
+              </div>
+              <div className="VerifyPrompt-graphic-divider">
+                <Icon type="swap" />
+              </div>
+              <div className="VerifyPrompt-graphic-icon">
+                <img src={Logo} />
+              </div>
             </div>
-            <div className="VerifyPrompt-graphic-divider">
-              <Icon type="swap" />
-            </div>
-            <div className="VerifyPrompt-graphic-icon">
-              <img src={Logo} />
-            </div>
+            <h2 className="VerifyPrompt-title">
+              <strong>{this.origin.name}</strong>
+              requests your verification
+            </h2>
+            <p className="VerifyPrompt-text">
+              Verification allows you to verify that a
+              message was previously signed by a specific node
+            </p>
+            {!verifyError && !verifyPubkey && 
+              <Tabs defaultActiveKey="message">
+                <Tabs.TabPane key="message" tab="Message">
+                  <p className="VerifyPrompt-message">
+                    {this.msg}
+                  </p>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="signature" tab="Signature">
+                  <p className="VerifyPrompt-message">
+                    {this.signature}
+                  </p>
+                </Tabs.TabPane>
+              </Tabs>
+            }
+            {verifyPubkey && 
+              <>
+                <p>
+                  <Alert
+                    type="success"
+                    message="Verification Success"
+                    showIcon
+                    closable
+                  />
+                </p>
+                <h3>Signer Public Key</h3>
+                <p className="VerifyPrompt-message">
+                  {verifyPubkey}
+                </p>
+              </>
+            }
+            {verifyError && 
+              <Alert
+                type="error"
+                message="Failed to verify message"
+                description={<>
+                  <p>{verifyError.message}</p>
+                </>}
+                showIcon
+                closable
+              />
+            }
           </div>
-          <h2 className="VerifyPrompt-title">
-            <strong>{this.origin.name}</strong>
-            wants your verification
-          </h2>
-          <p className="VerifyPrompt-text">
-            Verification allows you to verify that a
-            message was previously signed by a specific node
-          </p>
-          {!verifyError && !verifyPubkey && 
-            <> 
-              <h3>Message to sign</h3>
-              <p className="VerifyPrompt-message">
-                {this.msg}
-              </p>
-              <p className="VerifyPrompt-message">
-                {this.signature}
-              </p>
-            </>
-          }
-          {verifyPubkey && 
-            <>
-              <p>
-                <Alert
-                  type="success"
-                  message="Verification Success"
-                  showIcon
-                  closable
-                />
-              </p>
-              <h3>Signer Public Key</h3>
-              <p className="VerifyPrompt-message">
-                {verifyPubkey}
-              </p>
-            </>
-          }
-          {verifyError && 
-            <Alert
-              type="error"
-              message="Failed to verify message"
-              description={<>
-                <p>{verifyError.message}</p>
-              </>}
-              showIcon
-              closable
-            />
-          }
         </div>
         <div className="PromptTemplate-buttons">
           {!verifyError && !verifyPubkey && 
