@@ -10,7 +10,6 @@ import { verifyMessage } from 'modules/sign/actions';
 import './verify.less';
 
 interface StateProps {
-  isVerifyValid: AppState['sign']['isVerifyValid'];
   verifyPubkey: AppState['sign']['verifyPubkey'];
   verifyError: AppState['sign']['verifyError'];
 }
@@ -19,7 +18,12 @@ interface DispatchProps {
 }
 
 type Props = StateProps & DispatchProps;
-class VerifyPrompt extends React.Component<Props> {
+
+interface State {
+  isVerifying: boolean;
+}
+
+class VerifyPrompt extends React.Component<Props, State> {
   signature: string;
   msg: string;
 
@@ -27,10 +31,23 @@ class VerifyPrompt extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
+    this.state = {
+      isVerifying: false,
+    }
+
     const args = getPromptArgs<{ signature: string, msg: string }>();
     this.signature = args.signature;
     this.msg = args.msg;
     this.origin = getPromptOrigin();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const { verifyPubkey, verifyError } = this.props;
+
+    if ((verifyPubkey && verifyPubkey !== prevProps.verifyPubkey) ||
+        (verifyError && verifyError !== prevProps.verifyError)) {
+          this.setState({ isVerifying: false });
+    }
   }
 
   render() {
@@ -116,7 +133,7 @@ class VerifyPrompt extends React.Component<Props> {
               <Button
                   type="primary"
                   onClick={this.handleConfirm}
-                  // loading={isConfirming}
+                  loading={this.state.isVerifying}
               >
                 Verify
               </Button>
@@ -136,7 +153,9 @@ class VerifyPrompt extends React.Component<Props> {
   }
 
   private handleConfirm = () => {
-    this.props.verifyMessage(this.signature, this.msg);
+    this.setState({ isVerifying: true }, () => {
+      this.props.verifyMessage(this.signature, this.msg);
+    });
   }
 
   private handleClose = () => {
@@ -146,7 +165,6 @@ class VerifyPrompt extends React.Component<Props> {
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
-    isVerifyValid: state.sign.isVerifyValid,
     verifyPubkey: state.sign.verifyPubkey,
     verifyError: state.sign.verifyError,
   }),
