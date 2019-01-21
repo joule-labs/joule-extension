@@ -2,7 +2,7 @@ import { CHAIN_TYPE } from 'utils/constants';
 import types, { RatesMap } from './types';
 
 export type Rates = {
-  [key in CHAIN_TYPE]: RatesMap
+  [key in CHAIN_TYPE]: RatesMap | undefined;
 }
 
 export interface RatesState {

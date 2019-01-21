@@ -13,6 +13,7 @@ import { createInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
 import './invoice.less';
 import { getNodeChain } from 'modules/node/selectors';
+import { getChainRates } from 'modules/rates/selectors';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -21,7 +22,7 @@ interface StateProps {
   denomination: AppState['settings']['denomination'];
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
-  rates: AppState['rates']['rates'];
+  rates: ReturnType<typeof getChainRates>;
   chain: ReturnType<typeof getNodeChain>;
 }
 
@@ -205,11 +206,11 @@ class InvoicePrompt extends React.Component<Props, State> {
       }
     }
 
-    if (rates && rates[chain][fiat] && !isNoFiat) {
+    if (rates && !isNoFiat) {
       const fiatAmt = fromUnitToFiat(
         value,
         denomination,
-        rates[chain][fiat],
+        rates[fiat],
         fiatSymbols[fiat],
       );
       helpPieces.push(
@@ -297,7 +298,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     denomination: state.settings.denomination,
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
-    rates: state.rates.rates,
+    rates: getChainRates(state),
     chain: getNodeChain(state),
   }),
   { createInvoice },
