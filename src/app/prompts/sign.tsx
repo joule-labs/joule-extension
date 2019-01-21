@@ -56,7 +56,6 @@ class SignPrompt extends React.Component<Props> {
           <p className="SignPrompt-text">
             Signing a message with your node's private 
             key does not disclose any confidential information.
-            The website will only be given your node's pubkey.
           </p>
           <h3>Message to sign</h3>
           <p className="SignPrompt-message">

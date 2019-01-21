@@ -122,7 +122,7 @@ class VerifyPrompt extends React.Component<Props> {
               </Button>
             </>
           }
-          {verifyPubkey && 
+          {(verifyError || verifyPubkey) && 
               <Button
               type="primary"
               onClick={this.handleClose}
