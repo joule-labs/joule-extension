@@ -349,7 +349,7 @@ export interface SignMessageParams {
 } 
 
 export interface SignMessageResponse {
-  signedMessage?: string;
+  signature?: string;
 }
 
 export interface VerifyMessageParams {

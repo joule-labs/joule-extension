@@ -77,7 +77,7 @@ class SignPrompt extends React.Component<Props> {
     if (!reciept) {
       throw new Error('Failed to sign message');
     }
-    return { signedMessage: reciept.signedMessage };
+    return reciept;
   };
 }
 

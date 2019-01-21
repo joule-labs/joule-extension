@@ -326,15 +326,11 @@ export class LndHttpClient {
 
   signMessage = (message: string) => {
     const msg = new Buffer(message).toString('base64');
-    return this.request<any, T.SignMessageParams>(
+    return this.request<T.SignMessageResponse, T.SignMessageParams>(
       'POST',
       '/v1/signmessage',
       { msg },
-    ).then(res => {
-      return {
-        signedMessage: res.signature,
-      } as T.SignMessageResponse
-    });
+    );
   };
 
   verifyMessage = (params: T.VerifyMessageParams) => {
