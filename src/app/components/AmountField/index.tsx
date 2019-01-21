@@ -11,6 +11,7 @@ import {
   fromBitcoinToUnit,
 } from 'utils/units';
 import { getNodeChain } from 'modules/node/selectors';
+import { getChainRates } from 'modules/rates/selectors';
 import { AppState } from 'store/reducers';
 import './index.less';
 
@@ -32,7 +33,7 @@ interface StateProps {
   denomination: AppState['settings']['denomination'];
   fiat: AppState['settings']['fiat'];
   isNoFiat: AppState['settings']['isNoFiat'];
-  rates: AppState['rates']['rates'];
+  rates: ReturnType<typeof getChainRates>;
   chain: ReturnType<typeof getNodeChain>;
 }
 
@@ -190,7 +191,7 @@ class AmountField extends React.Component<Props, State> {
   };
 
   private updateBothValues = (name: string, val: string) => {
-    const { fiat, chain, rates } = this.props;
+    const { fiat, rates } = this.props;
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
   
@@ -202,13 +203,13 @@ class AmountField extends React.Component<Props, State> {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
-        valueFiat = (rates[chain][fiat] * parseFloat(btc)).toFixed(2);
+        valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
       }
     }
     else {
       valueFiat = val;
       if (rates) {
-        const btc = (parseFloat(valueFiat) / rates[chain][fiat]).toFixed(8);
+        const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
         value = fromBitcoinToUnit(btc, denomination);
       }
     }
@@ -231,7 +232,7 @@ export default connect<StateProps, {}, OwnProps, AppState>(
     denomination: state.settings.denomination,
     fiat: state.settings.fiat,
     isNoFiat: state.settings.isNoFiat,
-    rates: state.rates.rates,
+    rates: getChainRates(state),
     chain: getNodeChain(state),
   }),
 )(AmountField);
