@@ -82,3 +82,8 @@ export function removeDomainPrefix(domain: string) {
 export function enumToClassName(key: string) {
   return key.toLowerCase().replace('_', '-');
 }
+
+export function urlWithoutPort(fullUrl: string) {
+  const url = new URL(fullUrl);
+  return `${url.protocol}//${url.hostname}${url.pathname}`;
+}

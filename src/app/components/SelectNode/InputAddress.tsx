@@ -1,6 +1,7 @@
 import React from 'react';
 import { browser } from 'webextension-polyfill-ts';
 import { Form, Input, Button, Alert, message } from 'antd';
+import { urlWithoutPort } from 'utils/formatters';
 import './InputAddress.less';
 
 interface Props {
@@ -19,15 +20,14 @@ interface State {
 export default class InputAddress extends React.Component<Props, State> {
   state: State = {
     url: this.props.initialUrl || '',
-    submittedUrl: 'https://localhost:8080',
+    submittedUrl: this.props.initialUrl || '',
     validation: '',
   };
 
   render() {
-    const { error, isCheckingNode, initialUrl } = this.props;
+    const { error, isCheckingNode } = this.props;
     const { validation, url, submittedUrl } = this.state;
     const validateStatus = url ? validation ? 'error' : 'success' : undefined;
-    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
     const help = (url && validation) || (
       <>
         You must provide the REST API address. Must begin with{' '}
@@ -48,26 +48,6 @@ export default class InputAddress extends React.Component<Props, State> {
           />
         </Form.Item>
 
-        {error && isFirefox &&
-          <Alert
-            type="warning"
-            message="Attention Firefox user"
-            description={<>
-              <p>
-                Firefox has an issue where addons cannot bypass cross-origin
-                request prevention. If you are running lnd or the Lightning App,
-                you will be unable to connect to your node.
-              </p>
-              <p>
-                You will either have to setup a proxy server for your node that
-                has CORS headers configured, or you will have to use another
-                supported browser such as Chrome or Opera.
-              </p>
-            </>}
-            showIcon
-            closable
-          />
-        }
         {error &&
           <Alert
             type="error"
@@ -92,7 +72,7 @@ export default class InputAddress extends React.Component<Props, State> {
           type="primary"
           size="large"
           htmlType="submit"
-          disabled={!url || url === initialUrl}
+          disabled={!url}
           loading={isCheckingNode}
           block
         >
@@ -116,9 +96,8 @@ export default class InputAddress extends React.Component<Props, State> {
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    const url = new URL(this.state.url);
     browser.permissions.request({
-      origins: [`${url.origin}/`]
+      origins: [urlWithoutPort(this.state.url)],
     }).then(accepted => {
       if (!accepted) {
         message.warn('Permission denied, connection may fail');

@@ -5,8 +5,9 @@ import { browser } from 'webextension-polyfill-ts';
 import UploadMacaroons from './UploadMacaroons';
 import ConfirmNode from './ConfirmNode';
 import BTCPayServer, { BTCPayServerConfig } from './BTCPayServer';
-import SelectType, { NODE_TYPE } from './SelectType';
-import { DEFAULT_LOCAL_NODE_URLS } from 'utils/constants';
+import SelectType from './SelectType';
+import { NODE_TYPE, DEFAULT_NODE_URLS } from 'utils/constants';
+import { urlWithoutPort } from 'utils/formatters';
 import { checkNode, checkNodes, checkAuth, setNode, resetNode } from 'modules/node/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
@@ -94,7 +95,12 @@ class SelectNode extends React.Component<Props, State> {
       }
       else if (isNodeChecked) {
         title = 'Upload Macaroons';
-        content = <UploadMacaroons onUploaded={this.handleMacaroons} />;
+        content = (
+          <UploadMacaroons
+            onUploaded={this.handleMacaroons}
+            nodeType={nodeType}
+          />
+        );
       }
       else if (nodeType === NODE_TYPE.BTCPAY_SERVER) {
         title = 'Connect to your BTCPay Server';
@@ -112,6 +118,7 @@ class SelectNode extends React.Component<Props, State> {
             submitUrl={this.setUrl}
             error={checkNodeError}
             isCheckingNode={isCheckingNode}
+            initialUrl={DEFAULT_NODE_URLS[nodeType]}
           />
         );
       }
@@ -130,19 +137,23 @@ class SelectNode extends React.Component<Props, State> {
 
   private setNodeType = (nodeType: null | NODE_TYPE) => {
     this.setState({ nodeType });
-    if (nodeType === NODE_TYPE.LOCAL) {
+
+    // Some node types have default URLs we can check immediately
+    const defaultUrl = nodeType ? DEFAULT_NODE_URLS[nodeType] : undefined;
+    if (defaultUrl) {
       this.setState({
         isRequestingPermission: true,
         isScanningLocal: true,
       });
-      // Instantly check the default local node
+      // Instantly check the default local node. Strip port to get around a
+      // firefox issue where CORS isn't stripped if you have port permission.
       browser.permissions.request({
-        origins: DEFAULT_LOCAL_NODE_URLS.map(url => `${url}/`)
+        origins: [urlWithoutPort(defaultUrl)],
       }).then(accepted => {
         if (!accepted) {
           message.warn('Permission denied, connection may fail', 2);
         }
-        this.props.checkNodes(DEFAULT_LOCAL_NODE_URLS);
+        this.props.checkNode(defaultUrl);
         this.setState({ isRequestingPermission: false });
       });
     }

@@ -124,11 +124,7 @@ export async function storageSyncGet(keys: string[]) {
       }
       // Run migrations on unencrypted data
       const config = getConfigByKey(key);
-      if (config.encrypted) {
-        prev[key] = res;
-      } else {
-        prev[key] = migrateSyncedData(config, res);
-      }
+      prev[key] = migrateSyncedData(config, res);
       return prev;
     }, {} as { [key: string]: any });
   } catch(err) {
@@ -143,6 +139,10 @@ export function migrateSyncedData(config: SyncConfig<any>, item: SyncData<any>) 
       version: 1,
       data: item,
     };
+  }
+  // If it's still encrypted, we can't migrate the data, so just send it back
+  if (config.encrypted && typeof item.data === 'string') {
+    return item.data;
   }
   // Throw off some potential warnings and early returns
   if (item.version === config.version) {

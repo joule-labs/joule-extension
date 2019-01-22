@@ -9,13 +9,14 @@ import { fromBaseToUnit, fromUnitToFiat } from 'utils/units';
 import { commaify } from 'utils/formatters';
 import { AppState } from 'store/reducers';
 import { getNodeChain } from 'modules/node/selectors';
+import { getChainRates } from 'modules/rates/selectors';
 
 interface StateProps {
-  rates: AppState['rates']['rates'];
   fiat: AppState['settings']['fiat'];
   denomination: AppState['settings']['denomination'];
   isFiatPrimary: AppState['settings']['isFiatPrimary'];
   isNoFiat: AppState['settings']['isNoFiat'];
+  rates: ReturnType<typeof getChainRates>;
   chain: ReturnType<typeof getNodeChain>;
 }
 
@@ -54,11 +55,11 @@ class Unit extends React.Component<Props> {
     </>;
 
     let fiatEl = '';
-    if (rates && rates[chain] && rates[chain][fiat]) {
+    if (rates) {
       fiatEl = fromUnitToFiat(
         value,
         Denomination.SATOSHIS,
-        rates[chain][fiat],
+        rates[fiat],
         fiatSymbols[fiat],
       );
     }
@@ -81,10 +82,10 @@ class Unit extends React.Component<Props> {
 }
 
 export default connect<StateProps, {}, OwnProps, AppState>(state => ({
-  rates: state.rates.rates,
   fiat: state.settings.fiat,
   denomination: state.settings.denomination,
   isFiatPrimary: state.settings.isFiatPrimary,
   isNoFiat: state.settings.isNoFiat,
+  rates: getChainRates(state),
   chain: getNodeChain(state),
 }))(Unit);
