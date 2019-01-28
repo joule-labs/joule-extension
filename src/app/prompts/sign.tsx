@@ -14,11 +14,13 @@ interface StateProps {
   signReceipt: AppState['sign']['signReceipt'];
   signError: AppState['sign']['signError'];
 }
+
 interface DispatchProps {
   signMessage: typeof signMessage;
 }
 
 type Props = StateProps & DispatchProps;
+
 class SignPrompt extends React.Component<Props> {
   message: string;
 
@@ -38,29 +40,35 @@ class SignPrompt extends React.Component<Props> {
         isContentCentered
       >
         <div className="SignPrompt">
-          <div className="SignPrompt-graphic">
-            <div className="SignPrompt-graphic-icon">
-              <img src={this.origin.icon || ''} />
+          <div className="SignPrompt-header">
+            <div className="SignPrompt-header-graphic">
+              <div className="SignPrompt-header-graphic-icon">
+                <img src={this.origin.icon || ''} />
+              </div>
+              <div className="SignPrompt-header-graphic-divider">
+                <Icon type="swap" />
+              </div>
+              <div className="SignPrompt-header-graphic-icon">
+                <img src={Logo} />
+              </div>
             </div>
-            <div className="SignPrompt-graphic-divider">
-              <Icon type="swap" />
-            </div>
-            <div className="SignPrompt-graphic-icon">
-              <img src={Logo} />
-            </div>
+            <h2 className="SignPrompt-header-title">
+              <strong>{this.origin.name}</strong>
+            </h2>
           </div>
-          <h2 className="SignPrompt-title">
-            <strong>{this.origin.name}</strong>
-            wants your signature
-          </h2>
-          <p className="SignPrompt-text">
+          <div className="SignPrompt-title">
+            <h3>Signature Request</h3>
+          </div>
+          <div className="SignPrompt-content">
+            <h4 className="SignPrompt-content-label">Message to sign:</h4>
+            <p className="SignPrompt-content-message">
+              {this.message}
+            </p>
+          </div>
+          <div className="SignPrompt-description">
             Signing a message with your node's private 
             key does not disclose any confidential information.
-          </p>
-          <h3>Message to sign</h3>
-          <p className="SignPrompt-message">
-            {this.message}
-          </p>
+          </div>
         </div>
       </PromptTemplate>
     );
