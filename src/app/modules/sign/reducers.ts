@@ -5,6 +5,7 @@ export interface SignState {
   signReceipt: SignMessageResponse | null;
   signError: null | Error;
   verifyPubkey: string | null;
+  verifyAlias: string | null;
   verifyError: null | Error;
 }
 
@@ -12,6 +13,7 @@ export const INITIAL_STATE: SignState = {
   signReceipt: null,
   signError: null,
   verifyPubkey: null,
+  verifyAlias: null,
   verifyError: null,
 };
 
@@ -43,10 +45,18 @@ export default function peersReducers(
         ...state,
         verifyError: null,
       };
-    case types.VERIFY_MESSAGE_SUCCESS:
+    case types.VERIFY_MESSAGE_VALID:
       return {
         ...state,
-        verifyPubkey: action.payload.pubkey
+        verifyPubkey: action.payload.pubkey,
+        verifyAlias: action.payload.alias,
+      };
+    case types.VERIFY_MESSAGE_INVALID:
+      return {
+        ...state,
+        verifyPubkey: action.payload.pubkey,
+        verifyAlias: action.payload.alias,
+        verifyError: new Error('The signature is not valid'),
       };
     case types.VERIFY_MESSAGE_FAILURE:
       return {

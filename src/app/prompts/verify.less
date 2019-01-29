@@ -1,65 +1,138 @@
+@import '~style/variables.less';
+
 .VerifyPrompt {
-  margin: 1.25rem;
-  padding: 0.75rem 1rem 1rem;
-  background: #FFF;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(#000, 0.2);
-  font-size: 0.9rem;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: auto;
+  background-color: #FFF;
 
-  &-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-  }
-
-  &-graphic {
+  &-node {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+    padding: 1rem 0;
+    background: #FFF;
+    border-bottom: 1px solid #EEE;
 
-    &-icon {
-      width: 3.8rem;
-      height: 3.8rem;
-      padding: 0.5rem;
-
-      img {
-        width: 100%;
-        height: 100%;
-      }
+    &-avatar {
+      width: 4.6rem;
+      height: 4.6rem;
+      margin-right: 1rem;
     }
 
-    &-divider {
-      padding: 0 1rem;
-      font-size: 1.4rem;
-      opacity: 0.4;
+    &-info {
+      &-alias {
+        font-size: 1.1rem;
+        margin-bottom: 0.1rem;
+      }
+
+      &-pubkey {
+        font-size: 0.6rem;
+        opacity: 0.45;
+      }
     }
   }
 
   &-title {
+    position: relative;
+    padding: 0.5rem;
     text-align: center;
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
+    background-color: #FAFAFA;
 
-    strong {
-      display: block;
+    h3 {
+      margin: 0.5rem 0;
     }
   }
 
-  &-text {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+  &-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    flex-grow: 1;
+    border-top: 1px solid #EEE;
+    padding: 1rem 1rem 0;
+
+    &-badge {
+      display: flex;
+      flex-direction: column;
+      font-family: @font-family;
+      color: rgba(0, 0, 0, 0.65);
+      border-radius: 4px;
+      padding: 1rem;
+
+      &-icon {
+        margin-bottom: 1rem;
+        font-size: 6rem;
+      }
+
+      &-msg {
+        width: auto;
+        text-align: center;
+      }
+
+      &.is-valid {
+        border: 1px solid #b7eb8f;
+        background-color: #f6ffed;
+  
+        .anticon {
+          color: #a1d688;
+        }
+      }
+
+      &.is-invalid {
+        border: 1px solid #ffa39e;
+        background-color: #fff1f0;
+  
+        .anticon {
+          color: #fb8187;
+        }
+      }
+    }
   }
 
-  &-message {
-    background-color: #FAFAFA;
-    padding: 0.6rem;
-    border-radius: 2px;
-    box-shadow: inset 0 1px 2px rgba(#000, 0.2);
-    font-size: 0.8rem;
-    word-break: break-all;
+  &-description {
+    font-size: 0.75rem;
+    opacity: 0.4;
+    text-align: justify;      
+    padding: 0.5rem 1rem;
+  }
+
+  &-drawer {
+    &-message {
+      flex-grow: 1;
+      background-color: #FAFAFA;
+      padding: 0.6rem;
+      margin: 0 1rem;
+      border-radius: 2px;
+      box-shadow: inset 0 1px 2px rgba(#000, 0.2);
+      font-size: 0.8rem;
+      word-break: break-all;
+    }
+
+    // Ant override
+    .ant-drawer-body {
+      padding: 0;
+      position: relative;
+      height: calc(98vh - 3rem);
+
+      .ant-tabs {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        height: 100%;
+  
+        .ant-tabs-content {
+          flex-grow: 1;
+          padding-bottom: 0.5rem;
+  
+          .ant-tabs-tabpane {
+            display: flex;
+          }
+        }
+      }
+    }
   }
 }
