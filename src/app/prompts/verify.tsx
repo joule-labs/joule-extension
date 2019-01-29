@@ -130,14 +130,14 @@ class VerifyPrompt extends React.Component<Props, State> {
           >
             <Tabs defaultActiveKey="message">
               <Tabs.TabPane key="message" tab={<><Icon type="mail"/> Message</>}>
-                <p className="VerifyPrompt-drawer-message">
+                <code className="VerifyPrompt-drawer-message">
                   {this.msg}
-                </p>
+                </code>
               </Tabs.TabPane>
               <Tabs.TabPane key="signature" tab={<><Icon type="file-protect"/> Signature</>}>
-                <p className="VerifyPrompt-drawer-message">
+                <code className="VerifyPrompt-drawer-message">
                   {this.signature}
-                </p>
+                </code>
               </Tabs.TabPane>
             </Tabs>
           </Drawer>

@@ -1,10 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon } from 'antd';
 import { SignMessageResponse } from 'webln/lib/provider';
 import { AppState } from 'store/reducers';
 import PromptTemplate from 'components/PromptTemplate';
-import Logo from 'static/images/logo.png';
+import SwapGraphic from 'components/PromptTemplate/SwapGraphic';
 import { getPromptOrigin, OriginData, getPromptArgs, watchUntilPropChange } from 'utils/prompt';
 import { signMessage } from 'modules/sign/actions';
 
@@ -41,29 +40,16 @@ class SignPrompt extends React.Component<Props> {
       >
         <div className="SignPrompt">
           <div className="SignPrompt-header">
-            <div className="SignPrompt-header-graphic">
-              <div className="SignPrompt-header-graphic-icon">
-                <img src={this.origin.icon || ''} />
-              </div>
-              <div className="SignPrompt-header-graphic-divider">
-                <Icon type="swap" />
-              </div>
-              <div className="SignPrompt-header-graphic-icon">
-                <img src={Logo} />
-              </div>
-            </div>
-            <h2 className="SignPrompt-header-title">
-              <strong>{this.origin.name}</strong>
-            </h2>
+            <SwapGraphic origin={this.origin} />
           </div>
           <div className="SignPrompt-title">
             <h3>Signature Request</h3>
           </div>
           <div className="SignPrompt-content">
             <h4 className="SignPrompt-content-label">Message to sign:</h4>
-            <p className="SignPrompt-content-message">
+            <code className="SignPrompt-content-message">
               {this.message}
-            </p>
+            </code>
           </div>
           <div className="SignPrompt-description">
             Signing a message with your node's private 
