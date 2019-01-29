@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { Icon, Button, Tabs, Drawer } from 'antd';
 import { AppState } from 'store/reducers';
 import PromptTemplate from 'components/PromptTemplate';
+import NodeInfo from 'components/PromptTemplate/NodeInfo';
+import Loader from 'components/Loader';
 import { getPromptArgs, confirmPrompt } from 'utils/prompt';
 import { verifyMessage } from 'modules/sign/actions';
 
 import './verify.less';
-import Identicon from 'components/Identicon';
-import Loader from 'components/Loader';
 
 interface StateProps {
   pubkey: AppState['sign']['verifyPubkey'];
@@ -76,23 +76,12 @@ class VerifyPrompt extends React.Component<Props, State> {
       };
       content = (
         <>
-          <div className="VerifyPrompt">          
-            <div className="VerifyPrompt-node">
-              <Identicon 
-                pubkey={pubkey || ''}
-                className="VerifyPrompt-node-avatar"
-              />
-              <div className="VerifyPrompt-node-info">
-                <div className="VerifyPrompt-node-info-alias">
-                  {alias}
-                </div>
-                <code className="VerifyPrompt-node-info-pubkey">
-                  {pubkey.slice(0, pubkey.length / 2)}
-                  <br/>
-                  {pubkey.slice(pubkey.length / 2)}
-                </code>
-              </div>
-            </div>
+          <div className="VerifyPrompt">
+            <NodeInfo 
+              pubkey={pubkey}
+              alias={alias || ''}
+              className="VerifyPrompt-node"
+            />
             <div className="VerifyPrompt-title">
               <h3>Signature Verification</h3>
             </div>
