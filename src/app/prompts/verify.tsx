@@ -76,7 +76,7 @@ class VerifyPrompt extends React.Component<Props, State> {
             </div>
             <div className="VerifyPrompt-status">
               <Alert
-                message={error ? error.message : 'Message Signature in Valid'}
+                message={error ? error.message : 'Message signature is valid'}
                 type={error ? 'error' : 'success'}
                 showIcon
               />
