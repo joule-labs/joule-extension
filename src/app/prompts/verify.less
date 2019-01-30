@@ -23,60 +23,13 @@
   }
 
   &-status {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    flex-grow: 1;
     border-top: 1px solid #EEE;
-    padding: 1rem 1rem 0;
-
-    &-badge {
-      display: flex;
-      flex-direction: column;
-      font-family: @font-family;
-      color: rgba(0, 0, 0, 0.65);
-      border-radius: 4px;
-      padding: 1rem;
-
-      &-icon {
-        margin-bottom: 1rem;
-        font-size: 6rem;
-      }
-
-      &-msg {
-        width: auto;
-        text-align: center;
-      }
-
-      &.is-valid {
-        border: 1px solid #b7eb8f;
-        background-color: #f6ffed;
-  
-        .anticon {
-          color: #a1d688;
-        }
-      }
-
-      &.is-invalid {
-        border: 1px solid #ffa39e;
-        background-color: #fff1f0;
-  
-        .anticon {
-          color: #fb8187;
-        }
-      }
-    }
+    padding: 0.5rem;
   }
 
-  &-description {
-    font-size: 0.75rem;
-    opacity: 0.4;
-    text-align: justify;      
-    padding: 0.5rem 1rem;
-  }
+  &-content {
+    flex-grow: 1;
 
-  &-drawer {
     &-message {
       flex-grow: 1;
       background-color: #FAFAFA;
@@ -89,26 +42,27 @@
     }
 
     // Ant override
-    .ant-drawer-body {
-      padding: 0;
-      position: relative;
-      height: calc(98vh - 3rem);
+    .ant-tabs {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 100%;
 
-      .ant-tabs {
-        display: flex;
-        flex-direction: column;
+      .ant-tabs-content {
         flex-grow: 1;
-        height: 100%;
-  
-        .ant-tabs-content {
-          flex-grow: 1;
-          padding-bottom: 0.5rem;
-  
-          .ant-tabs-tabpane {
-            display: flex;
-          }
+        padding-bottom: 0.5rem;
+
+        .ant-tabs-tabpane {
+          display: flex;
         }
       }
     }
+  }
+
+  &-description {
+    font-size: 0.75rem;
+    opacity: 0.4;
+    text-align: justify;      
+    padding: 0.5rem 1rem;
   }
 }

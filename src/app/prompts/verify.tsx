@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button, Tabs, Drawer } from 'antd';
+import { Icon, Button, Tabs, Alert } from 'antd';
 import { AppState } from 'store/reducers';
 import PromptTemplate from 'components/PromptTemplate';
 import NodeInfo from 'components/PromptTemplate/NodeInfo';
@@ -23,7 +23,6 @@ type Props = StateProps & DispatchProps;
 
 interface State {
   isVerifying: boolean;
-  showDrawer: boolean;
 }
 
 class VerifyPrompt extends React.Component<Props, State> {
@@ -34,7 +33,6 @@ class VerifyPrompt extends React.Component<Props, State> {
     super(props);
     this.state = {
       isVerifying: true,
-      showDrawer: false,
     }
 
     const args = getPromptArgs<{ signature: string, msg: string }>();
@@ -65,15 +63,6 @@ class VerifyPrompt extends React.Component<Props, State> {
         <Loader size="5rem" />
       );
     } else {
-      const status = !error ? {
-        cls: 'is-valid',
-        icon: 'safety',
-        msg: 'Message Signature is Valid',
-      } : {
-        cls: 'is-invalid',
-        icon: 'exclamation-circle',
-        msg: error.message,
-      };
       content = (
         <>
           <div className="VerifyPrompt">
@@ -86,15 +75,25 @@ class VerifyPrompt extends React.Component<Props, State> {
               <h3>Signature Verification</h3>
             </div>
             <div className="VerifyPrompt-status">
-              <div className={`VerifyPrompt-status-badge ${status.cls}`}>
-                <Icon type={status.icon} className="VerifyPrompt-status-badge-icon" />
-                <span className="VerifyPrompt-status-badge-msg">{status.msg}</span>
-              </div>
-              <Button
-                icon="file-text"
-                size="small"
-                onClick={this.toggleDrawer}
-              >Details</Button>
+              <Alert
+                message={error ? error.message : 'Message Signature in Valid'}
+                type={error ? 'error' : 'success'}
+                showIcon
+              />
+            </div>
+            <div className="VerifyPrompt-content">
+              <Tabs defaultActiveKey="message">
+                <Tabs.TabPane key="message" tab={<><Icon type="file-text"/> Message</>}>
+                  <code className="VerifyPrompt-content-message">
+                    {this.msg}
+                  </code>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="signature" tab={<><Icon type="file-protect"/> Signature</>}>
+                  <code className="VerifyPrompt-content-message">
+                    {this.signature}
+                  </code>
+                </Tabs.TabPane>
+              </Tabs>
             </div>
             <div className="VerifyPrompt-description">
               Verification allows you to confirm a
@@ -109,27 +108,6 @@ class VerifyPrompt extends React.Component<Props, State> {
               Close
             </Button>
           </div>
-          <Drawer
-            visible={this.state.showDrawer}
-            placement="right"
-            onClose={this.toggleDrawer}
-            width="92%"
-            title="Verification Details"
-            className="VerifyPrompt-drawer"
-          >
-            <Tabs defaultActiveKey="message">
-              <Tabs.TabPane key="message" tab={<><Icon type="mail"/> Message</>}>
-                <code className="VerifyPrompt-drawer-message">
-                  {this.msg}
-                </code>
-              </Tabs.TabPane>
-              <Tabs.TabPane key="signature" tab={<><Icon type="file-protect"/> Signature</>}>
-                <code className="VerifyPrompt-drawer-message">
-                  {this.signature}
-                </code>
-              </Tabs.TabPane>
-            </Tabs>
-          </Drawer>
         </>
       );
     }
@@ -140,8 +118,6 @@ class VerifyPrompt extends React.Component<Props, State> {
       </PromptTemplate>
     );
   }
-
-  private toggleDrawer = () => this.setState({ showDrawer: !this.state.showDrawer })
 
   private handleClose = () => {
     confirmPrompt({ pubkey: this.props.pubkey });
