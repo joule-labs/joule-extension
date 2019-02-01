@@ -324,6 +324,26 @@ export class LndHttpClient {
     });
   };
 
+  signMessage = (message: string) => {
+    const msg = new Buffer(message).toString('base64');
+    return this.request<T.SignMessageResponse, T.SignMessageParams>(
+      'POST',
+      '/v1/signmessage',
+      { msg },
+    );
+  };
+
+  verifyMessage = (params: T.VerifyMessageParams) => {
+    return this.request<T.VerifyMessageResponse, T.VerifyMessageParams>(
+      'POST',
+      '/v1/verifymessage',
+      { 
+        ...params,
+        msg: new Buffer(params.msg).toString('base64')
+      },
+    );
+  };
+
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,

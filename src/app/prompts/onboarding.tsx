@@ -1,9 +1,9 @@
 import React from 'react';
-import { Icon, Button } from 'antd';
+import { Button } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import { getPromptOrigin, OriginData } from 'utils/prompt';
-import Logo from 'static/images/logo.png';
 import PromptTemplate from 'components/PromptTemplate';
+import SwapGraphic from 'components/PromptTemplate/SwapGraphic';
 import './onboarding.less';
 
 export default class OnboardingPrompt extends React.Component {
@@ -18,22 +18,10 @@ export default class OnboardingPrompt extends React.Component {
     return (
       <PromptTemplate hasNoButtons isContentCentered>
         <div className="OnboardingPrompt">
-          <div className="OnboardingPrompt-graphic">
-            <div className="OnboardingPrompt-graphic-icon">
-              <img src={this.origin.icon || ''} />
-            </div>
-            <div className="OnboardingPrompt-graphic-divider">
-              <Icon type="swap" />
-            </div>
-            <div className="OnboardingPrompt-graphic-icon">
-              <img src={Logo} />
-            </div>
-          </div>
-          <h2 className="OnboardingPrompt-title">
-            <strong>{this.origin.name}</strong>
-            {' '}
-            wants to connect
-          </h2>
+          <SwapGraphic 
+            origin={this.origin}
+            message="wants to connect"
+          />
           <p className="OnboardingPrompt-text">
             But you haven't set your node up yet! Click below to begin
             setting up Joule with your Lightning node.

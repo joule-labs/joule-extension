@@ -4,6 +4,7 @@ import {
   SendPaymentResponse,
   RequestInvoiceArgs,
   RequestInvoiceResponse,
+  SignMessageResponse,
 } from 'webln/lib/provider';
 import { PROMPT_TYPE } from './types';
 
@@ -54,16 +55,29 @@ export default class JouleWebLNProvider implements WebLNProvider {
     );
   }
 
-  async signMessage(_: string) {
+  async signMessage(message: string) {
     if (!this.isEnabled) {
       throw new Error('Provider must be enabled before calling signMessage');
     }
-    throw new Error('Not yet implemented');
-    return { signedMessage: '' };
+
+    return this.promptUser<SignMessageResponse, { message: string }>(
+      PROMPT_TYPE.SIGN,
+      { message },
+    );
   }
 
-  async verifyMessage(_: string) {
-    throw new Error('Not yet implemented');
+  async verifyMessage(signature: string, message: string) {
+    if (!this.isEnabled) {
+      throw new Error('Provider must be enabled before calling verifyMessage');
+    }
+
+    return this.promptUser<void, { signature: string, msg: string }>(
+      PROMPT_TYPE.VERIFY,
+      { 
+        signature,
+        msg: message,
+      },
+    );
   }
 
   // Internal prompt handler

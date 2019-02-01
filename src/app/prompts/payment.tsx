@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import { Tabs, Input, Select } from 'antd';
 import { SendPaymentResponse } from 'webln/lib/provider';
 import PromptTemplate from 'components/PromptTemplate';
+import NodeInfo from 'components/PromptTemplate/NodeInfo';
 import Loader from 'components/Loader';
 import BigMessage from 'components/BigMessage';
 import Unit from 'components/Unit';
-import Identicon from 'components/Identicon';
 import { getPromptArgs, watchUntilPropChange } from 'utils/prompt';
 import { unixMoment, SHORT_FORMAT } from 'utils/time';
 import { fromBaseToUnit, fromUnitToBase } from 'utils/units';
@@ -101,19 +101,10 @@ class PaymentPrompt extends React.Component<Props, State> {
 
       content = (
         <div className="PaymentPrompt">
-          <div className="PaymentPrompt-to">
-            <Identicon pubkey={node.pub_key} className="PaymentPrompt-to-avatar" />
-            <div className="PaymentPrompt-to-info">
-              <div className="PaymentPrompt-to-info-alias">
-                {node.alias}
-              </div>
-              <code className="PaymentPrompt-to-info-pubkey">
-                {node.pub_key.slice(0, node.pub_key.length / 2)}
-                <br/>
-                {node.pub_key.slice(node.pub_key.length / 2)}
-              </code>
-            </div>
-          </div>
+          <NodeInfo 
+            pubkey={node.pub_key}
+            alias={node.alias}
+          />
           <div className="PaymentPrompt-amount">
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
             {request.num_satoshis ? (
