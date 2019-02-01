@@ -166,6 +166,8 @@ export class LndHttpClient {
     ).then(res => {
       res.transactions = res.transactions.map(tx => ({
         total_fees: '0',
+        amount: '0',
+        num_confirmations: 0,
         ...tx,
       }));
       return res;
