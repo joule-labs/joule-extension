@@ -2,7 +2,7 @@ import React from 'react';
 import { Radio, Icon } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import LightningSend from './LightningSend';
-import BigMessage from 'components/BigMessage';
+import ChainSend from './ChainSend';
 import { AppState } from 'store/reducers';
 import './style.less';
 import { connect } from 'react-redux';
@@ -35,10 +35,7 @@ class SendForm extends React.Component<Props, State> {
     const form = type === 'lightning' ? (
       <LightningSend close={this.props.close} />
     ) : (
-      <BigMessage
-        title="Not yet supported"
-        message="You'll have to send directly from your node for now. Sorry!"
-      />
+      <ChainSend close={this.props.close} />
     );
 
     return (
