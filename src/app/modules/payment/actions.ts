@@ -1,4 +1,4 @@
-import { SendPaymentArguments, CreateInvoiceArguments } from 'lib/lnd-http';
+import { SendPaymentArguments, CreateInvoiceArguments, SendOnChainArguments } from 'lib/lnd-http';
 import types from './types';
 
 export function checkPaymentRequest(paymentRequest: string, amount?: string) {
@@ -14,6 +14,13 @@ export function checkPaymentRequest(paymentRequest: string, amount?: string) {
 export function sendPayment(payload: SendPaymentArguments) {
   return {
     type: types.SEND_PAYMENT,
+    payload,
+  };
+}
+
+export function sendOnChain(payload: SendOnChainArguments) {
+  return {
+    type: types.SEND_ON_CHAIN,
     payload,
   };
 }

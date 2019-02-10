@@ -296,6 +296,18 @@ export interface SendPaymentResponse {
   payment_preimage: string;
 };
 
+export interface SendOnChainArguments {
+  amount?: string;
+  addr: string;
+  send_all?: boolean;
+  sat_per_byte?: string;
+  target_conf?: number;
+};
+
+export interface SendOnChainResponse {
+  txid: string;
+};
+
 export interface CreateInvoiceArguments {
   value?: string;
   memo?: string;

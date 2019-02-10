@@ -2,7 +2,8 @@ import { SagaIterator } from 'redux-saga';
 import { takeEvery, call, all, select, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
-import { checkPaymentRequest, sendPayment, createInvoice } from './actions';
+import { getAccountInfo } from 'modules/account/actions';
+import { checkPaymentRequest, sendPayment, createInvoice, sendOnChain } from './actions';
 import types from './types';
 
 export function* handleSendPayment(action: ReturnType<typeof sendPayment>): SagaIterator {
@@ -17,6 +18,25 @@ export function* handleSendPayment(action: ReturnType<typeof sendPayment>): Saga
   } catch(err) {
     yield put({
       type: types.SEND_PAYMENT_FAILURE,
+      payload: err,
+    });
+  }
+}
+
+export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>): SagaIterator {
+  try {
+    yield call(requirePassword);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+    const payload = yield call(nodeLib.sendOnChain, action.payload);
+    yield put({
+      type: types.SEND_ON_CHAIN_SUCCESS,
+      payload,
+    });
+    // fetch the new onchain balance to update the home screen 
+    yield put(getAccountInfo());
+  } catch(err) {
+    yield put({
+      type: types.SEND_ON_CHAIN_FAILURE,
       payload: err,
     });
   }
@@ -75,6 +95,7 @@ export function* handleCheckPaymentRequest(action: ReturnType<typeof checkPaymen
 
 export default function* paymentSagas(): SagaIterator {
   yield takeEvery(types.SEND_PAYMENT, handleSendPayment);
+  yield takeEvery(types.SEND_ON_CHAIN, handleSendOnChain);
   yield takeEvery(types.CREATE_INVOICE, handleCreateInvoice);
   yield takeEvery(types.CHECK_PAYMENT_REQUEST, handleCheckPaymentRequest);
 }

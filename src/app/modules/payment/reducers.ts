@@ -1,10 +1,11 @@
-import { SendPaymentResponse, CreateInvoiceResponse } from 'lib/lnd-http';
+import { SendPaymentResponse, CreateInvoiceResponse, SendOnChainResponse } from 'lib/lnd-http';
 import types, { PaymentRequestState } from './types';
 
 export interface PaymentState {
   sendReceipt: SendPaymentResponse | null;
   paymentRequests: { [req: string]: PaymentRequestState };
   invoice: CreateInvoiceResponse | null;
+  sendOnChainReceipt: SendOnChainResponse | null;
   sendError: Error | null;
   isSending: boolean;
   invoiceError: Error | null;
@@ -15,6 +16,7 @@ export const INITIAL_STATE: PaymentState = {
   sendReceipt: null,
   paymentRequests: {},
   invoice: null,
+  sendOnChainReceipt: null,
   sendError: null,
   isSending: false,
   invoiceError: null,
@@ -50,6 +52,7 @@ export default function channelsReducers(
       return {
         ...state,
         sendReceipt: null,
+        sendOnChainReceipt: null,
         sendError: null,
         isSending: false,
       };
@@ -124,6 +127,27 @@ export default function channelsReducers(
           },
         },
       };
+
+    case types.SEND_ON_CHAIN:
+      return {
+        ...state,
+        sendOnChainReceipt: null,
+        sendError: null,
+        isSending: true,
+      };
+    case types.SEND_ON_CHAIN_SUCCESS:
+      return {
+        ...state,
+        sendOnChainReceipt: action.payload,
+        isSending: false,
+      };
+    case types.SEND_ON_CHAIN_FAILURE:
+      return {
+        ...state,
+        sendError: action.payload,
+        isSending: false,
+      };
+    
   }
   
   return state;
