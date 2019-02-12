@@ -1,4 +1,4 @@
-.BitcoinSend {
+.ChainSend {
 
   &-sendAll {
     margin-top: -0.25rem;
@@ -7,8 +7,70 @@
     transform-origin: left center;
   }
 
+  &-fees {
+    .ant-radio-group {
+      display: flex;
+
+      .ant-radio-button-wrapper {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  }
+
+  &-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    table {
+      max-width: 280px;
+      width: 100%;
+      margin-bottom: 0.5rem;
+
+      tr {
+        border-bottom: 1px solid rgba(#000, 0.05);
+
+        &:last-child {
+          border: none;
+        }
+
+        td {
+          padding: 0.2rem;
+
+          &:first-child {
+            text-align: left;
+            min-width: 80px;
+            padding-right: 0.5rem;
+          }
+
+          &:last-child {
+            text-align: right;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+
+  &-advanced {
+    display: block;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin: 0.75rem auto;
+
+    &:hover,
+    &:focus,
+    &:active {
+      opacity: 1;
+    }
+  }
+  
   &-buttons {
     display: flex;
+    padding: 0.5rem 0;
 
     .ant-btn {
       &:first-child {

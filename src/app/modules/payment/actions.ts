@@ -39,3 +39,7 @@ export function createInvoice(payload: CreateInvoiceArguments) {
 export function resetCreateInvoice() {
   return { type: types.RESET_CREATE_INVOICE };
 }
+
+export function getOnChainFeeEstimates() {
+  return { type: types.FETCH_CHAIN_FEES };
+}

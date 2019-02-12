@@ -1,10 +1,12 @@
 import { SagaIterator } from 'redux-saga';
 import { takeEvery, call, all, select, put } from 'redux-saga/effects';
-import { selectNodeLibOrThrow } from 'modules/node/selectors';
+import { selectNodeLibOrThrow, selectNodeInfo, getNodeChain } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
-import { getAccountInfo } from 'modules/account/actions';
+import { getAccountInfo, getTransactions } from 'modules/account/actions';
 import { checkPaymentRequest, sendPayment, createInvoice, sendOnChain } from './actions';
+import { apiFetchOnChainFees } from 'lib/earn';
 import types from './types';
+import { CHAIN_TYPE } from 'utils/constants';
 
 export function* handleSendPayment(action: ReturnType<typeof sendPayment>): SagaIterator {
   try {
@@ -32,8 +34,9 @@ export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>): Saga
       type: types.SEND_ON_CHAIN_SUCCESS,
       payload,
     });
-    // fetch the new onchain balance to update the home screen 
+    // fetch the new onchain balance && transactions to update the home screen 
     yield put(getAccountInfo());
+    yield put(getTransactions());
   } catch(err) {
     yield put({
       type: types.SEND_ON_CHAIN_FAILURE,
@@ -93,9 +96,27 @@ export function* handleCheckPaymentRequest(action: ReturnType<typeof checkPaymen
   }
 }
 
+export function* handleFetchChainFees(): SagaIterator {
+  try {
+    const chain: Yielded<typeof getNodeChain> = yield select(getNodeChain);
+    const nodeInfo: Yielded<typeof selectNodeInfo> = yield select(selectNodeInfo);
+    const chainType = (nodeInfo && !nodeInfo.testnet) ? 'mainnet' : 'testnet';
+    // the fee estimates API only works for bitcoin mainnet
+    if (chain !== CHAIN_TYPE.BITCOIN || chainType !== 'mainnet') {
+      throw new Error(`Unable to estimate fees for ${chain} ${chainType}`);
+    } 
+
+    const rates = yield call(apiFetchOnChainFees);
+    yield put({ type: types.FETCH_CHAIN_FEES_SUCCESS, payload: rates });
+  } catch(err) {
+    yield put({ type: types.FETCH_CHAIN_FEES_FAILURE, payload: err });
+  }  
+}
+
 export default function* paymentSagas(): SagaIterator {
   yield takeEvery(types.SEND_PAYMENT, handleSendPayment);
   yield takeEvery(types.SEND_ON_CHAIN, handleSendOnChain);
   yield takeEvery(types.CREATE_INVOICE, handleCreateInvoice);
   yield takeEvery(types.CHECK_PAYMENT_REQUEST, handleCheckPaymentRequest);
+  yield takeEvery(types.FETCH_CHAIN_FEES, handleFetchChainFees);
 }

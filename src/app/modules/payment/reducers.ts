@@ -1,5 +1,5 @@
 import { SendPaymentResponse, CreateInvoiceResponse, SendOnChainResponse } from 'lib/lnd-http';
-import types, { PaymentRequestState } from './types';
+import types, { PaymentRequestState, OnChainFeeEstimates } from './types';
 
 export interface PaymentState {
   sendLightningReceipt: SendPaymentResponse | null;
@@ -10,6 +10,9 @@ export interface PaymentState {
   isSending: boolean;
   invoiceError: Error | null;
   isCreatingInvoice: boolean;
+  onChainFees: OnChainFeeEstimates | null;
+  isFetchingFees: boolean;
+  feesError: Error | null;
 }
 
 export const INITIAL_STATE: PaymentState = {
@@ -21,6 +24,9 @@ export const INITIAL_STATE: PaymentState = {
   isSending: false,
   invoiceError: null,
   isCreatingInvoice: false,
+  onChainFees: null,
+  isFetchingFees: false,
+  feesError: null,
 };
 
 export default function channelsReducers(
@@ -146,6 +152,26 @@ export default function channelsReducers(
         ...state,
         sendError: action.payload,
         isSending: false,
+      };
+
+    case types.FETCH_CHAIN_FEES:
+      return {
+        ...state,
+        onChainFees: null,
+        feesError: null,
+        isFetchingFees: true,
+      };
+    case types.FETCH_CHAIN_FEES_SUCCESS:
+      return {
+        ...state,
+        onChainFees: action.payload,
+        isFetchingFees: false,
+      };
+    case types.FETCH_CHAIN_FEES_FAILURE:
+      return {
+        ...state,
+        feesError: action.payload,
+        isFetchingFees: false,
       };
     
   }
