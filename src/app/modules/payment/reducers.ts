@@ -2,7 +2,7 @@ import { SendPaymentResponse, CreateInvoiceResponse, SendOnChainResponse } from 
 import types, { PaymentRequestState } from './types';
 
 export interface PaymentState {
-  sendReceipt: SendPaymentResponse | null;
+  sendLightningReceipt: SendPaymentResponse | null;
   paymentRequests: { [req: string]: PaymentRequestState };
   invoice: CreateInvoiceResponse | null;
   sendOnChainReceipt: SendOnChainResponse | null;
@@ -13,7 +13,7 @@ export interface PaymentState {
 }
 
 export const INITIAL_STATE: PaymentState = {
-  sendReceipt: null,
+  sendLightningReceipt: null,
   paymentRequests: {},
   invoice: null,
   sendOnChainReceipt: null,
@@ -31,14 +31,14 @@ export default function channelsReducers(
     case types.SEND_PAYMENT:
       return {
         ...state,
-        sendReceipt: null,
+        sendLightningReceipt: null,
         sendError: null,
         isSending: true,
       };
     case types.SEND_PAYMENT_SUCCESS:
       return {
         ...state,
-        sendReceipt: action.payload,
+        sendLightningReceipt: action.payload,
         isSending: false,
       };
     case types.SEND_PAYMENT_FAILURE:
@@ -51,7 +51,7 @@ export default function channelsReducers(
     case types.RESET_SEND_PAYMENT:
       return {
         ...state,
-        sendReceipt: null,
+        sendLightningReceipt: null,
         sendOnChainReceipt: null,
         sendError: null,
         isSending: false,

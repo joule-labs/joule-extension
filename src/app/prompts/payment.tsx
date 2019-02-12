@@ -21,7 +21,7 @@ import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
-  sendReceipt: AppState['payment']['sendReceipt'];
+  sendLightningReceipt: AppState['payment']['sendLightningReceipt'];
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
   denomination: AppState['settings']['denomination'];
@@ -248,7 +248,7 @@ class PaymentPrompt extends React.Component<Props, State> {
     });
 
     const receipt = await watchUntilPropChange(
-      () => this.props.sendReceipt,
+      () => this.props.sendLightningReceipt,
       () => this.props.sendError,
     );
 
@@ -283,7 +283,7 @@ const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     paymentRequests: state.payment.paymentRequests,
-    sendReceipt: state.payment.sendReceipt,
+    sendLightningReceipt: state.payment.sendLightningReceipt,
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
     denomination: state.settings.denomination,
