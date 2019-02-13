@@ -1,14 +1,12 @@
 import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
-import { Form, Input, Button, Checkbox, Radio, Alert } from 'antd';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { Form, Input, Button, Radio, Alert, Icon } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { AppState } from 'store/reducers';
 import AmountField from 'components/AmountField';
 import Unit from 'components/Unit';
 import SendState from './SendState';
-import { blockchainDisplayName } from 'utils/constants';
 import { getNodeChain } from 'modules/node/selectors';
 import { getAdjustedFees } from 'modules/payment/selectors';
 import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
@@ -72,8 +70,17 @@ class ChainSend extends React.Component<Props, State> {
   }
 
   render() {
+    const { 
+      sendOnChainReceipt, 
+      isSending, 
+      sendError, 
+      account, 
+      onChainFees, 
+      isFetchingFees, 
+      feesError 
+    } = this.props;
+    
     // Early exit for send state
-    const { sendOnChainReceipt, isSending, sendError, account, chain, onChainFees, isFetchingFees, feesError } = this.props;
     if (isSending || sendOnChainReceipt || sendError) {
       return (
         <SendState
@@ -112,19 +119,18 @@ class ChainSend extends React.Component<Props, State> {
         <AmountField
           label="Amount"
           amount={amount}
-          maximumSats={blockchainBalance}
           onChangeAmount={this.handleChangeAmount}
-          required={!isSendAll}
-          disabled={isSendAll}
-          showFiat
+          minimumSats="1"
+          maximumSats={blockchainBalance}
+          showMax
+          required
+          help={(
+            <small>
+              Available on-chain balance: <Unit value={blockchainBalance} />
+              <a href="#"><Icon type="info-circle" /></a>
+            </small>
+          )}
         />
-        <div className="ChainSend-sendAll">
-          <Checkbox onChange={this.handleChangeSendAll} checked={isSendAll}>
-            Send all
-            {account && <strong> <Unit value={blockchainBalance} /> </strong>}
-            in {blockchainDisplayName[chain]} wallet
-          </Checkbox>
-        </div>
         <Form.Item label="Recipient" required>
           <Input
             name="address"
@@ -208,11 +214,13 @@ class ChainSend extends React.Component<Props, State> {
   };  
 
   private handleChangeAmount = (amount: string) => {
-    this.setState({ amount });
-  };
+    const { account } = this.props;
+    const blockchainBalance = account ? account.blockchainBalance : '';
 
-  private handleChangeSendAll = (ev: CheckboxChangeEvent) => {
-    this.setState({ isSendAll: ev.target.checked, amount: '' });
+    this.setState({
+      amount,
+      isSendAll: amount === blockchainBalance
+    });
   };
 
   private handleChangeAddress = (ev: React.ChangeEvent<HTMLInputElement>) => {
