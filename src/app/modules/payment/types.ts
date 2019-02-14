@@ -48,7 +48,8 @@ export type PaymentRequestState = {
 };
 
 export interface OnChainFeeEstimates { 
+  [key:string]: number,
   fastestFee: number,
   halfHourFee: number, 
   hourFee: number,
-}
+};

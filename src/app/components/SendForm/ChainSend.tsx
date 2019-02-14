@@ -8,7 +8,6 @@ import AmountField from 'components/AmountField';
 import Unit from 'components/Unit';
 import SendState from './SendState';
 import { getNodeChain } from 'modules/node/selectors';
-import { getAdjustedFees } from 'modules/payment/selectors';
 import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
 import './ChainSend.less';
 
@@ -39,6 +38,7 @@ interface State {
   amount: string;
   isSendAll: boolean;
   address: string;
+  feeMethod: string;
   fee: number;
   showMoreInfo: boolean;
 }
@@ -47,6 +47,7 @@ const INITIAL_STATE = {
   amount: '',
   isSendAll: false,
   address: '',
+  feeMethod: '',
   fee: 0,
   showMoreInfo: false,
 };
@@ -63,6 +64,7 @@ class ChainSend extends React.Component<Props, State> {
     const { onChainFees } = this.props;
     if (nextProps.onChainFees !== onChainFees && nextProps.onChainFees !== null) {
       this.setState({ 
+        feeMethod: 'fastestFee',
         fee: nextProps.onChainFees.fastestFee,
         showMoreInfo: true,
       });
@@ -105,7 +107,7 @@ class ChainSend extends React.Component<Props, State> {
       );
     }
 
-    const { amount, isSendAll, address, fee, showMoreInfo } = this.state;
+    const { amount, isSendAll, address, fee, feeMethod, showMoreInfo } = this.state;
     const blockchainBalance = account ? account.blockchainBalance : '';
     const disabled = (!amount && !isSendAll) || !address ||
       (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
@@ -148,10 +150,10 @@ class ChainSend extends React.Component<Props, State> {
                 <Alert type="warning" message={feesError.message} /> 
               )}
               {onChainFees && (
-                <Radio.Group defaultValue={this.state.fee} onChange={this.handleChangeFee}>
-                  <Radio.Button value={onChainFees.fastestFee}>Fast</Radio.Button>
-                  <Radio.Button value={onChainFees.halfHourFee}>Normal</Radio.Button>
-                  <Radio.Button value={onChainFees.hourFee}>Slow</Radio.Button>
+                <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
+                  <Radio.Button value="fastestFee">Fast</Radio.Button>
+                  <Radio.Button value="halfHourFee">Normal</Radio.Button>
+                  <Radio.Button value="hourFee">Slow</Radio.Button>
                 </Radio.Group>
               )}
             </Form.Item>
@@ -228,7 +230,12 @@ class ChainSend extends React.Component<Props, State> {
   };
 
   private handleChangeFee = (ev: RadioChangeEvent) => {
-    this.setState({ fee: parseInt(ev.target.value, 10) });
+    if (this.props.onChainFees) {
+      this.setState({ 
+        feeMethod: ev.target.value,
+        fee: this.props.onChainFees[ev.target.value], 
+      });
+    }
   };
 
   private handleMoreInfo = () => {
@@ -247,7 +254,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     sendOnChainReceipt: state.payment.sendOnChainReceipt,
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
-    onChainFees: getAdjustedFees(state),
+    onChainFees: state.payment.onChainFees,
     feesError: state.payment.feesError,
     isFetchingFees: state.payment.isFetchingFees,
     chain: getNodeChain(state),
