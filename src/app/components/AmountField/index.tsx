@@ -22,6 +22,7 @@ interface OwnProps {
   autoFocus?: boolean;
   size?: 'large' | 'default' | 'small';
   help?: React.ReactNode;
+  warn?: React.ReactNode;
   required?: boolean;
   showFiat?: boolean;
   minimumSats?: string;
@@ -97,6 +98,7 @@ class AmountField extends React.Component<Props, State> {
       fiat,
       rates,
       required,
+      warn,
       help,
       chain,
     } = this.props;
@@ -106,8 +108,8 @@ class AmountField extends React.Component<Props, State> {
     return (
       <Form.Item
         label={label}
-        help={valueError || help}
-        validateStatus={value && valueError ? 'error' : undefined}
+        help={valueError || warn || help}
+        validateStatus={value && valueError ? 'error' : (warn ? 'warning' : undefined)}
         className="AmountField"
         required={required}
       >

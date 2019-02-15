@@ -9,6 +9,7 @@ import Unit from 'components/Unit';
 import SendState from './SendState';
 import { getNodeChain } from 'modules/node/selectors';
 import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
+import { isPossibleDust } from 'utils/validators';
 import './ChainSend.less';
 
 interface StateProps {
@@ -111,6 +112,9 @@ class ChainSend extends React.Component<Props, State> {
     const blockchainBalance = account ? account.blockchainBalance : '';
     const disabled = (!amount && !isSendAll) || !address ||
       (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
+    const dustWarning = isPossibleDust(amount, address, fee) ? (
+      <><Icon type="exclamation-circle" /> Dust warning: This amount may not be spendable</>
+    ) : undefined;
 
     return (
       <Form
@@ -126,6 +130,7 @@ class ChainSend extends React.Component<Props, State> {
           maximumSats={blockchainBalance}
           showMax
           required
+          warn={dustWarning}
           help={(
             <small>
               Available on-chain balance: <Unit value={blockchainBalance} />
