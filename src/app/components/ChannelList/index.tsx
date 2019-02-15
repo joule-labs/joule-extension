@@ -6,6 +6,7 @@ import BigMessage from 'components/BigMessage';
 import { getChannels } from 'modules/channels/actions';
 import { AppState } from 'store/reducers';
 import { ChannelWithNode } from 'modules/channels/types';
+import OpenChannelModal from 'components/OpenChannelModal';
 
 
 interface StateProps {
@@ -23,7 +24,15 @@ interface OwnProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 
-class ChannelList extends React.Component<Props> {
+interface State {
+  isChannelModalOpen: boolean;
+}
+
+class ChannelList extends React.Component<Props, State> {
+  state: State = {
+    isChannelModalOpen: false,
+  };
+
   componentWillMount() {
     if (!this.props.channels) {
       this.props.getChannels();
@@ -32,6 +41,7 @@ class ChannelList extends React.Component<Props> {
 
   render() {
     const { channels, isFetchingChannels, fetchChannelsError, onClick } = this.props;
+    const { isChannelModalOpen } = this.state;
 
     let content;
     if (isFetchingChannels) {
@@ -55,10 +65,21 @@ class ChannelList extends React.Component<Props> {
       );
     } else {
       content = (
-        <BigMessage
-          title="You have no open channels"
-          message="Once you start opening channels, you’ll be able to view and manage them here"
-        />
+        <div>
+          <BigMessage
+            title="You have no open channels"
+            message="Once you start opening channels, you’ll be able to view and manage them here"
+            button={{
+              children: 'Open channel',
+              icon: 'fork',
+              onClick: () => this.openChannelModal(),
+            }}
+          />
+          <OpenChannelModal
+            isVisible={isChannelModalOpen}
+            handleClose={this.closeChannelModal}
+          />
+        </div>
       );
     }
     return (
@@ -67,6 +88,9 @@ class ChannelList extends React.Component<Props> {
       </div>
     );
   }
+
+  private openChannelModal = () => this.setState({ isChannelModalOpen: true });
+  private closeChannelModal = () => this.setState({ isChannelModalOpen: false });
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
