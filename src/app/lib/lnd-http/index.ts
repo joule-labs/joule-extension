@@ -89,6 +89,12 @@ export class LndHttpClient {
         pending_open_channels: [],
       }
     ).then(res => {
+      const collapse = (chan: any) => ({
+        ...chan,
+        ...chan.channel,
+        // remove nested 'channel' key from the chan spread
+        ...{ channel: undefined },
+      });
       res.pending_open_channels = res.pending_open_channels.map(channel => ({
         status: T.CHANNEL_STATUS.OPENING,
         commit_weight: '0',
@@ -98,15 +104,15 @@ export class LndHttpClient {
         remote_balance: '0',
         local_balance: '0',
         capacity: '0',
-        ...(channel as any).channel,
+        ...collapse(channel),
       }));
       res.pending_closing_channels = res.pending_closing_channels.map(channel => ({
         status: T.CHANNEL_STATUS.CLOSING,
-        closing_txid: channel.closing_txid,
+        closing_txid: '',
         remote_balance: '0',
         local_balance: '0',
         capacity: '0',
-        ...(channel as any).channel,
+        ...collapse(channel),
       }));
       res.waiting_close_channels = res.waiting_close_channels.map(channel => ({
         status: T.CHANNEL_STATUS.WAITING,
@@ -114,7 +120,7 @@ export class LndHttpClient {
         remote_balance: '0',
         local_balance: '0',
         capacity: '0',
-        ...(channel as any).channel,
+        ...collapse(channel),
       }));
       res.pending_force_closing_channels = res.pending_force_closing_channels.map(channel => ({
         status: T.CHANNEL_STATUS.FORCE_CLOSING,
@@ -126,7 +132,7 @@ export class LndHttpClient {
         remote_balance: '0',
         local_balance: '0',
         capacity: '0',
-        ...(channel as any).channel,
+        ...collapse(channel),
       }));
       return res;
     });
