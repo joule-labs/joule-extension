@@ -36,11 +36,11 @@ class NodeUriModal extends React.Component<Props> {
       // Placeholders to keep the modal the right size
       const content = (
         <>
-        <div className="NodeUriModal-qr">
+        <div className="DepositModal-qr">
           <QRCode value={text} size={200} />
         </div>
         <Copy text={text} name={title}>
-          <code className="NodeUriModal-text">
+          <code className="DepositModal-text">
             {text}
           </code>
         </Copy>
@@ -49,7 +49,7 @@ class NodeUriModal extends React.Component<Props> {
 
     return (
       <Modal
-        title={"Node URI"}
+        title={title}
         visible={isVisible}
         onCancel={onClose}
         okButtonProps={{ style: { display: 'none'} }}
