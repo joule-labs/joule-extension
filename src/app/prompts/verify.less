@@ -1,0 +1,68 @@
+@import '~style/variables.less';
+
+.VerifyPrompt {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: auto;
+  background-color: #FFF;
+
+  &-node {
+    margin-bottom: 0;
+  }
+
+  &-title {
+    position: relative;
+    padding: 0.5rem;
+    text-align: center;
+    background-color: #FAFAFA;
+
+    h3 {
+      margin: 0.5rem 0;
+    }
+  }
+
+  &-status {
+    border-top: 1px solid #EEE;
+    padding: 0.5rem;
+  }
+
+  &-content {
+    flex-grow: 1;
+
+    &-message {
+      flex-grow: 1;
+      background-color: #FAFAFA;
+      padding: 0.6rem;
+      margin: 0 1rem;
+      border-radius: 2px;
+      box-shadow: inset 0 1px 2px rgba(#000, 0.2);
+      font-size: 0.8rem;
+      word-break: break-all;
+    }
+
+    // Ant override
+    .ant-tabs {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 100%;
+
+      .ant-tabs-content {
+        flex-grow: 1;
+        padding-bottom: 0.5rem;
+
+        .ant-tabs-tabpane {
+          display: flex;
+        }
+      }
+    }
+  }
+
+  &-description {
+    font-size: 0.75rem;
+    opacity: 0.4;
+    text-align: justify;      
+    padding: 0.5rem 1rem;
+  }
+}

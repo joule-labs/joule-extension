@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon, Checkbox } from 'antd';
+import { Checkbox } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { sleep } from 'utils/misc';
 import { getPromptOrigin, OriginData } from 'utils/prompt';
-import Logo from 'static/images/logo.png';
 import { addEnabledDomain, addRejectedDomain } from 'modules/settings/actions';
 import PromptTemplate from 'components/PromptTemplate';
+import SwapGraphic from 'components/PromptTemplate/SwapGraphic';
 import './authorize.less';
 
 interface DispatchProps {
@@ -42,22 +42,10 @@ class AuthorizePrompt extends React.Component<Props, State> {
         isContentCentered
       >
         <div className="AuthorizePrompt">
-          <div className="AuthorizePrompt-graphic">
-            <div className="AuthorizePrompt-graphic-icon">
-              <img src={this.origin.icon || ''} />
-            </div>
-            <div className="AuthorizePrompt-graphic-divider">
-              <Icon type="swap" />
-            </div>
-            <div className="AuthorizePrompt-graphic-icon">
-              <img src={Logo} />
-            </div>
-          </div>
-          <h2>
-            <strong>{this.origin.name}</strong>
-            {' '}
-            wants to connect
-          </h2>
+          <SwapGraphic 
+            origin={this.origin}
+            message="wants to connect"
+          />
           <h3>They want to know</h3>
           <ul>
             <li>Your node's alias & color</li>
