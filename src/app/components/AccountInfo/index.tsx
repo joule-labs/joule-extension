@@ -48,8 +48,7 @@ class AccountInfo extends React.Component<Props, State> {
 
   render() {
     const { account, chain } = this.props;
-    const { isDepositModalOpen } = this.state;
-    const { isNodeUriModalOpen } = this.state;
+    const { isDepositModalOpen,isNodeUriModalOpen } = this.state;
     const actions: ButtonProps[] = [{
       children: 'Deposit',
       icon: 'qrcode',
