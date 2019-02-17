@@ -19,14 +19,9 @@ type Props = StateProps & OwnProps;
 class NodeUriModal extends React.Component<Props> {
   render() {
     const { node, isOpen, onClose } = this.props;
-    const text = node === null ? '' :
-                 node.uris[0] === undefined ? node.identity_pubkey :
-                 node.uris[0] === null ? node.identity_pubkey :
-                 node.uris[0];
-    const title = node === null ? '' :
-                  node.uris[0] === undefined ? 'Pubkey' :
-                  node.uris[0] === null ? 'Pubkey' :
-                  'Node URI';
+    const text =
+      node === null ? '' : !!node.uris[0] === false ? node.identity_pubkey : node.uris[0];
+    const title = node === null ? '' : !!node.uris[0] === false ? 'Pubkey' : 'Node URI';
     const isVisible = !!isOpen;
     // Placeholders to keep the modal the right size
     const content = (
