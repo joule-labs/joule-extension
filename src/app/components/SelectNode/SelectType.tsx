@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Collapse, Icon } from 'antd';
-import { NODE_TYPE } from 'utils/constants';
 import LightningAppIcon from 'static/images/lightningapp.svg';
 import BTCPayServerIcon from 'static/images/btcpayserver.svg';
 import './SelectType.less';
@@ -15,7 +14,7 @@ class SelectType extends React.Component<RouteComponentProps> {
           size="large"
           icon="laptop"
           block
-          onClick={() => this.navForward(NODE_TYPE.LOCAL)}
+          onClick={() => this.navForward('/onboarding-node-address')}
         >
           Local node
         </Button>
@@ -23,29 +22,30 @@ class SelectType extends React.Component<RouteComponentProps> {
           size="large"
           icon="global"
           block
-          onClick={() => this.navForward(NODE_TYPE.REMOTE)}
+          onClick={() => this.navForward('/onboarding-node-address')}
         >
           Remote node
         </Button>
         <Button
           size="large"
           block
-          onClick={() => this.navForward(NODE_TYPE.LIGHTNING_APP)}
+          onClick={() => this.navForward('/onboarding-node-lightningapp')}
         >
-          <Icon component={LightningAppIcon} /> Lightning App
+          <Icon component={LightningAppIcon}/> Lightning App
         </Button>
         <Button
           size="large"
           block
-          onClick={() => this.navForward(NODE_TYPE.BTCPAY_SERVER)}
+          onClick={() => this.navForward('/onboarding-node-btcpayserver')}
         >
-          <Icon component={BTCPayServerIcon} /> BTCPay Server
+          <Icon component={BTCPayServerIcon}/> BTCPay Server
         </Button>
         <Collapse>
           <Collapse.Panel header="Need help? Click here" key="help">
             <p>
               In order to run Joule, you must run your own LND node (other
-              node types coming soon). You can use one of the following for example:
+              node types coming soon). You can use one of the following for
+              example:
             </p>
             <ul>
               <li>
@@ -100,11 +100,11 @@ class SelectType extends React.Component<RouteComponentProps> {
           </Collapse.Panel>
         </Collapse>
       </div>
-    )
+    );
   }
 
-  private navForward(type: NODE_TYPE) {
-    console.log(type);
+  private navForward(link: string) {
+    this.props.history.push(link);
   }
 }
 

@@ -1,15 +1,29 @@
 import React from 'react';
 import { browser } from 'webextension-polyfill-ts';
-import { Form, Input, Button, Alert, message } from 'antd';
+import { Alert, Button, Form, Input, message } from 'antd';
 import { urlWithoutPort } from 'utils/formatters';
 import './InputAddress.less';
+import { checkNode } from 'modules/node/actions';
+import { connect } from 'react-redux';
+import { AppState } from 'store/reducers';
+import { RouteComponentProps } from 'react-router';
 
-interface Props {
-  initialUrl?: string;
-  error: Error | null;
-  isCheckingNode?: boolean;
-  submitUrl(url: string): void;
+interface StateProps {
+  isNodeChecked: AppState['node']['isNodeChecked'];
+  isCheckingNode: AppState['node']['isCheckingNode'];
+  checkNodeError: AppState['node']['checkNodeError'];
 }
+
+interface DispatchProps {
+  checkNode: typeof checkNode;
+}
+
+interface OwnProps {
+  initialUrl?: string;
+  isCheckingNode?: boolean;
+}
+
+type Props = StateProps & DispatchProps & OwnProps & RouteComponentProps;
 
 interface State {
   url: string;
@@ -17,16 +31,16 @@ interface State {
   validation: string;
 }
 
-export default class InputAddress extends React.Component<Props, State> {
+class InputAddress extends React.Component<Props, State> {
   state: State = {
     url: this.props.initialUrl || '',
     submittedUrl: this.props.initialUrl || '',
-    validation: '',
+    validation: ''
   };
 
   render() {
-    const { error, isCheckingNode } = this.props;
-    const { validation, url, submittedUrl } = this.state;
+    const {checkNodeError, isCheckingNode} = this.props;
+    const {validation, url, submittedUrl} = this.state;
     const validateStatus = url ? validation ? 'error' : 'success' : undefined;
     const help = (url && validation) || (
       <>
@@ -36,50 +50,62 @@ export default class InputAddress extends React.Component<Props, State> {
       </>
     );
     return (
-      <Form className="InputAddress" onSubmit={this.handleSubmit} layout="vertical">
-        <Form.Item label="Node URL" help={help} validateStatus={validateStatus}>
-          <Input
-            type="url"
-            size="large"
-            value={url}
-            onChange={this.handleChange}
-            placeholder="http://localhost:8080"
-            autoFocus
-          />
-        </Form.Item>
+      <div>
+        <h2 className="SelectNode-title">Provide a URL</h2>
+        <Form className="InputAddress" onSubmit={this.handleSubmit}
+              layout="vertical">
+          <Form.Item label="Node URL" help={help}
+                     validateStatus={validateStatus}>
+            <Input
+              type="url"
+              size="large"
+              value={url}
+              onChange={this.handleChange}
+              placeholder="http://localhost:8080"
+              autoFocus
+            />
+          </Form.Item>
 
-        {error &&
+          {checkNodeError &&
           <Alert
-            type="error"
-            message="Failed to connect to node"
-            description={<>
-              <p>Request failed with the message "{error.message}"</p>
-              <p>
-                If you're sure you've setup your node correctly, try{' '}
-                <a href={`${submittedUrl}/v1/getinfo`} target="_blank">
-                  clicking this link
-                </a>{' '}
-                and making sure it loads correctly. If there are SSL errors,
-                click "advanced" and proceed to accept the certificate.
-              </p>
-            </>}
-            showIcon
-            closable
+              type="error"
+              message="Failed to connect to node"
+              description={<>
+                <p>Request failed with the message
+                  "{checkNodeError.message}"</p>
+                <p>
+                  If you're sure you've setup your node correctly, try{' '}
+                  <a href={`${submittedUrl}/v1/getinfo`} target="_blank">
+                    clicking this link
+                  </a>{' '}
+                  and making sure it loads correctly. If there are SSL errors,
+                  click "advanced" and proceed to accept the certificate.
+                </p>
+              </>}
+              showIcon
+              closable
           />
-        }
+          }
 
-        <Button
-          type="primary"
-          size="large"
-          htmlType="submit"
-          disabled={!url}
-          loading={isCheckingNode}
-          block
-        >
-          Connect
-        </Button>
-      </Form>
-    )
+          <Button
+            type="primary"
+            size="large"
+            htmlType="submit"
+            disabled={!url}
+            loading={isCheckingNode}
+            block
+          >
+            Connect
+          </Button>
+        </Form>
+      </div>
+    );
+  }
+
+  componentDidUpdate() {
+    if (this.props.isNodeChecked) {
+      this.props.history.push('/onboarding-node-macroon');
+    }
   }
 
   private handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,22 +114,34 @@ export default class InputAddress extends React.Component<Props, State> {
     try {
       // tslint:disable-next-line
       new URL(url);
-    } catch(err) {
+    } catch (err) {
       validation = 'That doesn’t look like a valid url';
     }
-    this.setState({ url, validation });
+    this.setState({url, validation});
   };
+
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     browser.permissions.request({
-      origins: [urlWithoutPort(this.state.url)],
+      origins: [urlWithoutPort(this.state.url)]
     }).then(accepted => {
       if (!accepted) {
         message.warn('Permission denied, connection may fail');
       }
-      this.props.submitUrl(this.state.url);
-      this.setState({ submittedUrl: this.state.url });
+      this.props.checkNode(this.state.url);
+      this.setState({submittedUrl: this.state.url});
     });
   };
 }
+
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(
+  state => ({
+    isNodeChecked: state.node.isNodeChecked,
+    isCheckingNode: state.node.isCheckingNode,
+    checkNodeError: state.node.checkNodeError
+  }),
+  {
+    checkNode
+  }
+)(InputAddress);
