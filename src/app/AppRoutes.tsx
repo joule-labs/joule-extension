@@ -20,6 +20,7 @@ import SelectType from 'components/SelectNode/SelectType';
 import InputAddress from 'components/SelectNode/InputAddress';
 import BTCPayServer from 'components/SelectNode/BTCPayServer';
 import UploadMacaroon from 'components/SelectNode/UploadMacaroons';
+import ConfirmNode from 'components/SelectNode/ConfirmNode';
 
 interface RouteConfig extends RouteProps {
   route: RouteProps;
@@ -103,6 +104,14 @@ const routeConfigs: RouteConfig[] = [
     route: {
       path: '/onboarding-node-macroon',
       component: UploadMacaroon
+    },
+    template: {}
+  },
+  {
+    // Onboarding
+    route: {
+      path: '/onboarding-node-confirm',
+      component: ConfirmNode
     },
     template: {}
   },

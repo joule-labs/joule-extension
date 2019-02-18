@@ -10,6 +10,7 @@ import { AppState } from 'store/reducers';
 
 interface StateProps {
   url: AppState['node']['url'];
+  nodeInfo: AppState['node']['nodeInfo'];
   isCheckingAuth: AppState['node']['isCheckingAuth'];
   checkAuthError: AppState['node']['checkAuthError'];
 }
@@ -24,8 +25,6 @@ interface OwnProps {
   initialAdmin?: string;
   initialReadonly?: string;
   nodeType?: NODE_TYPE,
-
-  onUploaded(admin: string, readOnly: string): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps & RouteComponentProps;
@@ -46,13 +45,16 @@ class UploadMacaroon extends React.Component<Props, State> {
   };
 
   componentDidUpdate(prevProps: Props) {
+    if (this.props.nodeInfo) {
+      this.props.history.push('/onboarding-node-confirm')
+    }
     if (prevProps.error !== this.props.error) {
       this.setState({error: this.props.error});
     }
   }
 
   render() {
-    const {nodeType} = this.props;
+    const {checkAuthError, nodeType} = this.props;
     const {error, admin, readonly, isShowingHexInputs} = this.state;
     const dirs = (nodeType && DEFAULT_LND_DIRS[nodeType]) || DEFAULT_LND_DIRS[NODE_TYPE.LOCAL];
     return (
@@ -137,10 +139,10 @@ class UploadMacaroon extends React.Component<Props, State> {
             </>
           )}
 
-          {error &&
+          {error || checkAuthError &&
           <Alert
               message="Invalid macaroon"
-              description={error}
+              description={error || checkAuthError}
               type="error"
               closable
               showIcon
