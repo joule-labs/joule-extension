@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  Switch,
+  matchPath,
   Route,
-  withRouter,
   RouteComponentProps,
   RouteProps,
-  matchPath,
+  Switch,
+  withRouter
 } from 'react-router';
 import { hot } from 'react-hot-loader/root';
 import { AppState } from 'store/reducers';
@@ -16,6 +16,7 @@ import OnboardingPage from 'pages/onboarding';
 import SettingsPage from 'pages/settings';
 import FourOhFourPage from 'pages/fourohfour';
 import Template, { Props as TemplateProps } from 'components/Template';
+import SelectType from 'components/SelectNode/SelectType';
 
 interface RouteConfig extends RouteProps {
   route: RouteProps;
@@ -27,49 +28,57 @@ const routeConfigs: RouteConfig[] = [
     // Initial loading
     route: {
       path: '/',
-      render: () => <Loader />,
-      exact: true,
+      render: () => <Loader/>,
+      exact: true
     },
-    template: {},
+    template: {}
   },
   {
     // Homepage
     route: {
       path: '/home',
       component: HomePage,
-      exact: true,
+      exact: true
     },
-    template: {},
+    template: {}
   },
   {
     // Onboarding
     route: {
       path: '/onboarding',
-      component: OnboardingPage,
+      component: OnboardingPage
     },
     template: {
-      hideHeader: true,
+      hideHeader: true
+    }
+  },
+  {
+    // Onboarding
+    route: {
+      path: '/onboarding-node',
+      component: SelectType
     },
+    template: {}
   },
   {
     // Settings
     route: {
       path: '/settings',
-      component: SettingsPage,
+      component: SettingsPage
     },
     template: {
       title: 'Settings',
-      showBack: true,
-    },
+      showBack: true
+    }
   },
   {
     // 404
     route: {
       path: '/*',
-      component: FourOhFourPage,
+      component: FourOhFourPage
     },
-    template: {},
-  },
+    template: {}
+  }
 ];
 
 interface StateProps {
@@ -89,7 +98,7 @@ class Routes extends React.Component<Props> {
   }
 
   render() {
-    const { pathname } = this.props.location;
+    const {pathname} = this.props.location;
     const currentRoute =
       routeConfigs.find(config => !!matchPath(pathname, config.route)) ||
       routeConfigs[routeConfigs.length - 1];
@@ -105,9 +114,9 @@ class Routes extends React.Component<Props> {
   }
 
   private redirectAsNeeded() {
-    const { hasSetPassword, history, location } = this.props;
+    const {hasSetPassword, history, location} = this.props;
     if (!hasSetPassword) {
-      if (location.pathname !== '/onboarding') {
+      if (!RegExp('^/onboarding*').test(location.pathname)) {
         history.replace('/onboarding');
       }
     } else if (location.pathname === '/') {
@@ -119,7 +128,7 @@ class Routes extends React.Component<Props> {
 const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(
   state => ({
     hasSetPassword: state.crypto.hasSetPassword,
-    password: state.crypto.password,
+    password: state.crypto.password
   })
 )(Routes);
 

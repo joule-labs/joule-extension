@@ -4,22 +4,18 @@ import { NODE_TYPE } from 'utils/constants';
 import LightningAppIcon from 'static/images/lightningapp.svg';
 import BTCPayServerIcon from 'static/images/btcpayserver.svg';
 import './SelectType.less';
+import { RouteComponentProps, withRouter } from 'react-router';
 
-interface Props {
-  onSelectNodeType(type: NODE_TYPE): void;
-}
-
-export default class SelectType extends React.Component<Props> {
+class SelectType extends React.Component<RouteComponentProps> {
   render() {
-    const { onSelectNodeType } = this.props;
-
     return (
       <div className="SelectType">
+        <h2 className="SelectNode-title">What kind of node do you have?</h2>
         <Button
           size="large"
           icon="laptop"
           block
-          onClick={() => onSelectNodeType(NODE_TYPE.LOCAL)}
+          onClick={() => this.navForward(NODE_TYPE.LOCAL)}
         >
           Local node
         </Button>
@@ -27,21 +23,21 @@ export default class SelectType extends React.Component<Props> {
           size="large"
           icon="global"
           block
-          onClick={() => onSelectNodeType(NODE_TYPE.REMOTE)}
+          onClick={() => this.navForward(NODE_TYPE.REMOTE)}
         >
           Remote node
         </Button>
         <Button
           size="large"
           block
-          onClick={() => onSelectNodeType(NODE_TYPE.LIGHTNING_APP)}
+          onClick={() => this.navForward(NODE_TYPE.LIGHTNING_APP)}
         >
           <Icon component={LightningAppIcon} /> Lightning App
         </Button>
         <Button
           size="large"
           block
-          onClick={() => onSelectNodeType(NODE_TYPE.BTCPAY_SERVER)}
+          onClick={() => this.navForward(NODE_TYPE.BTCPAY_SERVER)}
         >
           <Icon component={BTCPayServerIcon} /> BTCPay Server
         </Button>
@@ -106,4 +102,10 @@ export default class SelectType extends React.Component<Props> {
       </div>
     )
   }
+
+  private navForward(type: NODE_TYPE) {
+    console.log(type);
+  }
 }
+
+export default withRouter(SelectType);

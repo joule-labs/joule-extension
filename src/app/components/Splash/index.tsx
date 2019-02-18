@@ -2,21 +2,12 @@ import React from 'react';
 import { Button } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import './style.less';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-interface Props {
-  handleContinue(): void;
-}
-
-export default class Splash extends React.Component<Props> {
+class Splash extends React.Component<RouteComponentProps> {
   componentDidMount() {
-    if (process.env.APP_CONTAINER === 'page') {
-      browser.storage.local.get('skipSplash').then(value => {
-        if (value && value.skipSplash) {
-          browser.storage.local.remove('skipSplash').then(() => {
-            this.handleContinue();
-          });
-        }
-      });
+    if (process.env.APP_CONTAINER !== 'page') {
+      browser.runtime.openOptionsPage().then(window.close);
     }
   }
 
@@ -33,7 +24,8 @@ export default class Splash extends React.Component<Props> {
             <li>Auth with a decentralized identity</li>
           </ul>
           <div className="Splash-controls">
-            <Button block size="large" type="primary" onClick={this.handleContinue}>
+            <Button block size="large" type="primary"
+                    onClick={this.navForward}>
               Get started
             </Button>
           </div>
@@ -42,14 +34,9 @@ export default class Splash extends React.Component<Props> {
     );
   }
 
-  private handleContinue = () => {
-    if (process.env.APP_CONTAINER === 'page') {
-      this.props.handleContinue();
-    } else {
-      browser.storage.local.set({ skipSplash: true }).then(() => {
-        browser.runtime.openOptionsPage();
-        setTimeout(window.close, 100);
-      });
-    }
+  private navForward = () => {
+    this.props.history.push('/onboarding-node');
   };
 }
+
+export default withRouter(Splash);
