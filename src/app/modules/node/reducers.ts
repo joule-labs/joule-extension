@@ -165,6 +165,7 @@ export default function cryptoReducers(
         ...state,
         lib: null,
         url: null,
+        nodeInfo: null,
         readonlyMacaroon: null,
         adminMacaroon: null,
       };

@@ -21,6 +21,7 @@ import InputAddress from 'components/SelectNode/InputAddress';
 import BTCPayServer from 'components/SelectNode/BTCPayServer';
 import UploadMacaroon from 'components/SelectNode/UploadMacaroons';
 import ConfirmNode from 'components/SelectNode/ConfirmNode';
+import CreatePassword from 'components/CreatePassword';
 
 interface RouteConfig extends RouteProps {
   route: RouteProps;
@@ -112,6 +113,14 @@ const routeConfigs: RouteConfig[] = [
     route: {
       path: '/onboarding-node-confirm',
       component: ConfirmNode
+    },
+    template: {}
+  },
+  {
+    // Onboarding
+    route: {
+      path: '/onboarding-password',
+      component: CreatePassword
     },
     template: {}
   },

@@ -3,7 +3,7 @@ import { Alert, Button, Form, Icon, Input, Upload } from 'antd';
 import { blobToHex } from 'utils/file';
 import { DEFAULT_LND_DIRS, NODE_TYPE } from 'utils/constants';
 import './UploadMacaroons.less';
-import { checkAuth } from 'modules/node/actions';
+import { checkAuth, setNode } from 'modules/node/actions';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
@@ -17,6 +17,7 @@ interface StateProps {
 
 interface DispatchProps {
   checkAuth: typeof checkAuth;
+  setNode: typeof setNode;
 }
 
 interface OwnProps {
@@ -45,8 +46,9 @@ class UploadMacaroon extends React.Component<Props, State> {
   };
 
   componentDidUpdate(prevProps: Props) {
-    if (this.props.nodeInfo) {
-      this.props.history.push('/onboarding-node-confirm')
+    if (this.props.nodeInfo && this.state.admin && this.state.readonly) {
+      this.props.setNode(this.props.url!, this.state.admin, this.state.readonly);
+      this.props.history.push('/onboarding-node-confirm');
     }
     if (prevProps.error !== this.props.error) {
       this.setState({error: this.props.error});
@@ -204,7 +206,8 @@ const ConnectedUploadMacaroons = connect<StateProps, DispatchProps, OwnProps, Ap
     checkAuthError: state.node.checkAuthError
   }),
   {
-    checkAuth
+    checkAuth,
+    setNode
   }
 )(UploadMacaroon);
 

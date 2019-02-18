@@ -4,7 +4,7 @@ import { blockchainDisplayName, CHAIN_TYPE } from 'utils/constants';
 import './ConfirmNode.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
-import { resetNode, setNode } from 'modules/node/actions';
+import { resetNode } from 'modules/node/actions';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 interface StateProps {
@@ -15,7 +15,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  setNode: typeof setNode;
   resetNode: typeof resetNode;
 }
 
@@ -75,18 +74,7 @@ class ConfirmNode extends React.Component<Props> {
   };
 
   private onConfirm = () => {
-    const {url} = this.props;
-    const {adminMacaroon, readonlyMacaroon} = this.props;
-    if (!url || !adminMacaroon || !readonlyMacaroon) {
-      console.warn('Invalid credentials:', {
-        url,
-        adminMacaroon,
-        readonlyMacaroon
-      });
-      return;
-    }
-    this.props.setNode(url, adminMacaroon, readonlyMacaroon);
-    this.props.history.push('/onboarding-node-password');
+    this.props.history.push('/onboarding-password');
   };
 
 }
@@ -99,7 +87,6 @@ const ConnectedConfirmNode = connect<StateProps, DispatchProps, {}, AppState>(
     readonlyMacaroon: state.node.readonlyMacaroon
   }),
   {
-    setNode,
     resetNode
   }
 )(ConfirmNode);

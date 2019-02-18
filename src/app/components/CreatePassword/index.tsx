@@ -1,45 +1,55 @@
 import React from 'react';
-import { Form, Button, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import zxcvbn from 'zxcvbn';
 import { decryptData, TEST_CIPHER_DATA } from 'utils/crypto';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { setPassword } from 'modules/crypto/actions';
+import { RouteComponentProps, withRouter } from 'react-router';
+import { connect } from 'react-redux';
 
-interface Props {
+interface DispatchProps {
+  setPassword: typeof setPassword;
+}
+
+interface OwnProps {
   testCipher?: AppState['crypto']['testCipher'];
   salt?: AppState['crypto']['salt'];
   requestCurrentPassword?: boolean;
+
   onCreatePassword(newPassword: string, currPassword?: string): void;
 }
+
+type Props = DispatchProps & OwnProps & RouteComponentProps;
 
 interface State {
   currPassword: string;
   currPassErr: null | string;
-  password1: string;
+  newPassword: string;
   password2: string;
   isReady: boolean;
   strength: number;
 }
 
-export default class CreatePassword extends React.Component<Props, State> {
+class CreatePassword extends React.Component<Props, State> {
   static defaultProps = {
-    requestCurrentPassword: false,
-  }
+    requestCurrentPassword: false
+  };
 
   constructor(props: any) {
     super(props);
     this.state = {
       currPassword: '',
       currPassErr: null,
-      password1: '',
+      newPassword: '',
       password2: '',
       isReady: false,
-      strength: 0,
+      strength: 0
     };
   }
 
   handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.currentTarget;
+    const {value, name} = e.currentTarget;
     const setPass = (n: string, nx: string, v: string, d: string) => {
       if (n === nx) {
         return v;
@@ -47,24 +57,24 @@ export default class CreatePassword extends React.Component<Props, State> {
         return d;
       }
     };
-    const password1 = setPass(name, 'p1', value, this.state.password1);
+    const password1 = setPass(name, 'p1', value, this.state.newPassword);
     const password2 = setPass(name, 'p2', value, this.state.password2);
     const strength = zxcvbn(password1).score;
     const isReady = password1 === password2 && strength >= 2;
-    this.setState({ password1, password2, isReady, strength });
+    this.setState({newPassword: password1, password2, isReady, strength});
   };
 
   handleCurrPassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       currPassword: e.currentTarget.value,
-      currPassErr: null,
+      currPassErr: null
     });
-  }
+  };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { currPassword, password1 } = this.state;
-    const { testCipher, salt } = this.props;
+    const {currPassword, newPassword} = this.state;
+    const {testCipher, salt} = this.props;
 
     // verify the current pw if it was requested
     if (this.props.requestCurrentPassword) {
@@ -73,29 +83,42 @@ export default class CreatePassword extends React.Component<Props, State> {
         if (data !== TEST_CIPHER_DATA) {
           throw new Error('Incorrect password');
         }
-      } catch(err) {
-        this.setState({ currPassErr: 'Password was incorrect' });
+      } catch (err) {
+        this.setState({currPassErr: 'Password was incorrect'});
         return;
       }
     }
-    
-    this.props.onCreatePassword(password1, currPassword);
+
+    // If no callback function was given, change the password and navigate
+    // back to the home screen. This happens e.g. during onboarding.
+    if (!this.props.onCreatePassword && currPassword === '') {
+      this.props.setPassword(newPassword);
+      this.props.history.replace('/home');
+      return;
+    }
+
+    this.props.onCreatePassword(newPassword, currPassword);
   };
 
   render() {
-    const { currPassword, currPassErr, password1, password2, isReady, strength } = this.state;
-    const { requestCurrentPassword } = this.props;
+    const {currPassword, currPassErr, newPassword, password2, isReady, strength} = this.state;
+    const {requestCurrentPassword} = this.props;
     const p2status = password2.length > 0 ?
-      password1 === password2 ?
+      newPassword === password2 ?
         'success' :
         'error'
       : undefined;
-    const labels = requestCurrentPassword 
-      ? { title: '', pass: 'New password', conf: 'Confirm new password' }
-      : { title: 'Create a Password', pass: 'Password', conf: 'Confirm password'}; 
-    
+    const labels = requestCurrentPassword
+      ? {title: '', pass: 'New password', conf: 'Confirm new password'}
+      : {
+        title: 'Create a Password',
+        pass: 'Password',
+        conf: 'Confirm password'
+      };
+
     return (
-      <Form className="CreatePassword" onSubmit={this.handleSubmit} layout="vertical">
+      <Form className="CreatePassword" onSubmit={this.handleSubmit}
+            layout="vertical">
         <h2 className="CreatePassword-title">{labels.title}</h2>
 
         {requestCurrentPassword && (
@@ -120,7 +143,7 @@ export default class CreatePassword extends React.Component<Props, State> {
         <Form.Item label={labels.pass}>
           <Input
             name="p1"
-            value={password1}
+            value={newPassword}
             onChange={this.handleInputChange}
             className="CreatePassword-input"
             size="large"
@@ -128,7 +151,7 @@ export default class CreatePassword extends React.Component<Props, State> {
             autoFocus={!requestCurrentPassword}
           />
         </Form.Item>
-        
+
         <Form.Item label={labels.conf} validateStatus={p2status}>
           <Input
             name="p2"
@@ -140,7 +163,7 @@ export default class CreatePassword extends React.Component<Props, State> {
           />
         </Form.Item>
         <div className="CreatePassword-strength">
-          <div className={`CreatePassword-strength-meter is-str${strength}`} />
+          <div className={`CreatePassword-strength-meter is-str${strength}`}/>
         </div>
         <div className="CreatePassword-continue">
           <Button
@@ -162,3 +185,12 @@ export default class CreatePassword extends React.Component<Props, State> {
     );
   }
 }
+
+const ConnectedCreatePassword = connect<{}, DispatchProps, Props, {}>(
+  () => ({}),
+  {
+    setPassword
+  }
+)(CreatePassword);
+
+export default withRouter(ConnectedCreatePassword);
