@@ -6,6 +6,7 @@ import BN from 'bn.js';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DepositModal from './DepositModal';
+import NodeUriModal from './NodeUriModal';
 import { getAccountInfo } from 'modules/account/actions';
 import { getNodeChain } from 'modules/node/selectors';
 import { blockchainDisplayName } from 'utils/constants';
@@ -30,11 +31,13 @@ type Props = DispatchProps & StateProps & OwnProps;
 
 interface State {
   isDepositModalOpen: boolean;
+  isNodeUriModalOpen: boolean;
 }
 
 class AccountInfo extends React.Component<Props, State> {
   state: State = {
     isDepositModalOpen: false,
+    isNodeUriModalOpen: false
   };
 
   componentDidMount() { 
@@ -45,8 +48,7 @@ class AccountInfo extends React.Component<Props, State> {
 
   render() {
     const { account, chain } = this.props;
-    const { isDepositModalOpen } = this.state;
-
+    const { isDepositModalOpen,isNodeUriModalOpen } = this.state;
     const actions: ButtonProps[] = [{
       children: 'Deposit',
       icon: 'qrcode',
@@ -78,6 +80,7 @@ class AccountInfo extends React.Component<Props, State> {
             <Identicon
               pubkey={account.pubKey}
               className="AccountInfo-top-avatar"
+              onClick={this.openNodeUriModal}
             />
             <div className="AccountInfo-top-info">
               <div className="AccountInfo-top-info-alias">{account.alias}</div>
@@ -116,12 +119,22 @@ class AccountInfo extends React.Component<Props, State> {
             onClose={this.closeDepositModal}
           />
         }
+
+        {account &&
+          <NodeUriModal
+            isOpen={isNodeUriModalOpen}
+            onClose={this.closeNodeUriModal}
+          />
+        }
       </div>
     );
   }
 
   private openDepositModal = () => this.setState({ isDepositModalOpen: true });
   private closeDepositModal = () => this.setState({ isDepositModalOpen: false });
+  // Get Node URI or Pubkey with QR Code
+  private openNodeUriModal = () => this.setState({ isNodeUriModalOpen: true });
+  private closeNodeUriModal = () => this.setState({ isNodeUriModalOpen: false }); 
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
