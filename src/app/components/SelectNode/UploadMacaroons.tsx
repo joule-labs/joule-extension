@@ -4,7 +4,7 @@ import { blobToHex } from 'utils/file';
 import { DEFAULT_LND_DIRS, NODE_TYPE } from 'utils/constants';
 import './UploadMacaroons.less';
 import { checkAuth } from 'modules/node/actions';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 
@@ -196,7 +196,7 @@ class UploadMacaroon extends React.Component<Props, State> {
   };
 }
 
-export default connect<StateProps, DispatchProps, OwnProps, AppState>(
+const ConnectedUploadMacaroons = connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     url: state.node.url,
     nodeInfo: state.node.nodeInfo,
@@ -207,3 +207,5 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     checkAuth
   }
 )(UploadMacaroon);
+
+export default withRouter(ConnectedUploadMacaroons);
