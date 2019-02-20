@@ -5,7 +5,8 @@ import './ConfirmNode.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
 import { resetNode } from 'modules/node/actions';
-import { RouteComponentProps, withRouter } from 'react-router';
+import TitleTemplate
+  from 'components/SelectNode/TitleTemplate';
 
 interface StateProps {
   url: AppState['node']['url'];
@@ -18,32 +19,42 @@ interface DispatchProps {
   resetNode: typeof resetNode;
 }
 
-type Props = StateProps & DispatchProps & RouteComponentProps;
+interface OwnProps {
+  onComplete() : void;
+  onCancel() : void;
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
 
 class ConfirmNode extends React.Component<Props> {
   render() {
     const {nodeInfo} = this.props;
-    const chain = nodeInfo!.chains[0] as CHAIN_TYPE;
-    const rows = [{
-      label: 'Alias',
-      value: nodeInfo!.alias
-    }, {
-      label: 'Version',
-      value: nodeInfo!.version.split(' ')[0]
-    }, {
-      label: 'Chain',
-      value: blockchainDisplayName[chain]
-    }, {
-      label: 'Testnet',
-      value: JSON.stringify(!!nodeInfo!.testnet)
-    }, {
-      label: '# of Channels',
-      value: nodeInfo!.num_active_channels || 'Unknown'
-    }];
+    let rows : Array<{label: string, value: any}> = [];
+    if (!nodeInfo) {
+      rows = [{label: 'Error', value: 'Node is not configured yet!'}];
+    } else {
+      const chain = nodeInfo.chains[0] as CHAIN_TYPE;
+      rows = [{
+        label: 'Alias',
+        value: nodeInfo.alias
+      }, {
+        label: 'Version',
+        value: nodeInfo.version.split(' ')[0]
+      }, {
+        label: 'Chain',
+        value: blockchainDisplayName[chain]
+      }, {
+        label: 'Testnet',
+        value: JSON.stringify(!!nodeInfo.testnet)
+      }, {
+        label: '# of Channels',
+        value: nodeInfo.num_active_channels || 'Unknown'
+      }];
+    }
 
     return (
       <div>
-        <h2 className="SelectNode-title">Confirm your node</h2>
+        <TitleTemplate title={'Confirm your node'}/>
         <div className="ConfirmNode">
           <table className="ConfirmNode-info">
             <tbody>
@@ -59,7 +70,7 @@ class ConfirmNode extends React.Component<Props> {
             <Button size="large" onClick={this.onCancel}>
               Cancel
             </Button>
-            <Button size="large" type="primary" onClick={this.onConfirm}>
+            <Button size="large" type="primary" onClick={this.props.onComplete}>
               Confirm
             </Button>
           </div>
@@ -70,16 +81,12 @@ class ConfirmNode extends React.Component<Props> {
 
   private onCancel = () => {
     this.props.resetNode();
-    this.props.history.replace('/onboarding-node');
-  };
-
-  private onConfirm = () => {
-    this.props.history.push('/onboarding-password');
+    this.props.onCancel();
   };
 
 }
 
-const ConnectedConfirmNode = connect<StateProps, DispatchProps, {}, AppState>(
+export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     url: state.node.url,
     nodeInfo: state.node.nodeInfo,
@@ -90,5 +97,3 @@ const ConnectedConfirmNode = connect<StateProps, DispatchProps, {}, AppState>(
     resetNode
   }
 )(ConfirmNode);
-
-export default withRouter(ConnectedConfirmNode);

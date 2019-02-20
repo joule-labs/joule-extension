@@ -4,9 +4,9 @@ import { blobToHex } from 'utils/file';
 import { DEFAULT_LND_DIRS, NODE_TYPE } from 'utils/constants';
 import './UploadMacaroons.less';
 import { checkAuth, setNode } from 'modules/node/actions';
-import { RouteComponentProps, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
+import TitleTemplate from 'components/SelectNode/TitleTemplate';
 
 interface StateProps {
   url: AppState['node']['url'];
@@ -25,10 +25,12 @@ interface OwnProps {
   isSaving?: boolean;
   initialAdmin?: string;
   initialReadonly?: string;
-  nodeType?: NODE_TYPE,
+  nodeType?: NODE_TYPE;
+
+  onComplete() : void;
 }
 
-type Props = StateProps & DispatchProps & OwnProps & RouteComponentProps;
+type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   admin: string;
@@ -48,7 +50,7 @@ class UploadMacaroon extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     if (this.props.nodeInfo && this.state.admin && this.state.readonly) {
       this.props.setNode(this.props.url!, this.state.admin, this.state.readonly);
-      this.props.history.push('/onboarding-node-confirm');
+      this.props.onComplete();
     }
     if (prevProps.error !== this.props.error) {
       this.setState({error: this.props.error});
@@ -61,7 +63,7 @@ class UploadMacaroon extends React.Component<Props, State> {
     const dirs = (nodeType && DEFAULT_LND_DIRS[nodeType]) || DEFAULT_LND_DIRS[NODE_TYPE.LOCAL];
     return (
       <div>
-        <h2 className="SelectNode-title">Upload Macaroons</h2>
+        <TitleTemplate title={'Upload Macaroons'}/>
         <Form layout="vertical" className="UploadMacaroons">
           <div className="UploadMacaroons-description">
             We need to authenticate with your node using macaroons. Your admin
@@ -198,7 +200,7 @@ class UploadMacaroon extends React.Component<Props, State> {
   };
 }
 
-const ConnectedUploadMacaroons = connect<StateProps, DispatchProps, OwnProps, AppState>(
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     url: state.node.url,
     nodeInfo: state.node.nodeInfo,
@@ -210,5 +212,3 @@ const ConnectedUploadMacaroons = connect<StateProps, DispatchProps, OwnProps, Ap
     setNode
   }
 )(UploadMacaroon);
-
-export default withRouter(ConnectedUploadMacaroons);

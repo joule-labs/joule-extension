@@ -6,7 +6,7 @@ import './InputAddress.less';
 import { checkNode } from 'modules/node/actions';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
-import { RouteComponentProps } from 'react-router';
+import TitleTemplate from 'components/SelectNode/TitleTemplate';
 
 interface StateProps {
   isNodeChecked: AppState['node']['isNodeChecked'];
@@ -21,9 +21,11 @@ interface DispatchProps {
 interface OwnProps {
   initialUrl?: string;
   isCheckingNode?: boolean;
+
+  onComplete(): void;
 }
 
-type Props = StateProps & DispatchProps & OwnProps & RouteComponentProps;
+type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   url: string;
@@ -38,6 +40,12 @@ class InputAddress extends React.Component<Props, State> {
     validation: ''
   };
 
+  componentDidUpdate() {
+    if (this.props.isNodeChecked) {
+      this.props.onComplete();
+    }
+  }
+
   render() {
     const {checkNodeError, isCheckingNode} = this.props;
     const {validation, url, submittedUrl} = this.state;
@@ -51,7 +59,7 @@ class InputAddress extends React.Component<Props, State> {
     );
     return (
       <div>
-        <h2 className="SelectNode-title">Provide a URL</h2>
+        <TitleTemplate title={'Provide a URL'}/>
         <Form className="InputAddress" onSubmit={this.handleSubmit}
               layout="vertical">
           <Form.Item label="Node URL" help={help}
@@ -100,12 +108,6 @@ class InputAddress extends React.Component<Props, State> {
         </Form>
       </div>
     );
-  }
-
-  componentDidUpdate() {
-    if (this.props.isNodeChecked) {
-      this.props.history.push('/onboarding-node-macroon');
-    }
   }
 
   private handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {

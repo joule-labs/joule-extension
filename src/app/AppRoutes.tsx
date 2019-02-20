@@ -16,12 +16,6 @@ import OnboardingPage from 'pages/onboarding';
 import SettingsPage from 'pages/settings';
 import FourOhFourPage from 'pages/fourohfour';
 import Template, { Props as TemplateProps } from 'components/Template';
-import SelectType from 'components/SelectNode/SelectType';
-import InputAddress from 'components/SelectNode/InputAddress';
-import BTCPayServer from 'components/SelectNode/BTCPayServer';
-import UploadMacaroon from 'components/SelectNode/UploadMacaroons';
-import ConfirmNode from 'components/SelectNode/ConfirmNode';
-import CreatePassword from 'components/CreatePassword';
 
 interface RouteConfig extends RouteProps {
   route: RouteProps;
@@ -67,62 +61,6 @@ const routeConfigs: RouteConfig[] = [
     template: {
       hideHeader: true
     }
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-node',
-      component: SelectType
-    },
-    template: {}
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-node-address',
-      component: InputAddress
-    },
-    template: {}
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-node-lightningapp',
-      component: SelectType
-    },
-    template: {}
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-node-btcpayserver',
-      component: BTCPayServer
-    },
-    template: {}
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-node-macroon',
-      component: UploadMacaroon
-    },
-    template: {}
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-node-confirm',
-      component: ConfirmNode
-    },
-    template: {}
-  },
-  {
-    // Onboarding
-    route: {
-      path: '/onboarding-password',
-      component: CreatePassword
-    },
-    template: {}
   },
   {
     // 404

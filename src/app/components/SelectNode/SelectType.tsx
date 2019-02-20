@@ -3,18 +3,23 @@ import { Button, Collapse, Icon } from 'antd';
 import LightningAppIcon from 'static/images/lightningapp.svg';
 import BTCPayServerIcon from 'static/images/btcpayserver.svg';
 import './SelectType.less';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { PATH } from 'pages/onboarding';
+import TitleTemplate from 'components/SelectNode/TitleTemplate';
 
-class SelectType extends React.Component<RouteComponentProps> {
+interface Props {
+  onComplete(type: string): void
+}
+
+export default class SelectType extends React.Component<Props> {
   render() {
     return (
       <div className="SelectType">
-        <h2 className="SelectNode-title">What kind of node do you have?</h2>
+        <TitleTemplate title={'What kind of node do you have?'}/>
         <Button
           size="large"
           icon="laptop"
           block
-          onClick={() => this.navForward('/onboarding-node-address')}
+          onClick={() => this.props.onComplete(PATH.INPUT_ADDRESS)}
         >
           Local node
         </Button>
@@ -22,21 +27,21 @@ class SelectType extends React.Component<RouteComponentProps> {
           size="large"
           icon="global"
           block
-          onClick={() => this.navForward('/onboarding-node-address')}
+          onClick={() => this.props.onComplete(PATH.INPUT_ADDRESS)}
         >
           Remote node
         </Button>
         <Button
           size="large"
           block
-          onClick={() => this.navForward('/onboarding-node-lightningapp')}
+          onClick={() => this.props.onComplete(PATH.LIGHTNING_APP)}
         >
           <Icon component={LightningAppIcon}/> Lightning App
         </Button>
         <Button
           size="large"
           block
-          onClick={() => this.navForward('/onboarding-node-btcpayserver')}
+          onClick={() => this.props.onComplete(PATH.BTCPAY_SERVER)}
         >
           <Icon component={BTCPayServerIcon}/> BTCPay Server
         </Button>
@@ -102,10 +107,4 @@ class SelectType extends React.Component<RouteComponentProps> {
       </div>
     );
   }
-
-  private navForward(link: string) {
-    this.props.history.push(link);
-  }
 }
-
-export default withRouter(SelectType);

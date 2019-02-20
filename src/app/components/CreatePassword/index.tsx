@@ -4,12 +4,12 @@ import zxcvbn from 'zxcvbn';
 import { decryptData, TEST_CIPHER_DATA } from 'utils/crypto';
 import { AppState } from 'store/reducers';
 import './style.less';
-import { setPassword } from 'modules/crypto/actions';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { changePassword, setPassword } from 'modules/crypto/actions';
 import { connect } from 'react-redux';
 
 interface DispatchProps {
   setPassword: typeof setPassword;
+  changePassword: typeof changePassword;
 }
 
 interface OwnProps {
@@ -17,10 +17,10 @@ interface OwnProps {
   salt?: AppState['crypto']['salt'];
   requestCurrentPassword?: boolean;
 
-  onCreatePassword(newPassword: string, currPassword?: string): void;
+  onComplete(): void;
 }
 
-type Props = DispatchProps & OwnProps & RouteComponentProps;
+type Props = DispatchProps & OwnProps;
 
 interface State {
   currPassword: string;
@@ -89,15 +89,13 @@ class CreatePassword extends React.Component<Props, State> {
       }
     }
 
-    // If no callback function was given, change the password and navigate
-    // back to the home screen. This happens e.g. during onboarding.
-    if (!this.props.onCreatePassword && currPassword === '') {
+    if (currPassword) {
+      this.props.changePassword(newPassword, currPassword);
+    } else {
       this.props.setPassword(newPassword);
-      this.props.history.replace('/home');
-      return;
     }
 
-    this.props.onCreatePassword(newPassword, currPassword);
+    this.props.onComplete();
   };
 
   render() {
@@ -186,11 +184,11 @@ class CreatePassword extends React.Component<Props, State> {
   }
 }
 
-const ConnectedCreatePassword = connect<{}, DispatchProps, Props, {}>(
-  () => ({}),
+export default connect<{}, DispatchProps, {}, AppState>(
+  null,
   {
-    setPassword
+    setPassword,
+    changePassword
   }
 )(CreatePassword);
 
-export default withRouter(ConnectedCreatePassword);

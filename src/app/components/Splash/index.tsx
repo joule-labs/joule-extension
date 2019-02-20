@@ -2,9 +2,12 @@ import React from 'react';
 import { Button } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import './style.less';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-class Splash extends React.Component<RouteComponentProps> {
+interface Props {
+  onComplete(): void
+}
+
+export default class Splash extends React.Component<Props> {
   componentDidMount() {
     if (process.env.APP_CONTAINER !== 'page') {
       browser.runtime.openOptionsPage().then(window.close);
@@ -12,6 +15,7 @@ class Splash extends React.Component<RouteComponentProps> {
   }
 
   render() {
+    const { onComplete } = this.props;
     return (
       <div className="Splash">
         <div className="Splash-inner">
@@ -25,7 +29,7 @@ class Splash extends React.Component<RouteComponentProps> {
           </ul>
           <div className="Splash-controls">
             <Button block size="large" type="primary"
-                    onClick={this.navForward}>
+                    onClick={onComplete}>
               Get started
             </Button>
           </div>
@@ -33,10 +37,4 @@ class Splash extends React.Component<RouteComponentProps> {
       </div>
     );
   }
-
-  private navForward = () => {
-    this.props.history.push('/onboarding-node');
-  };
 }
-
-export default withRouter(Splash);

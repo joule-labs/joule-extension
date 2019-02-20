@@ -144,7 +144,7 @@ class NodeSettings extends React.Component<Props, State> {
       title = 'Change your password';
       cmp = (
         <CreatePassword
-          onCreatePassword={this.props.changePassword}
+          onComplete={this.props.changePassword}
           requestCurrentPassword
           testCipher={testCipher}
           salt={salt}

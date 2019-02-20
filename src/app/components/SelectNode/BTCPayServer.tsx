@@ -5,7 +5,8 @@ import './BTCPayServer.less';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import { checkAuth } from 'modules/node/actions';
-import { RouteComponentProps, withRouter } from 'react-router';
+import TitleTemplate
+  from 'components/SelectNode/TitleTemplate';
 
 export interface BTCPayServerConfig {
   chainType: string;
@@ -28,9 +29,11 @@ interface DispatchProps {
 
 interface OwnProps {
   error?: Error | null;
+
+  onComplete() : void;
 }
 
-type Props = StateProps & DispatchProps & OwnProps & RouteComponentProps;
+type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   configData: string;
@@ -45,7 +48,7 @@ class BTCPayServer extends React.Component<Props, State> {
 
   componentWillUpdate(nextProps: Props) {
     if (this.props.nodeInfo) {
-      this.props.history.push('/onboarding-node-confirm');
+      this.props.onComplete();
     }
     if (nextProps.error && this.props.error !== nextProps.error) {
       message.error(nextProps.error.message);
@@ -60,7 +63,7 @@ class BTCPayServer extends React.Component<Props, State> {
 
     return (
       <div>
-        <h2 className="SelectNode-title">Connect to your BTCPay Server</h2>
+        <TitleTemplate title={'Connect to your BTCPay Server'}/>
         <div className="BTCPayServer">
           <p>
             Follow these steps to connect your BTCPay Server to Joule. Your
@@ -177,7 +180,7 @@ class BTCPayServer extends React.Component<Props, State> {
   };
 }
 
-const ConnectedBTCPayServer = connect<StateProps, DispatchProps, {}, AppState>(
+export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     nodeInfo: state.node.nodeInfo,
     isCheckingAuth: state.node.isCheckingAuth,
@@ -187,5 +190,3 @@ const ConnectedBTCPayServer = connect<StateProps, DispatchProps, {}, AppState>(
     checkAuth
   }
 )(BTCPayServer);
-
-export default withRouter(ConnectedBTCPayServer);
