@@ -11,6 +11,7 @@ import { getNodeChain } from 'modules/node/selectors';
 import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
 import { isPossibleDust } from 'utils/validators';
 import './ChainSend.less';
+import BalanceModal from 'components/BalanceModal';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -42,6 +43,7 @@ interface State {
   feeMethod: string;
   fee: number;
   showMoreInfo: boolean;
+  isBalanceModalOpen: boolean;
 }
 
 const INITIAL_STATE = {
@@ -51,6 +53,7 @@ const INITIAL_STATE = {
   feeMethod: '',
   fee: 0,
   showMoreInfo: false,
+  isBalanceModalOpen: false,
 };
 
 class ChainSend extends React.Component<Props, State> {
@@ -108,7 +111,7 @@ class ChainSend extends React.Component<Props, State> {
       );
     }
 
-    const { amount, isSendAll, address, fee, feeMethod, showMoreInfo } = this.state;
+    const { amount, isSendAll, address, fee, feeMethod, showMoreInfo, isBalanceModalOpen } = this.state;
     const blockchainBalance = account ? account.blockchainBalance : '';
     const disabled = (!amount && !isSendAll) || !address ||
       (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
@@ -117,95 +120,101 @@ class ChainSend extends React.Component<Props, State> {
     ) : undefined;
 
     return (
-      <Form
-        className="ChainSend"
-        layout="vertical"
-        onSubmit={this.handleSubmit}
-      >
-        <AmountField
-          label="Amount"
-          amount={amount}
-          onChangeAmount={this.handleChangeAmount}
-          minimumSats="1"
-          maximumSats={blockchainBalance}
-          showMax
-          required
-          warn={dustWarning}
-          help={(
-            <small>
-              Available on-chain balance: <Unit value={blockchainBalance} />
-              <a href="#"><Icon type="info-circle" /></a>
-            </small>
-          )}
-        />
-        <Form.Item label="Recipient" required>
-          <Input
-            name="address"
-            value={address}
-            autoComplete="off"
-            onChange={this.handleChangeAddress}
-            placeholder="Enter Bitcoin wallet address"
+      <>
+        <Form
+          className="ChainSend"
+          layout="vertical"
+          onSubmit={this.handleSubmit}
+        >
+          <AmountField
+            label="Amount"
+            amount={amount}
+            onChangeAmount={this.handleChangeAmount}
+            minimumSats="1"
+            maximumSats={blockchainBalance}
+            showMax
+            required
+            warn={dustWarning}
+            help={(
+              <small>
+                Available on-chain balance: <Unit value={blockchainBalance} />
+                <a onClick={this.openBalanceModal}><Icon type="info-circle" /></a>
+              </small>
+            )}
           />
-        </Form.Item>
+          <Form.Item label="Recipient" required>
+            <Input
+              name="address"
+              value={address}
+              autoComplete="off"
+              onChange={this.handleChangeAddress}
+              placeholder="Enter Bitcoin wallet address"
+            />
+          </Form.Item>
 
-        {showMoreInfo && (
-          <>
-            <Form.Item label="Fee" className="ChainSend-fees">
-              {feesError && (
-                <Alert type="warning" message={feesError.message} /> 
-              )}
-              {onChainFees && (
-                <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
-                  <Radio.Button value="fastestFee">Fast</Radio.Button>
-                  <Radio.Button value="halfHourFee">Normal</Radio.Button>
-                  <Radio.Button value="hourFee">Slow</Radio.Button>
-                </Radio.Group>
-              )}
-            </Form.Item>
+          {showMoreInfo && (
+            <>
+              <Form.Item label="Fee" className="ChainSend-fees">
+                {feesError && (
+                  <Alert type="warning" message={feesError.message} /> 
+                )}
+                {onChainFees && (
+                  <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
+                    <Radio.Button value="fastestFee">Fast</Radio.Button>
+                    <Radio.Button value="halfHourFee">Normal</Radio.Button>
+                    <Radio.Button value="hourFee">Slow</Radio.Button>
+                  </Radio.Group>
+                )}
+              </Form.Item>
 
-            <div className="ChainSend-details">
-              <table><tbody>
-                <tr>
-                  <td>Amount</td>
-                  <td>
-                    <Unit value={isSendAll ? blockchainBalance : amount} />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Fee</td>
-                  <td>
-                    {fee} <small>sats/b</small>
-                  </td>
-                </tr>
-              </tbody></table>
-            </div>          
-          </>
-        )}
-        {!showMoreInfo &&
-          <Button
-            className="ChainSend-advanced"
-            onClick={this.handleMoreInfo}
-            type="primary"
-            loading={isFetchingFees}
-            ghost
-          >
-            Show advanced fields
-          </Button>
-        }
-        <div className="ChainSend-buttons">
-          <Button size="large" type="ghost" onClick={this.reset}>
-            Reset
-          </Button>
-          <Button
-            htmlType="submit"
-            type="primary"
-            size="large"
-            disabled={disabled}
-          >
-            Send
-          </Button>
-        </div>
-      </Form>
+              <div className="ChainSend-details">
+                <table><tbody>
+                  <tr>
+                    <td>Amount</td>
+                    <td>
+                      <Unit value={isSendAll ? blockchainBalance : amount} />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Fee</td>
+                    <td>
+                      {fee} <small>sats/b</small>
+                    </td>
+                  </tr>
+                </tbody></table>
+              </div>          
+            </>
+          )}
+          {!showMoreInfo &&
+            <Button
+              className="ChainSend-advanced"
+              onClick={this.handleMoreInfo}
+              type="primary"
+              loading={isFetchingFees}
+              ghost
+            >
+              Show advanced fields
+            </Button>
+          }
+          <div className="ChainSend-buttons">
+            <Button size="large" type="ghost" onClick={this.reset}>
+              Reset
+            </Button>
+            <Button
+              htmlType="submit"
+              type="primary"
+              size="large"
+              disabled={disabled}
+            >
+              Send
+            </Button>
+          </div>
+        </Form>
+        <BalanceModal
+          isVisible={isBalanceModalOpen}
+          handleClose={this.closeBalanceModal}
+        />
+      </>
     );
   }
 
@@ -251,6 +260,9 @@ class ChainSend extends React.Component<Props, State> {
     this.setState({ ...INITIAL_STATE });
     this.props.resetSendPayment();
   };
+
+  private openBalanceModal = () => this.setState({ isBalanceModalOpen: true });
+  private closeBalanceModal = () => this.setState({ isBalanceModalOpen: false }); 
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
