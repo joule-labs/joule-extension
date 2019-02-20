@@ -6,6 +6,7 @@ import { RadioChangeEvent } from 'antd/lib/radio';
 import { AppState } from 'store/reducers';
 import AmountField from 'components/AmountField';
 import Unit from 'components/Unit';
+import Loader from 'components/Loader';
 import SendState from './SendState';
 import { getNodeChain } from 'modules/node/selectors';
 import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
@@ -42,7 +43,6 @@ interface State {
   address: string;
   feeMethod: string;
   fee: number;
-  showMoreInfo: boolean;
   isBalanceModalOpen: boolean;
 }
 
@@ -52,7 +52,6 @@ const INITIAL_STATE = {
   address: '',
   feeMethod: '',
   fee: 0,
-  showMoreInfo: false,
   isBalanceModalOpen: false,
 };
 
@@ -64,13 +63,16 @@ class ChainSend extends React.Component<Props, State> {
     }
   }
 
+  componentDidMount() {
+    this.props.getOnChainFeeEstimates();
+  }
+
   componentWillReceiveProps(nextProps: Props) {
     const { onChainFees } = this.props;
     if (nextProps.onChainFees !== onChainFees && nextProps.onChainFees !== null) {
       this.setState({ 
         feeMethod: 'fastestFee',
         fee: nextProps.onChainFees.fastestFee,
-        showMoreInfo: true,
       });
     }
   }
@@ -111,7 +113,7 @@ class ChainSend extends React.Component<Props, State> {
       );
     }
 
-    const { amount, isSendAll, address, fee, feeMethod, showMoreInfo, isBalanceModalOpen } = this.state;
+    const { amount, isSendAll, address, fee, feeMethod, isBalanceModalOpen } = this.state;
     const blockchainBalance = account ? account.blockchainBalance : '';
     const disabled = (!amount && !isSendAll) || !address ||
       (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
@@ -141,6 +143,7 @@ class ChainSend extends React.Component<Props, State> {
                 <a onClick={this.openBalanceModal}><Icon type="info-circle" /></a>
               </small>
             )}
+
           />
           <Form.Item label="Recipient" required>
             <Input
@@ -151,51 +154,38 @@ class ChainSend extends React.Component<Props, State> {
               placeholder="Enter Bitcoin wallet address"
             />
           </Form.Item>
+          <Form.Item label="Fee" required className="ChainSend-fees">
+            {feesError && (
+              <Alert type="warning" message={feesError.message} /> 
+            )}
+            {onChainFees && (
+              <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
+                <Radio.Button value="hourFee">Slow</Radio.Button>
+                <Radio.Button value="halfHourFee">Normal</Radio.Button>
+                <Radio.Button value="fastestFee">Fast</Radio.Button>
+              </Radio.Group>
+            )}
+          </Form.Item>
 
-          {showMoreInfo && (
-            <>
-              <Form.Item label="Fee" className="ChainSend-fees">
-                {feesError && (
-                  <Alert type="warning" message={feesError.message} /> 
-                )}
-                {onChainFees && (
-                  <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
-                    <Radio.Button value="fastestFee">Fast</Radio.Button>
-                    <Radio.Button value="halfHourFee">Normal</Radio.Button>
-                    <Radio.Button value="hourFee">Slow</Radio.Button>
-                  </Radio.Group>
-                )}
-              </Form.Item>
-
-              <div className="ChainSend-details">
-                <table><tbody>
-                  <tr>
-                    <td>Amount</td>
-                    <td>
-                      <Unit value={isSendAll ? blockchainBalance : amount} />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Fee</td>
-                    <td>
-                      {fee} <small>sats/b</small>
-                    </td>
-                  </tr>
-                </tbody></table>
-              </div>          
-            </>
-          )}
-          {!showMoreInfo &&
-            <Button
-              className="ChainSend-advanced"
-              onClick={this.handleMoreInfo}
-              type="primary"
-              loading={isFetchingFees}
-              ghost
-            >
-              Show advanced fields
-            </Button>
-          }
+          <div className="ChainSend-details">
+            <table><tbody>
+              <tr>
+                <td>Amount</td>
+                <td>
+                  <Unit value={isSendAll ? blockchainBalance : amount} />
+                </td>
+              </tr>
+              <tr>
+                <td>Fee</td>
+                <td>
+                  {isFetchingFees ?
+                    <Loader inline size="1rem" /> :
+                    <>{feesError ? '?' : fee} <small>sats/B</small></>
+                  }
+                </td>
+              </tr>
+            </tbody></table>
+          </div>          
           <div className="ChainSend-buttons">
             <Button size="large" type="ghost" onClick={this.reset}>
               Reset
@@ -250,10 +240,6 @@ class ChainSend extends React.Component<Props, State> {
         fee: this.props.onChainFees[ev.target.value], 
       });
     }
-  };
-
-  private handleMoreInfo = () => {
-    this.props.getOnChainFeeEstimates();
   };
 
   private reset = () => {

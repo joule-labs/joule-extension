@@ -240,8 +240,10 @@ class AmountField extends React.Component<Props, State> {
 
   private handleMaxClicked = () => {
     const { maximumSats } = this.props;
+    const { denomination } = this.state;
     if (maximumSats) {
-      this.updateBothValues('value', maximumSats);
+      const value = fromBaseToUnit(maximumSats, denomination);
+      this.updateBothValues('value', value);
     }
   };
 
