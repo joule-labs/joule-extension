@@ -100,6 +100,7 @@ export enum Fiat {
   EUR = 'EUR',
   GBP = 'GBP',
   JPY = 'JPY',
+  RUB = 'RUB',
 }
 
 export const fiatSymbols: { [key in Fiat]: string } = {
@@ -107,6 +108,7 @@ export const fiatSymbols: { [key in Fiat]: string } = {
   EUR: '€',
   GBP: '£',
   JPY: '¥',
+  RUB: '₽'
 };
 
 export const channelStatusText: { [key in CHANNEL_STATUS]: string } = {
