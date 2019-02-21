@@ -11,6 +11,7 @@ import TitleTemplate from 'components/SelectNode/TitleTemplate';
 interface StateProps {
   isNodeChecked: AppState['node']['isNodeChecked'];
   isCheckingNode: AppState['node']['isCheckingNode'];
+  nodeInfo: AppState['node']['nodeInfo'];
   checkNodeError: AppState['node']['checkNodeError'];
 }
 
@@ -30,17 +31,19 @@ interface State {
   url: string;
   submittedUrl: string;
   validation: string;
+  checkRequested: boolean;
 }
 
 class InputAddress extends React.Component<Props, State> {
   state: State = {
     url: this.props.initialUrl || '',
     submittedUrl: this.props.initialUrl || '',
-    validation: ''
+    validation: '',
+    checkRequested: false,
   };
 
   componentDidUpdate() {
-    if (this.props.isNodeChecked && this.props.onComplete) {
+    if (this.state.checkRequested && this.props.isNodeChecked && this.props.onComplete) {
       this.props.onComplete();
     }
   }
@@ -118,7 +121,7 @@ class InputAddress extends React.Component<Props, State> {
     } catch (err) {
       validation = 'That doesn’t look like a valid url';
     }
-    this.setState({url, validation});
+    this.setState({url, validation, checkRequested: false});
   };
 
 
@@ -131,7 +134,7 @@ class InputAddress extends React.Component<Props, State> {
         message.warn('Permission denied, connection may fail');
       }
       this.props.checkNode(this.state.url);
-      this.setState({submittedUrl: this.state.url});
+      this.setState({submittedUrl: this.state.url, checkRequested: true});
     });
   };
 }
@@ -140,6 +143,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     isNodeChecked: state.node.isNodeChecked,
     isCheckingNode: state.node.isCheckingNode,
+    nodeInfo: state.node.nodeInfo,
     checkNodeError: state.node.checkNodeError
   }),
   {

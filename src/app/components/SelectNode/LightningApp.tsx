@@ -1,6 +1,6 @@
 import React from 'react';
 import { browser } from 'webextension-polyfill-ts';
-import { Alert, message } from 'antd';
+import { Alert, Button, message } from 'antd';
 import { urlWithoutPort } from 'utils/formatters';
 import './LightningApp.less';
 import { checkNode } from 'modules/node/actions';
@@ -39,20 +39,7 @@ class LightningApp extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const url = DEFAULT_NODE_URLS.LIGHTNING_APP;
-    if (!url) {
-      message.warn('Lightning App URL not set!');
-      return;
-    }
-
-    browser.permissions.request({
-      origins: [urlWithoutPort(url)]
-    }).then(accepted => {
-      if (!accepted) {
-        message.warn('Permission denied, connection may fail');
-      }
-      this.props.checkNode(url);
-    });
+    this.checkNode();
   }
 
   render() {
@@ -83,8 +70,34 @@ class LightningApp extends React.Component<Props, State> {
             closable
         />
         }
+        <Button
+          type="primary"
+          size="large"
+          disabled={!checkNodeError}
+          onClick={this.checkNode}
+          block
+        >
+          Connect
+        </Button>
       </div>
     );
+  }
+
+  private checkNode = () => {
+    const url = DEFAULT_NODE_URLS.LIGHTNING_APP;
+    if (!url) {
+      message.warn('Lightning App URL not set!');
+      return;
+    }
+
+    browser.permissions.request({
+      origins: [urlWithoutPort(url)]
+    }).then(accepted => {
+      if (!accepted) {
+        message.warn('Permission denied, connection may fail');
+      }
+      this.props.checkNode(url);
+    });
   }
 
 }
