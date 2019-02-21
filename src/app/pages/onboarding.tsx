@@ -11,6 +11,7 @@ import UploadMacaroon from 'components/SelectNode/UploadMacaroons';
 import BTCPayServer from 'components/SelectNode/BTCPayServer';
 import ConfirmNode from 'components/SelectNode/ConfirmNode';
 import CreatePassword from 'components/CreatePassword';
+import LightningApp from 'components/SelectNode/LightningApp';
 
 export enum PATH {
   SPLASH = '/onboarding',
@@ -42,6 +43,7 @@ class OnboardingPage extends React.Component<Props, {}> {
           <Route exact path={PATH.SPLASH} render={() => <Splash onComplete={() => this.nav(PATH.SELECT_NODE)}/>} />
           <Route exact path={PATH.SELECT_NODE} render={() => <SelectType onComplete={this.nav} />} />
           <Route exact path={PATH.INPUT_ADDRESS} render={() => <InputAddress onComplete={() => this.nav(PATH.UPLOAD_MACAROON)}/>} />
+          <Route exact path={PATH.LIGHTNING_APP} render={() => <LightningApp onComplete={() => this.nav(PATH.UPLOAD_MACAROON)}/>} />
           <Route exact path={PATH.BTCPAY_SERVER} render={() => <BTCPayServer onComplete={() => this.nav(PATH.CONFIRM_NODE)}/>} />
           <Route exact path={PATH.UPLOAD_MACAROON} render={() => <UploadMacaroon onComplete={() => this.nav(PATH.CONFIRM_NODE)} />} />
           <Route exact path={PATH.CONFIRM_NODE} render={() => <ConfirmNode onComplete={() => this.nav(PATH.PASSWORD)} onCancel={() => this.nav(PATH.SPLASH)}/>} />
