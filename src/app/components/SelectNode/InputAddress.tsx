@@ -20,9 +20,8 @@ interface DispatchProps {
 
 interface OwnProps {
   initialUrl?: string;
-  isCheckingNode?: boolean;
 
-  onComplete(): void;
+  onComplete?(): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
@@ -41,7 +40,7 @@ class InputAddress extends React.Component<Props, State> {
   };
 
   componentDidUpdate() {
-    if (this.props.isNodeChecked) {
+    if (this.props.isNodeChecked && this.props.onComplete) {
       this.props.onComplete();
     }
   }

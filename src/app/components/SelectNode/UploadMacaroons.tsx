@@ -27,7 +27,7 @@ interface OwnProps {
   initialReadonly?: string;
   nodeType?: NODE_TYPE;
 
-  onComplete() : void;
+  onComplete?() : void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
@@ -50,7 +50,9 @@ class UploadMacaroon extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     if (this.props.nodeInfo && this.state.admin && this.state.readonly) {
       this.props.setNode(this.props.url!, this.state.admin, this.state.readonly);
-      this.props.onComplete();
+      if (this.props.onComplete) {
+        this.props.onComplete();
+      }
     }
     if (prevProps.error !== this.props.error) {
       this.setState({error: this.props.error});

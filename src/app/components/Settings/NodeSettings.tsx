@@ -124,17 +124,7 @@ class NodeSettings extends React.Component<Props, State> {
   }
 
   private renderDrawer = () => {
-    const { 
-      url,
-      adminMacaroon,
-      readonlyMacaroon,
-      isUpdatingNodeUrl, 
-      updateNodeUrlError,
-      isUpdatingMacaroons,
-      updateMacaroonsError,
-      testCipher,
-      salt,
-    } = this.props
+    const { url } = this.props;
     const { editingNodeField } = this.state;
 
     let title;
@@ -143,33 +133,17 @@ class NodeSettings extends React.Component<Props, State> {
     if (editingNodeField === 'password') {
       title = 'Change your password';
       cmp = (
-        <CreatePassword
-          onComplete={this.props.changePassword}
-          requestCurrentPassword
-          testCipher={testCipher}
-          salt={salt}
-        />
+        <CreatePassword requestCurrentPassword/>
       );
     } else if (editingNodeField === 'url') {
       title = 'Provide a URL';
       cmp = (
-        <InputAddress
-          initialUrl={url as string}
-          error={updateNodeUrlError}
-          isCheckingNode={isUpdatingNodeUrl}
-          submitUrl={this.props.updateNodeUrl}
-        />      
+        <InputAddress initialUrl={url as string}/>
       );
     } else if (editingNodeField === 'macaroons') {
       title = 'Upload Macaroons';
       cmp = (
-        <UploadMacaroons
-          onUploaded={this.handleMacaroons}
-          isSaving={isUpdatingMacaroons}
-          initialAdmin={adminMacaroon || undefined}
-          initialReadonly={readonlyMacaroon || undefined}
-          error={updateMacaroonsError ? updateMacaroonsError.message : undefined}
-        />
+        <UploadMacaroons/>
       );
     }
 
@@ -184,11 +158,6 @@ class NodeSettings extends React.Component<Props, State> {
         {cmp}
       </Drawer>      
     )
-  };
-
-  private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
-    const { url } = this.props;
-    this.props.updateMacaroons(url as string, adminMacaroon, readonlyMacaroon);
   };
 
   private editNodeUrl = () => this.setState({ editingNodeField: 'url' });
