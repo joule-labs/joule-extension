@@ -1,26 +1,51 @@
+@import '~style/variables.less';
+
 .BalanceModal {
 
   @media (max-width: 767px) {
     min-width: 90%;
   }
 
+  @media (max-width: 500px) {
+    max-width: 90%;
+  }
+
   .ant-modal-body {
-    padding: 0;
+    padding: 0 0 24px;
   }
 
   &-header {
     padding: 1rem;
+    text-align: right;
   }
 
   &-chart {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    padding: 1.5rem 0;
+    position: relative;
+
+    &-denoms {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+
+    &-tip {
+      font-size: 0.8rem;
+    }
 
     &-progress {
       .ant-progress-circle-path:nth-child(2) {
         stroke: #d9d9d9 !important;
+      }
+    }
+
+    &-metrics {
+      .ant-statistic:first-child {
+        margin-bottom: 2rem;
       }
     }
   }
@@ -32,13 +57,86 @@
     background-color: #FBFBFB;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding: 1rem;
-
-    .ant-statistic-content-suffix {
-      display: block;
-    }
   }
 
   &-details {
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 500;
+      // background-color: #FBFBFB;
+      border-bottom: 1px solid rgba(#000, 0.08);
+      padding: 0.2rem 0.5rem;
+
+      &:not(:nth-child(2)){
+        margin-top: 1rem;
+      }
+    }
+
+    &-row {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(#000, 0.08);
+      
+      &-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;    
+        flex-shrink: 0;    
+        justify-content: center;
+        align-items: center;
+        border-radius: 100%;
+        background: linear-gradient(to top, darken(#FF9900, 5%), lighten(#FF9900, 5%));
+        margin: 0.3rem 0.7rem;
+
+        &.is-big {
+          width: 2.2rem;
+          height: 2.2rem;
+        }
+
+        .anticon {
+          color: #FFF;
+          transform: rotate(20deg);
+        }
+      }
+
+      &-info {
+        flex-grow: 1;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        margin-right: 1.5rem;
+
+        &-comment {
+          font-style: italic;
+          font-size: 0.6rem;
+          padding-bottom: 0.3rem;
+        }
+      }
+
+      &-amount {
+        font-size: 0.7rem;
+        text-align: right;
+        white-space: nowrap;
+        margin-right: 5px;
+
+        &.is-positive .Unit-primary {
+          color: @success-color;
+        }
+    
+        &.is-negative .Unit-primary {
+          color: @error-color;
+        }
+      }
+
+      &-close {
+        color: @error-color;
+        margin: 0 0.7rem;
+      }
+    }
 
     // Ant override
     .ant-tabs {

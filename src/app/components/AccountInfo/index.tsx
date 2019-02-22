@@ -12,6 +12,7 @@ import { getNodeChain } from 'modules/node/selectors';
 import { blockchainDisplayName } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './style.less';
+import BalanceModal from 'components/BalanceModal';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -32,12 +33,14 @@ type Props = DispatchProps & StateProps & OwnProps;
 interface State {
   isDepositModalOpen: boolean;
   isNodeUriModalOpen: boolean;
+  isBalanceModalOpen: boolean;
 }
 
 class AccountInfo extends React.Component<Props, State> {
   state: State = {
     isDepositModalOpen: false,
-    isNodeUriModalOpen: false
+    isNodeUriModalOpen: false,
+    isBalanceModalOpen: false,
   };
 
   componentDidMount() { 
@@ -48,7 +51,7 @@ class AccountInfo extends React.Component<Props, State> {
 
   render() {
     const { account, chain } = this.props;
-    const { isDepositModalOpen,isNodeUriModalOpen } = this.state;
+    const { isDepositModalOpen,isNodeUriModalOpen, isBalanceModalOpen } = this.state;
     const actions: ButtonProps[] = [{
       children: 'Deposit',
       icon: 'qrcode',
@@ -87,12 +90,20 @@ class AccountInfo extends React.Component<Props, State> {
               <div className="AccountInfo-top-info-balance">
                 <Unit value={account.totalBalancePending} showFiat />
                 {showPending &&
-                  <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
-                    <Icon
-                      className="AccountInfo-top-info-balance-pending"
-                      type="clock-circle"
+                  <>
+                    <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
+                      <a onClick={this.openBalanceModal}>
+                        <Icon
+                          className="AccountInfo-top-info-balance-pending"
+                          type="clock-circle"
+                        />
+                      </a>
+                    </Tooltip>
+                    <BalanceModal
+                      isVisible={isBalanceModalOpen}
+                      handleClose={this.closeBalanceModal}
                     />
-                  </Tooltip>
+                  </>
                 }
               </div>
               <div className="AccountInfo-top-info-balances">
@@ -135,6 +146,9 @@ class AccountInfo extends React.Component<Props, State> {
   // Get Node URI or Pubkey with QR Code
   private openNodeUriModal = () => this.setState({ isNodeUriModalOpen: true });
   private closeNodeUriModal = () => this.setState({ isNodeUriModalOpen: false }); 
+
+  private openBalanceModal = () => this.setState({ isBalanceModalOpen: true });
+  private closeBalanceModal = () => this.setState({ isBalanceModalOpen: false }); 
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
