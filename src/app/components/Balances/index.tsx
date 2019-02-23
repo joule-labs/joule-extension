@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Tooltip, Progress, Tabs, Icon, Select } from 'antd';
+import { Tooltip, Progress, Tabs, Icon, Select, Alert } from 'antd';
 import Statistic from 'antd/lib/statistic'; 
 import Loader from 'components/Loader';
 import Unit from 'components/Unit';
@@ -12,11 +12,15 @@ import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { getChannels } from 'modules/channels/actions';
 import { getUtxos } from 'modules/onchain/actions';
 import './index.less';
+import { calculateBalanaceStats } from 'utils/balances';
 
 interface StateProps {
   channels: AppState['channels']['channels'];
   isFetchingChannels: AppState['channels']['isFetchingChannels'];
   fetchChannelsError: AppState['channels']['fetchChannelsError'];
+  utxos: AppState['onchain']['utxos'];
+  isFetchingUtxos: AppState['onchain']['isFetchingUtxos'];
+  fetchUtxosError: AppState['onchain']['fetchUtxosError'];
 }
 
 interface ActionProps {
@@ -42,17 +46,31 @@ class Balances extends React.Component<Props, State> {
 
 
   render() {
-    const { channels, fetchChannelsError } = this.props;
+    const { channels, isFetchingChannels, fetchChannelsError, utxos, isFetchingUtxos, fetchUtxosError } = this.props;
+
+    if (isFetchingChannels || isFetchingUtxos) {
+      return <Loader />;
+    }
+
+    if (fetchChannelsError || fetchUtxosError) {
+      return (
+        <Alert
+          type="error"
+          message={fetchChannelsError!.message || fetchUtxosError!.message}
+        />
+      );
+    }
 
     let content;
-    if (channels) {
+    if (channels && utxos) {
+      const stats = calculateBalanaceStats(channels, utxos);
+      console.log(stats);
       content = (
-        <>
+        <div className="BalanceModal">
           <div className="BalanceModal-chart">
             <Select
               className="BalanceModal-chart-denoms"
               size="small"
-              onChange={() => {}}
               value="bits"
               dropdownMatchSelectWidth={false}
             >
@@ -109,10 +127,10 @@ class Balances extends React.Component<Props, State> {
               </Tabs.TabPane>
             </Tabs>
           </div>
-        </>
+        </div>
       );
-    } else if (fetchChannelsError) {
-      content = fetchChannelsError.message;
+    } else if (fetchChannelsError || fetchUtxosError) {
+      content = fetchChannelsError!.message || fetchUtxosError!.message;
     } else {
       content = <Loader />;
     }

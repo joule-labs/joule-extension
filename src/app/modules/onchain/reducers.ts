@@ -2,13 +2,13 @@ import types from './types';
 import { Utxo } from 'lib/lnd-http';
 
 export interface OnChainState {
-  utxos: Utxo[];
+  utxos: Utxo[] | null;
   isFetchingUtxos: boolean;
   fetchUtxosError: null | Error;
 }
 
 export const INITIAL_STATE: OnChainState = {
-  utxos: [],
+  utxos: null,
   isFetchingUtxos: false,
   fetchUtxosError: null,
 };
