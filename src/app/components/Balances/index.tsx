@@ -10,6 +10,7 @@ import { AppState } from 'store/reducers';
 import { blockchainLogos, CHAIN_TYPE, Denomination } from 'utils/constants';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { getChannels } from 'modules/channels/actions';
+import { getUtxos } from 'modules/onchain/actions';
 import './index.less';
 
 interface StateProps {
@@ -20,24 +21,23 @@ interface StateProps {
 
 interface ActionProps {
   getChannels: typeof getChannels;
+  getUtxos: typeof getUtxos;
 }
 
 type Props = StateProps & ActionProps;
 
 interface State {
   denomination: Denomination;
-  percent: number;
-  successPercent: number;
 }
 
-class BalanceModal extends React.Component<Props, State> {
+class Balances extends React.Component<Props, State> {
   state: State = {
     denomination: Denomination.BITS,
-    percent: 0,
-    successPercent: 0,
   };
 
   componentDidMount() {
+    this.props.getChannels();
+    this.props.getUtxos();
   }
 
 
@@ -52,7 +52,7 @@ class BalanceModal extends React.Component<Props, State> {
             <Select
               className="BalanceModal-chart-denoms"
               size="small"
-              onChange={() => this.setState({ percent: this.state.percent + 20, successPercent: this.state.successPercent - 10 })}
+              onChange={() => {}}
               value="bits"
               dropdownMatchSelectWidth={false}
             >
@@ -74,10 +74,10 @@ class BalanceModal extends React.Component<Props, State> {
             >
               <Progress
                 className="BalanceModal-chart-progress"
-                percent={this.state.percent}
+                percent={70}
                 type="dashboard"
                 strokeColor="#7642ff"
-                successPercent={this.state.successPercent}
+                successPercent={20}
                 trailColor="#ff9500"
               />
             </Tooltip>
@@ -130,11 +130,15 @@ export default connect<StateProps, ActionProps, {}, AppState>(
     channels: state.channels.channels,
     isFetchingChannels: state.channels.isFetchingChannels,
     fetchChannelsError: state.channels.fetchChannelsError,
+    utxos: state.onchain.utxos,
+    isFetchingUtxos: state.onchain.isFetchingUtxos,
+    fetchUtxosError: state.onchain.fetchUtxosError,
   }),
   {
     getChannels,
+    getUtxos,
   },
-)(BalanceModal);
+)(Balances);
 
 
 

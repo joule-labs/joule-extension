@@ -10,6 +10,7 @@ import settings, { SettingsState, INITIAL_STATE as settingsInitialState } from '
 import rates, { RatesState, INITIAL_STATE as ratesInitialState } from 'modules/rates';
 import peers, { PeersState, INITIAL_STATE as peersInitialState } from 'modules/peers';
 import sign, { SignState, INITIAL_STATE as signInitialState } from 'modules/sign';
+import onchain, { OnChainState, INITIAL_STATE as onchainInitialState } from 'modules/onchain';
 
 export interface AppState {
   crypto: CryptoState;
@@ -22,6 +23,7 @@ export interface AppState {
   rates: RatesState;
   peers: PeersState;
   sign: SignState;
+  onchain: OnChainState;
 }
 
 export const combineInitialState: Partial<AppState> = {
@@ -35,6 +37,7 @@ export const combineInitialState: Partial<AppState> = {
   rates: ratesInitialState,
   peers: peersInitialState,
   sign: signInitialState,
+  onchain: onchainInitialState
 };
 
 export default combineReducers<AppState>({
@@ -48,4 +51,5 @@ export default combineReducers<AppState>({
   rates,
   peers,
   sign,
+  onchain,
 });
