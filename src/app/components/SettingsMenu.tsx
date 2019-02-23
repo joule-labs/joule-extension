@@ -33,6 +33,11 @@ export default class SettingsMenu extends React.Component<{}, State> {
             <Icon type="team" /> Manage peers
           </a>
         </Menu.Item>
+        <Menu.Item key="balances">
+          <Link to="/balances">
+            <Icon type="pie-chart" /> Balances
+          </Link>
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="settings">
           <Link to="/settings">

@@ -1644,7 +1644,7 @@ ant-design-pro@2.0.0:
     react-router-dom "^4.3.1"
     umi "^2.0.0-beta.10"
 
-antd@^3.13.2:
+antd@3.13.2:
   version "3.13.2"
   resolved "https://registry.yarnpkg.com/antd/-/antd-3.13.2.tgz#66541c58a9009c54dfe09f5a374863c6783f30f9"
   dependencies:

@@ -1,16 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Tooltip, Progress, Tabs, Icon, Select } from 'antd';
+import { Tooltip, Progress, Tabs, Icon, Select } from 'antd';
 import Statistic from 'antd/lib/statistic'; 
 import Loader from 'components/Loader';
-import { AppState } from 'store/reducers';
-import { getChannels } from 'modules/channels/actions';
-import './index.less';
 import Unit from 'components/Unit';
-import { blockchainLogos, CHAIN_TYPE, Denomination } from 'utils/constants';
 import Copy from 'components/Copy';
 import Identicon from 'components/Identicon';
+import { AppState } from 'store/reducers';
+import { blockchainLogos, CHAIN_TYPE, Denomination } from 'utils/constants';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
+import { getChannels } from 'modules/channels/actions';
+import './index.less';
 
 interface StateProps {
   channels: AppState['channels']['channels'];
@@ -22,25 +22,27 @@ interface ActionProps {
   getChannels: typeof getChannels;
 }
 
-interface OwnProps {
-  isVisible: boolean;
-  handleClose(): void;
-}
-
-type Props = StateProps & ActionProps & OwnProps;
+type Props = StateProps & ActionProps;
 
 interface State {
   denomination: Denomination;
+  percent: number;
+  successPercent: number;
 }
 
 class BalanceModal extends React.Component<Props, State> {
   state: State = {
     denomination: Denomination.BITS,
+    percent: 0,
+    successPercent: 0,
   };
+
+  componentDidMount() {
+  }
 
 
   render() {
-    const { channels, fetchChannelsError, isVisible, handleClose } = this.props;
+    const { channels, fetchChannelsError } = this.props;
 
     let content;
     if (channels) {
@@ -50,7 +52,7 @@ class BalanceModal extends React.Component<Props, State> {
             <Select
               className="BalanceModal-chart-denoms"
               size="small"
-              onChange={console.log}
+              onChange={() => this.setState({ percent: this.state.percent + 20, successPercent: this.state.successPercent - 10 })}
               value="bits"
               dropdownMatchSelectWidth={false}
             >
@@ -72,10 +74,10 @@ class BalanceModal extends React.Component<Props, State> {
             >
               <Progress
                 className="BalanceModal-chart-progress"
-                percent={70}
-                type="circle"
+                percent={this.state.percent}
+                type="dashboard"
                 strokeColor="#7642ff"
-                successPercent={20}
+                successPercent={this.state.successPercent}
                 trailColor="#ff9500"
               />
             </Tooltip>
@@ -116,21 +118,14 @@ class BalanceModal extends React.Component<Props, State> {
     }
 
     return (
-      <Modal
-        title="Balances"
-        visible={isVisible}
-        onCancel={handleClose}
-        className="BalanceModal"
-        footer={''}
-        centered
-      >
+      <div className="BalanceModal">
         {content}
-      </Modal>
+      </div>
     )
   }
 }
 
-export default connect<StateProps, ActionProps, OwnProps, AppState>(
+export default connect<StateProps, ActionProps, {}, AppState>(
   state => ({
     channels: state.channels.channels,
     isFetchingChannels: state.channels.isFetchingChannels,

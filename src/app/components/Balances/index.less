@@ -1,6 +1,8 @@
 @import '~style/variables.less';
 
 .BalanceModal {
+  background-color: #ffffff;
+  height: 100%;
 
   @media (max-width: 767px) {
     min-width: 90%;
@@ -78,23 +80,19 @@
     &-row {
       display: flex;
       align-items: center;
+      padding: 0.5rem;
       border-bottom: 1px solid rgba(#000, 0.08);
       
       &-icon {
-        width: 1.5rem;
-        height: 1.5rem;
+        width: 2.2rem;
+        height: 2.2rem;
         display: flex;    
         flex-shrink: 0;    
         justify-content: center;
         align-items: center;
         border-radius: 100%;
         background: linear-gradient(to top, darken(#FF9900, 5%), lighten(#FF9900, 5%));
-        margin: 0.3rem 0.7rem;
-
-        &.is-big {
-          width: 2.2rem;
-          height: 2.2rem;
-        }
+        margin-right: 1rem;
 
         .anticon {
           color: #FFF;
@@ -104,7 +102,7 @@
 
       &-info {
         flex-grow: 1;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -112,13 +110,13 @@
 
         &-comment {
           font-style: italic;
-          font-size: 0.6rem;
+          font-size: 0.7rem;
           padding-bottom: 0.3rem;
         }
       }
 
       &-amount {
-        font-size: 0.7rem;
+        font-size: 0.9rem;
         text-align: right;
         white-space: nowrap;
         margin-right: 5px;

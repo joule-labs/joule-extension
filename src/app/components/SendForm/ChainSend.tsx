@@ -1,6 +1,7 @@
 import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Form, Input, Button, Radio, Alert, Icon } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { AppState } from 'store/reducers';
@@ -12,7 +13,6 @@ import { getNodeChain } from 'modules/node/selectors';
 import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
 import { isPossibleDust } from 'utils/validators';
 import './ChainSend.less';
-import BalanceModal from 'components/BalanceModal';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -113,7 +113,7 @@ class ChainSend extends React.Component<Props, State> {
       );
     }
 
-    const { amount, isSendAll, address, fee, feeMethod, isBalanceModalOpen } = this.state;
+    const { amount, isSendAll, address, fee, feeMethod } = this.state;
     const blockchainBalance = account ? account.blockchainBalance : '';
     const disabled = (!amount && !isSendAll) || !address ||
       (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
@@ -140,7 +140,7 @@ class ChainSend extends React.Component<Props, State> {
             help={(
               <small>
                 Available on-chain balance: <Unit value={blockchainBalance} />
-                <a onClick={this.openBalanceModal}><Icon type="info-circle" /></a>
+                <Link to="/balances"><Icon type="info-circle" /></Link>
               </small>
             )}
 
@@ -200,10 +200,6 @@ class ChainSend extends React.Component<Props, State> {
             </Button>
           </div>
         </Form>
-        <BalanceModal
-          isVisible={isBalanceModalOpen}
-          handleClose={this.closeBalanceModal}
-        />
       </>
     );
   }
@@ -246,9 +242,6 @@ class ChainSend extends React.Component<Props, State> {
     this.setState({ ...INITIAL_STATE });
     this.props.resetSendPayment();
   };
-
-  private openBalanceModal = () => this.setState({ isBalanceModalOpen: true });
-  private closeBalanceModal = () => this.setState({ isBalanceModalOpen: false }); 
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
