@@ -280,6 +280,14 @@ export class LndHttpClient {
     });
   };
 
+  sendOnChain = (args: T.SendOnChainArguments) => {
+    return this.request<T.SendOnChainResponse, T.SendOnChainArguments>(
+      'POST',
+      '/v1/transactions',
+      args,
+    );
+  };
+
   getAddress = (_: T.AddressType = 'p2wkh') => {
     return this.request<T.NewAddressResponse, T.NewAddressArguments>(
       'GET',

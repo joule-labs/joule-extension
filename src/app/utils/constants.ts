@@ -118,3 +118,15 @@ export const channelStatusText: { [key in CHANNEL_STATUS]: string } = {
   [CHANNEL_STATUS.WAITING]: 'Closing',
   [CHANNEL_STATUS.FORCE_CLOSING]: 'Closing',
 };
+
+// Currency prefixes came from 
+// https://github.com/satoshilabs/slips/blob/master/slip-0173.md
+export const CHAIN_PREFIXES = [
+  'bc',   // Bitcoin Mainnet
+  'tb',   // Bitcoin Testnet
+  'bcrt', // Bitcoin Regtest
+  'sb',   // Bitcoin Simnet
+  'ltc',  // Litecoin Mainnet
+  'tltc', // Litecoin Testnet
+  'rltc', // Litecoin Regtest
+]

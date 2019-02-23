@@ -1,7 +1,7 @@
 import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
-import { Form, Input, Select } from 'antd';
+import { Form, Input, Select, Button } from 'antd';
 import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
 import { typedKeys } from 'utils/ts';
 import {
@@ -22,10 +22,12 @@ interface OwnProps {
   autoFocus?: boolean;
   size?: 'large' | 'default' | 'small';
   help?: React.ReactNode;
+  warn?: React.ReactNode;
   required?: boolean;
   showFiat?: boolean;
   minimumSats?: string;
   maximumSats?: string;
+  showMax?: boolean;
   onChangeAmount(amount: string): void;
 }
 
@@ -90,10 +92,13 @@ class AmountField extends React.Component<Props, State> {
       disabled,
       autoFocus,
       showFiat,
+      maximumSats,
+      showMax,
       isNoFiat,
       fiat,
       rates,
       required,
+      warn,
       help,
       chain,
     } = this.props;
@@ -103,8 +108,8 @@ class AmountField extends React.Component<Props, State> {
     return (
       <Form.Item
         label={label}
-        help={valueError || help}
-        validateStatus={value && valueError ? 'error' : undefined}
+        help={valueError || warn || help}
+        validateStatus={value && valueError ? 'error' : (warn ? 'warning' : undefined)}
         className="AmountField"
         required={required}
       >
@@ -120,6 +125,14 @@ class AmountField extends React.Component<Props, State> {
               disabled={disabled}
               autoFocus={autoFocus}
             />
+            {maximumSats && showMax && (
+              <Button
+                className="AmountField-inner-max"
+                onClick={this.handleMaxClicked}
+              >
+                max
+              </Button>
+            )}
             <Select
               size={size}
               onChange={this.handleChangeDenomination}
@@ -161,6 +174,11 @@ class AmountField extends React.Component<Props, State> {
   private getValueError = () => {
     const { minimumSats, maximumSats, chain } = this.props;
     const { value, denomination } = this.state;
+
+    if (value === '') {
+      return '';
+    }
+
     const valueBN = new BN(fromUnitToBase(value, denomination));
     if (maximumSats) {
       const max = new BN(maximumSats);
@@ -218,6 +236,15 @@ class AmountField extends React.Component<Props, State> {
       const sats = value ? fromUnitToBase(value, denomination) : '';
       this.props.onChangeAmount(sats);
     });
+  };
+
+  private handleMaxClicked = () => {
+    const { maximumSats } = this.props;
+    const { denomination } = this.state;
+    if (maximumSats) {
+      const value = fromBaseToUnit(maximumSats, denomination);
+      this.updateBothValues('value', value);
+    }
   };
 
   private handleChangeDenomination = (value: any) => {

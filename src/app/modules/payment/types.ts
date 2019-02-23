@@ -8,6 +8,10 @@ enum PaymentTypes {
   SEND_PAYMENT = 'SEND_PAYMENT',
   SEND_PAYMENT_SUCCESS = 'SEND_PAYMENT_SUCCESS',
   SEND_PAYMENT_FAILURE = 'SEND_PAYMENT_FAILURE',
+  
+  SEND_ON_CHAIN = 'SEND_ON_CHAIN',
+  SEND_ON_CHAIN_SUCCESS = 'SEND_ON_CHAIN_SUCCESS',
+  SEND_ON_CHAIN_FAILURE = 'SEND_ON_CHAIN_FAILURE',
 
   CREATE_INVOICE = 'CREATE_INVOICE',
   CREATE_INVOICE_SUCCESS = 'CREATE_INVOICE_SUCCESS',
@@ -15,6 +19,10 @@ enum PaymentTypes {
 
   RESET_SEND_PAYMENT = 'RESET_SEND_PAYMENT',
   RESET_CREATE_INVOICE = 'RESET_CREATE_INVOICE',
+
+  FETCH_CHAIN_FEES = 'FETCH_CHAIN_FEES',
+  FETCH_CHAIN_FEES_SUCCESS = 'FETCH_CHAIN_FEES_SUCCESS',
+  FETCH_CHAIN_FEES_FAILURE = 'FETCH_CHAIN_FEES_FAILURE',
 }
 
 export default PaymentTypes;
@@ -37,4 +45,11 @@ export type PaymentRequestState = {
   isLoading: false;
   error: null;
   data: PaymentRequestData;
+};
+
+export interface OnChainFeeEstimates { 
+  [key:string]: number,
+  fastestFee: number,
+  halfHourFee: number, 
+  hourFee: number,
 };

@@ -1,24 +1,32 @@
-import { SendPaymentResponse, CreateInvoiceResponse } from 'lib/lnd-http';
-import types, { PaymentRequestState } from './types';
+import { SendPaymentResponse, CreateInvoiceResponse, SendOnChainResponse } from 'lib/lnd-http';
+import types, { PaymentRequestState, OnChainFeeEstimates } from './types';
 
 export interface PaymentState {
-  sendReceipt: SendPaymentResponse | null;
+  sendLightningReceipt: SendPaymentResponse | null;
   paymentRequests: { [req: string]: PaymentRequestState };
   invoice: CreateInvoiceResponse | null;
+  sendOnChainReceipt: SendOnChainResponse | null;
   sendError: Error | null;
   isSending: boolean;
   invoiceError: Error | null;
   isCreatingInvoice: boolean;
+  onChainFees: OnChainFeeEstimates | null;
+  isFetchingFees: boolean;
+  feesError: Error | null;
 }
 
 export const INITIAL_STATE: PaymentState = {
-  sendReceipt: null,
+  sendLightningReceipt: null,
   paymentRequests: {},
   invoice: null,
+  sendOnChainReceipt: null,
   sendError: null,
   isSending: false,
   invoiceError: null,
   isCreatingInvoice: false,
+  onChainFees: null,
+  isFetchingFees: false,
+  feesError: null,
 };
 
 export default function channelsReducers(
@@ -29,14 +37,14 @@ export default function channelsReducers(
     case types.SEND_PAYMENT:
       return {
         ...state,
-        sendReceipt: null,
+        sendLightningReceipt: null,
         sendError: null,
         isSending: true,
       };
     case types.SEND_PAYMENT_SUCCESS:
       return {
         ...state,
-        sendReceipt: action.payload,
+        sendLightningReceipt: action.payload,
         isSending: false,
       };
     case types.SEND_PAYMENT_FAILURE:
@@ -49,7 +57,8 @@ export default function channelsReducers(
     case types.RESET_SEND_PAYMENT:
       return {
         ...state,
-        sendReceipt: null,
+        sendLightningReceipt: null,
+        sendOnChainReceipt: null,
         sendError: null,
         isSending: false,
       };
@@ -124,6 +133,47 @@ export default function channelsReducers(
           },
         },
       };
+
+    case types.SEND_ON_CHAIN:
+      return {
+        ...state,
+        sendOnChainReceipt: null,
+        sendError: null,
+        isSending: true,
+      };
+    case types.SEND_ON_CHAIN_SUCCESS:
+      return {
+        ...state,
+        sendOnChainReceipt: action.payload,
+        isSending: false,
+      };
+    case types.SEND_ON_CHAIN_FAILURE:
+      return {
+        ...state,
+        sendError: action.payload,
+        isSending: false,
+      };
+
+    case types.FETCH_CHAIN_FEES:
+      return {
+        ...state,
+        onChainFees: null,
+        feesError: null,
+        isFetchingFees: true,
+      };
+    case types.FETCH_CHAIN_FEES_SUCCESS:
+      return {
+        ...state,
+        onChainFees: action.payload,
+        isFetchingFees: false,
+      };
+    case types.FETCH_CHAIN_FEES_FAILURE:
+      return {
+        ...state,
+        feesError: action.payload,
+        isFetchingFees: false,
+      };
+    
   }
   
   return state;

@@ -18,7 +18,7 @@ import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
-  sendReceipt: AppState['payment']['sendReceipt'];
+  sendLightningReceipt: AppState['payment']['sendLightningReceipt'];
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
   denomination: AppState['settings']['denomination'];
@@ -79,16 +79,16 @@ class LightningSend extends React.Component<Props, State> {
 
   render() {
     // Early exit for send state
-    const { sendReceipt, isSending, sendError, chain } = this.props;
-    if (isSending || sendReceipt || sendError) {
+    const { sendLightningReceipt, isSending, sendError, chain } = this.props;
+    if (isSending || sendLightningReceipt || sendError) {
       return (
         <SendState
           isLoading={isSending}
           error={sendError}
-          result={sendReceipt && (
+          result={sendLightningReceipt && (
             <>
               <h3>Pre-image</h3>
-              <code>{sendReceipt.payment_preimage}</code>
+              <code>{sendLightningReceipt.payment_preimage}</code>
             </>
           )}
           back={this.props.resetSendPayment}
@@ -336,7 +336,7 @@ class LightningSend extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     paymentRequests: state.payment.paymentRequests,
-    sendReceipt: state.payment.sendReceipt,
+    sendLightningReceipt: state.payment.sendLightningReceipt,
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
     denomination: state.settings.denomination,
