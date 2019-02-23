@@ -71,15 +71,26 @@ export function* handleGetTransactions(): SagaIterator {
     const paymentNodes: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
       paymentNodeIds.map(id => call(safeGetNodeInfo, nodeLib, id))
     );
-    const payments = paymentsRes.payments.map(p => {
-      const nodeResponse = paymentNodes.find(
-        n => p.path[p.path.length - 1] === n.node.pub_key
-      );
-      return {
-        ...p,
-        to: (nodeResponse as any).node,
-      };
-    });
+    const payments = paymentsRes.payments
+      .map(p => {
+        const nodeResponse = paymentNodes.find(
+          n => p.path[p.path.length - 1] === n.node.pub_key
+        );
+        return {
+          ...p,
+          to: (nodeResponse as any).node,
+        };
+      })
+      .map(p => {
+        if (!p.value_sat && !p.value_msat) {
+          return {
+            ...p,
+            value_sat: (p as any).value,
+            value_msat: `${(p as any).value}000`,
+          }
+        }
+        return p;
+      });
 
     yield put({
       type: types.GET_TRANSACTIONS_SUCCESS,
