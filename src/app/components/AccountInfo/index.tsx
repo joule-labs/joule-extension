@@ -88,16 +88,14 @@ class AccountInfo extends React.Component<Props, State> {
               <div className="AccountInfo-top-info-balance">
                 <Unit value={account.totalBalancePending} showFiat />
                 {showPending &&
-                  <>
-                    <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
-                      <Link to="/balances">
-                        <Icon
-                          className="AccountInfo-top-info-balance-pending"
-                          type="clock-circle"
-                        />
-                      </Link>
-                    </Tooltip>
-                  </>
+                  <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
+                    <Link to="/balances">
+                      <Icon
+                        className="AccountInfo-top-info-balance-pending"
+                        type="clock-circle"
+                      />
+                    </Link>
+                  </Tooltip>
                 }
               </div>
               <div className="AccountInfo-top-info-balances">

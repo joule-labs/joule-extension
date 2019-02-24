@@ -144,7 +144,6 @@ class ChainSend extends React.Component<Props, State> {
               </Tooltip>
             </small>
           )}
-
         />
         <Form.Item label="Recipient" required>
           <Input
@@ -155,6 +154,7 @@ class ChainSend extends React.Component<Props, State> {
             placeholder="Enter Bitcoin wallet address"
           />
         </Form.Item>
+
         <Form.Item label="Fee" required className="ChainSend-fees">
           {feesError && (
             <Alert type="warning" message={feesError.message} /> 
