@@ -2,7 +2,7 @@ import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Form, Input, Button, Radio, Alert, Icon } from 'antd';
+import { Form, Input, Button, Radio, Alert, Icon, Tooltip } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { AppState } from 'store/reducers';
 import AmountField from 'components/AmountField';
@@ -140,7 +140,11 @@ class ChainSend extends React.Component<Props, State> {
             help={(
               <small>
                 Available on-chain balance: <Unit value={blockchainBalance} />
-                <Link to="/balances"><Icon type="info-circle" /></Link>
+                <Tooltip title="How is this calculated?">
+                  <Link to="/balances">
+                    <Icon type="info-circle" />
+                  </Link>
+                </Tooltip>
               </small>
             )}
 

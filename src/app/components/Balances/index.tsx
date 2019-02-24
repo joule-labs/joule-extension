@@ -3,12 +3,8 @@ import { connect } from 'react-redux';
 import { Tooltip, Progress, Tabs, Icon, Select, Alert } from 'antd';
 import Statistic from 'antd/lib/statistic'; 
 import Loader from 'components/Loader';
-import Unit from 'components/Unit';
-import Copy from 'components/Copy';
-import Identicon from 'components/Identicon';
 import { AppState } from 'store/reducers';
-import { blockchainLogos, CHAIN_TYPE, Denomination, denominationSymbols, blockchainDisplayName } from 'utils/constants';
-import { CHANNEL_STATUS } from 'lib/lnd-http';
+import { Denomination, denominationSymbols, blockchainDisplayName } from 'utils/constants';
 import { getNodeChain } from 'modules/node/selectors';
 import { getChannels } from 'modules/channels/actions';
 import { getUtxos } from 'modules/onchain/actions';
@@ -161,7 +157,6 @@ class Balances extends React.Component<Props, State> {
                   chain={chain}
                   denomination={denomination}
                   emptyMessage="Open some channels to enjoy the Lightning experience"
-                  isRemovable
                 />
               </Tabs.TabPane>
               <Tabs.TabPane

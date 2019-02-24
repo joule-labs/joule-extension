@@ -75,7 +75,7 @@ function updateFromChannels(stats: BalanceStats, channels: ChannelWithNode[]) {
     info: !pending 
       ? `Last seen ${moment.unix(chan.node.last_update).fromNow()}`
       : chan.status === CHANNEL_STATUS.FORCE_CLOSING
-      ? `Force Closing in ${chan.blocks_til_maturity} blocks (~${
+      ? `Forced Closing in ${chan.blocks_til_maturity} blocks (~${
           moment().add(chan.blocks_til_maturity * 10, 'minutes').fromNow(true)
         })` 
       : 'Pending 1 confirmation (~10 minutes)',
