@@ -43,7 +43,6 @@ interface State {
   address: string;
   feeMethod: string;
   fee: number;
-  isBalanceModalOpen: boolean;
 }
 
 const INITIAL_STATE = {
@@ -52,7 +51,6 @@ const INITIAL_STATE = {
   address: '',
   feeMethod: '',
   fee: 0,
-  isBalanceModalOpen: false,
 };
 
 class ChainSend extends React.Component<Props, State> {
@@ -122,89 +120,87 @@ class ChainSend extends React.Component<Props, State> {
     ) : undefined;
 
     return (
-      <>
-        <Form
-          className="ChainSend"
-          layout="vertical"
-          onSubmit={this.handleSubmit}
-        >
-          <AmountField
-            label="Amount"
-            amount={amount}
-            onChangeAmount={this.handleChangeAmount}
-            minimumSats="1"
-            maximumSats={blockchainBalance}
-            showMax
-            required
-            warn={dustWarning}
-            help={(
-              <small>
-                Available on-chain balance: <Unit value={blockchainBalance} />
-                <Tooltip title="How is this calculated?">
-                  <Link to="/balances">
-                    <Icon type="info-circle" />
-                  </Link>
-                </Tooltip>
-              </small>
-            )}
+      <Form
+        className="ChainSend"
+        layout="vertical"
+        onSubmit={this.handleSubmit}
+      >
+        <AmountField
+          label="Amount"
+          amount={amount}
+          onChangeAmount={this.handleChangeAmount}
+          minimumSats="1"
+          maximumSats={blockchainBalance}
+          showMax
+          required
+          warn={dustWarning}
+          help={(
+            <small>
+              Available on-chain balance: <Unit value={blockchainBalance} />
+              <Tooltip title="How is this calculated?">
+                <Link to="/balances">
+                  <Icon type="info-circle" />
+                </Link>
+              </Tooltip>
+            </small>
+          )}
 
+        />
+        <Form.Item label="Recipient" required>
+          <Input
+            name="address"
+            value={address}
+            autoComplete="off"
+            onChange={this.handleChangeAddress}
+            placeholder="Enter Bitcoin wallet address"
           />
-          <Form.Item label="Recipient" required>
-            <Input
-              name="address"
-              value={address}
-              autoComplete="off"
-              onChange={this.handleChangeAddress}
-              placeholder="Enter Bitcoin wallet address"
-            />
-          </Form.Item>
-          <Form.Item label="Fee" required className="ChainSend-fees">
-            {feesError && (
-              <Alert type="warning" message={feesError.message} /> 
-            )}
-            {onChainFees && (
-              <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
-                <Radio.Button value="hourFee">Slow</Radio.Button>
-                <Radio.Button value="halfHourFee">Normal</Radio.Button>
-                <Radio.Button value="fastestFee">Fast</Radio.Button>
-              </Radio.Group>
-            )}
-          </Form.Item>
+        </Form.Item>
+        <Form.Item label="Fee" required className="ChainSend-fees">
+          {feesError && (
+            <Alert type="warning" message={feesError.message} /> 
+          )}
+          {onChainFees && (
+            <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
+              <Radio.Button value="hourFee">Slow</Radio.Button>
+              <Radio.Button value="halfHourFee">Normal</Radio.Button>
+              <Radio.Button value="fastestFee">Fast</Radio.Button>
+            </Radio.Group>
+          )}
+        </Form.Item>
 
-          <div className="ChainSend-details">
-            <table><tbody>
-              <tr>
-                <td>Amount</td>
-                <td>
-                  <Unit value={isSendAll ? blockchainBalance : amount} />
-                </td>
-              </tr>
-              <tr>
-                <td>Fee</td>
-                <td>
-                  {isFetchingFees ?
-                    <Loader inline size="1rem" /> :
-                    <>{feesError ? '?' : fee} <small>sats/B</small></>
-                  }
-                </td>
-              </tr>
-            </tbody></table>
-          </div>          
-          <div className="ChainSend-buttons">
-            <Button size="large" type="ghost" onClick={this.reset}>
-              Reset
-            </Button>
-            <Button
-              htmlType="submit"
-              type="primary"
-              size="large"
-              disabled={disabled}
-            >
-              Send
-            </Button>
-          </div>
-        </Form>
-      </>
+        <div className="ChainSend-details">
+          <table><tbody>
+            <tr>
+              <td>Amount</td>
+              <td>
+                <Unit value={isSendAll ? blockchainBalance : amount} />
+              </td>
+            </tr>
+            <tr>
+              <td>Fee</td>
+              <td>
+                {isFetchingFees ?
+                  <Loader inline size="1rem" /> :
+                  <>{feesError ? '?' : fee} <small>sats/B</small></>
+                }
+              </td>
+            </tr>
+          </tbody></table>
+        </div>          
+        <div className="ChainSend-buttons">
+          <Button size="large" type="ghost" onClick={this.reset}>
+            Reset
+          </Button>
+          <Button
+            htmlType="submit"
+            type="primary"
+            size="large"
+            disabled={disabled}
+          >
+            Send
+          </Button>
+        </div>
+      </Form>
     );
   }
 

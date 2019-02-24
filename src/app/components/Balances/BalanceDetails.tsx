@@ -1,12 +1,12 @@
 import React from 'react';
 import { Icon, Tooltip } from 'antd';
 import Identicon from 'components/Identicon';
+import BigMessage from 'components/BigMessage';
 import { BalanceDetailGroup } from 'utils/balances';
 import { CHAIN_TYPE, blockchainLogos, denominationSymbols, Denomination } from 'utils/constants';
-import './BalanceDetails.less';
 import { fromBaseToUnit } from 'utils/units';
 import { commaify } from 'utils/formatters';
-import BigMessage from 'components/BigMessage';
+import './BalanceDetails.less';
 
 const BalanceDetails: React.SFC<{
   groups: BalanceDetailGroup[], 

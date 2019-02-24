@@ -33,14 +33,12 @@ type Props = DispatchProps & StateProps & OwnProps;
 interface State {
   isDepositModalOpen: boolean;
   isNodeUriModalOpen: boolean;
-  isBalanceModalOpen: boolean;
 }
 
 class AccountInfo extends React.Component<Props, State> {
   state: State = {
     isDepositModalOpen: false,
     isNodeUriModalOpen: false,
-    isBalanceModalOpen: false,
   };
 
   componentDidMount() { 
@@ -92,7 +90,7 @@ class AccountInfo extends React.Component<Props, State> {
                 {showPending &&
                   <>
                     <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
-                    <Link to="/balances">
+                      <Link to="/balances">
                         <Icon
                           className="AccountInfo-top-info-balance-pending"
                           type="clock-circle"

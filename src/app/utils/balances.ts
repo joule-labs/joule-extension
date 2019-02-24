@@ -63,7 +63,6 @@ export function calculateBalanaceStats(
     updateFromChain(stats, utxos);
     updateTotals(stats);
   }
-  console.log('calculateBalanaceStats', stats);
   return stats;
 }
 
