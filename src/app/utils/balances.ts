@@ -1,11 +1,13 @@
 // functions used to calculate the balances stats
 import BN from 'bn.js';
+import moment from 'moment';
 import { ChannelWithNode } from 'modules/channels/types';
 import { Utxo, CHANNEL_STATUS } from 'lib/lnd-http';
 
 export interface BalanceStats {
   total: string,
   spendable: string,
+  spendablePercent: number;
   pendingPercent: number,
   channelPercent: number,
   onchainPercent: number,
@@ -17,7 +19,7 @@ export interface BalanceStats {
   onchainDetails: BalanceDetailGroup[],
 }
 
-interface BalanceDetailGroup {
+export interface BalanceDetailGroup {
   title: string,
   balance: string,
   details: BalanceDetail[],
@@ -37,6 +39,7 @@ function getInitialStats(): BalanceStats {
   return {
     total: '0',
     spendable: '0',
+    spendablePercent: 0,
     pendingPercent: 0,
     channelPercent: 0,
     onchainPercent: 0,
@@ -51,7 +54,7 @@ function getInitialStats(): BalanceStats {
 
 export function calculateBalanaceStats(
   channels: ChannelWithNode[], 
-  utxos: Utxo[]
+  utxos: Utxo[],
 ): BalanceStats {
   const stats = getInitialStats();
   if (channels.length || utxos.length) {
@@ -60,43 +63,50 @@ export function calculateBalanaceStats(
     updateFromChain(stats, utxos);
     updateTotals(stats);
   }
+  console.log('calculateBalanaceStats', stats);
   return stats;
 }
 
 function updateFromChannels(stats: BalanceStats, channels: ChannelWithNode[]) {
   // helper to map channel -> BalanceDetail
-  const channelToDetail = (chan: ChannelWithNode) => ({
+  const channelToDetail = (pending?: boolean) => (chan: ChannelWithNode) => ({
     icon: { type: 'channel', pubKey: chan.node.pub_key },
     text: chan.node.alias || chan.node.pub_key,
+    info: pending 
+      ? 'X confirmations pending (~Y minutes)' 
+      : `Last seen ${moment.unix(chan.node.last_update).fromNow()}`,
     amount: chan.local_balance
   } as BalanceDetail);
 
+  const localChannels = channels
+    .filter(chan => chan.local_balance && chan.local_balance !== '0');
+
   // add inactive channels
-  const inactive = channels
+  const inactive = localChannels
     .filter(chan => chan.status === CHANNEL_STATUS.OPEN && !chan.active)
-    .map(channelToDetail);
+    .map(channelToDetail());
   addDetailsToGroup(stats.channelDetails, 'Inactive Channel', inactive);
 
   // add active channels
-  const active = channels
+  const active = localChannels
     .filter(chan => chan.status === CHANNEL_STATUS.OPEN && chan.active)
-    .map(channelToDetail);
+    .map(channelToDetail());
   addDetailsToGroup(stats.channelDetails, 'Active Channel', active);
 
   // add opening channels to pending stats
-  const opening = channels
+  const opening = localChannels
     .filter(chan => chan.status === CHANNEL_STATUS.OPENING)
-    .map(channelToDetail);
+    .map(channelToDetail(true));
   addDetailsToGroup(stats.pendingDetails, 'Opening Channel', opening);
 
   // add opening channels to pending stats
-  const closing = channels
+  const closing = localChannels
     .filter(chan => 
       chan.status === CHANNEL_STATUS.CLOSING ||
       chan.status === CHANNEL_STATUS.FORCE_CLOSING ||
       chan.status === CHANNEL_STATUS.WAITING
     )
-    .map(channelToDetail);
+    .map(channelToDetail(true));
   addDetailsToGroup(stats.pendingDetails, 'Closing Channel', closing);
 }
 
@@ -105,12 +115,13 @@ function updateFromChain(stats: BalanceStats, utxos: Utxo[]) {
   const utxoToDetail = (utxo: Utxo) => ({
     icon: { type: 'onchain' },
     text: utxo.address,
-    info: `${utxo.confirmations} confirmations`,
+    info: `${utxo.confirmations} confirmations *** need current chain height ***`,
     amount: utxo.amount_sat
   } as BalanceDetail);
 
   // add confirmed utxos to the stats
   const confirmed = utxos
+    .sort((a, b) => a.address.localeCompare(b.address))
     .filter(u => u.confirmations && u.confirmations !== '0')
     .map(utxoToDetail);
   addDetailsToGroup(stats.onchainDetails, 'Confirmed UTXO', confirmed);
@@ -119,7 +130,7 @@ function updateFromChain(stats: BalanceStats, utxos: Utxo[]) {
   const unconfirmed = utxos
     .filter(u => !u.confirmations)
     .map(utxoToDetail);
-  addDetailsToGroup(stats.pendingDetails, 'On-chain Transaction', unconfirmed);
+  addDetailsToGroup(stats.pendingDetails, 'Unconfirmed UTXO', unconfirmed);
 }
 
 function updateTotals(stats: BalanceStats) {
@@ -130,6 +141,7 @@ function updateTotals(stats: BalanceStats) {
   stats.spendable = new BN(stats.onchainTotal).add(new BN(stats.channelTotal)).toString();
   stats.total = new BN(stats.spendable).add(new BN(stats.pendingTotal)).toString();
 
+  stats.spendablePercent = new BN(stats.spendable).muln(100).divRound(new BN(stats.total)).toNumber();
   stats.onchainPercent = new BN(stats.onchainTotal).muln(100).divRound(new BN(stats.total)).toNumber();
   stats.channelPercent = new BN(stats.channelTotal).muln(100).divRound(new BN(stats.total)).toNumber();
   stats.pendingPercent = new BN(stats.pendingTotal).muln(100).divRound(new BN(stats.total)).toNumber();
