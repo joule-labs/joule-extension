@@ -4,18 +4,6 @@
   background-color: #ffffff;
   height: 100%;
 
-  @media (max-width: 767px) {
-    min-width: 90%;
-  }
-
-  @media (max-width: 500px) {
-    max-width: 90%;
-  }
-
-  .ant-modal-body {
-    padding: 0 0 24px;
-  }
-
   &-header {
     padding: 1rem;
     text-align: right;
@@ -59,6 +47,12 @@
     background-color: #FBFBFB;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding: 1rem;
+
+    @media (max-width: 500px) {
+      .ant-statistic-content {
+        font-size: 1.3rem;
+      }
+    }      
   }
 
   &-details {

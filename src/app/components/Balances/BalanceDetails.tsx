@@ -12,12 +12,13 @@ const BalanceDetails: React.SFC<{
   groups: BalanceDetailGroup[], 
   chain: CHAIN_TYPE,
   denomination: Denomination,
+  emptyMessage: string,
   isRemovable?: boolean,
-}> = ({ groups, chain, denomination, isRemovable }) => {
+}> = ({ groups, chain, denomination, emptyMessage, isRemovable }) => {
   if (!groups.length) {
     return <BigMessage
       title="Nothing to see here..."
-      message="All of your funds are available to spend immediately"
+      message={emptyMessage}
       icon="search"
     />;
   }

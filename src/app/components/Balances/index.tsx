@@ -55,7 +55,8 @@ class Balances extends React.Component<Props, State> {
   componentDidUpdate() {
     const { isFetchingChannels, channels, isFetchingUtxos, utxos } = this.props;
     // only calculate the stats one time when we have the channels & utxos
-    // this approach avoids calculating the stats on every render
+    // this approach avoids calculating the stats on every render if the
+    // call to calculateBalanaceStats was inside of the render method
     if (!isFetchingChannels && !isFetchingUtxos &&
         channels && utxos && !this.state.stats) {
       this.setState({
@@ -148,6 +149,7 @@ class Balances extends React.Component<Props, State> {
                   groups={stats.pendingDetails} 
                   chain={chain}
                   denomination={denomination}
+                  emptyMessage="All of your funds are available to spend immediately"
                 />
               </Tabs.TabPane>
               <Tabs.TabPane
@@ -158,6 +160,7 @@ class Balances extends React.Component<Props, State> {
                   groups={stats.channelDetails} 
                   chain={chain}
                   denomination={denomination}
+                  emptyMessage="Open some channels to enjoy the Lightning experience"
                   isRemovable
                 />
               </Tabs.TabPane>
@@ -168,6 +171,7 @@ class Balances extends React.Component<Props, State> {
                 <BalanceDetails 
                   groups={stats.onchainDetails} 
                   chain={chain} 
+                  emptyMessage="Fund you"
                   denomination={denomination}
                 />
               </Tabs.TabPane>
@@ -176,10 +180,12 @@ class Balances extends React.Component<Props, State> {
         </>
       );
     } else if (fetchChannelsError || fetchUtxosError) {
+      const message = fetchChannelsError ? fetchChannelsError.message :
+        fetchUtxosError ? fetchUtxosError.message : 'Unable to fetch balance data';
       content = (
         <Alert
           type="error"
-          message={fetchChannelsError!.message || fetchUtxosError!.message}
+          message={message}
         />
       );
     } else {

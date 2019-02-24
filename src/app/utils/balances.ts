@@ -72,9 +72,13 @@ function updateFromChannels(stats: BalanceStats, channels: ChannelWithNode[]) {
   const channelToDetail = (pending?: boolean) => (chan: ChannelWithNode) => ({
     icon: { type: 'channel', pubKey: chan.node.pub_key },
     text: chan.node.alias || chan.node.pub_key,
-    info: pending 
-      ? 'X confirmations pending (~Y minutes)' 
-      : `Last seen ${moment.unix(chan.node.last_update).fromNow()}`,
+    info: !pending 
+      ? `Last seen ${moment.unix(chan.node.last_update).fromNow()}`
+      : chan.status === CHANNEL_STATUS.FORCE_CLOSING
+      ? `Force Closing in ${chan.blocks_til_maturity} blocks (~${
+          moment().add(chan.blocks_til_maturity * 10, 'minutes').fromNow(true)
+        })` 
+      : 'Pending 1 confirmation (~10 minutes)',
     amount: chan.local_balance
   } as BalanceDetail);
 
@@ -112,24 +116,26 @@ function updateFromChannels(stats: BalanceStats, channels: ChannelWithNode[]) {
 
 function updateFromChain(stats: BalanceStats, utxos: Utxo[]) {
   // helper to map utxo -> BalanceDetail
-  const utxoToDetail = (utxo: Utxo) => ({
+  const utxoToDetail = (pending?: boolean) => (utxo: Utxo) => ({
     icon: { type: 'onchain' },
     text: utxo.address,
-    info: `${utxo.confirmations} confirmations *** need current chain height ***`,
+    info: pending 
+      ? 'Pending 1 confirmation (~10 minutes)' 
+      : `${utxo.confirmations} confirmations`,
     amount: utxo.amount_sat
   } as BalanceDetail);
 
   // add confirmed utxos to the stats
   const confirmed = utxos
-    .sort((a, b) => a.address.localeCompare(b.address))
+    .sort((a, b) => parseInt(a.confirmations, 10) - parseInt(b.confirmations, 10))
     .filter(u => u.confirmations && u.confirmations !== '0')
-    .map(utxoToDetail);
+    .map(utxoToDetail());
   addDetailsToGroup(stats.onchainDetails, 'Confirmed UTXO', confirmed);
 
   // add unconfirmed utxos to the stats
   const unconfirmed = utxos
     .filter(u => !u.confirmations)
-    .map(utxoToDetail);
+    .map(utxoToDetail(true));
   addDetailsToGroup(stats.pendingDetails, 'Unconfirmed UTXO', unconfirmed);
 }
 
