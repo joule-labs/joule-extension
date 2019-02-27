@@ -56,6 +56,7 @@ export interface OpenChannel extends BaseChannel {
   csv_delay: number;
   chan_id: string;
   fee_per_kw: string;
+  total_satoshis_sent: string;
   total_satoshis_received: string;
   pending_htlcs: HTLC[];
   num_updates: number;
