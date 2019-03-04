@@ -374,6 +374,10 @@ export interface OpenChannelResponse {
   output_index: string;
 }
 
+export interface CloseChannelResponse {
+  closing_txid: string;
+}
+
 export interface SignMessageParams {
   msg: string;
 } 

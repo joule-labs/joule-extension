@@ -7,9 +7,10 @@ import Unit from 'components/Unit';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
+import { closeChannel } from 'modules/channels/actions';
 import { ChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
-import { ellipsisSandwich } from 'utils/formatters';
+import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
 import './style.less';
 
 interface StateProps {
@@ -18,6 +19,7 @@ interface StateProps {
 
 interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
+  closeChannel: typeof closeChannel;
 }
 
 interface OwnProps {
@@ -45,6 +47,11 @@ class ChannelInfo extends React.Component<Props> {
       return null;
     }
 
+    let statusClass = `is-${enumToClassName(channel.status)}`;
+    if (channel.status === CHANNEL_STATUS.OPEN) {
+      statusClass = `${statusClass} is-${channel.active ? 'active' : 'inactive'}`;
+    }
+    
     return (
       <div className="ChannelInfo">
         <div className="ChannelInfo-parties">
@@ -62,6 +69,7 @@ class ChannelInfo extends React.Component<Props> {
           <div className="ChannelInfo-parties-party is-to">
             <div className="ChannelInfo-parties-party-icon">
               <Identicon pubkey={channel.node.pub_key} />
+              <div className={`ChannelInfo-parties-party-icon-status ${statusClass}`} />
             </div>
             <div className="ChannelInfo-parties-party-name">
               {channel.node.alias || channel.node.pub_key}
@@ -80,15 +88,16 @@ class ChannelInfo extends React.Component<Props> {
           </tbody>
         </table>
 
+        {/* TODO: show button when LND issue #2730 is resolved */}
         {channel.status === CHANNEL_STATUS.OPEN && (
-          <div className="ChannelInfo-actions">
+          <div className="ChannelInfo-actions" style={{ display: 'none' }}>
             <Button
               type="danger"
               size="large"
               block
               ghost
               onClick={this.closeChannel}
-              >
+            >
               Close Channel
             </Button>
           </div>
@@ -131,9 +140,6 @@ class ChannelInfo extends React.Component<Props> {
 
     if (channel.status === CHANNEL_STATUS.OPEN) {
       details.push({
-        label: 'Online',
-        value: channel.active ? 'Yes' : 'No',
-      }, {
         label: 'Total Sent',
         value: <Unit value={channel.total_satoshis_sent} showFiat />,
       }, {
@@ -147,8 +153,13 @@ class ChannelInfo extends React.Component<Props> {
       });
     } else if (channel.status === CHANNEL_STATUS.FORCE_CLOSING) {
       details.push({
-        label: 'ETA til Closed',
-        value: `~${moment().add(channel.blocks_til_maturity * 10, 'minutes').fromNow(true)}`
+        label: 'Closing in',
+        value: <>
+          <span>{channel.blocks_til_maturity} blocks</span>
+          <span className="Unit-secondary">
+            ~{moment().add(channel.blocks_til_maturity * 10, 'minutes').fromNow(true)}
+          </span>
+        </>
       }, {
         label: 'Closing Tx',
         value: txLink(channel.closing_txid),  
@@ -163,11 +174,12 @@ class ChannelInfo extends React.Component<Props> {
       title: 'Are you sure?',
       content: `
         We'll attempt to close the channel cooperatively. If this
-        fails, you will be given the oppurtunity to force the
+        fails, you will be given the option to force the
         channel closed.
       `,
       onOk: () => {
-        console.log('do it bro!')
+        const [fundingTxId, outputIndex] = this.props.channel.channel_point.split(':')
+        this.props.closeChannel(fundingTxId, outputIndex);
       },
     });
   }
@@ -177,5 +189,8 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
   }),
-  { getAccountInfo },
+  { 
+    getAccountInfo,
+    closeChannel
+  },
 )(ChannelInfo);
