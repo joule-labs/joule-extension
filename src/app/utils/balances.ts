@@ -102,7 +102,7 @@ function updateFromChannels(stats: BalanceStats, channels: ChannelWithNode[]) {
     .map(channelToDetail(true));
   addDetailsToGroup(stats.pendingDetails, 'Opening Channel', opening);
 
-  // add opening channels to pending stats
+  // add closing channels to pending stats
   const closing = localChannels
     .filter(chan => 
       chan.status === CHANNEL_STATUS.CLOSING ||
