@@ -49,8 +49,43 @@
     padding: 1rem;
 
     @media (max-width: 500px) {
-      .ant-statistic-content {
-        font-size: 1.3rem;
+      .ant-statistic {
+        &.is-small {
+          .ant-statistic-content {
+            font-size: 0.9rem;
+
+            .ant-statistic-content-value-decimal {
+              font-size: 0.7rem;
+            }
+
+            .ant-statistic-content-suffix {
+              // hide the suffix for really large numbers
+              display: none;
+            }
+          }
+        }
+
+        &.is-medium {
+          .ant-statistic-content {
+            font-size: 0.8rem;
+
+            .ant-statistic-content-value-decimal,
+            .ant-statistic-content-suffix {
+              font-size: 0.6rem;
+            }
+          }
+        }
+
+        &.is-large {
+          .ant-statistic-content {
+            font-size: 1rem;
+
+            .ant-statistic-content-value-decimal,
+            .ant-statistic-content-suffix {
+              font-size: 0.8rem;
+            }
+          }
+        }
       }
     }      
   }

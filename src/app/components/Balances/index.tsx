@@ -69,6 +69,8 @@ class Balances extends React.Component<Props, State> {
 
     let content;
     if (stats) {
+      const statsClass = this.getStatsClassName(stats);
+  
       content = (
         <>
           <div className="Balances-chart">
@@ -123,16 +125,22 @@ class Balances extends React.Component<Props, State> {
               title="Pending" 
               value={parseFloat(fromBaseToUnit(stats.pendingTotal, denomination))} 
               valueStyle={{ color: '#858585' }} 
+              className={statsClass}
+              suffix={denomText} 
             />
             <Statistic 
               title="Lightning" 
               value={parseFloat(fromBaseToUnit(stats.channelTotal, denomination))} 
               valueStyle={{ color: '#7642ff' }} 
+              className={statsClass}
+              suffix={denomText} 
             />
             <Statistic 
               title={blockchainDisplayName[chain]}
               value={parseFloat(fromBaseToUnit(stats.onchainTotal, denomination))} 
               valueStyle={{ color: '#ff9500' }} 
+              className={statsClass}
+              suffix={denomText} 
             />
           </div>
           <div className="Balances-details">
@@ -160,13 +168,13 @@ class Balances extends React.Component<Props, State> {
                 />
               </Tabs.TabPane>
               <Tabs.TabPane
-                tab={<><Icon type="link"/> Bitcoin</>}
+                tab={<><Icon type="link"/> {blockchainDisplayName[chain]}</>}
                 key="on-chain"
               >
                 <BalanceDetails 
                   groups={stats.onchainDetails} 
                   chain={chain} 
-                  emptyMessage="Fund you"
+                  emptyMessage="Fund your on-chain wallet to view your UTXOs"
                   denomination={denomination}
                 />
               </Tabs.TabPane>
@@ -197,6 +205,22 @@ class Balances extends React.Component<Props, State> {
   private handleChangeDenomination = (value: any) => {
     this.setState({ denomination: value as Denomination });
   };
+
+  // helper function used to shrink the stats font sizes
+  // based on how big (in length) the largest value is
+  private getStatsClassName(stats: BalanceStats) {
+    const statsClasses: {[key:number]: string} = {
+      4: 'is-small',  // 12+ digits in sats, +1000BTC
+      3: 'is-medium', // 9-11 digits in sats, 1-999BTC
+      2: 'is-large',  // 6-8 digits in sats, 1-100M sats
+    };
+    const longest = Math.max(
+      stats.pendingTotal.length,
+      stats.channelTotal.length,
+      stats.onchainTotal.length,
+    )
+    return statsClasses[Math.floor(longest / 3)] || '';
+  }
 }
 
 export default connect<StateProps, ActionProps, {}, AppState>(
