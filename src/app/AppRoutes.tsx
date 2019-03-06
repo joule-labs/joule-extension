@@ -14,6 +14,7 @@ import Loader from 'components/Loader';
 import HomePage from 'pages/home';
 import OnboardingPage from 'pages/onboarding';
 import SettingsPage from 'pages/settings';
+import BalancesPage from 'pages/balances';
 import FourOhFourPage from 'pages/fourohfour';
 import Template, { Props as TemplateProps } from 'components/Template';
 
@@ -59,6 +60,17 @@ const routeConfigs: RouteConfig[] = [
     },
     template: {
       title: 'Settings',
+      showBack: true,
+    },
+  },
+  {
+    // Balances
+    route: {
+      path: '/balances',
+      component: BalancesPage,
+    },
+    template: {
+      title: 'Balances',
       showBack: true,
     },
   },

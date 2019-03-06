@@ -5,6 +5,8 @@ export type Response<T> = Promise<T>;
 
 export type AddressType = 'np2wkh' | 'p2wkh';
 
+export type UtxoAddressType = 'NESTED_PUBKEY_HASH' | 'WITNESS_PUBKEY_HASH';
+
 export interface ErrorResponse {
   error: string;
   code: number;
@@ -186,6 +188,21 @@ export interface Peer {
 interface LightningAddress {
   pubkey: string;
   host: string;
+}
+
+interface Outpoint {
+  txid_str: string;
+  txid_bytes: string;
+  outpoint_index: number;
+}
+
+export interface Utxo {
+  pk_script: string;
+  confirmations: string;
+  amount_sat: string;
+  address: string;
+  type: UtxoAddressType;
+  outpoint: Outpoint;
 }
 
 // Argument & Response Types
@@ -372,5 +389,14 @@ export interface VerifyMessageParams {
 export interface VerifyMessageResponse {
   valid: boolean;
   pubkey: string;
+} 
+
+export interface GetUtxosParams {
+  min_confs?: number;
+  max_confs?: number;
+} 
+
+export interface GetUtxosResponse {
+  utxos: Utxo[];
 } 
 

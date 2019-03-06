@@ -360,6 +360,16 @@ export class LndHttpClient {
     );
   };
 
+  getUtxos = (params: T.GetUtxosParams = { max_confs: 100000000 }) => {
+    // max_confs must be set to a number higher than the chain's current
+    // block height in order to get all utxos for a wallet
+    return this.request<T.GetUtxosResponse, T.GetUtxosParams>(
+      'GET',
+      '/v1/utxos',
+      params
+    );
+  };
+
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,

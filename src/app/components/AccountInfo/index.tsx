@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Button, Icon, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import BN from 'bn.js';
@@ -37,7 +38,7 @@ interface State {
 class AccountInfo extends React.Component<Props, State> {
   state: State = {
     isDepositModalOpen: false,
-    isNodeUriModalOpen: false
+    isNodeUriModalOpen: false,
   };
 
   componentDidMount() { 
@@ -88,10 +89,12 @@ class AccountInfo extends React.Component<Props, State> {
                 <Unit value={account.totalBalancePending} showFiat />
                 {showPending &&
                   <Tooltip title={<><Unit value={balanceDiff} /> pending</>}>
-                    <Icon
-                      className="AccountInfo-top-info-balance-pending"
-                      type="clock-circle"
-                    />
+                    <Link to="/balances">
+                      <Icon
+                        className="AccountInfo-top-info-balance-pending"
+                        type="clock-circle"
+                      />
+                    </Link>
                   </Tooltip>
                 }
               </div>
