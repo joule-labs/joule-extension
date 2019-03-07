@@ -6,6 +6,7 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import Copy from 'components/Copy';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
+import TransferIcons, { TransferParty } from 'components/TransferIcons';
 import { ellipsisSandwich } from 'utils/formatters';
 import { getAccountInfo } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
@@ -29,11 +30,6 @@ interface OwnProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 
-interface TransactionParty {
-  name: React.ReactNode;
-  icon: React.ReactNode;
-}
-
 class TransactionInfo extends React.Component<Props> {
   componentWillMount() {
     if (!this.props.account) {
@@ -47,8 +43,8 @@ class TransactionInfo extends React.Component<Props> {
       return null;
     }
 
-    let to: TransactionParty | undefined;
-    let from: TransactionParty | undefined;
+    let to: TransferParty | undefined;
+    let from: TransferParty | undefined;
     let primaryCode;
     let pathEl;
     let details: DetailsRow[] = [];
@@ -153,27 +149,11 @@ class TransactionInfo extends React.Component<Props> {
     return (
       <div className="TxInfo">
         {to && from && (
-          <div className="TxInfo-parties">
-            <div className="TxInfo-parties-party is-from">
-              <div className="TxInfo-parties-party-icon">
-                {from.icon}
-              </div>
-              <div className="TxInfo-parties-party-name">
-                {from.name}
-              </div>
-            </div>
-            <div className="TxInfo-parties-arrow">
-              <Icon component={TransactionArrow} />
-            </div>
-            <div className="TxInfo-parties-party is-to">
-              <div className="TxInfo-parties-party-icon">
-                {to.icon}
-              </div>
-              <div className="TxInfo-parties-party-name">
-                {to.name}
-              </div>
-            </div>
-          </div>
+          <TransferIcons
+            from={from}
+            to={to}
+            icon={<Icon component={TransactionArrow} />}
+          />
         )}
 
         <DetailsTable details={details} />

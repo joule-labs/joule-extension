@@ -5,6 +5,7 @@ import { Icon, Button, Modal } from 'antd';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
+import TransferIcons from 'components/TransferIcons';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
@@ -12,7 +13,6 @@ import { closeChannel } from 'modules/channels/actions';
 import { ChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
 import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
-import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -50,28 +50,18 @@ class ChannelInfo extends React.Component<Props> {
     
     return (
       <div className="ChannelInfo">
-        <div className="ChannelInfo-parties">
-          <div className="ChannelInfo-parties-party is-from">
-            <div className="ChannelInfo-parties-party-icon">
-              <Identicon pubkey={account.pubKey} />
-            </div>
-            <div className="ChannelInfo-parties-party-name">
-              {account.alias || account.pubKey}
-            </div>
-          </div>
-          <div className="ChannelInfo-parties-arrow">
-            <Icon type="swap" />
-          </div>
-          <div className="ChannelInfo-parties-party is-to">
-            <div className="ChannelInfo-parties-party-icon">
-              <Identicon pubkey={channel.node.pub_key} />
-              <div className={`ChannelInfo-parties-party-icon-status ${statusClass}`} />
-            </div>
-            <div className="ChannelInfo-parties-party-name">
-              {channel.node.alias || channel.node.pub_key}
-            </div>
-          </div>
-        </div>
+        <TransferIcons 
+          from={{
+            icon: <Identicon pubkey={account.pubKey} />,
+            name: account.alias || account.pubKey,
+          }}
+          icon={<Icon type="swap" />}
+          to={{
+            icon: <Identicon pubkey={channel.node.pub_key} />,
+            name: channel.node.alias || channel.node.pub_key,
+            statusClass,
+          }}
+        />
 
         <DetailsTable details={this.getChannelDetails()} />
 
