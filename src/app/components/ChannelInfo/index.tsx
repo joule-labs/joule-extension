@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Icon, Button, Modal } from 'antd';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
+import DetailsTable, { DetailsRow } from 'components/DetailsTable';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
@@ -28,11 +29,6 @@ interface OwnProps {
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
-
-interface DetailRow {
-  label: string;
-  value: React.ReactNode;
-}
 
 class ChannelInfo extends React.Component<Props> {
   componentDidMount() {
@@ -77,16 +73,7 @@ class ChannelInfo extends React.Component<Props> {
           </div>
         </div>
 
-        <table className="ChannelInfo-details">
-          <tbody>
-            {this.getChannelDetails().map(d => (
-              <tr className="TxInfo-details-row" key={d.label}>
-                <td className="TxInfo-details-row-label">{d.label}</td>
-                <td className="TxInfo-details-row-value">{d.value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DetailsTable details={this.getChannelDetails()} />
 
         {/* TODO: show button when LND issue #2730 is resolved */}
         {channel.status === CHANNEL_STATUS.OPEN && (
@@ -106,7 +93,7 @@ class ChannelInfo extends React.Component<Props> {
     );
   }
 
-  private getChannelDetails = (): DetailRow[] => {
+  private getChannelDetails = (): DetailsRow[] => {
     const { channel } = this.props;
 
     const txLink = (txid: string) => (
@@ -121,7 +108,7 @@ class ChannelInfo extends React.Component<Props> {
 
     const fundingTx = channel.channel_point.split(':')[0];
     // details shared by all channel statuses
-    const details: DetailRow[] = [{
+    const details: DetailsRow[] = [{
       label: 'Status',
       value: channelStatusText[channel.status],
     }, {

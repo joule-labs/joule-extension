@@ -5,6 +5,7 @@ import QRCode from 'qrcode.react';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import Copy from 'components/Copy';
+import DetailsTable, { DetailsRow } from 'components/DetailsTable';
 import { ellipsisSandwich } from 'utils/formatters';
 import { getAccountInfo } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
@@ -28,11 +29,6 @@ interface OwnProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 
-interface DetailRow {
-  label: string;
-  value: React.ReactNode;
-}
-
 interface TransactionParty {
   name: React.ReactNode;
   icon: React.ReactNode;
@@ -55,7 +51,7 @@ class TransactionInfo extends React.Component<Props> {
     let from: TransactionParty | undefined;
     let primaryCode;
     let pathEl;
-    let details: DetailRow[] = [];
+    let details: DetailsRow[] = [];
 
     if (isPayment(tx)) {
       to = {
@@ -180,16 +176,7 @@ class TransactionInfo extends React.Component<Props> {
           </div>
         )}
 
-        <table className="TxInfo-details">
-          <tbody>
-            {details.map(d => (
-              <tr className="TxInfo-details-row" key={d.label}>
-                <td className="TxInfo-details-row-label">{d.label}</td>
-                <td className="TxInfo-details-row-value">{d.value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DetailsTable details={details} />
 
         {primaryCode && (
           <>
