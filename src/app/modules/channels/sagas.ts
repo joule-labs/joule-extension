@@ -3,7 +3,7 @@ import { takeLatest, select, call, all, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, safeConnectPeer, sleep } from 'utils/misc';
-import { openChannel, getChannels } from './actions';
+import { openChannel, getChannels, closeChannel } from './actions';
 import types from './types';
 
 export function* handleGetChannels(): SagaIterator {
@@ -101,7 +101,35 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
   }
 }
 
+export function* handleCloseChannel(action: ReturnType<typeof closeChannel>): SagaIterator {
+  try {
+    yield call(requirePassword);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+
+    const { fundingTxid, outputIndex } = action.payload;
+    const res: Yielded<typeof nodeLib.closeChannel> = yield call(
+      nodeLib.closeChannel, fundingTxid, outputIndex
+    );
+    yield put({
+      type: types.CLOSE_CHANNEL_SUCCESS,
+      payload: {
+        closingTxId: res.closing_txid,
+      },
+    });
+
+    // Refresh channels list
+    yield call(sleep, 300);
+    yield put(getChannels());
+  } catch(err) {
+    yield put({
+      type: types.CLOSE_CHANNEL_FAILURE,
+      payload: err,
+    })
+  }
+}
+
 export default function* channelsSagas(): SagaIterator {
   yield takeLatest(types.GET_CHANNELS, handleGetChannels);
   yield takeLatest(types.OPEN_CHANNEL, handleOpenChannel);
+  yield takeLatest(types.CLOSE_CHANNEL, handleCloseChannel);
 }

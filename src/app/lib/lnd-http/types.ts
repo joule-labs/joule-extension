@@ -56,6 +56,7 @@ export interface OpenChannel extends BaseChannel {
   csv_delay: number;
   chan_id: string;
   fee_per_kw: string;
+  total_satoshis_sent: string;
   total_satoshis_received: string;
   pending_htlcs: HTLC[];
   num_updates: number;
@@ -371,6 +372,10 @@ export interface OpenChannelResponse {
   funding_txid_bytes: string;
   funding_txid_str: string;
   output_index: string;
+}
+
+export interface CloseChannelResponse {
+  closing_txid: string;
 }
 
 export interface SignMessageParams {

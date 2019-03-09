@@ -8,6 +8,10 @@ export interface ChannelsState {
   newChannelTxIds: { [address: string]: string };
   isOpeningChannel: boolean;
   openChannelError: null | Error;
+
+  closingTxId: null | string;
+  isClosingChannel: boolean;
+  closeChannelError: null | Error;
 }
 
 export const INITIAL_STATE: ChannelsState = {
@@ -18,6 +22,10 @@ export const INITIAL_STATE: ChannelsState = {
   newChannelTxIds: {},
   isOpeningChannel: false,
   openChannelError: null,
+
+  closingTxId: null,
+  isClosingChannel: false,
+  closeChannelError: null,
 };
 
 export default function channelsReducers(
@@ -66,6 +74,26 @@ export default function channelsReducers(
         openChannelError: action.payload,
         isOpeningChannel: false,
       }
+
+      case types.CLOSE_CHANNEL:
+      return {
+        ...state,
+        isClosingChannel: true,
+        closeChannelError: null,
+      };
+    case types.CLOSE_CHANNEL_SUCCESS:
+      return {
+        ...state,
+        closingTxId: action.payload,
+        isClosingChannel: false,
+      };
+    case types.CLOSE_CHANNEL_FAILURE:
+      return {
+        ...state,
+        closeChannelError: action.payload,
+        isClosingChannel: false,
+      }
+    
   }
 
   return state;
