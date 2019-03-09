@@ -62,7 +62,7 @@ class FeeSelectField extends Component<Props, State> {
     let help = showCustomFee ? (
       <>
         <a onClick={this.toggleCustomFee}>Switch back </a>
-        to a recommended fee.
+        to a suggested fee.
       </>
     ) : (
       <>
@@ -89,8 +89,8 @@ class FeeSelectField extends Component<Props, State> {
       help = (
         <>
           <div>
-            Warning: Your fee of {fee} is higher than the 
-            suggested fastest fee of {onChainFees.fastestFee}
+            Warning: Suggested fastest fee is 
+            <strong> {onChainFees.fastestFee} </strong>
           </div>
           {help}
         </>

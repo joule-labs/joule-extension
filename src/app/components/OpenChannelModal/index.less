@@ -1,4 +1,13 @@
 .OpenChannel {
+
+  @media (max-width: 767px) {
+    // fixes broken re-centering of modal
+    // when browser scrollbar is shown
+    &.ant-modal {
+        max-width: calc(100vw - 32px);
+    }
+  }
+
   &-form {
     &-advancedToggle {
       display: block;
