@@ -4,6 +4,7 @@ import { Modal, Form, Input, Button, Checkbox, Icon, Alert, message } from 'antd
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import Result from 'ant-design-pro/lib/Result';
 import AmountField from 'components/AmountField';
+import FeeSelectField from 'components/FeeSelectField';
 import { isValidConnectAddress } from 'utils/validators';
 import { openChannel } from 'modules/channels/actions';
 import { AppState } from 'store/reducers';
@@ -32,6 +33,7 @@ interface State {
   capacity: string;
   pushAmount: string;
   isPrivate: boolean;
+  fee: number;
   isShowingAdvanced: boolean;
   isOpeningChannel: boolean;
   successfulTxId: string | null;
@@ -43,6 +45,7 @@ const INITIAL_STATE: State = {
   capacity: '',
   pushAmount: '',
   isPrivate: false,
+  fee: 0,
   isShowingAdvanced: false,
   isOpeningChannel: false,
   successfulTxId: null,
@@ -153,6 +156,10 @@ class OpenChannelModal extends React.Component<Props, State> {
 
           {isShowingAdvanced ? (
             <div className="OpenChannel-form-advanced">
+              <FeeSelectField
+                showHelp
+                onChange={this.handleFeeChange}
+              />
               <AmountField
                 label="Push amount"
                 amount={pushAmount}
@@ -232,6 +239,10 @@ class OpenChannelModal extends React.Component<Props, State> {
     this.setState({ isPrivate: ev.target.checked });
   };
 
+  private handleFeeChange = (fee: number) => {
+    this.setState({ fee });
+  };
+
   private toggleAdvanced = () => {
     this.setState({ isShowingAdvanced: true });
   };
@@ -242,7 +253,7 @@ class OpenChannelModal extends React.Component<Props, State> {
     }
 
     const { newChannelTxIds } = this.props;
-    const { capacity, pushAmount, isPrivate } = this.state;
+    const { capacity, pushAmount, isPrivate, fee } = this.state;
     const address = this.state.address.trim();
 
     if (!address) {
@@ -266,6 +277,8 @@ class OpenChannelModal extends React.Component<Props, State> {
         address,
         capacity,
         isPrivate,
+        // only send non-zero fee
+        fee: fee ? fee.toString() : undefined,
         // Don't send empty string
         pushAmount: pushAmount || undefined,
       });

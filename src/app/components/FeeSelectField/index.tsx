@@ -19,21 +19,21 @@ interface DispatchProps {
 }
 
 interface OwnProps {
+  showHelp?: boolean;
   onChange(fee: number): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
+  fee: number,
   feeMethod: keyof OnChainFeeEstimates;
 }
 
 class FeeSelectField extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      feeMethod: 'auto',
-    }
+  state: State = {
+    fee: 0,
+    feeMethod: 'auto',
   }
 
   componentDidMount() {
@@ -41,11 +41,23 @@ class FeeSelectField extends Component<Props, State> {
   }
 
   render() {
-    const { onChainFees, isFetchingFees, feesError } = this.props;
-    const { feeMethod } = this.state;
+    const { onChainFees, isFetchingFees, feesError, showHelp } = this.props;
+    const { fee, feeMethod } = this.state;
+
+    const help = showHelp && <>
+      The transaction will be sent with the fee
+      {fee 
+        ? <> set to <strong>{fee} sats</strong> per byte</> 
+        : ' automatically calculated by your node'}
+    </>;
 
     return (
-      <Form.Item label="Fee" required className="FeeSelectField">
+      <Form.Item 
+        className="FeeSelectField"
+        label="Fee"
+        help={help}
+        required
+      >
         {isFetchingFees &&
           <Loader inline />
         }
@@ -69,8 +81,9 @@ class FeeSelectField extends Component<Props, State> {
 
   private handleChangeFee = (ev: RadioChangeEvent) => {
     if (this.props.onChainFees) {
-      this.setState({ feeMethod: ev.target.value });
-      this.props.onChange(this.props.onChainFees[ev.target.value]);
+      const fee = this.props.onChainFees[ev.target.value];
+      this.setState({ fee, feeMethod: ev.target.value });
+      this.props.onChange(fee);
     }
   };
 }

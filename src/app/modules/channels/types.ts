@@ -45,6 +45,7 @@ export interface OpenChannelPayload {
   capacity: string;
   pushAmount?: string;
   isPrivate?: boolean;
+  fee?: string;
 }
 
 export default ChannelsTypes;
