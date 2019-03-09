@@ -7,11 +7,11 @@ import { AppState } from 'store/reducers';
 import AmountField from 'components/AmountField';
 import Unit from 'components/Unit';
 import SendState from './SendState';
+import FeeSelectField from 'components/FeeSelectField';
 import { getNodeChain } from 'modules/node/selectors';
 import { sendOnChain, resetSendPayment } from 'modules/payment/actions';
 import { isPossibleDust } from 'utils/validators';
 import './ChainSend.less';
-import FeeSelectField from 'components/FeeSelectField';
 
 interface StateProps {
   account: AppState['account']['account'];
