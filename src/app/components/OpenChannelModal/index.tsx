@@ -157,7 +157,7 @@ class OpenChannelModal extends React.Component<Props, State> {
           {isShowingAdvanced ? (
             <div className="OpenChannel-form-advanced">
               <FeeSelectField
-                showHelp
+                showFeeMsg
                 onChange={this.handleFeeChange}
               />
               <AmountField

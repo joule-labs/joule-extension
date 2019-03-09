@@ -8,4 +8,26 @@
       text-align: center;
     }
   }  
+
+  .ant-form-explain {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 0.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .ant-input-number {
+    width: 100%;
+
+    // removes the browser-based spinner
+    // a nicer spinner is added by antd
+    input[type='number'] {
+      -moz-appearance:textfield;
+    }
+    
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+  }
 }
