@@ -6,12 +6,15 @@ import { AppState } from 'store/reducers';
 import Loader from 'components/Loader';
 import { getOnChainFeeEstimates } from 'modules/payment/actions';
 import { OnChainFeeEstimates } from 'modules/payment/types';
+import { getNodeChain } from 'modules/node/selectors';
 import './style.less';
+import { CHAIN_TYPE } from 'utils/constants';
 
 interface StateProps {
   onChainFees: AppState['payment']['onChainFees'];
   feesError: AppState['payment']['feesError'];
   isFetchingFees: AppState['payment']['isFetchingFees'];
+  chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
@@ -41,8 +44,14 @@ class FeeSelectField extends Component<Props, State> {
   }
 
   render() {
-    const { onChainFees, isFetchingFees, feesError, showHelp } = this.props;
+    const { chain, onChainFees, isFetchingFees, feesError, showHelp } = this.props;
     const { fee, feeMethod } = this.state;
+
+    if (chain !== CHAIN_TYPE.BITCOIN) {
+      // hide fee selection if not using the Bitcoin chain
+      // since the fee estimates are only available for BTC
+      return null;
+    }
 
     const help = showHelp && <>
       The transaction will be sent with the fee
@@ -93,6 +102,7 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     onChainFees: state.payment.onChainFees,
     feesError: state.payment.feesError,
     isFetchingFees: state.payment.isFetchingFees,
+    chain: getNodeChain(state),
   }),
   {
     getOnChainFeeEstimates,
