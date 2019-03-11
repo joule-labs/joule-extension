@@ -6,52 +6,6 @@
     margin-bottom: 0;
   }
 
-  &-parties {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-
-    &-party {
-      position: relative;
-      padding-bottom: 1.25rem;
-      text-align: center;
-
-      &-icon {
-        width: @icon-size;
-        height: @icon-size;
-        margin: 0 auto 0.5rem;
-
-        .Identicon {
-          width: 100%;
-          height: 100%;
-        }
-      }
-
-      &-name {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        max-width: 150px;
-        font-weight: 500;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transform: translateX(-50%);
-      }
-    }
-
-    &-arrow {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: @icon-size;
-      font-size: 2rem;
-      opacity: 0.8;
-    }
-  }
-
   &-qr {
     display: flex;
     justify-content: center;
@@ -81,48 +35,6 @@
     &:hover {
       cursor: pointer;
       background: rgba(#000, 0.05);
-    }
-  }
-
-  &-details {
-    width: 100%;
-    max-width: 260px;
-    margin: 0 auto 2rem;
-
-    &-row {
-      border-bottom: 1px solid rgba(#000, 0.05);
-
-      &-label,
-      &-value {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-      }
-
-      &-label {
-        padding-right: 0.5rem;
-        font-size: 0.8rem;
-        opacity: 0.8;
-      }
-
-      &-value {
-        font-size: 0.9rem;
-        text-align: right;
-        font-weight: 500;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 200px;
-
-        .Unit-secondary {
-          display: block;
-          opacity: 0.7;
-          font-size: 0.8rem;
-        }
-
-        em {
-          opacity: 0.5;
-        }
-      }
     }
   }
 
