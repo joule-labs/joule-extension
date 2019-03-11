@@ -6,6 +6,7 @@ import {
   selectNodeInfo,
   selectSyncedEncryptedNodeState,
   selectSyncedUnencryptedNodeState,
+  selectNodeInfoError,
 } from './selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { accountTypes } from 'modules/account';
@@ -198,6 +199,13 @@ export function* getNodePubKey(): SagaIterator {
   if (!nodeInfo) {
     yield call(handleGetNodeInfo);
     nodeInfo = yield select(selectNodeInfo);
+  }
+  if (!nodeInfo) {
+    // if the fetch fails (bad cert) then throw the error
+    const nodeError = yield select(selectNodeInfoError);
+    if (nodeError) {
+      throw nodeError;
+    }   
   }
   return nodeInfo.identity_pubkey;
 }
