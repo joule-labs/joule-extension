@@ -33,7 +33,6 @@ export default class ConnectionFailureModal extends React.Component<Props> {
             <Link to="/settings">Settings</Link>
           </p>
         </>}
-        showIcon
       />
     );
 
