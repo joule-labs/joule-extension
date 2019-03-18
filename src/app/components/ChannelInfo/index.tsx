@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Icon, Button, Modal } from 'antd';
+import { Icon, Button, Modal, Input } from 'antd';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
@@ -13,6 +13,8 @@ import { closeChannel } from 'modules/channels/actions';
 import { ChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
 import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
+import './index.less';
+import Copy from 'components/Copy';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -47,6 +49,12 @@ class ChannelInfo extends React.Component<Props> {
     if (channel.status === CHANNEL_STATUS.OPEN) {
       statusClass = `${statusClass} is-${channel.active ? 'active' : 'inactive'}`;
     }
+
+    let closeCommand = '';
+    if (channel.status === CHANNEL_STATUS.OPEN) {
+      const txInfo = channel.channel_point.split(':');
+      closeCommand = `lncli closechannel ${txInfo[0]} ${txInfo[1]}`;
+    }
     
     return (
       <div className="ChannelInfo">
@@ -65,7 +73,7 @@ class ChannelInfo extends React.Component<Props> {
 
         <DetailsTable details={this.getChannelDetails()} />
 
-        {/* TODO: show button when LND issue #2730 is resolved */}
+        {/* TODO: show button instead of instructions when LND issue #2730 is resolved */}
         {channel.status === CHANNEL_STATUS.OPEN && (
           <div className="ChannelInfo-actions" style={{ display: 'none' }}>
             <Button
@@ -77,6 +85,23 @@ class ChannelInfo extends React.Component<Props> {
             >
               Close Channel
             </Button>
+          </div>
+        )}
+        {channel.status === CHANNEL_STATUS.OPEN && (
+          <div className="ChannelInfo-close">
+            <div className="ChannelInfo-close-instructions">
+              Ready to <strong>close the channel</strong>? Run this:
+            </div>
+            <Input
+              className="ChannelInfo-close-command"
+              value={closeCommand}
+              readOnly
+              addonAfter={
+                <Copy text={closeCommand}>
+                  <span><Icon type="copy" /> Copy</span>
+                </Copy>
+              }
+            />
           </div>
         )}
       </div>
