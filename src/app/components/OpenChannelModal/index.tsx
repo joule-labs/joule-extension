@@ -90,6 +90,7 @@ class OpenChannelModal extends React.Component<Props, State> {
       isOpeningChannel,
       successfulTxId,
       error,
+      fee,
     } = this.state;
     const addressValidity = address
       ? isValidConnectAddress(address.trim())
@@ -157,8 +158,9 @@ class OpenChannelModal extends React.Component<Props, State> {
           {isShowingAdvanced ? (
             <div className="OpenChannel-form-advanced">
               <FeeSelectField
-                showFeeMsg
+                fee={fee}
                 onChange={this.handleFeeChange}
+                showFeeMsg
               />
               <AmountField
                 label="Push amount"

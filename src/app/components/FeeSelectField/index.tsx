@@ -21,21 +21,14 @@ interface DispatchProps {
 }
 
 interface OwnProps {
+  fee: number;
   showFeeMsg?: boolean;
   onChange(fee: number): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
 
-interface State {
-  fee: number | undefined,
-}
-
-class FeeSelectField extends Component<Props, State> {
-  state: State = {
-    fee: 0,
-  }
-
+class FeeSelectField extends Component<Props> {
   componentDidMount() {
     this.props.getOnChainFeeEstimates();
   }
@@ -44,14 +37,12 @@ class FeeSelectField extends Component<Props, State> {
     const { onChainFees } = this.props;	
     if (nextProps.onChainFees !== onChainFees && nextProps.onChainFees !== null) {	
       const { fastestFee } = nextProps.onChainFees;
-      this.setState({ fee: fastestFee });	
       this.props.onChange(fastestFee);
-    }	
+    }
   }
 
   render() {
-    const { chain, onChainFees, isFetchingFees, feesError, showFeeMsg } = this.props;
-    const { fee } = this.state;
+    const { fee, chain, onChainFees, isFetchingFees, feesError, showFeeMsg } = this.props;
 
     if (chain !== CHAIN_TYPE.BITCOIN) {
       // hide fee selection if not using the Bitcoin chain
@@ -97,9 +88,9 @@ class FeeSelectField extends Component<Props, State> {
             }}
             tipFormatter={(v) => {
               switch (v) {
-                case onChainFees.fastestFee: return 'fastest';
-                case onChainFees.halfHourFee: return 'normal';
-                case onChainFees.hourFee: return 'slow';
+                case onChainFees.fastestFee: return `${v} (fastest)`;
+                case onChainFees.halfHourFee: return `${v} (normal)`;
+                case onChainFees.hourFee: return `${v} (slow)`;
                 case 0: return 'auto';
                 default: return v;
               }
@@ -113,7 +104,6 @@ class FeeSelectField extends Component<Props, State> {
 
   private handleChangeFee = (value: SliderValue) => {
     const fee = (value as number) || 0;
-    this.setState({ fee });
     this.props.onChange(fee);
   };
 }

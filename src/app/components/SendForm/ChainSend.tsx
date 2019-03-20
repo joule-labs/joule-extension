@@ -131,7 +131,7 @@ class ChainSend extends React.Component<Props, State> {
           />
         </Form.Item>
 
-        <FeeSelectField onChange={this.handleChangeFee} />
+        <FeeSelectField fee={fee} onChange={this.handleChangeFee} />
 
         <div className="ChainSend-details">
           <table><tbody>
@@ -175,7 +175,7 @@ class ChainSend extends React.Component<Props, State> {
     this.props.sendOnChain({
       ...args,
       addr: address,
-      sat_per_byte: fee.toString(),
+      sat_per_byte: fee ? fee.toString() : undefined,
     });
   };  
 
