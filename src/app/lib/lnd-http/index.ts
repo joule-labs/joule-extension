@@ -340,6 +340,15 @@ export class LndHttpClient {
     });
   };
 
+  closeChannel = (fundingTxid: string, outputIndex: string) => {
+    // there's currently a bug in LND (#2730) which causes this
+    // request to hang until the next block is mined
+    return this.request<T.CloseChannelResponse>(
+      'DELETE',
+      `/v1/channels/${fundingTxid}/${outputIndex}`,
+    );
+  };
+
   signMessage = (message: string) => {
     const msg = new Buffer(message).toString('base64');
     return this.request<T.SignMessageResponse, T.SignMessageParams>(
@@ -366,7 +375,8 @@ export class LndHttpClient {
     return this.request<T.GetUtxosResponse, T.GetUtxosParams>(
       'GET',
       '/v1/utxos',
-      params
+      params,
+      { utxos: [] },
     );
   };
 

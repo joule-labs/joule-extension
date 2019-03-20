@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Tabs, Icon, Drawer } from 'antd';
 import AccountInfo from 'components/AccountInfo';
 import ChannelList from 'components/ChannelList';
@@ -6,9 +7,27 @@ import TransactionList from 'components/TransactionList';
 import SendForm from 'components/SendForm';
 import InvoiceForm from 'components/InvoiceForm';
 import TransactionInfo from 'components/TransactionInfo';
-// import { ChannelWithNode } from 'modules/channels/types';
+import ConnectionFailureModal from 'components/ConnectionFailureModal';
+import { AppState } from 'store/reducers';
+import ChannelInfo from 'components/ChannelInfo';
+import { ChannelWithNode } from 'modules/channels/types';
 import { AnyTransaction } from 'modules/account/types';
+import { getAccountInfo } from 'modules/account/actions';
+import { getChannels } from 'modules/channels/actions';
 import './home.less';
+
+
+interface StateProps {
+  nodeUrl: AppState['node']['url'];
+  fetchAccountInfoError: AppState['account']['fetchAccountInfoError'];
+}
+
+interface DispatchProps {
+  getAccountInfo: typeof getAccountInfo;
+  getChannels: typeof getChannels;
+}
+
+type Props = DispatchProps & StateProps;
 
 interface State {
   drawerTitle: React.ReactNode | null;
@@ -16,7 +35,7 @@ interface State {
   isDrawerOpen: boolean;
 }
 
-export default class HomePage extends React.Component<{}, State> {
+class HomePage extends React.Component<Props, State> {
   state: State = {
     drawerTitle: null,
     drawerContent: null,
@@ -25,6 +44,7 @@ export default class HomePage extends React.Component<{}, State> {
   drawerTimeout: any = null;
 
   render() {
+    const { nodeUrl, fetchAccountInfoError } = this.props;
     const { drawerContent, drawerTitle, isDrawerOpen } = this.state;
 
     return (
@@ -38,7 +58,7 @@ export default class HomePage extends React.Component<{}, State> {
             tab={<><Icon type="fork"/> Channels</>}
             key="channels"
           >
-            <ChannelList /*onClick={this.handleChannelClick}*/ />
+            <ChannelList onClick={this.handleChannelClick} />
           </Tabs.TabPane>
           <Tabs.TabPane
             tab={<><Icon type="shopping"/> Transactions</>}
@@ -57,6 +77,14 @@ export default class HomePage extends React.Component<{}, State> {
         >
           {drawerContent}
         </Drawer>
+
+        {fetchAccountInfoError && 
+          <ConnectionFailureModal
+            nodeUrl={nodeUrl}
+            error={fetchAccountInfoError}
+            onRetry={this.retryConnection}
+          />
+        }
       </div>
     );
   }
@@ -92,11 +120,27 @@ export default class HomePage extends React.Component<{}, State> {
     this.openDrawer(<InvoiceForm close={this.closeDrawer} />, 'Create Invoice');
   };
 
-  // private handleChannelClick = (channel: ChannelWithNode) => {
-  //   this.openDrawer(<h1>{channel.node.alias}</h1>)
-  // };
+  private handleChannelClick = (channel: ChannelWithNode) => {
+    this.openDrawer(<ChannelInfo channel={channel} close={this.closeDrawer} />, 'Channel Details');
+  };
 
   private handleTransactionClick = (tx: AnyTransaction) => {
     this.openDrawer(<TransactionInfo tx={tx} />, 'Transaction Details');
   };
+
+  private retryConnection = () => {
+    this.props.getAccountInfo();
+    this.props.getChannels();
+  }
 }
+
+export default connect<StateProps, DispatchProps, {}, AppState>(
+  state => ({
+    nodeUrl: state.node.url,
+    fetchAccountInfoError: state.account.fetchAccountInfoError,
+  }),
+  {
+    getAccountInfo,
+    getChannels,
+  },
+)(HomePage);
