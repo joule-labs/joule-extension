@@ -1,0 +1,31 @@
+@import '~style/variables.less';
+
+.ChannelInfo {
+  &-close {
+    max-width: 260px;
+    margin: 0 auto 2rem;
+
+    &-instructions {
+      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    &-command {
+      display: block;
+      font-family: @code-family;
+
+      .ant-input {
+        font-size: 0.75rem;
+      }
+
+      .ant-input-group-addon > span {
+        opacity: 0.6;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
