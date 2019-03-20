@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const hash = require('string-hash');
 
 // webpack plugins
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -57,16 +58,25 @@ const svgLoaderClient = {
   issuer: {
     test: /\.tsx?$/,
   },
-  use: [
-    {
-      loader: '@svgr/webpack',
-      options: {
-        svgoConfig: {
-          plugins: [{ inlineStyles: { onlyMatchedOnce: false } }],
-        },
+  use: ({ resource }) => ({
+    loader: '@svgr/webpack',
+    options: {
+      svgoConfig: {
+        plugins: [
+          {
+            inlineStyles: {
+              onlyMatchedOnce: false,
+            },
+          },
+          {
+            cleanupIDs: {
+              prefix: `svg-${hash(resource)}`,
+            },
+          },
+        ],
       },
     },
-  ], // svg -> react component
+  }), // svg -> react component
 };
 
 const urlLoaderClient = {

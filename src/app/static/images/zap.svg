@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 47 47" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#202431" offset="0%"></stop>
+            <stop stop-color="#242633" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" fill="url(#linearGradient-1)" cx="23.5" cy="23.5" r="22.5"></circle>
+        <g id="zap" transform="translate(11.000000, 12.000000)">
+            <g id="cloud-lightning">
+                <path d="M20.1675725,17.361166 C22.9836776,16.803019 24.9083042,14.2528246 24.6195136,11.4621955 C24.330723,8.67156646 21.9224867,6.54856454 19.048913,6.5513834 L17.6394022,6.5513834 C16.6189158,2.69500403 13.055062,0.000740191543 8.97449933,0.000740230917 C4.8939367,0.000740270291 1.33008298,2.69500417 0.309596603,6.55138357 C-0.710889766,10.407763 1.07043321,14.4496153 4.64057971,16.3784585" id="Shape" stroke="#FFFFFF"></path>
+                <polyline id="Shape" stroke="#F5B300" points="13.455616 10.9189723 8.98097826 17.4703558 15.6929348 17.4703558 11.2182971 24.0217391"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -53,6 +53,13 @@ class Balances extends React.Component<Props, State> {
     // only calculate the stats one time when we have the channels & utxos
     // this approach avoids calculating the stats on every render if the
     // call to calculateBalanaceStats was inside of the render method
+    console.log({
+      isFetchingChannels,
+      isFetchingUtxos,
+      channels,
+      utxos,
+      this.state.stats,
+    });
     if (!isFetchingChannels && !isFetchingUtxos &&
         channels && utxos && !this.state.stats) {
       this.setState({
