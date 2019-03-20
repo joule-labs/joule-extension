@@ -375,7 +375,8 @@ export class LndHttpClient {
     return this.request<T.GetUtxosResponse, T.GetUtxosParams>(
       'GET',
       '/v1/utxos',
-      params
+      params,
+      { utxos: [] },
     );
   };
 
