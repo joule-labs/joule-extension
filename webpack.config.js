@@ -10,9 +10,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
 
-// postcss plugins
-const autoprefixer = require('autoprefixer');
-
 const isDev = process.env.NODE_ENV !== 'production';
 
 // url for standalone react-devtools inspector
