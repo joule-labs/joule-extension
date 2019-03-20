@@ -9,12 +9,14 @@ export enum NODE_TYPE {
   LOCAL = 'LOCAL',
   REMOTE = 'REMOTE',
   LIGHTNING_APP = 'LIGHTNING_APP',
+  ZAP_DESKTOP = 'ZAP_DESKTOP',
   BTCPAY_SERVER = 'BTCPAY_SERVER',
 }
 
 export const DEFAULT_NODE_URLS = {
   [NODE_TYPE.LOCAL]: 'https://localhost:8080',
   [NODE_TYPE.LIGHTNING_APP]: 'https://localhost:8086',
+  [NODE_TYPE.ZAP_DESKTOP]: 'https://localhost:8180',
 } as { [key in NODE_TYPE]: string | undefined };
 
 interface LndDirectories  {
@@ -32,8 +34,13 @@ export const DEFAULT_LND_DIRS = {
   [NODE_TYPE.LIGHTNING_APP]: {
     MACOS: '~/Library/Application Support/lightning-app/lnd/data/chain/*',
     LINUX: '~/.config/lightning-app/lnd/data/chain/*',
-    WINDOWS: '%APPDATA%\\Roaming\\lightning-app\\lnd\\data\\chain\\*'
-  }
+    WINDOWS: '%APPDATA%\\Roaming\\lightning-app\\lnd\\data\\chain\\*',
+  },
+  [NODE_TYPE.ZAP_DESKTOP]: {
+    MACOS: '~/Library/Application Support/Zap/lnd/bitcoin/*',
+    LINUX: '~/.config/Zap/lnd/data/chain/*',
+    WINDOWS: '%APPDATA%\\Roaming\\Zap\\lnd\\data\\chain\\*',
+  },
 } as { [key in NODE_TYPE]: LndDirectories | undefined };
 
 export enum CHAIN_TYPE {
