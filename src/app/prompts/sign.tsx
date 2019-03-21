@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { SignMessageResponse } from 'webln/lib/provider';
+import { SignMessageResponse } from 'webln';
 import { AppState } from 'store/reducers';
 import PromptTemplate from 'components/PromptTemplate';
 import SwapGraphic from 'components/PromptTemplate/SwapGraphic';

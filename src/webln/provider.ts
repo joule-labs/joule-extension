@@ -5,7 +5,7 @@ import {
   RequestInvoiceArgs,
   RequestInvoiceResponse,
   SignMessageResponse,
-} from 'webln/lib/provider';
+} from 'webln';
 import { PROMPT_TYPE } from './types';
 
 export default class JouleWebLNProvider implements WebLNProvider {

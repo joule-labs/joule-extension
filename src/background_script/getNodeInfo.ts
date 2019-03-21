@@ -1,4 +1,4 @@
-import { GetInfoResponse } from 'webln/lib/provider';
+import { GetInfoResponse } from 'webln';
 import runSelector from '../content_script/runSelector';
 import { LndHttpClient } from 'lib/lnd-http';
 import { selectSyncedUnencryptedNodeState } from 'modules/node/selectors';

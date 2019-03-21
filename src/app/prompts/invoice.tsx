@@ -2,7 +2,7 @@ import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
 import { Form, Input, Select, Button } from 'antd';
-import { RequestInvoiceArgs, RequestInvoiceResponse } from 'webln/lib/provider';
+import { RequestInvoiceArgs, RequestInvoiceResponse } from 'webln';
 import PromptTemplate from 'components/PromptTemplate';
 import { getPromptArgs, getPromptOrigin, watchUntilPropChange, OriginData } from 'utils/prompt';
 import { removeDomainPrefix } from 'utils/formatters';
