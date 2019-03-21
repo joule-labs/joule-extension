@@ -52,4 +52,5 @@ export interface OnChainFeeEstimates {
   fastestFee: number,
   halfHourFee: number, 
   hourFee: number,
+  auto: number,
 };

@@ -77,6 +77,7 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
       local_funding_amount: action.payload.capacity,
       private: action.payload.isPrivate,
       push_sat: action.payload.pushAmount,
+      sat_per_byte: action.payload.fee,
     };
     const res: Yielded<typeof nodeLib.openChannel> = yield call(
       nodeLib.openChannel, openParams

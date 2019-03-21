@@ -2,15 +2,14 @@ import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Form, Input, Button, Radio, Alert, Icon, Tooltip } from 'antd';
-import { RadioChangeEvent } from 'antd/lib/radio';
+import { Form, Input, Button, Icon, Tooltip } from 'antd';
 import { AppState } from 'store/reducers';
 import AmountField from 'components/AmountField';
 import Unit from 'components/Unit';
-import Loader from 'components/Loader';
 import SendState from './SendState';
+import FeeSelectField from 'components/FeeSelectField';
 import { getNodeChain } from 'modules/node/selectors';
-import { sendOnChain, resetSendPayment, getOnChainFeeEstimates } from 'modules/payment/actions';
+import { sendOnChain, resetSendPayment } from 'modules/payment/actions';
 import { isPossibleDust } from 'utils/validators';
 import './ChainSend.less';
 
@@ -20,15 +19,11 @@ interface StateProps {
   sendOnChainReceipt: AppState['payment']['sendOnChainReceipt'];
   isSending: AppState['payment']['isSending'];
   sendError: AppState['payment']['sendError'];
-  onChainFees: AppState['payment']['onChainFees'];
-  feesError: AppState['payment']['feesError'];
-  isFetchingFees: AppState['payment']['isFetchingFees'];
 }
 
 interface DispatchProps {
   sendOnChain: typeof sendOnChain;
   resetSendPayment: typeof resetSendPayment;
-  getOnChainFeeEstimates: typeof getOnChainFeeEstimates;
 }
 
 interface OwnProps {
@@ -41,7 +36,6 @@ interface State {
   amount: string;
   isSendAll: boolean;
   address: string;
-  feeMethod: string;
   fee: number;
 }
 
@@ -49,7 +43,6 @@ const INITIAL_STATE = {
   amount: '',
   isSendAll: false,
   address: '',
-  feeMethod: '',
   fee: 0,
 };
 
@@ -61,29 +54,12 @@ class ChainSend extends React.Component<Props, State> {
     }
   }
 
-  componentDidMount() {
-    this.props.getOnChainFeeEstimates();
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    const { onChainFees } = this.props;
-    if (nextProps.onChainFees !== onChainFees && nextProps.onChainFees !== null) {
-      this.setState({ 
-        feeMethod: 'fastestFee',
-        fee: nextProps.onChainFees.fastestFee,
-      });
-    }
-  }
-
   render() {
     const { 
       sendOnChainReceipt, 
       isSending, 
       sendError, 
       account, 
-      onChainFees, 
-      isFetchingFees, 
-      feesError 
     } = this.props;
     
     // Early exit for send state
@@ -111,7 +87,7 @@ class ChainSend extends React.Component<Props, State> {
       );
     }
 
-    const { amount, isSendAll, address, fee, feeMethod } = this.state;
+    const { amount, isSendAll, address, fee } = this.state;
     const blockchainBalance = account ? account.blockchainBalance : '';
     const disabled = (!amount && !isSendAll) || !address ||
       (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
@@ -155,18 +131,7 @@ class ChainSend extends React.Component<Props, State> {
           />
         </Form.Item>
 
-        <Form.Item label="Fee" required className="ChainSend-fees">
-          {feesError && (
-            <Alert type="warning" message={feesError.message} /> 
-          )}
-          {onChainFees && (
-            <Radio.Group defaultValue={feeMethod} onChange={this.handleChangeFee}>
-              <Radio.Button value="hourFee">Slow</Radio.Button>
-              <Radio.Button value="halfHourFee">Normal</Radio.Button>
-              <Radio.Button value="fastestFee">Fast</Radio.Button>
-            </Radio.Group>
-          )}
-        </Form.Item>
+        <FeeSelectField fee={fee} onChange={this.handleChangeFee} />
 
         <div className="ChainSend-details">
           <table><tbody>
@@ -179,10 +144,9 @@ class ChainSend extends React.Component<Props, State> {
             <tr>
               <td>Fee</td>
               <td>
-                {isFetchingFees ?
-                  <Loader inline size="1rem" /> :
-                  <>{feesError ? '?' : fee} <small>sats/B</small></>
-                }
+                {!fee ? 'auto' : 
+                  <>{fee} <small> sats/B</small></>
+                } 
               </td>
             </tr>
           </tbody></table>
@@ -211,7 +175,7 @@ class ChainSend extends React.Component<Props, State> {
     this.props.sendOnChain({
       ...args,
       addr: address,
-      sat_per_byte: fee.toString(),
+      sat_per_byte: fee ? fee.toString() : undefined,
     });
   };  
 
@@ -229,13 +193,8 @@ class ChainSend extends React.Component<Props, State> {
     this.setState({ address: ev.target.value });
   };
 
-  private handleChangeFee = (ev: RadioChangeEvent) => {
-    if (this.props.onChainFees) {
-      this.setState({ 
-        feeMethod: ev.target.value,
-        fee: this.props.onChainFees[ev.target.value], 
-      });
-    }
+  private handleChangeFee = (fee: number) => {
+    this.setState({ fee });
   };
 
   private reset = () => {
@@ -250,14 +209,10 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     sendOnChainReceipt: state.payment.sendOnChainReceipt,
     isSending: state.payment.isSending,
     sendError: state.payment.sendError,
-    onChainFees: state.payment.onChainFees,
-    feesError: state.payment.feesError,
-    isFetchingFees: state.payment.isFetchingFees,
     chain: getNodeChain(state),
   }),
   {
     sendOnChain,
     resetSendPayment,
-    getOnChainFeeEstimates,
   },
 )(ChainSend);
