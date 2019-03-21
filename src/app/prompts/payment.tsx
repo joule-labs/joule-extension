@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Tabs, Input, Select } from 'antd';
-import { SendPaymentResponse } from 'webln/lib/provider';
+import { SendPaymentResponse } from 'webln';
 import PromptTemplate from 'components/PromptTemplate';
 import NodeInfo from 'components/PromptTemplate/NodeInfo';
 import Loader from 'components/Loader';

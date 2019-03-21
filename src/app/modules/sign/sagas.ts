@@ -1,17 +1,30 @@
 import { SagaIterator } from 'redux-saga';
 import { takeLatest, select, call,  put } from 'redux-saga/effects';
+import { SignMessageResponse as WebLNSignMessageResponse } from 'webln';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { signMessage, verifyMessage } from './actions';
 import types from './types';
-import { SignMessageResponse, VerifyMessageResponse } from 'lib/lnd-http/types';
+import {
+  SignMessageResponse as LndSignMessageResponse,
+  VerifyMessageResponse as LndVerifyMessageResponse,
+} from 'lib/lnd-http/types';
 import { safeGetNodeInfo } from 'utils/misc';
 
 export function* handleSignMessage(action: ReturnType<typeof signMessage>): SagaIterator {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    const payload: Yielded<SignMessageResponse> = yield call(nodeLib.signMessage, action.payload);
+    const res: Yielded<LndSignMessageResponse> = yield call(nodeLib.signMessage, action.payload);
+
+    if (!res.signature) {
+      throw new Error('Message failed to sign, missing signature');
+    }
+
+    const payload: WebLNSignMessageResponse = {
+      message: action.payload,
+      signature: res.signature,
+    };
     
     yield put({ 
       type: types.SIGN_MESSAGE_SUCCESS,
@@ -29,7 +42,7 @@ export function* handleVerifyMessage(action: ReturnType<typeof verifyMessage>): 
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    const verification: Yielded<VerifyMessageResponse> = yield call(nodeLib.verifyMessage, action.payload);
+    const verification: Yielded<LndVerifyMessageResponse> = yield call(nodeLib.verifyMessage, action.payload);
     const nodeInfo: Yielded<typeof nodeLib.getNodeInfo> = yield call(safeGetNodeInfo, nodeLib, verification.pubkey);
     const payload = {
       ...verification,

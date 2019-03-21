@@ -1,5 +1,5 @@
 import types from './types';
-import { SignMessageResponse } from 'webln/lib/provider';
+import { SignMessageResponse } from 'webln';
 
 export interface SignState {
   signReceipt: SignMessageResponse | null;

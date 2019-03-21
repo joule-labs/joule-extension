@@ -7778,9 +7778,10 @@ webidl-conversions@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
 
-webln@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/webln/-/webln-0.0.3.tgz#d8bd43accfb2f85216441a3f67f58349835c9aa9"
+webln@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/webln/-/webln-0.2.0.tgz#841a19a315efb407dc065ab6827bd64e61051cdd"
+  integrity sha512-8fuN3k6Aif6HkAeKtvhnWHUdkOwZDf5igQc+jtOR3Id1x1q6/hklJqnixSOIARu1VUrhInLeVBTr1QdKatGlkw==
   dependencies:
     "@types/chrome" "0.0.74"
 
