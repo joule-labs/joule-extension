@@ -189,6 +189,7 @@ export class LndHttpClient {
     ).then(res => {
       res.payments = res.payments.map(t => ({
         fee: '0',
+        path: [],
         ...t,
       }));
       return res;
