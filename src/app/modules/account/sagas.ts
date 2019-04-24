@@ -4,7 +4,7 @@ import BN from 'bn.js';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { getNodePubKey } from 'modules/node/sagas';
 import { requirePassword } from 'modules/crypto/sagas';
-import { safeGetNodeInfo } from 'utils/misc';
+import { safeGetNodeInfo, UNKNOWN_NODE } from 'utils/misc';
 import types, { Account } from './types';
 
 
@@ -66,13 +66,21 @@ export function* handleGetTransactions(): SagaIterator {
 
     // Get node information from payments
     const paymentNodeIds: string[] = paymentsRes.payments
-      .map(payment => payment.path[payment.path.length - 1])
+      .map(payment => payment.path.length ? payment.path[payment.path.length - 1] : '')
+      .filter(id => !!id)
       .filter((id, idx, ids) => ids.indexOf(id) === idx);
     const paymentNodes: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
       paymentNodeIds.map(id => call(safeGetNodeInfo, nodeLib, id))
     );
     const payments = paymentsRes.payments
       .map(p => {
+        // Handle payments that may be missing a path
+        if (!p.path.length) {
+          return {
+            ...p,
+            to: UNKNOWN_NODE,
+          };
+        }
         const nodeResponse = paymentNodes.find(
           n => p.path[p.path.length - 1] === n.node.pub_key
         );
@@ -82,6 +90,7 @@ export function* handleGetTransactions(): SagaIterator {
         };
       })
       .map(p => {
+        // Fix old style payments that only had `value`
         if (!p.value_sat && !p.value_msat) {
           return {
             ...p,
