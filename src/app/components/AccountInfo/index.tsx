@@ -9,18 +9,21 @@ import Unit from 'components/Unit';
 import DepositModal from './DepositModal';
 import NodeUriModal from './NodeUriModal';
 import { getAccountInfo } from 'modules/account/actions';
-import { getNodeChain } from 'modules/node/selectors';
+import { getNodeInfo } from 'modules/node/actions';
+import { getNodeChain, selectNodeInfo } from 'modules/node/selectors';
 import { blockchainDisplayName } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  nodeInfo: ReturnType<typeof selectNodeInfo>;
   chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
+  getNodeInfo: typeof getNodeInfo
 }
 
 interface OwnProps {
@@ -45,10 +48,13 @@ class AccountInfo extends React.Component<Props, State> {
     if (!this.props.account) {
       this.props.getAccountInfo();
     }
+    if (!this.props.nodeInfo) {
+      this.props.getNodeInfo();
+    }
   }
 
   render() {
-    const { account, chain } = this.props;
+    const { account, nodeInfo, chain } = this.props;
     const { isDepositModalOpen,isNodeUriModalOpen } = this.state;
     const actions: ButtonProps[] = [{
       children: 'Deposit',
@@ -116,6 +122,12 @@ class AccountInfo extends React.Component<Props, State> {
           ))}
         </div>
 
+        {nodeInfo && !nodeInfo.synced_to_chain && (
+          <div className="AccountInfo-syncWarning">
+            <Icon type="warning" /> Node is syncing to chain, balances may be incorrect
+          </div>
+        )}
+
         {account &&
           <DepositModal
             isOpen={isDepositModalOpen}
@@ -143,9 +155,11 @@ class AccountInfo extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
+    nodeInfo: selectNodeInfo(state),
     chain: getNodeChain(state),
   }),
   {
+    getNodeInfo,
     getAccountInfo,
   },
 )(AccountInfo);
