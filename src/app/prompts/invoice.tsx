@@ -41,18 +41,24 @@ interface State {
   isShowingAdvanced: boolean;
 }
 
+const notNilNum = (v: string | number | null | undefined): v is string | number =>
+  !!v || v === 0;
+
 class InvoicePrompt extends React.Component<Props, State> {
   private args: RequestInvoiceArgs;
   private origin: OriginData;
 
   constructor(props: Props) {
     super(props);
-    this.args = getPromptArgs<RequestInvoiceArgs>();
+    const args = getPromptArgs<RequestInvoiceArgs>();
+    this.args = args;
     this.origin = getPromptOrigin();
 
     const { denomination } = props;
-    const valueSats = this.args.amount || this.args.defaultAmount;
-    const value = valueSats ? fromBaseToUnit(valueSats.toString(), denomination).toString() : '';
+    const valueSats = notNilNum(args.amount) ? args.amount : args.defaultAmount;
+    const value = notNilNum(valueSats)
+      ? fromBaseToUnit(valueSats.toString(), denomination).toString()
+      : '';
 
     this.state = {
       value,
@@ -69,7 +75,7 @@ class InvoicePrompt extends React.Component<Props, State> {
     const { chain } = this.props;
     const amountError = this.getValueError();
     const isConfirmDisabled = !!amountError;
-    const isValueDisabled = !!this.args.amount;
+    const isValueDisabled = notNilNum(this.args.amount);
     const amountHelp = this.renderHelp();
 
     return (
@@ -97,7 +103,9 @@ class InvoicePrompt extends React.Component<Props, State> {
               <Input.Group size="large" compact>
                 <Input
                   size="large"
-                  value={value}
+                  value={value === '0' && isValueDisabled
+                    ? '0 (Any amount)' : value
+                  }
                   onChange={this.handleChangeValue}
                   placeholder="Enter an amount"
                   disabled={isValueDisabled}
@@ -173,16 +181,17 @@ class InvoicePrompt extends React.Component<Props, State> {
   private renderHelp = () => {
     const { rates, fiat, isNoFiat, chain } = this.props;
     const { value, denomination } = this.state;
+    const amountError = this.getValueError();
     const helpPieces = [];
 
-    if (this.args.amount) {
+    if (notNilNum(this.args.amount)) {
       helpPieces.push(
         <span key="disabled">
           Specific amount was set and cannot be adjusted
         </span>
       );
     } else {
-      if (this.args.minimumAmount) {
+      if (notNilNum(this.args.minimumAmount)) {
         helpPieces.push(
           <span key="min">
             <strong>Min:</strong>
@@ -193,7 +202,7 @@ class InvoicePrompt extends React.Component<Props, State> {
           </span>
         );
       }
-      if (this.args.maximumAmount) {
+      if (notNilNum(this.args.maximumAmount)) {
         helpPieces.push(
           <span key="max">
             <strong>Max:</strong>
@@ -224,19 +233,20 @@ class InvoicePrompt extends React.Component<Props, State> {
   };
 
   private getValueError = () => {
-    const { value, denomination } = this.state;
+    const { args, state } = this;
+    const { value, denomination } = state;
     const valueBN = new BN(fromUnitToBase(value, denomination));
     if (!value) {
       return 'Must specify value';
     }
-    if (this.args.maximumAmount) {
-      const max = new BN(this.args.maximumAmount);
+    if (notNilNum(args.maximumAmount)) {
+      const max = new BN(args.maximumAmount);
       if (max.lt(valueBN)) {
         return 'Amount exceeds maximum';
       }
     }
-    if (this.args.minimumAmount) {
-      const min = new BN(this.args.minimumAmount);
+    if (notNilNum(args.minimumAmount)) {
+      const min = new BN(args.minimumAmount);
       if (min.gte(valueBN)) {
         return 'Amount is less than minimum';
       }
