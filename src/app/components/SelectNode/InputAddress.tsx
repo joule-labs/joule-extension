@@ -98,7 +98,7 @@ export default class InputAddress extends React.Component<Props, State> {
     const url = this.state.url.replace(/\/$/, '')
     ev.preventDefault();
     browser.permissions.request({
-      origins: [urlWithoutPort(this.state.url)],
+      origins: [urlWithoutPort(url)],
     }).then(accepted => {
       if (!accepted) {
         message.warn('Permission denied, connection may fail');
