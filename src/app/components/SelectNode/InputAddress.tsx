@@ -28,12 +28,6 @@ export default class InputAddress extends React.Component<Props, State> {
     const { error, isCheckingNode } = this.props;
     const { validation, url, submittedUrl } = this.state;
     const validateStatus = url ? validation ? 'error' : 'success' : undefined;
-    // Handle accidental user input after port number
-    const modUrl = submittedUrl.split(":");
-    // Basically just break apart the URL
-    const modPort = modUrl[2].split("/");
-    // Eliminate anything after port number and bring back together
-    const altUrl = `${modUrl[0]}:${modUrl[1]}:${modPort[0]}`;
     const help = (url && validation) || (
       <>
         You must provide the REST API address. Must begin with{' '}
@@ -62,7 +56,7 @@ export default class InputAddress extends React.Component<Props, State> {
               <p>Request failed with the message "{error.message}"</p>
               <p>
                 If you're sure you've setup your node correctly, try{' '}
-                <a href={`${altUrl}/v1/getinfo`} target="_blank">
+                <a href={`${submittedUrl}/v1/getinfo`} target="_blank">
                   clicking this link
                 </a>{' '}
                 and making sure it loads correctly. If there are SSL errors,
@@ -101,6 +95,7 @@ export default class InputAddress extends React.Component<Props, State> {
   };
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
+    const url = this.state.url.replace(/\/$/, '')
     ev.preventDefault();
     browser.permissions.request({
       origins: [urlWithoutPort(this.state.url)],
@@ -108,8 +103,8 @@ export default class InputAddress extends React.Component<Props, State> {
       if (!accepted) {
         message.warn('Permission denied, connection may fail');
       }
-      this.props.submitUrl(this.state.url);
-      this.setState({ submittedUrl: this.state.url });
+      this.props.submitUrl(url);
+      this.setState({ submittedUrl: url });
     });
   };
 }
