@@ -4,3 +4,5 @@ install: yarn
 cache: yarn
 script:
  - yarn run tsc
+ - yarn run lint
+ - yarn run prettier:check
