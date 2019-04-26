@@ -5,6 +5,6 @@ export async function apiFetchOnChainFees() {
   const rates = await res.json();
   return {
     auto: 0, // set auto to 0 so LND can determine the fee
-    ...rates
-  }
+    ...rates,
+  };
 }

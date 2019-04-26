@@ -20,10 +20,10 @@ export default function handleContextMenu() {
         openPrompt({
           type: PROMPT_TYPE.PAYMENT,
           args: { paymentRequest: currentPaymentRequest },
-          origin: getOriginData()
+          origin: getOriginData(),
         });
       }
-    }
+    },
   });
 
   // Add a message listener that shows the menu item when applicable

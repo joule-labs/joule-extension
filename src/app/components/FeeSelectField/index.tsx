@@ -33,9 +33,9 @@ class FeeSelectField extends Component<Props> {
     this.props.getOnChainFeeEstimates();
   }
 
-  componentWillReceiveProps(nextProps: Props) {	
-    const { onChainFees } = this.props;	
-    if (nextProps.onChainFees !== onChainFees && nextProps.onChainFees !== null) {	
+  componentWillReceiveProps(nextProps: Props) {
+    const { onChainFees } = this.props;
+    if (nextProps.onChainFees !== onChainFees && nextProps.onChainFees !== null) {
       const { fastestFee } = nextProps.onChainFees;
       this.props.onChange(fastestFee);
     }
@@ -53,30 +53,28 @@ class FeeSelectField extends Component<Props> {
     const help = showFeeMsg && (
       <>
         The transaction will be sent with the fee
-        {fee 
-          ? <> set to <strong>{fee} sats</strong> per byte. </> 
-          : ' automatically calculated by your node. '}
+        {fee ? (
+          <>
+            {' '}
+            set to <strong>{fee} sats</strong> per byte.{' '}
+          </>
+        ) : (
+          ' automatically calculated by your node. '
+        )}
       </>
     );
 
     return (
-      <Form.Item 
-        className="FeeSelectField"
-        label="Fee"
-        help={help}
-        required
-      >
-        {isFetchingFees &&
-          <Loader inline />
-        }
+      <Form.Item className="FeeSelectField" label="Fee" help={help} required>
+        {isFetchingFees && <Loader inline />}
         {feesError && (
-          <Alert 
-            type="warning" 
+          <Alert
+            type="warning"
             message={`Unable to estimate fees: ${feesError.message}`}
-          /> 
+          />
         )}
         {onChainFees && (
-          <Slider 
+          <Slider
             value={fee}
             step={1}
             max={onChainFees.fastestFee}
@@ -86,13 +84,18 @@ class FeeSelectField extends Component<Props> {
               [onChainFees.halfHourFee]: '',
               [onChainFees.fastestFee]: 'fastest',
             }}
-            tipFormatter={(v) => {
+            tipFormatter={v => {
               switch (v) {
-                case onChainFees.fastestFee: return `${v} (fastest)`;
-                case onChainFees.halfHourFee: return `${v} (normal)`;
-                case onChainFees.hourFee: return `${v} (slow)`;
-                case 0: return 'auto';
-                default: return v;
+                case onChainFees.fastestFee:
+                  return `${v} (fastest)`;
+                case onChainFees.halfHourFee:
+                  return `${v} (normal)`;
+                case onChainFees.hourFee:
+                  return `${v} (slow)`;
+                case 0:
+                  return 'auto';
+                default:
+                  return v;
               }
             }}
             onChange={this.handleChangeFee}

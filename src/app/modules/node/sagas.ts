@@ -1,7 +1,7 @@
 import { SagaIterator } from 'redux-saga';
 import { take, takeLatest, call, put, select, all } from 'redux-saga/effects';
 import * as actions from './actions';
-import { 
+import {
   selectNodeLibOrThrow,
   selectNodeInfo,
   selectSyncedEncryptedNodeState,
@@ -14,12 +14,14 @@ import { channelsTypes } from 'modules/channels';
 import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
 import types from './types';
 
-export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): SagaIterator {
+export function* handleCheckNode(
+  action: ReturnType<typeof actions.checkNode>,
+): SagaIterator {
   const url = action.payload;
   const client = new LndHttpClient(url);
   try {
     yield call(client.getInfo);
-  } catch(err) {
+  } catch (err) {
     if (!(err instanceof MacaroonAuthError)) {
       yield put({ type: types.CHECK_NODE_FAILURE, payload: err });
       return;
@@ -28,37 +30,44 @@ export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>): 
   yield put({ type: types.CHECK_NODE_SUCCESS, payload: url });
 }
 
-export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>): SagaIterator {
+export function* handleCheckNodes(
+  action: ReturnType<typeof actions.checkNodes>,
+): SagaIterator {
   const urls = action.payload;
   try {
     // Use Promise.all with custom catch here, because we expect some
     // of the requests to fail, we only need one succeed
-    const requests = urls.map((url) => {
-      return new Promise<string | null>(async (resolve) => {
+    const requests = urls.map(url => {
+      return new Promise<string | null>(async resolve => {
         try {
           const client = new LndHttpClient(url);
           await client.getInfo();
           resolve(url);
-        } catch(err) {
+        } catch (err) {
           if (err instanceof MacaroonAuthError) {
-            resolve(url)
+            resolve(url);
           }
           resolve(null);
         }
       });
     });
-    const validUrls: Array<string | null> = yield call(Promise.all.bind(Promise), requests);
+    const validUrls: Array<string | null> = yield call(
+      Promise.all.bind(Promise),
+      requests,
+    );
     const validUrl = validUrls.find(url => !!url);
     if (!validUrl) {
       throw new Error('None of the checked nodes were available');
     }
     yield put({ type: types.CHECK_NODE_SUCCESS, payload: validUrl });
-  } catch(err) {
+  } catch (err) {
     yield put({ type: types.CHECK_NODE_FAILURE, payload: err });
   }
 }
 
-export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): SagaIterator {
+export function* handleCheckAuth(
+  action: ReturnType<typeof actions.checkAuth>,
+): SagaIterator {
   const { url, admin, readonly } = action.payload;
 
   // Check read-only by making sure request doesn't error
@@ -66,7 +75,7 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): 
   let nodeInfo;
   try {
     nodeInfo = yield call(client.getInfo);
-  } catch(err) {
+  } catch (err) {
     console.error('Read only macaroon failed:', err);
     yield put({
       type: types.CHECK_AUTH_FAILURE,
@@ -81,9 +90,12 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): 
   client = new LndHttpClient(url, admin);
   try {
     yield call(client.sendPayment, { payment_request: 'testing admin' });
-  } catch(err) {
+  } catch (err) {
     console.log(err);
-    if (err.constructor === MacaroonAuthError || err.constructor === PermissionDeniedError) {
+    if (
+      err.constructor === MacaroonAuthError ||
+      err.constructor === PermissionDeniedError
+    ) {
       yield put({
         type: types.CHECK_AUTH_FAILURE,
         payload: new Error('Admin macaroon did not authenticate'),
@@ -101,10 +113,12 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>): 
   });
 }
 
-export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNodeUrl>): SagaIterator {
+export function* handleUpdateNodeUrl(
+  action: ReturnType<typeof actions.updateNodeUrl>,
+): SagaIterator {
   try {
     const newUrl = action.payload;
-    
+
     // passowrd is needed to decrypt the admin macaroon
     yield call(requirePassword);
 
@@ -129,15 +143,17 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
     yield put({
       type: types.UPDATE_NODE_URL_SUCCESS,
     });
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.UPDATE_NODE_URL_FAILURE,
-      payload: err
+      payload: err,
     });
   }
 }
 
-export function* handleUpdateMacaroons(action: ReturnType<typeof actions.updateMacaroons>): SagaIterator {
+export function* handleUpdateMacaroons(
+  action: ReturnType<typeof actions.updateMacaroons>,
+): SagaIterator {
   try {
     const { url, admin, readonly } = action.payload;
 
@@ -152,7 +168,7 @@ export function* handleUpdateMacaroons(action: ReturnType<typeof actions.updateM
     if (checkAction.type === types.CHECK_AUTH_FAILURE) {
       throw checkAction.payload;
     }
-    
+
     // save the new info in state & storage
     yield put(actions.setNode(url, admin, readonly));
 
@@ -165,14 +181,14 @@ export function* handleUpdateMacaroons(action: ReturnType<typeof actions.updateM
       channelsTypes.GET_CHANNELS,
       // fetch updated transactions
       accountTypes.GET_TRANSACTIONS,
-    ]
+    ];
     yield all(updateActionsTypes.map(type => put({ type })));
 
     yield put({ type: types.UPDATE_MACAROONS_SUCCESS });
   } catch (err) {
     yield put({
       type: types.UPDATE_MACAROONS_FAILURE,
-      payload: err
+      payload: err,
     });
   }
 }
@@ -185,7 +201,7 @@ export function* handleGetNodeInfo(): SagaIterator {
       type: types.GET_NODE_INFO_SUCCESS,
       payload,
     });
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.GET_NODE_INFO_FAILURE,
       payload: err,
@@ -205,11 +221,10 @@ export function* getNodePubKey(): SagaIterator {
     const nodeError = yield select(selectNodeInfoError);
     if (nodeError) {
       throw nodeError;
-    }   
+    }
   }
   return nodeInfo.identity_pubkey;
 }
-
 
 export default function* nodeSagas(): SagaIterator {
   yield takeLatest(types.CHECK_NODE, handleCheckNode);

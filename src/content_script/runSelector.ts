@@ -9,7 +9,7 @@ export default async function runSelector<T>(
   stateKey: keyof AppState,
 ): Promise<T> {
   const storageData = await storageSyncGet([storageKey]);
-  const keyData = storageData && storageData[storageKey] || {};
+  const keyData = (storageData && storageData[storageKey]) || {};
   const state = {
     ...combineInitialState,
     [stateKey]: {

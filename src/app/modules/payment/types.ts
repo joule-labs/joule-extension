@@ -4,11 +4,11 @@ enum PaymentTypes {
   CHECK_PAYMENT_REQUEST = 'CHECK_PAYMENT_REQUEST',
   CHECK_PAYMENT_REQUEST_SUCCESS = 'CHECK_PAYMENT_REQUEST_SUCCESS',
   CHECK_PAYMENT_REQUEST_FAILURE = 'CHECK_PAYMENT_REQUEST_FAILURE',
-  
+
   SEND_PAYMENT = 'SEND_PAYMENT',
   SEND_PAYMENT_SUCCESS = 'SEND_PAYMENT_SUCCESS',
   SEND_PAYMENT_FAILURE = 'SEND_PAYMENT_FAILURE',
-  
+
   SEND_ON_CHAIN = 'SEND_ON_CHAIN',
   SEND_ON_CHAIN_SUCCESS = 'SEND_ON_CHAIN_SUCCESS',
   SEND_ON_CHAIN_FAILURE = 'SEND_ON_CHAIN_FAILURE',
@@ -33,24 +33,27 @@ export interface PaymentRequestData {
   route: Route;
 }
 
-export type PaymentRequestState = {
-  isLoading: true;
-  error: null;
-  data: null;
-} | {
-  isLoading: false;
-  error: Error;
-  data: null;
-} | {
-  isLoading: false;
-  error: null;
-  data: PaymentRequestData;
-};
+export type PaymentRequestState =
+  | {
+      isLoading: true;
+      error: null;
+      data: null;
+    }
+  | {
+      isLoading: false;
+      error: Error;
+      data: null;
+    }
+  | {
+      isLoading: false;
+      error: null;
+      data: PaymentRequestData;
+    };
 
-export interface OnChainFeeEstimates { 
-  [key:string]: number,
-  fastestFee: number,
-  halfHourFee: number, 
-  hourFee: number,
-  auto: number,
-};
+export interface OnChainFeeEstimates {
+  [key: string]: number;
+  fastestFee: number;
+  halfHourFee: number;
+  hourFee: number;
+  auto: number;
+}

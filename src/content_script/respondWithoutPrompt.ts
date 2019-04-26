@@ -19,8 +19,7 @@ async function handleAuthorizePrompt(data: any) {
     if (settings.enabledDomains.includes(domain)) {
       postDataMessage(undefined);
       return true;
-    }
-    else if (settings.rejectedDomains.includes(domain)) {
+    } else if (settings.rejectedDomains.includes(domain)) {
       postErrorMessage('User rejected prompt');
       return true;
     }
@@ -30,17 +29,23 @@ async function handleAuthorizePrompt(data: any) {
 }
 
 function postDataMessage(data: any) {
-  window.postMessage({
-    application: 'Joule',
-    response: true,
-    data,
-  }, '*');
+  window.postMessage(
+    {
+      application: 'Joule',
+      response: true,
+      data,
+    },
+    '*',
+  );
 }
 
 function postErrorMessage(error: string) {
-  window.postMessage({
-    application: 'Joule',
-    response: true,
-    error,
-  }, '*');
+  window.postMessage(
+    {
+      application: 'Joule',
+      response: true,
+      error,
+    },
+    '*',
+  );
 }

@@ -42,8 +42,8 @@ export default class BTCPayServer extends React.Component<Props, State> {
     return (
       <div className="BTCPayServer">
         <p>
-          Follow these steps to connect your BTCPay Server to Joule. Your node
-          must be fully synced in order to get connection details.
+          Follow these steps to connect your BTCPay Server to Joule. Your node must be
+          fully synced in order to get connection details.
         </p>
         <ol className="BTCPayServer-steps">
           <li>Navigate to your BTCPayServer and log in as an admin</li>
@@ -51,7 +51,11 @@ export default class BTCPayServer extends React.Component<Props, State> {
           <li>Click "See QR Code information" and copy the QR Code data</li>
           <li>Paste the data below:</li>
         </ol>
-        <Form className="BTCPayServer-form" onSubmit={this.handleSubmit} layout="vertical">
+        <Form
+          className="BTCPayServer-form"
+          onSubmit={this.handleSubmit}
+          layout="vertical"
+        >
           <Form.Item
             label="Connect data"
             help={error}
@@ -77,15 +81,15 @@ export default class BTCPayServer extends React.Component<Props, State> {
           </Button>
         </Form>
         <div className="BTCPayServer-help">
-          Want to learn more about BTCPay Server?
-          {' '}
+          Want to learn more about BTCPay Server?{' '}
           <a
             href="https://github.com/btcpayserver/btcpayserver"
             target="_blank"
             rel="noopener nofollow"
           >
             Click here
-          </a>.
+          </a>
+          .
         </div>
       </div>
     );
@@ -128,7 +132,7 @@ export default class BTCPayServer extends React.Component<Props, State> {
           message.error('No LND configuration found', 2);
         }
         this.props.submitConfig(lndConfig);
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         message.error('Failed to connect to BTCPay Server', 2);
       }

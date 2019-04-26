@@ -8,23 +8,17 @@ import types from './types';
 
 export function* handleGetChannels(): SagaIterator {
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow>
-      = yield select(selectNodeLibOrThrow);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
     // Get open and pending channels in one go
     const [
       { channels },
-      {
-        pending_force_closing_channels,
-        pending_open_channels,
-        waiting_close_channels,
-      },
-    ] : [
-      Yielded <typeof nodeLib.getChannels>,
-      Yielded <typeof nodeLib.getPendingChannels>
-    ]
-     = yield all([
-       call(nodeLib.getChannels),
-       call(nodeLib.getPendingChannels)]);
+      { pending_force_closing_channels, pending_open_channels, waiting_close_channels },
+    ]: [
+      Yielded<typeof nodeLib.getChannels>,
+      Yielded<typeof nodeLib.getPendingChannels>
+    ] = yield all([call(nodeLib.getChannels), call(nodeLib.getPendingChannels)]);
 
     // Map all channels' node info together
     const allChannels = [
@@ -33,17 +27,23 @@ export function* handleGetChannels(): SagaIterator {
       ...pending_open_channels,
       ...waiting_close_channels,
     ];
-    const nodePubKeys = allChannels.reduce((prev, c) => {
-      prev[c.remote_node_pub] = true;
-      return prev;
-    }, {} as { [pubkey: string]: boolean });
-    const nodeInfoResponses: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
-      Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk))
+    const nodePubKeys = allChannels.reduce(
+      (prev, c) => {
+        prev[c.remote_node_pub] = true;
+        return prev;
+      },
+      {} as { [pubkey: string]: boolean },
     );
-    const nodeInfoMap = nodeInfoResponses.reduce((prev, node) => {
-      prev[node.node.pub_key] = node;
-      return prev;
-    }, {} as { [pubkey: string]: Yielded<typeof nodeLib.getNodeInfo> });
+    const nodeInfoResponses: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
+      Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk)),
+    );
+    const nodeInfoMap = nodeInfoResponses.reduce(
+      (prev, node) => {
+        prev[node.node.pub_key] = node;
+        return prev;
+      },
+      {} as { [pubkey: string]: Yielded<typeof nodeLib.getNodeInfo> },
+    );
 
     // Map all channels together with node info
     const payload = allChannels.map(channel => ({
@@ -54,7 +54,7 @@ export function* handleGetChannels(): SagaIterator {
       type: types.GET_CHANNELS_SUCCESS,
       payload,
     });
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.GET_CHANNELS_FAILURE,
       payload: err,
@@ -65,7 +65,9 @@ export function* handleGetChannels(): SagaIterator {
 export function* handleOpenChannel(action: ReturnType<typeof openChannel>): SagaIterator {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
 
     // Connect to peer and wait a sec just in case we weren't already
     yield call(safeConnectPeer, nodeLib, action.payload.address);
@@ -80,7 +82,8 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
       sat_per_byte: action.payload.fee,
     };
     const res: Yielded<typeof nodeLib.openChannel> = yield call(
-      nodeLib.openChannel, openParams
+      nodeLib.openChannel,
+      openParams,
     );
     yield put({
       type: types.OPEN_CHANNEL_SUCCESS,
@@ -94,22 +97,28 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
     // Refresh channels list
     yield call(sleep, 300);
     yield put(getChannels());
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.OPEN_CHANNEL_FAILURE,
       payload: err,
-    })
+    });
   }
 }
 
-export function* handleCloseChannel(action: ReturnType<typeof closeChannel>): SagaIterator {
+export function* handleCloseChannel(
+  action: ReturnType<typeof closeChannel>,
+): SagaIterator {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
 
     const { fundingTxid, outputIndex } = action.payload;
     const res: Yielded<typeof nodeLib.closeChannel> = yield call(
-      nodeLib.closeChannel, fundingTxid, outputIndex
+      nodeLib.closeChannel,
+      fundingTxid,
+      outputIndex,
     );
     yield put({
       type: types.CLOSE_CHANNEL_SUCCESS,
@@ -121,11 +130,11 @@ export function* handleCloseChannel(action: ReturnType<typeof closeChannel>): Sa
     // Refresh channels list
     yield call(sleep, 300);
     yield put(getChannels());
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.CLOSE_CHANNEL_FAILURE,
       payload: err,
-    })
+    });
   }
 }
 

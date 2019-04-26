@@ -41,15 +41,19 @@ export default class DomainLists extends React.Component<Props> {
           searchPlaceholder: 'Search here',
         }}
       />
-    )
+    );
   }
 
   private renderFooter = (props: TransferListProps) => {
     const disabled = !props.checkedKeys.length;
-    const handleMove = props.titleText === APPROVED ?
-      this.moveDomainsToRejected : this.moveDomainsToEnabled;
-    const handleRemove = props.titleText === APPROVED ?
-      this.removeDomainsFromEnabled : this.removeDomainsFromRejected;
+    const handleMove =
+      props.titleText === APPROVED
+        ? this.moveDomainsToRejected
+        : this.moveDomainsToEnabled;
+    const handleRemove =
+      props.titleText === APPROVED
+        ? this.removeDomainsFromEnabled
+        : this.removeDomainsFromRejected;
     const moveText = props.titleText === APPROVED ? 'Reject' : 'Enable';
 
     return (
@@ -69,8 +73,8 @@ export default class DomainLists extends React.Component<Props> {
           Remove
         </Button>
       </div>
-    )
-  }
+    );
+  };
 
   private moveDomainsToRejected = (domains: string[]) => {
     domains.forEach(domain => {

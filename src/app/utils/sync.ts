@@ -7,8 +7,14 @@ import {
 } from 'modules/crypto/selectors';
 import { setSyncedCryptoState } from 'modules/crypto/actions';
 import cryptoTypes from 'modules/crypto/types';
-import { selectSyncedEncryptedNodeState, selectSyncedUnencryptedNodeState } from 'modules/node/selectors';
-import { setSyncedEncryptedNodeState, setSyncedUnencryptedNodeState } from 'modules/node/actions';
+import {
+  selectSyncedEncryptedNodeState,
+  selectSyncedUnencryptedNodeState,
+} from 'modules/node/selectors';
+import {
+  setSyncedEncryptedNodeState,
+  setSyncedUnencryptedNodeState,
+} from 'modules/node/actions';
 import nodeTypes from 'modules/node/types';
 import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
@@ -42,10 +48,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     encrypted: false,
     selector: selectSyncedCryptoState,
     action: setSyncedCryptoState,
-    triggerActions: [
-      cryptoTypes.SET_PASSWORD,
-      settingsTypes.CLEAR_SETTINGS,
-    ],
+    triggerActions: [cryptoTypes.SET_PASSWORD, settingsTypes.CLEAR_SETTINGS],
   },
   {
     key: 'node-unencrypted',
@@ -106,7 +109,7 @@ export function storageSyncSet(key: string, item: any) {
       data: item,
     };
     return browser.storage.sync.set({ [key]: data });
-  } catch(err) {
+  } catch (err) {
     Promise.reject(err);
   }
 }
@@ -115,19 +118,22 @@ export async function storageSyncGet(keys: string[]) {
   try {
     // Format and migrate responses
     const allResponses = await browser.storage.sync.get(keys);
-    return keys.reduce((prev, key) => {
-      const res = allResponses[key];
-      // No data synced yet
-      if (!res) {
-        prev[key] = undefined;
+    return keys.reduce(
+      (prev, key) => {
+        const res = allResponses[key];
+        // No data synced yet
+        if (!res) {
+          prev[key] = undefined;
+          return prev;
+        }
+        // Run migrations on unencrypted data
+        const config = getConfigByKey(key);
+        prev[key] = migrateSyncedData(config, res);
         return prev;
-      }
-      // Run migrations on unencrypted data
-      const config = getConfigByKey(key);
-      prev[key] = migrateSyncedData(config, res);
-      return prev;
-    }, {} as { [key: string]: any });
-  } catch(err) {
+      },
+      {} as { [key: string]: any },
+    );
+  } catch (err) {
     Promise.reject(err);
   }
 }
@@ -150,7 +156,9 @@ export function migrateSyncedData(config: SyncConfig<any>, item: SyncData<any>) 
   }
   if (!config.migrations) {
     if (config.version !== 1) {
-      console.warn(`Failed to find any migration functions for sync config '${config.key}'`);
+      console.warn(
+        `Failed to find any migration functions for sync config '${config.key}'`,
+      );
     }
     return item.data;
   }

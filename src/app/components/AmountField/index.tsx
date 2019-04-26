@@ -109,7 +109,7 @@ class AmountField extends React.Component<Props, State> {
       <Form.Item
         label={label}
         help={valueError || warn || help}
-        validateStatus={value && valueError ? 'error' : (warn ? 'warning' : undefined)}
+        validateStatus={value && valueError ? 'error' : warn ? 'warning' : undefined}
         className="AmountField"
         required={required}
       >
@@ -126,10 +126,7 @@ class AmountField extends React.Component<Props, State> {
               autoFocus={autoFocus}
             />
             {maximumSats && showMax && (
-              <Button
-                className="AmountField-inner-max"
-                onClick={this.handleMaxClicked}
-              >
+              <Button className="AmountField-inner-max" onClick={this.handleMaxClicked}>
                 max
               </Button>
             )}
@@ -148,9 +145,7 @@ class AmountField extends React.Component<Props, State> {
           </Input.Group>
           {!isNoFiat && showFiat && (
             <>
-              <div className="AmountField-divider">
-                or
-              </div>
+              <div className="AmountField-divider">or</div>
               <div className="AmountField-fiat">
                 <Input
                   size={size}
@@ -183,18 +178,18 @@ class AmountField extends React.Component<Props, State> {
     if (maximumSats) {
       const max = new BN(maximumSats);
       if (max.lt(valueBN)) {
-        const maxAmount = `${
-          fromBaseToUnit(max.toString(), denomination)
-        } ${denominationSymbols[chain][denomination]}`;
+        const maxAmount = `${fromBaseToUnit(max.toString(), denomination)} ${
+          denominationSymbols[chain][denomination]
+        }`;
         return `Amount exceeds maximum (${maxAmount})`;
       }
     }
     if (minimumSats) {
       const min = new BN(minimumSats);
       if (min.gte(valueBN)) {
-        const minAmount = `${
-          fromBaseToUnit(min.toString(), denomination)
-        } ${denominationSymbols[chain][denomination]}`;
+        const minAmount = `${fromBaseToUnit(min.toString(), denomination)} ${
+          denominationSymbols[chain][denomination]
+        }`;
         return `Amount is less than minimum (${minAmount})`;
       }
     }
@@ -212,19 +207,17 @@ class AmountField extends React.Component<Props, State> {
     const { fiat, rates } = this.props;
     const { denomination } = this.state;
     let { value, valueFiat } = this.state;
-  
+
     if (!val) {
       value = '';
       valueFiat = '';
-    }
-    else if (name === 'value') {
+    } else if (name === 'value') {
       value = val;
       if (rates) {
         const btc = fromUnitToBitcoin(value, denomination);
         valueFiat = (rates[fiat] * parseFloat(btc)).toFixed(2);
       }
-    }
-    else {
+    } else {
       valueFiat = val;
       if (rates) {
         const btc = (parseFloat(valueFiat) / rates[fiat]).toFixed(8);
@@ -254,12 +247,10 @@ class AmountField extends React.Component<Props, State> {
   };
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(
-  state => ({
-    denomination: state.settings.denomination,
-    fiat: state.settings.fiat,
-    isNoFiat: state.settings.isNoFiat,
-    rates: getChainRates(state),
-    chain: getNodeChain(state),
-  }),
-)(AmountField);
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+  denomination: state.settings.denomination,
+  fiat: state.settings.fiat,
+  isNoFiat: state.settings.isNoFiat,
+  rates: getChainRates(state),
+  chain: getNodeChain(state),
+}))(AmountField);

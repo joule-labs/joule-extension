@@ -39,7 +39,7 @@ export default function peersReducers(
         ...state,
         fetchPeersError: action.payload,
         isFetchingPeers: false,
-      }
+      };
 
     case types.ADD_PEER:
       return {

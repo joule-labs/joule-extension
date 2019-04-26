@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 
-
 interface StateProps {
   isSyncing: AppState['sync']['isSyncing'];
   hasSynced: AppState['sync']['hasSynced'];
@@ -28,9 +27,7 @@ class SyncGate extends React.Component<Props> {
   }
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(
-  state => ({
-    isSyncing: state.sync.isSyncing,
-    hasSynced: state.sync.hasSynced,
-  })
-)(SyncGate);
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+  isSyncing: state.sync.isSyncing,
+  hasSynced: state.sync.hasSynced,
+}))(SyncGate);

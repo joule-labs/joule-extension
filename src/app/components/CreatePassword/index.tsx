@@ -24,7 +24,7 @@ interface State {
 export default class CreatePassword extends React.Component<Props, State> {
   static defaultProps = {
     requestCurrentPassword: false,
-  }
+  };
 
   constructor(props: any) {
     super(props);
@@ -59,7 +59,7 @@ export default class CreatePassword extends React.Component<Props, State> {
       currPassword: e.currentTarget.value,
       currPassErr: null,
     });
-  }
+  };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,27 +73,31 @@ export default class CreatePassword extends React.Component<Props, State> {
         if (data !== TEST_CIPHER_DATA) {
           throw new Error('Incorrect password');
         }
-      } catch(err) {
+      } catch (err) {
         this.setState({ currPassErr: 'Password was incorrect' });
         return;
       }
     }
-    
+
     this.props.onCreatePassword(password1, currPassword);
   };
 
   render() {
-    const { currPassword, currPassErr, password1, password2, isReady, strength } = this.state;
+    const {
+      currPassword,
+      currPassErr,
+      password1,
+      password2,
+      isReady,
+      strength,
+    } = this.state;
     const { requestCurrentPassword } = this.props;
-    const p2status = password2.length > 0 ?
-      password1 === password2 ?
-        'success' :
-        'error'
-      : undefined;
-    const labels = requestCurrentPassword 
+    const p2status =
+      password2.length > 0 ? (password1 === password2 ? 'success' : 'error') : undefined;
+    const labels = requestCurrentPassword
       ? { title: '', pass: 'New password', conf: 'Confirm new password' }
-      : { title: 'Create a Password', pass: 'Password', conf: 'Confirm password'}; 
-    
+      : { title: 'Create a Password', pass: 'Password', conf: 'Confirm password' };
+
     return (
       <Form className="CreatePassword" onSubmit={this.handleSubmit} layout="vertical">
         <h2 className="CreatePassword-title">{labels.title}</h2>
@@ -128,7 +132,7 @@ export default class CreatePassword extends React.Component<Props, State> {
             autoFocus={!requestCurrentPassword}
           />
         </Form.Item>
-        
+
         <Form.Item label={labels.conf} validateStatus={p2status}>
           <Input
             name="p2"
@@ -143,20 +147,14 @@ export default class CreatePassword extends React.Component<Props, State> {
           <div className={`CreatePassword-strength-meter is-str${strength}`} />
         </div>
         <div className="CreatePassword-continue">
-          <Button
-            size="large"
-            type="primary"
-            htmlType="submit"
-            disabled={!isReady}
-            block
-          >
+          <Button size="large" type="primary" htmlType="submit" disabled={!isReady} block>
             Continue
           </Button>
         </div>
         <div className="CreatePassword-disclaimer">
-          Joule secures all of your data using AES-256 encryption, and won't
-          be able to do anything until you enter it. This password is the key
-          to your data, and cannot be recovered. Make sure you back it up.
+          Joule secures all of your data using AES-256 encryption, and won't be able to do
+          anything until you enter it. This password is the key to your data, and cannot
+          be recovered. Make sure you back it up.
         </div>
       </Form>
     );

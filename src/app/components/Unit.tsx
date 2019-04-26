@@ -1,10 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Denomination,
-  denominationSymbols,
-  fiatSymbols,
-} from 'utils/constants';
+import { Denomination, denominationSymbols, fiatSymbols } from 'utils/constants';
 import { fromBaseToUnit, fromUnitToFiat } from 'utils/units';
 import { commaify } from 'utils/formatters';
 import { AppState } from 'store/reducers';
@@ -49,10 +45,12 @@ class Unit extends React.Component<Props> {
     value = value.replace('-', '');
 
     const adjustedValue = fromBaseToUnit(value, denomination);
-    const bitcoinEl = <>
-      {commaify(adjustedValue)}
-      {!hideUnit && <small>{' '}{denominationSymbols[chain][denomination]}</small>}
-    </>;
+    const bitcoinEl = (
+      <>
+        {commaify(adjustedValue)}
+        {!hideUnit && <small> {denominationSymbols[chain][denomination]}</small>}
+      </>
+    );
 
     let fiatEl = '';
     if (rates) {
@@ -69,12 +67,9 @@ class Unit extends React.Component<Props> {
         <span className="Unit-primary">
           {prefix}
           {isFiatPrimary ? fiatEl : bitcoinEl}
-        </span>
-        {' '}
+        </span>{' '}
         {showFiat && !isNoFiat && (
-          <span className="Unit-secondary">
-            {isFiatPrimary ? bitcoinEl : fiatEl}
-          </span>
+          <span className="Unit-secondary">{isFiatPrimary ? bitcoinEl : fiatEl}</span>
         )}
       </span>
     );

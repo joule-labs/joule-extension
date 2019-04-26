@@ -16,9 +16,7 @@ interface Props {
 const App: React.SFC<Props> = ({ routes }) => (
   <Provider store={store}>
     <SyncGate>
-      <MemoryRouter>
-        {routes}
-      </MemoryRouter>
+      <MemoryRouter>{routes}</MemoryRouter>
       <PasswordPrompt />
     </SyncGate>
   </Provider>

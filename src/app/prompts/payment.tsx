@@ -73,9 +73,12 @@ class PaymentPrompt extends React.Component<Props, State> {
         // Only consider latest route if we're replacing one...
         isLatestRoute: !!this.state.routedRequest,
       });
-      
+
       if (newPr.data.request.num_satoshis) {
-        const value = fromBaseToUnit(newPr.data.request.num_satoshis, denomination).toString();
+        const value = fromBaseToUnit(
+          newPr.data.request.num_satoshis,
+          denomination,
+        ).toString();
         this.setState({
           value,
           // ...but if a payment came with the request, it's a latest route
@@ -101,10 +104,7 @@ class PaymentPrompt extends React.Component<Props, State> {
 
       content = (
         <div className="PaymentPrompt">
-          <NodeInfo 
-            pubkey={node.pub_key}
-            alias={node.alias}
-          />
+          <NodeInfo pubkey={node.pub_key} alias={node.alias} />
           <div className="PaymentPrompt-amount">
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
             {request.num_satoshis ? (
@@ -146,38 +146,58 @@ class PaymentPrompt extends React.Component<Props, State> {
           <div className="PaymentPrompt-details">
             <Tabs defaultActiveKey="basics">
               <Tabs.TabPane key="basics" tab="Basics">
-                <DetailsTable rows={[{
-                  label: 'Fee',
-                  isLarge: true,
-                  value: isLatestRoute ?
-                    <Unit value={route.total_fees} showFiat /> :
-                    <Loader inline size="1.3rem" />,
-                }, {
-                  label: 'Total',
-                  isLarge: true,
-                  value: isLatestRoute ?
-                    <Unit value={route.total_amt} showFiat /> :
-                    <Loader inline size="1.3rem" />,
-                }]}/>
+                <DetailsTable
+                  rows={[
+                    {
+                      label: 'Fee',
+                      isLarge: true,
+                      value: isLatestRoute ? (
+                        <Unit value={route.total_fees} showFiat />
+                      ) : (
+                        <Loader inline size="1.3rem" />
+                      ),
+                    },
+                    {
+                      label: 'Total',
+                      isLarge: true,
+                      value: isLatestRoute ? (
+                        <Unit value={route.total_amt} showFiat />
+                      ) : (
+                        <Loader inline size="1.3rem" />
+                      ),
+                    },
+                  ]}
+                />
               </Tabs.TabPane>
               <Tabs.TabPane key="details" tab="Details">
-                <DetailsTable rows={[{
-                  label: 'Hops',
-                  value: isLatestRoute ?
-                    `${route.hops.length} node(s)` :
-                    <Loader inline size="1.3rem" />,
-                }, {
-                  label: 'Time lock',
-                  value: moment().add(route.total_time_lock, 'seconds').fromNow(true),
-                }, {
-                  label: 'Expires',
-                  value: unixMoment(request.timestamp)
-                    .add(request.expiry, 'seconds')
-                    .format(SHORT_FORMAT),
-                }, {
-                  label: 'Fallback address',
-                  value: request.fallback_addr || <em>N/A</em>,
-                }]}/>
+                <DetailsTable
+                  rows={[
+                    {
+                      label: 'Hops',
+                      value: isLatestRoute ? (
+                        `${route.hops.length} node(s)`
+                      ) : (
+                        <Loader inline size="1.3rem" />
+                      ),
+                    },
+                    {
+                      label: 'Time lock',
+                      value: moment()
+                        .add(route.total_time_lock, 'seconds')
+                        .fromNow(true),
+                    },
+                    {
+                      label: 'Expires',
+                      value: unixMoment(request.timestamp)
+                        .add(request.expiry, 'seconds')
+                        .format(SHORT_FORMAT),
+                    },
+                    {
+                      label: 'Fallback address',
+                      value: request.fallback_addr || <em>N/A</em>,
+                    },
+                  ]}
+                />
               </Tabs.TabPane>
             </Tabs>
           </div>
@@ -198,7 +218,7 @@ class PaymentPrompt extends React.Component<Props, State> {
             onClick: () => this.props.checkPaymentRequest(this.paymentRequest),
           }}
         />
-      )
+      );
     } else {
       content = <Loader />;
     }
@@ -292,5 +312,5 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
   {
     checkPaymentRequest,
     sendPayment,
-  }
-)(PaymentPrompt)
+  },
+)(PaymentPrompt);

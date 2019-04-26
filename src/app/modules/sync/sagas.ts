@@ -7,7 +7,13 @@ import {
   selectHasSetPassword,
 } from 'modules/crypto/selectors';
 import cryptoTypes from 'modules/crypto/types';
-import { storageSyncGet, storageSyncSet, SyncConfig, syncConfigs, migrateSyncedData } from 'utils/sync';
+import {
+  storageSyncGet,
+  storageSyncSet,
+  SyncConfig,
+  syncConfigs,
+  migrateSyncedData,
+} from 'utils/sync';
 import { encryptData, decryptData } from 'utils/crypto';
 import { startSync, finishSync } from './actions';
 import types from './types';
@@ -85,12 +91,12 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): Saga
   const decryptedItem = decryptData(data, password, salt);
   const payload = migrateSyncedData(syncConfig, decryptedItem);
   yield put(syncConfig.action(payload));
-  yield put({ type: types.FINISH_DECRYPT});
+  yield put({ type: types.FINISH_DECRYPT });
 }
 
 export default function* cryptoSagas(): SagaIterator {
   yield takeEvery(types.CLEAR_DATA, clearData);
-  
+
   // First fetch sync'd data and hydrate the store
   yield fork(sync);
   yield take(types.FINISH_SYNC);

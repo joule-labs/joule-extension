@@ -27,8 +27,7 @@ export default class ChannelRow extends React.Component<Props> {
     let tooltipText = channelStatusText[channel.status];
     if (channel.status === CHANNEL_STATUS.FORCE_CLOSING) {
       tooltipText = `${tooltipText} (in ${channel.blocks_til_maturity} blocks)`;
-    }
-    else if (channel.status === CHANNEL_STATUS.OPEN && !channel.active) {
+    } else if (channel.status === CHANNEL_STATUS.OPEN && !channel.active) {
       tooltipText = `${tooltipText} (offline)`;
     }
 
@@ -39,7 +38,7 @@ export default class ChannelRow extends React.Component<Props> {
 
     return (
       <div
-        className={classnames("ChannelRow", onClick && 'is-clickable')}
+        className={classnames('ChannelRow', onClick && 'is-clickable')}
         onClick={this.handleClick}
       >
         <div className="ChannelRow-avatar">
@@ -49,9 +48,7 @@ export default class ChannelRow extends React.Component<Props> {
           </Tooltip>
         </div>
         <div className="ChannelRow-info">
-          <div className="ChannelRow-info-alias">
-            {node.alias}
-          </div>
+          <div className="ChannelRow-info-alias">{node.alias}</div>
           <div className="ChannelRow-info-pubkey">
             <code>{node.pub_key}</code>
           </div>
@@ -62,7 +59,10 @@ export default class ChannelRow extends React.Component<Props> {
             <Unit value={channel.capacity} />
           </div>
           <div className="ChannelRow-info-progress">
-            <div className="ChannelRow-info-progress-inner" style={{ width: `${capacityPct}%` }}/>
+            <div
+              className="ChannelRow-info-progress-inner"
+              style={{ width: `${capacityPct}%` }}
+            />
           </div>
         </div>
       </div>

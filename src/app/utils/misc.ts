@@ -43,7 +43,7 @@ export async function safeGetNodeInfo(
   try {
     const node = await lib.getNodeInfo(pubkey);
     return node;
-  } catch(err) {
+  } catch (err) {
     return {
       total_capacity: 0,
       num_channels: 0,
@@ -56,13 +56,10 @@ export async function safeGetNodeInfo(
 }
 
 // Run connectPeer, but if it fails due to duplicate, just ignore
-export async function safeConnectPeer(
-  lib: LndHttpClient,
-  address: string,
-): Promise<any> {
+export async function safeConnectPeer(lib: LndHttpClient, address: string): Promise<any> {
   try {
     lib.connectPeer(address);
-  } catch(err) {
+  } catch (err) {
     if (err === AlreadyConnectedError) {
       return;
     }

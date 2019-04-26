@@ -44,7 +44,7 @@ class PasswordPage extends React.Component<Props, State> {
 
   render() {
     const { password, error, isClearModalOpen } = this.state;
-  
+
     return (
       <div className="EnterPassword">
         <Form className="EnterPassword-form" onSubmit={this.handleSubmit}>
@@ -56,7 +56,7 @@ class PasswordPage extends React.Component<Props, State> {
               value={password}
               onChange={this.handleChange}
               enterButton={<Icon type="unlock" />}
-              ref={el => this.input = el}
+              ref={el => (this.input = el)}
             />
           </Form.Item>
 
@@ -74,9 +74,9 @@ class PasswordPage extends React.Component<Props, State> {
             closable
           >
             <p>
-              Safu data is encrypted, and your password <strong>cannot be recovered</strong>.
-              If you forgot your password, you’ll have to reset your Safu extension and
-              start over.
+              Safu data is encrypted, and your password{' '}
+              <strong>cannot be recovered</strong>. If you forgot your password, you’ll
+              have to reset your Safu extension and start over.
             </p>
             <p>
               This cannot be undone, so make sure you’re ready to start over before
@@ -105,7 +105,7 @@ class PasswordPage extends React.Component<Props, State> {
         throw new Error('Incorrect password');
       }
       this.props.enterPassword(password);
-    } catch(err) {
+    } catch (err) {
       this.setState({ error: 'Password was incorrect' });
     }
   };

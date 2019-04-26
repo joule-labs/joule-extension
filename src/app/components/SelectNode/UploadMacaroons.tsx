@@ -9,7 +9,7 @@ interface Props {
   isSaving?: boolean;
   initialAdmin?: string;
   initialReadonly?: string;
-  nodeType?: NODE_TYPE,
+  nodeType?: NODE_TYPE;
   onUploaded(admin: string, readOnly: string): void;
 }
 
@@ -37,13 +37,14 @@ export default class UploadMacaroon extends React.Component<Props, State> {
   render() {
     const { nodeType } = this.props;
     const { error, admin, readonly, isShowingHexInputs } = this.state;
-    const dirs = (nodeType && DEFAULT_LND_DIRS[nodeType]) || DEFAULT_LND_DIRS[NODE_TYPE.LOCAL];
+    const dirs =
+      (nodeType && DEFAULT_LND_DIRS[nodeType]) || DEFAULT_LND_DIRS[NODE_TYPE.LOCAL];
     return (
       <Form layout="vertical" className="UploadMacaroons">
         <div className="UploadMacaroons-description">
-          We need to authenticate with your node using macaroons. Your admin
-          macaroon will be encrypted, and payments will <em>never</em> be made
-          without your explicit approval.
+          We need to authenticate with your node using macaroons. Your admin macaroon will
+          be encrypted, and payments will <em>never</em> be made without your explicit
+          approval.
         </div>
 
         {isShowingHexInputs ? (
@@ -70,9 +71,7 @@ export default class UploadMacaroon extends React.Component<Props, State> {
             <Upload.Dragger
               accept=".macaroon"
               showUploadList={false}
-              beforeUpload={
-                (file) => this.handleMacaroonUpload('admin', file)
-              }
+              beforeUpload={file => this.handleMacaroonUpload('admin', file)}
             >
               <p className="ant-upload-drag-icon">
                 <Icon type={admin ? 'check-circle' : 'inbox'} />
@@ -80,17 +79,13 @@ export default class UploadMacaroon extends React.Component<Props, State> {
               <p className="ant-upload-text">
                 Upload <code>admin.macaroon</code>
               </p>
-              <p className="ant-upload-hint">
-                Click or drag to upload macaroon
-              </p>
+              <p className="ant-upload-hint">Click or drag to upload macaroon</p>
             </Upload.Dragger>
 
             <Upload.Dragger
               accept=".macaroon"
               showUploadList={false}
-              beforeUpload={
-                (file) => this.handleMacaroonUpload('readonly', file)
-              }
+              beforeUpload={file => this.handleMacaroonUpload('readonly', file)}
             >
               <p className="ant-upload-drag-icon">
                 <Icon type={readonly ? 'check-circle' : 'inbox'} />
@@ -98,26 +93,24 @@ export default class UploadMacaroon extends React.Component<Props, State> {
               <p className="ant-upload-text">
                 Upload <code>readonly.macaroon</code>
               </p>
-              <p className="ant-upload-hint">
-                Click or drag to upload
-              </p>
+              <p className="ant-upload-hint">Click or drag to upload</p>
             </Upload.Dragger>
 
-            {dirs &&
+            {dirs && (
               <div className="UploadMacaroons-hint">
                 Macaroons are usually located in the following places
-                <br/>
+                <br />
                 <strong>macOS</strong>: <code>{dirs.MACOS}</code>
-                <br/>
+                <br />
                 <strong>Windows</strong>: <code>{dirs.WINDOWS}</code>
-                <br/>
+                <br />
                 <strong>Linux</strong>: <code>{dirs.LINUX}</code>
               </div>
-            }
+            )}
           </>
         )}
 
-        {error &&
+        {error && (
           <Alert
             message="Invalid macaroon"
             description={error}
@@ -125,11 +118,12 @@ export default class UploadMacaroon extends React.Component<Props, State> {
             closable
             showIcon
           />
-        }
+        )}
 
         <div className="UploadMacaroons-toggle">
-          {isShowingHexInputs ? 'Have macaroon files instead?' : 'Have hex strings instead?'}
-          {' '}
+          {isShowingHexInputs
+            ? 'Have macaroon files instead?'
+            : 'Have hex strings instead?'}{' '}
           <a onClick={this.toggleHexInputs}>Click here to switch</a>.
         </div>
 

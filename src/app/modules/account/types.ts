@@ -1,4 +1,9 @@
-import { LightningNode, LightningInvoice, LightningPayment, BitcoinTransaction } from 'lib/lnd-http';
+import {
+  LightningNode,
+  LightningInvoice,
+  LightningPayment,
+  BitcoinTransaction,
+} from 'lib/lnd-http';
 
 enum AccountTypes {
   GET_ACCOUNT_INFO = 'GET_ACCOUNT_INFO',

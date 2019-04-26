@@ -4,7 +4,11 @@ import { LndHttpClient } from 'lib/lnd-http';
 import { selectSyncedUnencryptedNodeState } from 'modules/node/selectors';
 
 export default async function getNodeInfo(): Promise<GetInfoResponse> {
-  const state = await runSelector(selectSyncedUnencryptedNodeState, 'node-unencrypted', 'node');
+  const state = await runSelector(
+    selectSyncedUnencryptedNodeState,
+    'node-unencrypted',
+    'node',
+  );
   if (!state.url || !state.readonlyMacaroon) {
     throw new Error('Node has not been set up');
   }

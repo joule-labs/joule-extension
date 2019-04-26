@@ -3,6 +3,6 @@ export enum SyncTypes {
   FINISH_SYNC = 'FINISH_SYNC',
   FINISH_DECRYPT = 'FINISH_DECRYPT',
   CLEAR_DATA = 'CLEAR_DATA',
-};
+}
 
 export default SyncTypes;

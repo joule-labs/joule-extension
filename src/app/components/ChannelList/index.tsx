@@ -8,7 +8,6 @@ import { AppState } from 'store/reducers';
 import { ChannelWithNode } from 'modules/channels/types';
 import OpenChannelModal from 'components/OpenChannelModal';
 
-
 interface StateProps {
   channels: AppState['channels']['channels'];
   isFetchingChannels: AppState['channels']['isFetchingChannels'];
@@ -47,7 +46,7 @@ class ChannelList extends React.Component<Props, State> {
     if (isFetchingChannels) {
       content = <Loader />;
     } else if (channels && channels.length) {
-      content = channels.map((c,i) => (
+      content = channels.map((c, i) => (
         <ChannelRow key={i} channel={c} onClick={onClick} />
       ));
     } else if (fetchChannelsError) {
@@ -82,11 +81,7 @@ class ChannelList extends React.Component<Props, State> {
         </div>
       );
     }
-    return (
-      <div className="ChannelList">
-        {content}
-      </div>
-    );
+    return <div className="ChannelList">{content}</div>;
   }
 
   private openChannelModal = () => this.setState({ isChannelModalOpen: true });

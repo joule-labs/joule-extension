@@ -24,4 +24,5 @@ export const selectNodeInfo = (s: AppState) => s.node.nodeInfo;
 
 export const selectNodeInfoError = (s: AppState) => s.node.fetchNodeInfoError;
 
-export const getNodeChain = (s: AppState) => ((s.node.nodeInfo && s.node.nodeInfo.chains[0]) || 'bitcoin') as CHAIN_TYPE;
+export const getNodeChain = (s: AppState) =>
+  ((s.node.nodeInfo && s.node.nodeInfo.chains[0]) || 'bitcoin') as CHAIN_TYPE;

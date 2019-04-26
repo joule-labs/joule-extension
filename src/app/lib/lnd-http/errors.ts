@@ -12,7 +12,11 @@ interface ErrorConstructor {
  * @param {Function} errorType
  */
 // tslint:enable:max-line-length
-function fixError(error: Error, newTarget: ErrorConstructor, errorType: ErrorConstructor) {
+function fixError(
+  error: Error,
+  newTarget: ErrorConstructor,
+  errorType: ErrorConstructor,
+) {
   Object.setPrototypeOf(error, errorType.prototype);
 
   // when an error constructor is invoked with the `new` operator
@@ -37,11 +41,10 @@ function fixStack(stack: string, functionName: string) {
   // exclude lines starts with:  "  at functionName "
   const exclusion: RegExp = new RegExp(`\\s+at\\s${functionName}\\s`);
 
-  const lines = stack.split("\n");
+  const lines = stack.split('\n');
   const resultLines = lines.filter(line => !line.match(exclusion));
-  return resultLines.join("\n");
+  return resultLines.join('\n');
 }
-
 
 export class NetworkError extends Error {
   statusCode: number;
@@ -65,7 +68,7 @@ export class MacaroonAuthError extends Error {
   }
 }
 
-export class PermissionDeniedError extends Error{
+export class PermissionDeniedError extends Error {
   constructor(message: string) {
     super(message);
     fixError(this, new.target, PermissionDeniedError);

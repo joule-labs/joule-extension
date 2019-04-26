@@ -105,9 +105,9 @@ class Routes extends React.Component<Props> {
     const currentRoute =
       routeConfigs.find(config => !!matchPath(pathname, config.route)) ||
       routeConfigs[routeConfigs.length - 1];
-    const routeComponents = routeConfigs.map(config =>
+    const routeComponents = routeConfigs.map(config => (
       <Route key={config.route.path} {...config.route} />
-    );
+    ));
 
     return (
       <Template {...currentRoute.template}>
@@ -128,11 +128,9 @@ class Routes extends React.Component<Props> {
   }
 }
 
-const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(
-  state => ({
-    hasSetPassword: state.crypto.hasSetPassword,
-    password: state.crypto.password,
-  })
-)(Routes);
+const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(state => ({
+  hasSetPassword: state.crypto.hasSetPassword,
+  password: state.crypto.password,
+}))(Routes);
 
 export default withRouter(hot(ConnectedRoutes));

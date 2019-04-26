@@ -24,7 +24,7 @@ class AuthorizePrompt extends React.Component<Props, State> {
   public state: State = {
     rememberChoice: true,
   };
-  
+
   private origin: OriginData;
 
   constructor(props: Props) {
@@ -42,10 +42,7 @@ class AuthorizePrompt extends React.Component<Props, State> {
         isContentCentered
       >
         <div className="AuthorizePrompt">
-          <SwapGraphic 
-            origin={this.origin}
-            message="wants to connect"
-          />
+          <SwapGraphic origin={this.origin} message="wants to connect" />
           <h3>They want to know</h3>
           <ul>
             <li>Your node's alias & color</li>

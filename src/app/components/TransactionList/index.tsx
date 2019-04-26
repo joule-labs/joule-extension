@@ -6,7 +6,7 @@ import BigMessage from 'components/BigMessage';
 import TransactionRow from './TransactionRow';
 import { getTransactions } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
-import { AppState } from 'store/reducers'
+import { AppState } from 'store/reducers';
 
 interface TxRowData {
   timestamp: number;
@@ -41,7 +41,7 @@ class TransactionList extends React.Component<Props> {
 
   render() {
     const { isFetchingTransactions, fetchTransactionsError } = this.props;
-    
+
     let content;
     if (isFetchingTransactions) {
       content = <Loader />;
@@ -73,11 +73,7 @@ class TransactionList extends React.Component<Props> {
       }
     }
 
-    return (
-      <div className="TransactionsList">
-        {content}
-      </div>
-    );
+    return <div className="TransactionsList">{content}</div>;
   }
 
   private renderTransactionRows = () => {
@@ -102,15 +98,18 @@ class TransactionList extends React.Component<Props> {
             delta={new BN(`-${payment.value_sat}`)}
             onClick={onClick}
           />
-        )
-      }))
-    )
+        ),
+      })),
+    );
     rows = rows.concat(
       invoices.map(invoice => {
         const timestamp = parseInt(invoice.creation_date, 10);
         const expiry = timestamp + parseInt(invoice.expiry, 10);
-        const status = invoice.settled ? 'complete' :
-          expiry < Date.now() / 1000 ? 'expired' : 'pending';
+        const status = invoice.settled
+          ? 'complete'
+          : expiry < Date.now() / 1000
+          ? 'expired'
+          : 'pending';
 
         return {
           timestamp,
@@ -131,7 +130,7 @@ class TransactionList extends React.Component<Props> {
             />
           ),
         };
-      })
+      }),
     );
     rows = rows.concat(
       transactions.map(tx => ({
@@ -148,8 +147,8 @@ class TransactionList extends React.Component<Props> {
             onClick={onClick}
           />
         ),
-      }))
-    )
+      })),
+    );
 
     return rows.sort((r1, r2) => r2.timestamp - r1.timestamp).map(r => r.component);
   };

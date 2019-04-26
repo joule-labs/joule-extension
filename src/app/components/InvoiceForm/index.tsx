@@ -67,9 +67,7 @@ class InvoiceForm extends React.Component<Props, State> {
             <QRCode value={invoice.payment_request} size={200} />
           </div>
           <Copy text={invoice.payment_request}>
-            <code className="InvoiceForm-invoice-reqcode">
-              {invoice.payment_request}
-            </code>
+            <code className="InvoiceForm-invoice-reqcode">{invoice.payment_request}</code>
           </Copy>
           <div className="InvoiceForm-invoice-buttons">
             {close && (
@@ -85,11 +83,7 @@ class InvoiceForm extends React.Component<Props, State> {
       );
     } else {
       content = (
-        <Form
-          className="InvoiceForm-form"
-          layout="vertical"
-          onSubmit={this.handleSubmit}
-        >
+        <Form className="InvoiceForm-form" layout="vertical" onSubmit={this.handleSubmit}>
           <AmountField
             label="Amount"
             amount={amount}
@@ -135,8 +129,8 @@ class InvoiceForm extends React.Component<Props, State> {
               </Form.Item>
             </Col>
           </Row>
-          
-          {invoiceError &&
+
+          {invoiceError && (
             <Alert
               type="error"
               message="Failed to create invoice"
@@ -144,7 +138,7 @@ class InvoiceForm extends React.Component<Props, State> {
               showIcon
               closable
             />
-          }
+          )}
 
           <div className="InvoiceForm-buttons">
             <Button
@@ -162,11 +156,7 @@ class InvoiceForm extends React.Component<Props, State> {
       );
     }
 
-    return (
-      <div className="InvoiceForm">
-        {content}
-      </div>
-    )
+    return <div className="InvoiceForm">{content}</div>;
   }
 
   private handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,7 +173,7 @@ class InvoiceForm extends React.Component<Props, State> {
       isAnyValue: ev.target.checked,
       amount: '',
     });
-  }
+  };
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();

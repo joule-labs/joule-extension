@@ -47,11 +47,11 @@ export function cancelPassword() {
 }
 
 export function changePassword(newPassword: string, currPassword: string) {
-  return { 
+  return {
     type: types.CHANGE_PASSWORD,
     payload: {
       currPassword,
-      newPassword
+      newPassword,
     },
   };
 }
@@ -60,7 +60,9 @@ export function logout() {
   return { type: types.LOGOUT };
 }
 
-export function setSyncedCryptoState(payload: ReturnType<typeof selectSyncedCryptoState>) {
+export function setSyncedCryptoState(
+  payload: ReturnType<typeof selectSyncedCryptoState>,
+) {
   return {
     type: types.SET_SYNCED_CRYPTO_STATE,
     payload,

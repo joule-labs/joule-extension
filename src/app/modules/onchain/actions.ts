@@ -1,7 +1,7 @@
 import types from './types';
 
 export function getUtxos() {
-  return { 
+  return {
     type: types.GET_UTXOS,
   };
 }

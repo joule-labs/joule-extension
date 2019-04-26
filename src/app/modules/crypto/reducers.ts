@@ -19,14 +19,14 @@ export const INITIAL_STATE: CryptoState = {
 
 export default function cryptoReducers(
   state: CryptoState = INITIAL_STATE,
-  action: any
+  action: any,
 ): CryptoState {
   switch (action.type) {
     case types.GENERATE_SALT:
       return {
         ...state,
         salt: action.payload,
-      }
+      };
 
     case types.SET_PASSWORD:
       return {
@@ -34,25 +34,25 @@ export default function cryptoReducers(
         hasSetPassword: true,
         password: action.payload,
       };
-    
+
     case types.SET_TEST_CIPHER:
       return {
         ...state,
         testCipher: action.payload,
       };
-    
+
     case types.ENTER_PASSWORD:
       return {
         ...state,
         password: action.payload.password,
         isRequestingPassword: false,
       };
-    
+
     case types.REQUEST_PASSWORD:
       return {
         ...state,
         isRequestingPassword: true,
-      }
+      };
 
     case types.CANCEL_PASSWORD:
       return {
@@ -71,7 +71,7 @@ export default function cryptoReducers(
         ...state,
         ...action.payload,
       };
-    
+
     case settingsTypes.CLEAR_SETTINGS:
       return {
         ...state,
@@ -79,7 +79,7 @@ export default function cryptoReducers(
         hasSetPassword: false,
         password: null,
         testCipher: null,
-      }
+      };
   }
 
   return state;

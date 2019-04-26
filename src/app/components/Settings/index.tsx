@@ -52,10 +52,8 @@ class Settings extends React.Component<Props> {
     return (
       <Form className="Settings" layout="vertical">
         <div className="Settings-section Settings-currencies">
-          <h3 className="Settings-section-title">
-            Units & Currencies
-          </h3>
-          <Form.Item label={blockchainDisplayName[chain] + " unit"}>
+          <h3 className="Settings-section-title">Units & Currencies</h3>
+          <Form.Item label={blockchainDisplayName[chain] + ' unit'}>
             <Select
               size="large"
               value={settings.denomination}
@@ -101,13 +99,10 @@ class Settings extends React.Component<Props> {
         </div>
 
         <div className="Settings-section">
-          <h3 className="Settings-section-title">
-            Approved & Rejected Domains
-          </h3>
+          <h3 className="Settings-section-title">Approved & Rejected Domains</h3>
           <p className="Settings-section-help">
-            Approved domains will be able to prompt you, and have access
-            to your node info. Rejected domains will automatically be
-            rejected without a prompt.
+            Approved domains will be able to prompt you, and have access to your node
+            info. Rejected domains will automatically be rejected without a prompt.
           </p>
           <DomainLists
             enabled={settings.enabledDomains}
@@ -120,23 +115,13 @@ class Settings extends React.Component<Props> {
         </div>
 
         <div className="Settings-section">
-          <h3 className="Settings-section-title">
-            Node
-          </h3>
+          <h3 className="Settings-section-title">Node</h3>
           <NodeSettings />
         </div>
         <div className="Settings-section">
-          <h3 className="Settings-section-title">
-            Reset
-          </h3>
+          <h3 className="Settings-section-title">Reset</h3>
           <Form.Item>
-            <Button
-              type="danger"
-              size="large"
-              block
-              ghost
-              onClick={this.clearSettings}
-              >
+            <Button type="danger" size="large" block ghost onClick={this.clearSettings}>
               Reset All Connection Settings
             </Button>
           </Form.Item>
@@ -151,8 +136,8 @@ class Settings extends React.Component<Props> {
 
   private handleChangeCheckbox = (ev: CheckboxChangeEvent) => {
     this.props.changeSettings({
-      [ev.target.name as SettingsKey]: ev.target.checked
-    })
+      [ev.target.name as SettingsKey]: ev.target.checked,
+    });
   };
 
   private clearSettings = () => {

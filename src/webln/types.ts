@@ -5,4 +5,4 @@ export enum PROMPT_TYPE {
   INVOICE = 'INVOICE',
   SIGN = 'SIGN',
   VERIFY = 'VERIFY',
-};
+}

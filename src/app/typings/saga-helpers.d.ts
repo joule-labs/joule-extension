@@ -2,7 +2,9 @@ import { Effect } from 'redux-saga/effects';
 
 type ExtPromise<T> = T extends Promise<infer U> ? U : T;
 
-type ExtSaga<T> = T extends IterableIterator<infer U> ? Exclude<U, Effect | Effect[]> : ExtPromise<T>;
+type ExtSaga<T> = T extends IterableIterator<infer U>
+  ? Exclude<U, Effect | Effect[]>
+  : ExtPromise<T>;
 
 /**
  * Use this helper to unwrap return types from effects like Call / Apply

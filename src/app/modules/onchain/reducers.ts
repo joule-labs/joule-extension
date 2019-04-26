@@ -35,7 +35,7 @@ export default function peersReducers(
         ...state,
         fetchUtxosError: action.payload,
         isFetchingUtxos: false,
-      }
+      };
   }
   return state;
 }

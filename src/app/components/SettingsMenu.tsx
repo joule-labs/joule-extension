@@ -69,10 +69,7 @@ export default class SettingsMenu extends React.Component<{}, State> {
             <Icon component={MenuIcon} />
           </Button>
         </Dropdown>
-        <PeersModal
-          isVisible={isPeersModalOpen}
-          handleClose={this.closePeersModal}
-        />
+        <PeersModal isVisible={isPeersModalOpen} handleClose={this.closePeersModal} />
         <OpenChannelModal
           isVisible={isChannelModalOpen}
           handleClose={this.closeChannelModal}

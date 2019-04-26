@@ -27,12 +27,11 @@ export default class InputAddress extends React.Component<Props, State> {
   render() {
     const { error, isCheckingNode } = this.props;
     const { validation, url, submittedUrl } = this.state;
-    const validateStatus = url ? validation ? 'error' : 'success' : undefined;
+    const validateStatus = url ? (validation ? 'error' : 'success') : undefined;
     const help = (url && validation) || (
       <>
-        You must provide the REST API address. Must begin with{' '}
-        <code>http://</code> or <code>https://</code>, and specify a port if
-        it's not 80 or 443.
+        You must provide the REST API address. Must begin with <code>http://</code> or{' '}
+        <code>https://</code>, and specify a port if it's not 80 or 443.
       </>
     );
     return (
@@ -48,25 +47,27 @@ export default class InputAddress extends React.Component<Props, State> {
           />
         </Form.Item>
 
-        {error &&
+        {error && (
           <Alert
             type="error"
             message="Failed to connect to node"
-            description={<>
-              <p>Request failed with the message "{error.message}"</p>
-              <p>
-                If you're sure you've setup your node correctly, try{' '}
-                <a href={`${submittedUrl}/v1/getinfo`} target="_blank">
-                  clicking this link
-                </a>{' '}
-                and making sure it loads correctly. If there are SSL errors,
-                click "advanced" and proceed to accept the certificate.
-              </p>
-            </>}
+            description={
+              <>
+                <p>Request failed with the message "{error.message}"</p>
+                <p>
+                  If you're sure you've setup your node correctly, try{' '}
+                  <a href={`${submittedUrl}/v1/getinfo`} target="_blank">
+                    clicking this link
+                  </a>{' '}
+                  and making sure it loads correctly. If there are SSL errors, click
+                  "advanced" and proceed to accept the certificate.
+                </p>
+              </>
+            }
             showIcon
             closable
           />
-        }
+        )}
 
         <Button
           type="primary"
@@ -79,7 +80,7 @@ export default class InputAddress extends React.Component<Props, State> {
           Connect
         </Button>
       </Form>
-    )
+    );
   }
 
   private handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,23 +89,25 @@ export default class InputAddress extends React.Component<Props, State> {
     try {
       // tslint:disable-next-line
       new URL(url);
-    } catch(err) {
+    } catch (err) {
       validation = 'That doesn’t look like a valid url';
     }
     this.setState({ url, validation });
   };
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
-    const url = this.state.url.replace(/\/$/, '')
+    const url = this.state.url.replace(/\/$/, '');
     ev.preventDefault();
-    browser.permissions.request({
-      origins: [urlWithoutPort(url)],
-    }).then(accepted => {
-      if (!accepted) {
-        message.warn('Permission denied, connection may fail');
-      }
-      this.props.submitUrl(url);
-      this.setState({ submittedUrl: url });
-    });
+    browser.permissions
+      .request({
+        origins: [urlWithoutPort(url)],
+      })
+      .then(accepted => {
+        if (!accepted) {
+          message.warn('Permission denied, connection may fail');
+        }
+        this.props.submitUrl(url);
+        this.setState({ submittedUrl: url });
+      });
   };
 }

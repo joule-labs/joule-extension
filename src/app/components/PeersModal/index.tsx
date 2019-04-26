@@ -49,8 +49,7 @@ class PeersModal extends React.Component<Props, State> {
         message.error(nextProps.addPeerError.message, 2);
         console.error('Failed to add peer:', nextProps.addPeerError);
         this.setState({ isAddingPeer: false });
-      }
-      else if (nextProps.peers !== this.props.peers) {
+      } else if (nextProps.peers !== this.props.peers) {
         message.success('Successfully connected to peer!', 2);
         this.resetForm();
       }
@@ -71,17 +70,16 @@ class PeersModal extends React.Component<Props, State> {
       content = (
         <>
           <div className="PeersModal-peers">
-            {peers.map(p => <PeerRow key={p.pub_key} {...p} />)}
+            {peers.map(p => (
+              <PeerRow key={p.pub_key} {...p} />
+            ))}
           </div>
           <Form
             className="PeersModal-form"
             layout="inline"
             onSubmit={this.handlePeerSubmit}
           >
-            <Form.Item
-              validateStatus={validity}
-              className="PeersModal-form-address"
-            >
+            <Form.Item validateStatus={validity} className="PeersModal-form-address">
               <Input
                 value={address}
                 placeholder="Add a peer, e.g. <pubkey>@host"
@@ -117,7 +115,7 @@ class PeersModal extends React.Component<Props, State> {
       >
         {content}
       </Modal>
-    )
+    );
   }
 
   private handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,17 +152,11 @@ export default connect<StateProps, ActionProps, OwnProps, AppState>(
   },
 )(PeersModal);
 
-
-const PeerRow: React.SFC<PeerWithNode> = (p) => (
+const PeerRow: React.SFC<PeerWithNode> = p => (
   <div key={p.pub_key} className="PeerRow">
-    <Identicon
-      className="PeerRow-avatar"
-      pubkey={p.pub_key}
-    />
+    <Identicon className="PeerRow-avatar" pubkey={p.pub_key} />
     <div className="PeerRow-info">
-      <div className="PeerRow-info-alias">
-        {p.node.alias}
-      </div>
+      <div className="PeerRow-info-alias">{p.node.alias}</div>
       <div className="PeerRow-info-address">
         <code>{p.address}</code>
       </div>

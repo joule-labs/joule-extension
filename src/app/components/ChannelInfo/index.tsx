@@ -55,10 +55,10 @@ class ChannelInfo extends React.Component<Props> {
       const txInfo = channel.channel_point.split(':');
       closeCommand = `lncli closechannel ${txInfo[0]} ${txInfo[1]}`;
     }
-    
+
     return (
       <div className="ChannelInfo">
-        <TransferIcons 
+        <TransferIcons
           from={{
             icon: <Identicon pubkey={account.pubKey} />,
             name: account.alias || account.pubKey,
@@ -76,13 +76,7 @@ class ChannelInfo extends React.Component<Props> {
         {/* TODO: show button instead of instructions when LND issue #2730 is resolved */}
         {channel.status === CHANNEL_STATUS.OPEN && (
           <div className="ChannelInfo-actions" style={{ display: 'none' }}>
-            <Button
-              type="danger"
-              size="large"
-              block
-              ghost
-              onClick={this.closeChannel}
-            >
+            <Button type="danger" size="large" block ghost onClick={this.closeChannel}>
               Close Channel
             </Button>
           </div>
@@ -98,7 +92,9 @@ class ChannelInfo extends React.Component<Props> {
               readOnly
               addonAfter={
                 <Copy text={closeCommand}>
-                  <span><Icon type="copy" /> Copy</span>
+                  <span>
+                    <Icon type="copy" /> Copy
+                  </span>
                 </Copy>
               }
             />
@@ -113,63 +109,80 @@ class ChannelInfo extends React.Component<Props> {
 
     const txLink = (txid: string) => (
       <a
-          href={`https://blockstream.info/tx/${txid}`}
-          target="_blank"
-          rel="noopener nofollow"
-        >
-          {ellipsisSandwich(txid, 5)}
-        </a>
+        href={`https://blockstream.info/tx/${txid}`}
+        target="_blank"
+        rel="noopener nofollow"
+      >
+        {ellipsisSandwich(txid, 5)}
+      </a>
     );
 
     const fundingTx = channel.channel_point.split(':')[0];
     // details shared by all channel statuses
-    const details: DetailsRow[] = [{
-      label: 'Status',
-      value: channelStatusText[channel.status],
-    }, {
-      label: 'Capacity',
-      value: <Unit value={channel.capacity} showFiat />,
-    }, {
-      label: 'Local Balance',
-      value: <Unit value={channel.local_balance} showFiat />,
-    }, {
-      label: 'Remote Balance',
-      value: <Unit value={channel.remote_balance} showFiat />,
-    }, {
-      label: 'Funding Tx',
-      value: txLink(fundingTx),
-    }];
+    const details: DetailsRow[] = [
+      {
+        label: 'Status',
+        value: channelStatusText[channel.status],
+      },
+      {
+        label: 'Capacity',
+        value: <Unit value={channel.capacity} showFiat />,
+      },
+      {
+        label: 'Local Balance',
+        value: <Unit value={channel.local_balance} showFiat />,
+      },
+      {
+        label: 'Remote Balance',
+        value: <Unit value={channel.remote_balance} showFiat />,
+      },
+      {
+        label: 'Funding Tx',
+        value: txLink(fundingTx),
+      },
+    ];
 
     if (channel.status === CHANNEL_STATUS.OPEN) {
-      details.push({
-        label: 'Total Sent',
-        value: <Unit value={channel.total_satoshis_sent} showFiat />,
-      }, {
-        label: 'Total Received',
-        value: <Unit value={channel.total_satoshis_received} showFiat />,
-      });
+      details.push(
+        {
+          label: 'Total Sent',
+          value: <Unit value={channel.total_satoshis_sent} showFiat />,
+        },
+        {
+          label: 'Total Received',
+          value: <Unit value={channel.total_satoshis_received} showFiat />,
+        },
+      );
     } else if (channel.status === CHANNEL_STATUS.CLOSING) {
       details.push({
         label: 'Closing Tx',
-        value: txLink(channel.closing_txid),  
+        value: txLink(channel.closing_txid),
       });
     } else if (channel.status === CHANNEL_STATUS.FORCE_CLOSING) {
-      details.push({
-        label: 'Closing in',
-        value: <>
-          <span>{channel.blocks_til_maturity} blocks</span>
-          <span className="Unit-secondary">
-            ~{moment().add(channel.blocks_til_maturity * 10, 'minutes').fromNow(true)}
-          </span>
-        </>
-      }, {
-        label: 'Closing Tx',
-        value: txLink(channel.closing_txid),  
-      });
+      details.push(
+        {
+          label: 'Closing in',
+          value: (
+            <>
+              <span>{channel.blocks_til_maturity} blocks</span>
+              <span className="Unit-secondary">
+                ~
+                {moment()
+                  .add(channel.blocks_til_maturity * 10, 'minutes')
+                  .fromNow(true)}
+              </span>
+            </>
+          ),
+        },
+        {
+          label: 'Closing Tx',
+          value: txLink(channel.closing_txid),
+        },
+      );
     }
 
     return details;
-  }
+  };
 
   private closeChannel = () => {
     Modal.confirm({
@@ -180,19 +193,19 @@ class ChannelInfo extends React.Component<Props> {
         channel closed.
       `,
       onOk: () => {
-        const [fundingTxId, outputIndex] = this.props.channel.channel_point.split(':')
+        const [fundingTxId, outputIndex] = this.props.channel.channel_point.split(':');
         this.props.closeChannel(fundingTxId, outputIndex);
       },
     });
-  }
+  };
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
   }),
-  { 
+  {
     getAccountInfo,
-    closeChannel
+    closeChannel,
   },
 )(ChannelInfo);
