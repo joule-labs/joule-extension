@@ -17,7 +17,7 @@
     "build:dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack",
     "build:prod": "rimraf dist-prod && cross-env NODE_ENV=production webpack",
     "clean": "rimraf ./dist-dev && rimraf ./dist-prod",
-    "lint": "tslint -p tsconfig.json && ",
+    "lint": "tslint -p tsconfig.json",
     "tsc": "tsc --noEmit",
     "prettier:base": "prettier --parser typescript 'src/**/*.{ts,tsx}'",
     "prettier:check": "npm run prettier:base -- --check",
