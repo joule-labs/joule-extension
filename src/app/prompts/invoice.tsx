@@ -181,7 +181,6 @@ class InvoicePrompt extends React.Component<Props, State> {
   private renderHelp = () => {
     const { rates, fiat, isNoFiat, chain } = this.props;
     const { value, denomination } = this.state;
-    const amountError = this.getValueError();
     const helpPieces = [];
 
     if (notNilNum(this.args.amount)) {
