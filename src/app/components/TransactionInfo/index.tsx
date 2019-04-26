@@ -7,6 +7,7 @@ import Unit from 'components/Unit';
 import Copy from 'components/Copy';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
 import TransferIcons, { TransferParty } from 'components/TransferIcons';
+import BigMessage from 'components/BigMessage';
 import { ellipsisSandwich } from 'utils/formatters';
 import { getAccountInfo } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
@@ -75,13 +76,20 @@ class TransactionInfo extends React.Component<Props> {
         <div className="TxInfo-route">
           <h2 className="TxInfo-route-title">Route</h2>
           <div className="TxInfo-route-routes">
-            <Timeline>
-              {tx.path.map(id => (
-                <Timeline.Item key={id}>
-                  <code>{id}</code>
-                </Timeline.Item>
-              ))}
-            </Timeline>
+            {tx.path.length ? (
+              <Timeline>
+                {tx.path.map(id => (
+                  <Timeline.Item key={id}>
+                    <code>{id}</code>
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+            ) : (
+              <BigMessage
+                title="No route info available"
+                message="This payment may be too old, and not have stored routing data"
+              />
+            )}
           </div>
         </div>
       );

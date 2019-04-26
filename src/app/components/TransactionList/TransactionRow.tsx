@@ -35,7 +35,7 @@ class TransactionRow extends React.Component<Props> {
     const { pubkey, timestamp, status, delta, onClick, source, title, chain } = this.props;
 
     let icon;
-    if (pubkey) {
+    if (pubkey !== null && pubkey !== undefined) {
       icon = <Identicon className="TransactionRow-avatar-img" pubkey={pubkey} />;
     } else if (isInvoice(source)) {
       icon = (
