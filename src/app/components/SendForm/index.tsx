@@ -43,7 +43,7 @@ class SendForm extends React.Component<Props, State> {
         <div className="SendForm-type">
           <Radio.Group value={type} onChange={this.handleTypeChange}>
             <Radio.Button value="lightning">
-              <Icon type="thunderbolt" /> Lighting
+              <Icon type="thunderbolt" /> Lightning
             </Radio.Button>
             <Radio.Button>
             <Icon type="link" /> {blockchainDisplayName[chain]}
