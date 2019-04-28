@@ -19,6 +19,7 @@ import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  node: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -39,11 +40,21 @@ class TransactionInfo extends React.Component<Props> {
   }
 
   render() {
-    const { tx, account } = this.props;
+    const { tx, account, node } = this.props;
     if (!account) {
       return null;
     }
-
+    // Handle testnet
+    if (!node) {
+      return null;
+    }
+    const testnet = node.testnet;
+    const mUrl = 'https://blockstream.info/';
+    const tUrl = 'https://blockstream.info/testnet/';
+    let txUrl;
+    testnet === true ? (txUrl = tUrl) : (txUrl = mUrl);
+    // End handle testnet
+    console.log(txUrl);
     let to: TransferParty | undefined;
     let from: TransferParty | undefined;
     let primaryCode;
@@ -146,7 +157,7 @@ class TransactionInfo extends React.Component<Props> {
           label: 'Block height',
           value: (
             <a
-              href={`https://blockstream.info/block/${tx.block_hash}`}
+              href={`${txUrl}block/${tx.block_hash}`}
               target="_blank"
               rel="noopener nofollow"
             >
@@ -157,11 +168,7 @@ class TransactionInfo extends React.Component<Props> {
         {
           label: 'Tx Hash',
           value: (
-            <a
-              href={`https://blockstream.info/tx/${tx.tx_hash}`}
-              target="_blank"
-              rel="noopener nofollow"
-            >
+            <a href={`${txUrl}tx/${tx.tx_hash}`} target="_blank" rel="noopener nofollow">
               {ellipsisSandwich(tx.tx_hash, 5)}
             </a>
           ),
@@ -201,6 +208,7 @@ class TransactionInfo extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
+    node: state.node.nodeInfo,
   }),
   { getAccountInfo },
 )(TransactionInfo);
