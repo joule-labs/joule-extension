@@ -109,7 +109,7 @@ class ChannelInfo extends React.Component<Props> {
     // Handle testnet
     const testnet = node === null ? '' : node.testnet;
     const mUrl = 'https://blockstream.info/';
-    const tUrl = 'https://blockstream.info/testnet/';
+    const tUrl = `${mUrl}testnet/`;
     let txUrl = '';
     testnet === true ? (txUrl = tUrl) : (txUrl = mUrl);
     // End handle testnet
