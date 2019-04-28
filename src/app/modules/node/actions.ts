@@ -1,5 +1,8 @@
 import LndHttpClient, { Macaroon } from 'lib/lnd-http';
-import { selectSyncedUnencryptedNodeState, selectSyncedEncryptedNodeState } from './selectors';
+import {
+  selectSyncedUnencryptedNodeState,
+  selectSyncedEncryptedNodeState,
+} from './selectors';
 import types from './types';
 
 export function checkNode(url: string) {
@@ -69,30 +72,30 @@ export function resetNode() {
   return { type: types.RESET_NODE };
 }
 
-export function setSyncedUnencryptedNodeState(payload: ReturnType<typeof selectSyncedUnencryptedNodeState>) {
+export function setSyncedUnencryptedNodeState(
+  payload: ReturnType<typeof selectSyncedUnencryptedNodeState>,
+) {
   const { url, readonlyMacaroon } = payload;
   return {
     type: types.SYNC_UNENCRYPTED_NODE_STATE,
     payload: {
       url,
       readonlyMacaroon,
-      lib: url
-        ? new LndHttpClient(url as string, readonlyMacaroon as string)
-        : null,
+      lib: url ? new LndHttpClient(url as string, readonlyMacaroon as string) : null,
     },
-  }
+  };
 }
 
-export function setSyncedEncryptedNodeState(payload: ReturnType<typeof selectSyncedEncryptedNodeState>) {
+export function setSyncedEncryptedNodeState(
+  payload: ReturnType<typeof selectSyncedEncryptedNodeState>,
+) {
   const { url, adminMacaroon } = payload;
   return {
     type: types.SYNC_UNENCRYPTED_NODE_STATE,
     payload: {
       url,
       adminMacaroon,
-      lib: url
-        ? new LndHttpClient(url as string, adminMacaroon as string)
-        : null,
+      lib: url ? new LndHttpClient(url as string, adminMacaroon as string) : null,
     },
-  }
+  };
 }

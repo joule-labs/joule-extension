@@ -2,6 +2,14 @@
   "name": "joule-extension",
   "version": "0.5.0",
   "description": "Lightning charge your browser by connecting your lightning node",
+  "homepage": "https://lightningjoule.com",
+  "bugs": "https://github.com/joule-labs/joule-extension/issues",
+  "repository": "github:joule-labs/joule-extension",
+  "license": "MIT",
+  "author": {
+    "name": "William O'Beirne",
+    "url": "https://twitter.com/wbobeirne"
+  },
   "keywords": [
     "typescript",
     "react",
@@ -18,7 +26,15 @@
     "build:prod": "rimraf dist-prod && cross-env NODE_ENV=production webpack",
     "clean": "rimraf ./dist-dev && rimraf ./dist-prod",
     "lint": "tslint -p tsconfig.json",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "prettier:base": "prettier --parser typescript 'src/**/*.{ts,tsx}'",
+    "prettier:check": "npm run prettier:base -- --check",
+    "prettier:write": "npm run prettier:base -- --write"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   },
   "contributors": [
     {
@@ -67,7 +83,7 @@
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "3.2.0",
     "http-proxy-middleware": "^0.18.0",
-    "husky": "^1.0.0-rc.8",
+    "husky": "2.1.0",
     "jdenticon": "2.1.0",
     "less": "^3.7.1",
     "less-loader": "^4.1.0",
@@ -75,7 +91,7 @@
     "moment": "^2.22.2",
     "net": "1.0.2",
     "node-sass": "^4.9.2",
-    "prettier": "^1.13.4",
+    "prettier": "1.17.0",
     "qrcode.react": "0.8.0",
     "query-string": "6.2.0",
     "react": "^16.4.0",
@@ -116,6 +132,7 @@
     "@types/remote-redux-devtools": "0.5.3",
     "@types/zxcvbn": "4.4.0",
     "cross-env": "5.2.0",
+    "pretty-quick": "1.10.0",
     "react-hot-loader": "^4.6.3",
     "rimraf": "2.6.2",
     "string-hash": "1.1.3",

@@ -39,15 +39,16 @@ export default class Template extends React.Component<Props> {
               <SettingsMenu />
             </div>
           </div>
-          <div className={
-            classnames('Template-headerPlaceholder', hideHeader && 'is-hidden')
-          } />
+          <div
+            className={classnames(
+              'Template-headerPlaceholder',
+              hideHeader && 'is-hidden',
+            )}
+          />
 
-          <div className="Template-content">
-            {children}
-          </div>
+          <div className="Template-content">{children}</div>
         </div>
       </div>
-    )
+    );
   }
 }

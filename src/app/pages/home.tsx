@@ -16,7 +16,6 @@ import { getAccountInfo } from 'modules/account/actions';
 import { getChannels } from 'modules/channels/actions';
 import './home.less';
 
-
 interface StateProps {
   nodeUrl: AppState['node']['url'];
   fetchAccountInfoError: AppState['account']['fetchAccountInfoError'];
@@ -55,13 +54,21 @@ class HomePage extends React.Component<Props, State> {
         />
         <Tabs defaultActiveKey="channels">
           <Tabs.TabPane
-            tab={<><Icon type="fork"/> Channels</>}
+            tab={
+              <>
+                <Icon type="fork" /> Channels
+              </>
+            }
             key="channels"
           >
             <ChannelList onClick={this.handleChannelClick} />
           </Tabs.TabPane>
           <Tabs.TabPane
-            tab={<><Icon type="shopping"/> Transactions</>}
+            tab={
+              <>
+                <Icon type="shopping" /> Transactions
+              </>
+            }
             key="transactions"
           >
             <TransactionList onClick={this.handleTransactionClick} />
@@ -78,13 +85,13 @@ class HomePage extends React.Component<Props, State> {
           {drawerContent}
         </Drawer>
 
-        {fetchAccountInfoError && 
+        {fetchAccountInfoError && (
           <ConnectionFailureModal
             nodeUrl={nodeUrl}
             error={fetchAccountInfoError}
             onRetry={this.retryConnection}
           />
-        }
+        )}
       </div>
     );
   }
@@ -121,7 +128,10 @@ class HomePage extends React.Component<Props, State> {
   };
 
   private handleChannelClick = (channel: ChannelWithNode) => {
-    this.openDrawer(<ChannelInfo channel={channel} close={this.closeDrawer} />, 'Channel Details');
+    this.openDrawer(
+      <ChannelInfo channel={channel} close={this.closeDrawer} />,
+      'Channel Details',
+    );
   };
 
   private handleTransactionClick = (tx: AnyTransaction) => {
@@ -131,7 +141,7 @@ class HomePage extends React.Component<Props, State> {
   private retryConnection = () => {
     this.props.getAccountInfo();
     this.props.getChannels();
-  }
+  };
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(

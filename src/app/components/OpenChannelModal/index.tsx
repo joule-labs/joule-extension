@@ -56,7 +56,7 @@ class OpenChannelModal extends React.Component<Props, State> {
   state: State = { ...INITIAL_STATE };
 
   componentWillUpdate(nextProps: Props, nextState: State) {
-    const {isVisible, newChannelTxIds, openChannelError } = nextProps;
+    const { isVisible, newChannelTxIds, openChannelError } = nextProps;
     const { isOpeningChannel, address } = nextState;
 
     if (isVisible && !this.props.isVisible) {
@@ -69,8 +69,7 @@ class OpenChannelModal extends React.Component<Props, State> {
           successfulTxId: newChannelTxIds[address],
           isOpeningChannel: false,
         });
-      }
-      else if (openChannelError && this.props.openChannelError !== openChannelError) {
+      } else if (openChannelError && this.props.openChannelError !== openChannelError) {
         this.setState({
           error: openChannelError,
           isOpeningChannel: false,
@@ -126,11 +125,7 @@ class OpenChannelModal extends React.Component<Props, State> {
       hideFooter = true;
     } else {
       content = (
-        <Form
-          className="OpenChannel-form"
-          layout="vertical"
-          onSubmit={this.openChannel}
-        >
+        <Form className="OpenChannel-form" layout="vertical" onSubmit={this.openChannel}>
           <Form.Item
             label="Connection info"
             validateStatus={addressValidity}
@@ -157,21 +152,18 @@ class OpenChannelModal extends React.Component<Props, State> {
 
           {isShowingAdvanced ? (
             <div className="OpenChannel-form-advanced">
-              <FeeSelectField
-                fee={fee}
-                onChange={this.handleFeeChange}
-                showFeeMsg
-              />
+              <FeeSelectField fee={fee} onChange={this.handleFeeChange} showFeeMsg />
               <AmountField
                 label="Push amount"
                 amount={pushAmount}
                 disabled={isOpeningChannel}
                 onChangeAmount={this.handlePushAmountChange}
-                help={<>
-                  An initial amount to send to the node. Must be less than
-                  capacity. It is not advised to do this unless you know what
-                  you are doing!
-                </>}
+                help={
+                  <>
+                    An initial amount to send to the node. Must be less than capacity. It
+                    is not advised to do this unless you know what you are doing!
+                  </>
+                }
                 showFiat
               />
               <Checkbox
@@ -192,14 +184,14 @@ class OpenChannelModal extends React.Component<Props, State> {
               Show advanced fields
             </Button>
           )}
-          {error &&
+          {error && (
             <Alert
               type="error"
               message="Failed to open channel"
               description={error.message}
               closable
             />
-          }
+          )}
         </Form>
       );
     }
@@ -222,7 +214,7 @@ class OpenChannelModal extends React.Component<Props, State> {
       >
         {content}
       </Modal>
-    )
+    );
   }
 
   private handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,25 +263,28 @@ class OpenChannelModal extends React.Component<Props, State> {
       return message.error('You just opened a channel with that node');
     }
 
-    this.setState({
-      error: null,
-      isOpeningChannel: true,
-    }, () => {
-      this.props.openChannel({
-        address,
-        capacity,
-        isPrivate,
-        // only send non-zero fee
-        fee: fee ? fee.toString() : undefined,
-        // Don't send empty string
-        pushAmount: pushAmount || undefined,
-      });
-    });
+    this.setState(
+      {
+        error: null,
+        isOpeningChannel: true,
+      },
+      () => {
+        this.props.openChannel({
+          address,
+          capacity,
+          isPrivate,
+          // only send non-zero fee
+          fee: fee ? fee.toString() : undefined,
+          // Don't send empty string
+          pushAmount: pushAmount || undefined,
+        });
+      },
+    );
   };
 
   private resetForm = () => {
     this.setState({ ...INITIAL_STATE });
-  }
+  };
 }
 
 export default connect<StateProps, ActionProps, OwnProps, AppState>(

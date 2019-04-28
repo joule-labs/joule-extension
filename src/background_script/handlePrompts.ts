@@ -18,36 +18,38 @@ export function openPrompt(request: PromptRequest): Promise<any> {
   });
 
   return new Promise((resolve, reject) => {
-    browser.windows.create({
-      url: `${browser.runtime.getURL('prompt.html')}?${urlParams}`,
-      type: 'popup',
-      width: 400,
-      height: 580,
-    }).then(window => {
-      const tabId = window.tabs![0].id;
+    browser.windows
+      .create({
+        url: `${browser.runtime.getURL('prompt.html')}?${urlParams}`,
+        type: 'popup',
+        width: 400,
+        height: 580,
+      })
+      .then(window => {
+        const tabId = window.tabs![0].id;
 
-      const onMessageListener = (message: any, sender: Runtime.MessageSender) => {
-        if (message && message.response && sender.tab && sender.tab.id === tabId) {
-          chrome.tabs.onRemoved.removeListener(onRemovedListener);
-          if (message.error) {
-            reject(new Error(message.error));
-          } else {
-            resolve(message.data);
+        const onMessageListener = (message: any, sender: Runtime.MessageSender) => {
+          if (message && message.response && sender.tab && sender.tab.id === tabId) {
+            chrome.tabs.onRemoved.removeListener(onRemovedListener);
+            if (message.error) {
+              reject(new Error(message.error));
+            } else {
+              resolve(message.data);
+            }
+            chrome.windows.remove(sender.tab.windowId as number);
           }
-          chrome.windows.remove(sender.tab.windowId as number);
-        }
-      };
+        };
 
-      const onRemovedListener = (tid: number) => {
-        if (tabId === tid) {
-          chrome.runtime.onMessage.removeListener(onMessageListener as any);
-          reject(new Error('Prompt was closed'));
-        }
-      };
+        const onRemovedListener = (tid: number) => {
+          if (tabId === tid) {
+            chrome.runtime.onMessage.removeListener(onMessageListener as any);
+            reject(new Error('Prompt was closed'));
+          }
+        };
 
-      chrome.runtime.onMessage.addListener(onMessageListener as any);
-      chrome.tabs.onRemoved.addListener(onRemovedListener);
-    });
+        chrome.runtime.onMessage.addListener(onMessageListener as any);
+        chrome.tabs.onRemoved.addListener(onRemovedListener);
+      });
   });
 }
 

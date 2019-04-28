@@ -11,7 +11,7 @@ export function* handleFetchRates(): SagaIterator {
     const coins = Object.values(CHAIN_TYPE);
     const rates = yield call(apiFetchRates, coins, fiats);
     yield put({ type: types.FETCH_RATES_SUCCESS, payload: rates });
-  } catch(err) {
+  } catch (err) {
     yield put({ type: types.FETCH_RATES_FAILURE, payload: err });
   }
 }

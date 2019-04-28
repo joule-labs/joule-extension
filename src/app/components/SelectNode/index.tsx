@@ -8,7 +8,13 @@ import BTCPayServer, { BTCPayServerConfig } from './BTCPayServer';
 import SelectType from './SelectType';
 import { NODE_TYPE, DEFAULT_NODE_URLS } from 'utils/constants';
 import { urlWithoutPort } from 'utils/formatters';
-import { checkNode, checkNodes, checkAuth, setNode, resetNode } from 'modules/node/actions';
+import {
+  checkNode,
+  checkNodes,
+  checkAuth,
+  setNode,
+  resetNode,
+} from 'modules/node/actions';
 import { AppState } from 'store/reducers';
 import './style.less';
 import InputAddress from './InputAddress';
@@ -55,7 +61,8 @@ class SelectNode extends React.Component<Props, State> {
   };
 
   componentWillUpdate(nextProps: Props) {
-    const finishedCheck = nextProps.url !== this.props.url ||
+    const finishedCheck =
+      nextProps.url !== this.props.url ||
       nextProps.checkNodeError !== this.props.checkNodeError;
     if (finishedCheck) {
       this.setState({ isScanningLocal: false });
@@ -82,8 +89,7 @@ class SelectNode extends React.Component<Props, State> {
     if (nodeType) {
       if (isCheckingAuth || isRequestingPermission || isScanningLocal) {
         content = <Spin />;
-      }
-      else if (nodeInfo) {
+      } else if (nodeInfo) {
         title = 'Confirm your node';
         content = (
           <ConfirmNode
@@ -92,17 +98,12 @@ class SelectNode extends React.Component<Props, State> {
             onCancel={this.resetNode}
           />
         );
-      }
-      else if (isNodeChecked) {
+      } else if (isNodeChecked) {
         title = 'Upload Macaroons';
         content = (
-          <UploadMacaroons
-            onUploaded={this.handleMacaroons}
-            nodeType={nodeType}
-          />
+          <UploadMacaroons onUploaded={this.handleMacaroons} nodeType={nodeType} />
         );
-      }
-      else if (nodeType === NODE_TYPE.BTCPAY_SERVER) {
+      } else if (nodeType === NODE_TYPE.BTCPAY_SERVER) {
         title = 'Connect to your BTCPay Server';
         content = (
           <BTCPayServer
@@ -110,9 +111,8 @@ class SelectNode extends React.Component<Props, State> {
             error={checkAuthError}
           />
         );
-      }
-      else {
-        title = 'Provide a URL'
+      } else {
+        title = 'Provide a URL';
         content = (
           <InputAddress
             submitUrl={this.setUrl}
@@ -147,15 +147,17 @@ class SelectNode extends React.Component<Props, State> {
       });
       // Instantly check the default local node. Strip port to get around a
       // firefox issue where CORS isn't stripped if you have port permission.
-      browser.permissions.request({
-        origins: [urlWithoutPort(defaultUrl)],
-      }).then(accepted => {
-        if (!accepted) {
-          message.warn('Permission denied, connection may fail', 2);
-        }
-        this.props.checkNode(defaultUrl);
-        this.setState({ isRequestingPermission: false });
-      });
+      browser.permissions
+        .request({
+          origins: [urlWithoutPort(defaultUrl)],
+        })
+        .then(accepted => {
+          if (!accepted) {
+            message.warn('Permission denied, connection may fail', 2);
+          }
+          this.props.checkNode(defaultUrl);
+          this.setState({ isRequestingPermission: false });
+        });
     }
   };
 
@@ -194,7 +196,7 @@ class SelectNode extends React.Component<Props, State> {
     }
     this.props.setNode(url, adminMacaroon, readonlyMacaroon);
     this.props.onConfirmNode();
-  }
+  };
 
   private resetNode = () => {
     this.props.resetNode();
@@ -217,5 +219,5 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
     checkAuth,
     setNode,
     resetNode,
-  }
+  },
 )(SelectNode);

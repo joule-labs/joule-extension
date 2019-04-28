@@ -32,10 +32,15 @@ export default class PromptTemplate extends React.Component<Props, State> {
 
     return (
       <div className="PromptTemplate">
-        <div className={classnames('PromptTemplate-content', isContentCentered && 'is-centered')}>
+        <div
+          className={classnames(
+            'PromptTemplate-content',
+            isContentCentered && 'is-centered',
+          )}
+        >
           {children}
         </div>
-        {!hasNoButtons &&
+        {!hasNoButtons && (
           <div className="PromptTemplate-buttons">
             <Button
               onClick={this.handleReject}
@@ -53,9 +58,9 @@ export default class PromptTemplate extends React.Component<Props, State> {
               Confirm
             </Button>
           </div>
-        }
+        )}
       </div>
-    )
+    );
   }
 
   private handleReject = async () => {
@@ -67,7 +72,7 @@ export default class PromptTemplate extends React.Component<Props, State> {
       await this.props.beforeReject();
     }
     rejectPrompt();
-  }
+  };
 
   private handleConfirm = async () => {
     // Kick in a loader if getting confirm data takes a sec
@@ -83,12 +88,12 @@ export default class PromptTemplate extends React.Component<Props, State> {
     if (this.props.getConfirmData) {
       try {
         data = await this.props.getConfirmData();
-      } catch(err) {
+      } catch (err) {
         this.setState({ isConfirming: false });
         message.error(err.message, 3);
         return;
       }
     }
     confirmPrompt(data);
-  }
+  };
 }

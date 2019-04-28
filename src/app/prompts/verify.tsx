@@ -33,9 +33,9 @@ class VerifyPrompt extends React.Component<Props, State> {
     super(props);
     this.state = {
       isVerifying: true,
-    }
+    };
 
-    const args = getPromptArgs<{ signature: string, msg: string }>();
+    const args = getPromptArgs<{ signature: string; msg: string }>();
     this.signature = args.signature;
     this.msg = args.msg;
   }
@@ -43,9 +43,8 @@ class VerifyPrompt extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { pubkey, error } = this.props;
 
-    if ((pubkey && pubkey !== prevProps.pubkey) ||
-        (error && error !== prevProps.error)) {
-          this.setState({ isVerifying: false });
+    if ((pubkey && pubkey !== prevProps.pubkey) || (error && error !== prevProps.error)) {
+      this.setState({ isVerifying: false });
     }
   }
 
@@ -59,18 +58,12 @@ class VerifyPrompt extends React.Component<Props, State> {
 
     let content;
     if (this.state.isVerifying) {
-      content = (
-        <Loader size="5rem" />
-      );
+      content = <Loader size="5rem" />;
     } else {
       content = (
         <>
           <div className="VerifyPrompt">
-            <NodeInfo 
-              pubkey={pubkey}
-              alias={alias || ''}
-              className="VerifyPrompt-node"
-            />
+            <NodeInfo pubkey={pubkey} alias={alias || ''} className="VerifyPrompt-node" />
             <div className="VerifyPrompt-title">
               <h3>Signature Verification</h3>
             </div>
@@ -83,28 +76,35 @@ class VerifyPrompt extends React.Component<Props, State> {
             </div>
             <div className="VerifyPrompt-content">
               <Tabs defaultActiveKey="message">
-                <Tabs.TabPane key="message" tab={<><Icon type="file-text"/> Message</>}>
-                  <code className="VerifyPrompt-content-message">
-                    {this.msg}
-                  </code>
+                <Tabs.TabPane
+                  key="message"
+                  tab={
+                    <>
+                      <Icon type="file-text" /> Message
+                    </>
+                  }
+                >
+                  <code className="VerifyPrompt-content-message">{this.msg}</code>
                 </Tabs.TabPane>
-                <Tabs.TabPane key="signature" tab={<><Icon type="file-protect"/> Signature</>}>
-                  <code className="VerifyPrompt-content-message">
-                    {this.signature}
-                  </code>
+                <Tabs.TabPane
+                  key="signature"
+                  tab={
+                    <>
+                      <Icon type="file-protect" /> Signature
+                    </>
+                  }
+                >
+                  <code className="VerifyPrompt-content-message">{this.signature}</code>
                 </Tabs.TabPane>
               </Tabs>
             </div>
             <div className="VerifyPrompt-description">
-              Verification allows you to confirm a
-              message was previously signed by a specific node.
+              Verification allows you to confirm a message was previously signed by a
+              specific node.
             </div>
           </div>
           <div className="PromptTemplate-buttons">
-            <Button
-              type="primary"
-              onClick={this.handleClose}
-            >
+            <Button type="primary" onClick={this.handleClose}>
               Close
             </Button>
           </div>
@@ -112,16 +112,12 @@ class VerifyPrompt extends React.Component<Props, State> {
       );
     }
 
-    return (
-      <PromptTemplate hasNoButtons>
-        {content}
-      </PromptTemplate>
-    );
+    return <PromptTemplate hasNoButtons>{content}</PromptTemplate>;
   }
 
   private handleClose = () => {
     confirmPrompt({ pubkey: this.props.pubkey });
-  }
+  };
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
@@ -132,5 +128,5 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
   }),
   {
     verifyMessage,
-  }
-)(VerifyPrompt)
+  },
+)(VerifyPrompt);

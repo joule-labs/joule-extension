@@ -10,7 +10,11 @@ import { unixMoment, SHORT_FORMAT } from 'utils/time';
 import { Denomination, denominationSymbols } from 'utils/constants';
 import { fromUnitToBase, fromBaseToUnit } from 'utils/units';
 import { typedKeys } from 'utils/ts';
-import { checkPaymentRequest, sendPayment, resetSendPayment } from 'modules/payment/actions';
+import {
+  checkPaymentRequest,
+  sendPayment,
+  resetSendPayment,
+} from 'modules/payment/actions';
 import { PaymentRequestData } from 'modules/payment/types';
 import { AppState } from 'store/reducers';
 import './LightningSend.less';
@@ -60,7 +64,7 @@ class LightningSend extends React.Component<Props, State> {
     this.state = {
       ...INITIAL_STATE,
       denomination: props.denomination,
-    }
+    };
   }
 
   componentWillUnmount() {
@@ -85,12 +89,14 @@ class LightningSend extends React.Component<Props, State> {
         <SendState
           isLoading={isSending}
           error={sendError}
-          result={sendLightningReceipt && (
-            <>
-              <h3>Pre-image</h3>
-              <code>{sendLightningReceipt.payment_preimage}</code>
-            </>
-          )}
+          result={
+            sendLightningReceipt && (
+              <>
+                <h3>Pre-image</h3>
+                <code>{sendLightningReceipt.payment_preimage}</code>
+              </>
+            )
+          }
           back={this.props.resetSendPayment}
           reset={this.reset}
           close={this.props.close}
@@ -98,16 +104,32 @@ class LightningSend extends React.Component<Props, State> {
       );
     }
 
-    const { paymentRequestValue, showMoreInfo, value, denomination, routedRequest } = this.state;
+    const {
+      paymentRequestValue,
+      showMoreInfo,
+      value,
+      denomination,
+      routedRequest,
+    } = this.state;
     const requestData = this.props.paymentRequests[paymentRequestValue] || {};
-    const prStatus = requestData.isLoading ? 'validating' :
-      requestData.error ? 'error' :
-        requestData.data ? 'success' : undefined;
+    const prStatus = requestData.isLoading
+      ? 'validating'
+      : requestData.error
+      ? 'error'
+      : requestData.data
+      ? 'success'
+      : undefined;
     const prHelp = requestData.error ? requestData.error.message : undefined;
-    const expiry = requestData.data && unixMoment(requestData.data.request.timestamp)
-      .add(requestData.data.request.expiry, 'seconds');
+    const expiry =
+      requestData.data &&
+      unixMoment(requestData.data.request.timestamp).add(
+        requestData.data.request.expiry,
+        'seconds',
+      );
     const hasExpired = expiry && expiry.isBefore(moment.now());
-    const disabled = !requestData.data || !!hasExpired ||
+    const disabled =
+      !requestData.data ||
+      !!hasExpired ||
       (!requestData.data.request.num_satoshis && !value);
 
     return (
@@ -126,14 +148,14 @@ class LightningSend extends React.Component<Props, State> {
             rows={5}
             autoFocus
           />
-          {!paymentRequestValue &&
+          {!paymentRequestValue && (
             <Button size="small" className="LightningSend-pr-qr">
               <Icon type="qrcode" />
             </Button>
-          }
+          )}
         </Form.Item>
 
-        {expiry && hasExpired &&
+        {expiry && hasExpired && (
           <Alert
             style={{ marginBottom: '1rem' }}
             type="warning"
@@ -144,7 +166,7 @@ class LightningSend extends React.Component<Props, State> {
             `}
             showIcon
           />
-        }
+        )}
 
         {routedRequest ? (
           <div className="LightningSend-payment">
@@ -190,63 +212,66 @@ class LightningSend extends React.Component<Props, State> {
             )}
             {routedRequest.route ? (
               <div className="LightningSend-payment-details">
-                <table><tbody>
-                  {routedRequest.request.num_satoshis && (
+                <table>
+                  <tbody>
+                    {routedRequest.request.num_satoshis && (
+                      <tr>
+                        <td>Amount</td>
+                        <td>
+                          <Unit value={routedRequest.request.num_satoshis} />
+                        </td>
+                      </tr>
+                    )}
                     <tr>
-                      <td>Amount</td>
+                      <td>Fee</td>
                       <td>
-                        <Unit value={routedRequest.request.num_satoshis} />
+                        {requestData.isLoading ? (
+                          <Loader inline size="1rem" />
+                        ) : (
+                          <Unit value={routedRequest.route.total_fees} />
+                        )}
                       </td>
                     </tr>
-                  )}
-                  <tr>
-                    <td>Fee</td>
-                    <td>
-                      {requestData.isLoading ?
-                        <Loader inline size="1rem" /> :
-                        <Unit value={routedRequest.route.total_fees} />
-                      }
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Total</td>
-                    <td>
-                      {requestData.isLoading ?
-                        <Loader inline size="1rem" /> :
-                        <Unit value={routedRequest.route.total_amt} />
-                      }
-                      
-                    </td>
-                  </tr>
-                  {showMoreInfo &&
-                    <>
-                      <tr>
-                        <td>Hops</td>
-                        <td>{routedRequest.route.hops.length} node(s)</td>
-                      </tr>
-                      <tr>
-                        <td>Time lock</td>
-                        <td>{
-                          moment()
-                          .add(routedRequest.route.total_time_lock, 'seconds')
-                          .fromNow(true)
-                        }</td>
-                      </tr>
-                      <tr>
-                        <td>Expires</td>
-                        <td>{expiry && expiry.format(SHORT_FORMAT)}</td>
-                      </tr>
-                    </>
-                  }
-                </tbody></table>
-                {!showMoreInfo &&
+                    <tr>
+                      <td>Total</td>
+                      <td>
+                        {requestData.isLoading ? (
+                          <Loader inline size="1rem" />
+                        ) : (
+                          <Unit value={routedRequest.route.total_amt} />
+                        )}
+                      </td>
+                    </tr>
+                    {showMoreInfo && (
+                      <>
+                        <tr>
+                          <td>Hops</td>
+                          <td>{routedRequest.route.hops.length} node(s)</td>
+                        </tr>
+                        <tr>
+                          <td>Time lock</td>
+                          <td>
+                            {moment()
+                              .add(routedRequest.route.total_time_lock, 'seconds')
+                              .fromNow(true)}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Expires</td>
+                          <td>{expiry && expiry.format(SHORT_FORMAT)}</td>
+                        </tr>
+                      </>
+                    )}
+                  </tbody>
+                </table>
+                {!showMoreInfo && (
                   <a
                     className="LightningSend-payment-details-more"
                     onClick={() => this.setState({ showMoreInfo: true })}
                   >
                     More info
                   </a>
-                }
+                )}
               </div>
             ) : (
               <Alert
@@ -270,12 +295,7 @@ class LightningSend extends React.Component<Props, State> {
           <Button size="large" type="ghost" onClick={this.reset}>
             Reset
           </Button>
-          <Button
-            htmlType="submit"
-            type="primary"
-            size="large"
-            disabled={disabled}
-          >
+          <Button htmlType="submit" type="primary" size="large" disabled={disabled}>
             Send
           </Button>
         </div>
@@ -285,14 +305,17 @@ class LightningSend extends React.Component<Props, State> {
 
   private handleChangePaymentRequest = (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
     const paymentRequestValue = ev.currentTarget.value;
-    this.setState({
-      paymentRequestValue,
-      showMoreInfo: false,
-    }, () => {
-      if (paymentRequestValue) {
-        this.props.checkPaymentRequest(paymentRequestValue);
-      }
-    });
+    this.setState(
+      {
+        paymentRequestValue,
+        showMoreInfo: false,
+      },
+      () => {
+        if (paymentRequestValue) {
+          this.props.checkPaymentRequest(paymentRequestValue);
+        }
+      },
+    );
   };
 
   private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -319,7 +342,7 @@ class LightningSend extends React.Component<Props, State> {
       value,
     });
   };
-  
+
   private handleSubmit = () => {
     this.props.sendPayment({
       payment_request: this.state.paymentRequestValue,

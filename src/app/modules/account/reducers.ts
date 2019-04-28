@@ -52,7 +52,7 @@ export default function channelsReducers(
         ...state,
         fetchAccountInfoError: action.payload,
         isFetchingAccountInfo: false,
-      }
+      };
 
     case types.GET_TRANSACTIONS:
       return {
@@ -74,8 +74,8 @@ export default function channelsReducers(
         ...state,
         fetchTransactionsError: action.payload,
         isFetchingTransactions: false,
-      }
-    
+      };
+
     case types.GET_DEPOSIT_ADDRESS:
       return {
         ...state,

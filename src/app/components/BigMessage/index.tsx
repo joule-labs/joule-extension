@@ -34,6 +34,6 @@ export default class BigMessage extends React.Component<Props> {
           </div>
         )}
       </div>
-    )
+    );
   }
 }

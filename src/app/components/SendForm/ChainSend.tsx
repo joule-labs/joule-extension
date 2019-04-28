@@ -50,36 +50,33 @@ class ChainSend extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      ...INITIAL_STATE
-    }
+      ...INITIAL_STATE,
+    };
   }
 
   render() {
-    const { 
-      sendOnChainReceipt, 
-      isSending, 
-      sendError, 
-      account, 
-    } = this.props;
-    
+    const { sendOnChainReceipt, isSending, sendError, account } = this.props;
+
     // Early exit for send state
     if (isSending || sendOnChainReceipt || sendError) {
       return (
         <SendState
           isLoading={isSending}
           error={sendError}
-          result={sendOnChainReceipt && (
-            <>
-              <h3>Transaction ID</h3>
-              <a
-                href={`https://blockstream.info/tx/${sendOnChainReceipt.txid}`}
-                target="_blank"
-                rel="noopener nofollow"
-              >
-                {sendOnChainReceipt.txid}
-              </a>
-            </>
-          )}
+          result={
+            sendOnChainReceipt && (
+              <>
+                <h3>Transaction ID</h3>
+                <a
+                  href={`https://blockstream.info/tx/${sendOnChainReceipt.txid}`}
+                  target="_blank"
+                  rel="noopener nofollow"
+                >
+                  {sendOnChainReceipt.txid}
+                </a>
+              </>
+            )
+          }
           back={this.props.resetSendPayment}
           reset={this.reset}
           close={this.props.close}
@@ -89,18 +86,20 @@ class ChainSend extends React.Component<Props, State> {
 
     const { amount, isSendAll, address, fee } = this.state;
     const blockchainBalance = account ? account.blockchainBalance : '';
-    const disabled = (!amount && !isSendAll) || !address ||
-      (!!blockchainBalance && !!amount && (new BN(blockchainBalance).lt(new BN(amount))));
+    const disabled =
+      (!amount && !isSendAll) ||
+      !address ||
+      (!!blockchainBalance && !!amount && new BN(blockchainBalance).lt(new BN(amount)));
     const dustWarning = isPossibleDust(amount, address, fee) ? (
-      <><Icon type="exclamation-circle" /> Dust warning: This amount may not be spendable</>
-    ) : undefined;
+      <>
+        <Icon type="exclamation-circle" /> Dust warning: This amount may not be spendable
+      </>
+    ) : (
+      undefined
+    );
 
     return (
-      <Form
-        className="ChainSend"
-        layout="vertical"
-        onSubmit={this.handleSubmit}
-      >
+      <Form className="ChainSend" layout="vertical" onSubmit={this.handleSubmit}>
         <AmountField
           label="Amount"
           amount={amount}
@@ -110,7 +109,7 @@ class ChainSend extends React.Component<Props, State> {
           showMax
           required
           warn={dustWarning}
-          help={(
+          help={
             <small>
               Available on-chain balance: <Unit value={blockchainBalance} />
               <Tooltip title="How is this calculated?">
@@ -119,7 +118,7 @@ class ChainSend extends React.Component<Props, State> {
                 </Link>
               </Tooltip>
             </small>
-          )}
+          }
         />
         <Form.Item label="Recipient" required>
           <Input
@@ -134,33 +133,34 @@ class ChainSend extends React.Component<Props, State> {
         <FeeSelectField fee={fee} onChange={this.handleChangeFee} />
 
         <div className="ChainSend-details">
-          <table><tbody>
-            <tr>
-              <td>Amount</td>
-              <td>
-                <Unit value={isSendAll ? blockchainBalance : amount} />
-              </td>
-            </tr>
-            <tr>
-              <td>Fee</td>
-              <td>
-                {!fee ? 'auto' : 
-                  <>{fee} <small> sats/B</small></>
-                } 
-              </td>
-            </tr>
-          </tbody></table>
-        </div>          
+          <table>
+            <tbody>
+              <tr>
+                <td>Amount</td>
+                <td>
+                  <Unit value={isSendAll ? blockchainBalance : amount} />
+                </td>
+              </tr>
+              <tr>
+                <td>Fee</td>
+                <td>
+                  {!fee ? (
+                    'auto'
+                  ) : (
+                    <>
+                      {fee} <small> sats/B</small>
+                    </>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div className="ChainSend-buttons">
           <Button size="large" type="ghost" onClick={this.reset}>
             Reset
           </Button>
-          <Button
-            htmlType="submit"
-            type="primary"
-            size="large"
-            disabled={disabled}
-          >
+          <Button htmlType="submit" type="primary" size="large" disabled={disabled}>
             Send
           </Button>
         </div>
@@ -177,7 +177,7 @@ class ChainSend extends React.Component<Props, State> {
       addr: address,
       sat_per_byte: fee ? fee.toString() : undefined,
     });
-  };  
+  };
 
   private handleChangeAmount = (amount: string) => {
     const { account } = this.props;
@@ -185,7 +185,7 @@ class ChainSend extends React.Component<Props, State> {
 
     this.setState({
       amount,
-      isSendAll: amount === blockchainBalance
+      isSendAll: amount === blockchainBalance,
     });
   };
 

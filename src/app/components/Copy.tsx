@@ -17,6 +17,6 @@ export default class Copy extends React.Component<Props> {
       <CopyToClipboard text={text} onCopy={() => message.success(msg, 1.5)}>
         {children}
       </CopyToClipboard>
-    )
+    );
   }
 }

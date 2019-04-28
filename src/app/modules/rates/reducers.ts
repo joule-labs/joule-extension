@@ -1,9 +1,7 @@
 import { CHAIN_TYPE } from 'utils/constants';
 import types, { RatesMap } from './types';
 
-export type Rates = {
-  [key in CHAIN_TYPE]: RatesMap | undefined;
-}
+export type Rates = { [key in CHAIN_TYPE]: RatesMap | undefined };
 
 export interface RatesState {
   rates: null | Rates;

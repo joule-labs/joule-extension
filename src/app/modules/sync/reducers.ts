@@ -12,7 +12,7 @@ export const INITIAL_STATE: SyncState = {
 
 export default function syncReducers(
   state: SyncState = INITIAL_STATE,
-  action: any
+  action: any,
 ): SyncState {
   switch (action.type) {
     case types.START_SYNC:
@@ -20,7 +20,7 @@ export default function syncReducers(
         ...state,
         isSyncing: true,
       };
-    
+
     case types.FINISH_SYNC:
       return {
         ...state,

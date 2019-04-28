@@ -46,12 +46,15 @@ export function getPromptOrigin(): OriginData {
   const { origin } = qs.parse(window.location.search);
   console.log(origin);
   return JSON.parse(origin as string) as OriginData;
-} 
+}
 
 // Used in components that call sagas and need to wait for a prop,
 // continues to check for either the data prop or error prop and
 // resolves promise with whichever comes first.
-export function watchUntilPropChange<D, E>(getData: () => D, getError: () => E): Promise<D> {
+export function watchUntilPropChange<D, E>(
+  getData: () => D,
+  getError: () => E,
+): Promise<D> {
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
       const data = getData();
@@ -78,18 +81,22 @@ export function getOriginData(): OriginData {
     domain: window.location.origin,
     name: getDocumentName(),
     icon: getDocumentIcon(),
-  }
+  };
 }
 
 function getDocumentName() {
-  const nameMeta: HTMLMetaElement | null = document.querySelector('head > meta[property="og:site_name"]');
+  const nameMeta: HTMLMetaElement | null = document.querySelector(
+    'head > meta[property="og:site_name"]',
+  );
   if (nameMeta) {
     return nameMeta.content;
   }
 
-  const titleMeta: HTMLMetaElement | null = document.querySelector('head > meta[name="title"]')
+  const titleMeta: HTMLMetaElement | null = document.querySelector(
+    'head > meta[name="title"]',
+  );
   if (titleMeta) {
-    return titleMeta.content
+    return titleMeta.content;
   }
 
   return document.title;
@@ -98,7 +105,7 @@ function getDocumentName() {
 function getDocumentIcon() {
   // Search for largest icon first
   const allIcons = Array.from<HTMLLinkElement>(
-    document.querySelectorAll('head > link[rel="icon"]')
+    document.querySelectorAll('head > link[rel="icon"]'),
   ).filter(icon => !!icon.href);
 
   if (allIcons.length) {
@@ -111,7 +118,9 @@ function getDocumentIcon() {
   }
 
   // Try for favicon
-  const favicon: HTMLLinkElement | null = document.querySelector('head > link[rel="shortcut icon"]');
+  const favicon: HTMLLinkElement | null = document.querySelector(
+    'head > link[rel="shortcut icon"]',
+  );
   if (favicon) {
     return makeAbsoluteUrl(favicon.href);
   }

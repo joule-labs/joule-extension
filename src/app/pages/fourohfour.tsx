@@ -10,10 +10,12 @@ export default class FourOhFourPage extends React.Component {
         type="404"
         title="You look lost"
         desc="We're not sure how you got here, but there's nothing good here!"
-        actions={(
+        actions={
           <div>
             <Link to="/home">
-              <Button type="primary" size="large">Back to home</Button>
+              <Button type="primary" size="large">
+                Back to home
+              </Button>
             </Link>
             <a
               href="https://github.com/wbobeirne/joule-extension/issues"
@@ -23,7 +25,7 @@ export default class FourOhFourPage extends React.Component {
               <Button size="large">Report an issue</Button>
             </a>
           </div>
-        )}
+        }
       />
     );
   }

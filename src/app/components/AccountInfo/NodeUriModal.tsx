@@ -24,12 +24,14 @@ class NodeUriModal extends React.Component<Props> {
        Return empty string when node object is null
        Catch all falsy values for node/uri
     */
-   const text = node === null ? '' :
-      node && node.uris && node.uris[0] ?
-      node.uris[0] : node.identity_pubkey;
-    const title = node === null ? '' :
-      node && node.uris && node.uris[0] ?
-      'Node URI': 'Pubkey';
+    const text =
+      node === null
+        ? ''
+        : node && node.uris && node.uris[0]
+        ? node.uris[0]
+        : node.identity_pubkey;
+    const title =
+      node === null ? '' : node && node.uris && node.uris[0] ? 'Node URI' : 'Pubkey';
     const isVisible = !!isOpen;
     // Placeholders to keep the modal the right size
     const content = (

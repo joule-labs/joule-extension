@@ -37,7 +37,7 @@ class PasswordPrompt extends React.Component<Props, State> {
   render() {
     const { isRequestingPassword } = this.props;
     const { password, isSavingPassword, error } = this.state;
-  
+
     return (
       <Modal
         title="Unlock your wallet"
@@ -97,7 +97,7 @@ class PasswordPrompt extends React.Component<Props, State> {
         throw new Error('Incorrect password');
       }
       this.props.enterPassword(password, isSavingPassword);
-    } catch(err) {
+    } catch (err) {
       this.setState({ error: 'Password was incorrect' });
     }
   };

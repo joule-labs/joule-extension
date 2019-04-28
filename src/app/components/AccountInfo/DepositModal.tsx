@@ -56,9 +56,7 @@ class DepositModal extends React.Component<Props> {
             <QRCode value={depositAddress} size={200} />
           </div>
           <Copy text={depositAddress} name="address">
-            <code className="DepositModal-address">
-              {depositAddress}
-            </code>
+            <code className="DepositModal-address">{depositAddress}</code>
           </Copy>
         </>
       );
@@ -79,9 +77,7 @@ class DepositModal extends React.Component<Props> {
             <div className="DepositModal-qr">
               <QRCode value="placeholder" size={200} />
             </div>
-            <code className="DepositModal-address">
-              placeholder
-            </code>
+            <code className="DepositModal-address">placeholder</code>
           </div>
           <Loader />
         </>
@@ -90,15 +86,13 @@ class DepositModal extends React.Component<Props> {
 
     return (
       <Modal
-        title={coinSymbols[chain] + " Address"}
+        title={coinSymbols[chain] + ' Address'}
         visible={isVisible}
         onCancel={onClose}
-        okButtonProps={{ style: { display: 'none'} }}
+        okButtonProps={{ style: { display: 'none' } }}
         centered
       >
-        <div className="DepositModal">
-          {content}
-        </div>
+        <div className="DepositModal">{content}</div>
       </Modal>
     );
   }

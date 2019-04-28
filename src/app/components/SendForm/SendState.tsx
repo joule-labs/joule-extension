@@ -13,7 +13,7 @@ interface Props {
   close?(): void;
 }
 
-const SendState: React.SFC<Props> = (props) => {
+const SendState: React.SFC<Props> = props => {
   if (props.isLoading) {
     return <Loader />;
   }
@@ -44,9 +44,9 @@ const SendState: React.SFC<Props> = (props) => {
         type={type}
         title={type === 'success' ? 'Succesfully sent!' : 'Failed to send'}
         description={
-          type === 'success' ?
-            'See below for more about your transaction' :
-            'See below for the full error'
+          type === 'success'
+            ? 'See below for more about your transaction'
+            : 'See below for the full error'
         }
         extra={errorMessage || props.result}
         actions={actions}

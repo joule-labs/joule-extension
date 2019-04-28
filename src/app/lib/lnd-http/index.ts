@@ -19,21 +19,16 @@ export class LndHttpClient {
 
   // Public API methods
   getInfo = () => {
-    return this.request<T.GetInfoResponse>(
-      'GET',
-      '/v1/getinfo',
-      undefined,
-      {
-        uris: [],
-        num_active_channels: 0,
-        num_peers: 0,
-        synced_to_chain: false,
-        block_height: 0,
-        num_pending_channels: 0,
-        testnet: false,
-        chains: [],
-      },
-    ).then(res => {
+    return this.request<T.GetInfoResponse>('GET', '/v1/getinfo', undefined, {
+      uris: [],
+      num_active_channels: 0,
+      num_peers: 0,
+      synced_to_chain: false,
+      block_height: 0,
+      num_pending_channels: 0,
+      testnet: false,
+      chains: [],
+    }).then(res => {
       // API can return chain as { chain: 'bitcoin', network: 'testnet' }
       res.chains = res.chains.map((chain: any) => {
         return chain.chain || chain;
@@ -47,12 +42,9 @@ export class LndHttpClient {
   };
 
   getChannels = () => {
-    return this.request<T.GetChannelsResponse>(
-      'GET',
-      '/v1/channels',
-      undefined,
-      { channels: [] },
-    ).then(res => {
+    return this.request<T.GetChannelsResponse>('GET', '/v1/channels', undefined, {
+      channels: [],
+    }).then(res => {
       // Default attributes for channels
       res.channels = res.channels.map(channel => ({
         status: T.CHANNEL_STATUS.OPEN,
@@ -87,7 +79,7 @@ export class LndHttpClient {
         pending_force_closing_channels: [],
         waiting_close_channels: [],
         pending_open_channels: [],
-      }
+      },
     ).then(res => {
       const collapse = (chan: any) => ({
         ...chan,
@@ -122,18 +114,20 @@ export class LndHttpClient {
         capacity: '0',
         ...collapse(channel),
       }));
-      res.pending_force_closing_channels = res.pending_force_closing_channels.map(channel => ({
-        status: T.CHANNEL_STATUS.FORCE_CLOSING,
-        maturity_height: '0',
-        pending_htlcs: [],
-        recovered_balance: '0',
-        limbo_balance: '0',
-        blocks_til_maturity: 0,
-        remote_balance: '0',
-        local_balance: '0',
-        capacity: '0',
-        ...collapse(channel),
-      }));
+      res.pending_force_closing_channels = res.pending_force_closing_channels.map(
+        channel => ({
+          status: T.CHANNEL_STATUS.FORCE_CLOSING,
+          maturity_height: '0',
+          pending_htlcs: [],
+          recovered_balance: '0',
+          limbo_balance: '0',
+          blocks_til_maturity: 0,
+          remote_balance: '0',
+          local_balance: '0',
+          capacity: '0',
+          ...collapse(channel),
+        }),
+      );
       return res;
     });
   };
@@ -164,12 +158,9 @@ export class LndHttpClient {
   };
 
   getTransactions = () => {
-    return this.request<T.GetTransactionsResponse>(
-      'GET',
-      '/v1/transactions',
-      undefined,
-      { transactions: [] },
-    ).then(res => {
+    return this.request<T.GetTransactionsResponse>('GET', '/v1/transactions', undefined, {
+      transactions: [],
+    }).then(res => {
       res.transactions = res.transactions.map(tx => ({
         total_fees: '0',
         amount: '0',
@@ -181,19 +172,16 @@ export class LndHttpClient {
   };
 
   getPayments = () => {
-    return this.request<T.GetPaymentsResponse>(
-      'GET',
-      '/v1/payments',
-      undefined,
-      { payments: [] },
-    ).then(res => {
+    return this.request<T.GetPaymentsResponse>('GET', '/v1/payments', undefined, {
+      payments: [],
+    }).then(res => {
       res.payments = res.payments.map(t => ({
         fee: '0',
         path: [],
         ...t,
       }));
       return res;
-    });;
+    });
   };
 
   getInvoices = (args: T.GetInvoicesArguments = {}) => {
@@ -226,7 +214,7 @@ export class LndHttpClient {
         route_hints: [],
         settled: false,
       },
-    )
+    );
   };
 
   createInvoice = (args: T.CreateInvoiceArguments) => {
@@ -298,12 +286,9 @@ export class LndHttpClient {
   };
 
   getPeers = () => {
-    return this.request<T.GetPeersResponse>(
-      'GET',
-      '/v1/peers',
-      undefined,
-      { peers: [] },
-    ).then(res => {
+    return this.request<T.GetPeersResponse>('GET', '/v1/peers', undefined, {
+      peers: [],
+    }).then(res => {
       // Default attributes for peers
       res.peers = res.peers.map(peer => ({
         ping_time: '0',
@@ -320,11 +305,7 @@ export class LndHttpClient {
   connectPeer = (address: string, perm?: boolean) => {
     const pieces = address.split('@');
     const addr = { pubkey: pieces[0], host: pieces[1] };
-    return this.request<any, T.ConnectPeerArguments>(
-      'POST',
-      '/v1/peers',
-      { addr, perm },
-    );
+    return this.request<any, T.ConnectPeerArguments>('POST', '/v1/peers', { addr, perm });
   };
 
   openChannel = (params: T.OpenChannelParams) => {
@@ -337,7 +318,7 @@ export class LndHttpClient {
         output_index: '0',
         funding_txid_str: txIdBytesToHex(res.funding_txid_bytes),
         ...res,
-      }
+      };
     });
   };
 
@@ -355,7 +336,9 @@ export class LndHttpClient {
     return this.request<T.SignMessageResponse, T.SignMessageParams>(
       'POST',
       '/v1/signmessage',
-      { msg },
+      {
+        msg,
+      },
     );
   };
 
@@ -363,9 +346,9 @@ export class LndHttpClient {
     return this.request<T.VerifyMessageResponse, T.VerifyMessageParams>(
       'POST',
       '/v1/verifymessage',
-      { 
+      {
         ...params,
-        msg: new Buffer(params.msg).toString('base64')
+        msg: new Buffer(params.msg).toString('base64'),
       },
     );
   };
@@ -377,7 +360,9 @@ export class LndHttpClient {
       'GET',
       '/v1/utxos',
       params,
-      { utxos: [] },
+      {
+        utxos: [],
+      },
     );
   };
 
@@ -396,8 +381,7 @@ export class LndHttpClient {
     if (method === 'POST') {
       body = JSON.stringify(args);
       headers.append('Content-Type', 'application/json');
-    }
-    else if (args !== undefined) {
+    } else if (args !== undefined) {
       // TS Still thinks it might be undefined(?)
       query = `?${stringify(args as any)}`;
     }
@@ -411,13 +395,13 @@ export class LndHttpClient {
       headers,
       body,
     })
-      .then(async (res) => {
+      .then(async res => {
         if (!res.ok) {
           let errBody: any;
           try {
             errBody = await res.json();
             if (!errBody.error) throw new Error();
-          } catch(err) {
+          } catch (err) {
             throw new NetworkError(res.statusText, res.status);
           }
           const error = parseNodeErrorResponse(errBody);
@@ -428,11 +412,11 @@ export class LndHttpClient {
       .then((res: Partial<R>) => {
         if (defaultValues) {
           // TS can't handle generic spreadables
-          return { ...defaultValues as any, ...res as any } as R;
+          return { ...(defaultValues as any), ...(res as any) } as R;
         }
         return res as R;
       })
-      .catch((err) => {
+      .catch(err => {
         console.error(`API error calling ${method} ${path}`, err);
         throw err;
       });

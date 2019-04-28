@@ -56,8 +56,8 @@ export default class SelectType extends React.Component<Props> {
         <Collapse>
           <Collapse.Panel header="Need help? Click here" key="help">
             <p>
-              In order to run Joule, you must run your own LND node (other
-              node types coming soon). You can use one of the following for example:
+              In order to run Joule, you must run your own LND node (other node types
+              coming soon). You can use one of the following for example:
             </p>
             <ul>
               <li>
@@ -100,18 +100,17 @@ export default class SelectType extends React.Component<Props> {
               </li>
             </ul>
             <p>
-              All of these will start up a local node. Alternatively, you can
-              run LND on a server to be able to connect remotely from any
-              computer.
+              All of these will start up a local node. Alternatively, you can run LND on a
+              server to be able to connect remotely from any computer.
             </p>
             <p>
-              Once you've set up the node, you'll need to find where it
-              stores the macaroons for access. This will depend on which
-              client you're running. Refer to their documentation.
+              Once you've set up the node, you'll need to find where it stores the
+              macaroons for access. This will depend on which client you're running. Refer
+              to their documentation.
             </p>
           </Collapse.Panel>
         </Collapse>
       </div>
-    )
+    );
   }
 }

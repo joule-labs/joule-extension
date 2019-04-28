@@ -4,7 +4,6 @@ import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 
-
 export enum NODE_TYPE {
   LOCAL = 'LOCAL',
   REMOTE = 'REMOTE',
@@ -19,7 +18,7 @@ export const DEFAULT_NODE_URLS = {
   [NODE_TYPE.ZAP_DESKTOP]: 'https://localhost:8180',
 } as { [key in NODE_TYPE]: string | undefined };
 
-interface LndDirectories  {
+interface LndDirectories {
   MACOS: string;
   LINUX: string;
   WINDOWS: string;
@@ -50,17 +49,19 @@ export enum CHAIN_TYPE {
 
 export const coinSymbols: { [key in CHAIN_TYPE]: string } = {
   bitcoin: 'BTC',
-  litecoin: 'LTC'
+  litecoin: 'LTC',
 };
 
-export const blockchainLogos: { [key in CHAIN_TYPE]: React.ComponentType<CustomIconComponentProps> } = {
+export const blockchainLogos: {
+  [key in CHAIN_TYPE]: React.ComponentType<CustomIconComponentProps>
+} = {
   bitcoin: BitcoinLogo,
   litecoin: LitecoinLogo,
 };
 
 export const blockchainDisplayName: { [key in CHAIN_TYPE]: string } = {
   bitcoin: 'Bitcoin',
-  litecoin: 'Litecoin'
+  litecoin: 'Litecoin',
 };
 
 export enum Denomination {
@@ -115,7 +116,7 @@ export const fiatSymbols: { [key in Fiat]: string } = {
   EUR: '€',
   GBP: '£',
   JPY: '¥',
-  RUB: '₽'
+  RUB: '₽',
 };
 
 export const channelStatusText: { [key in CHANNEL_STATUS]: string } = {
@@ -126,14 +127,14 @@ export const channelStatusText: { [key in CHANNEL_STATUS]: string } = {
   [CHANNEL_STATUS.FORCE_CLOSING]: 'Closing',
 };
 
-// Currency prefixes came from 
+// Currency prefixes came from
 // https://github.com/satoshilabs/slips/blob/master/slip-0173.md
 export const CHAIN_PREFIXES = [
-  'bc',   // Bitcoin Mainnet
-  'tb',   // Bitcoin Testnet
+  'bc', // Bitcoin Mainnet
+  'tb', // Bitcoin Testnet
   'bcrt', // Bitcoin Regtest
-  'sb',   // Bitcoin Simnet
-  'ltc',  // Litecoin Mainnet
+  'sb', // Bitcoin Simnet
+  'ltc', // Litecoin Mainnet
   'tltc', // Litecoin Testnet
   'rltc', // Litecoin Regtest
-]
+];

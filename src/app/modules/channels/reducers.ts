@@ -51,8 +51,8 @@ export default function channelsReducers(
         ...state,
         fetchChannelsError: action.payload,
         isFetchingChannels: false,
-      }
-    
+      };
+
     case types.OPEN_CHANNEL:
       return {
         ...state,
@@ -73,9 +73,9 @@ export default function channelsReducers(
         ...state,
         openChannelError: action.payload,
         isOpeningChannel: false,
-      }
+      };
 
-      case types.CLOSE_CHANNEL:
+    case types.CLOSE_CHANNEL:
       return {
         ...state,
         isClosingChannel: true,
@@ -92,8 +92,7 @@ export default function channelsReducers(
         ...state,
         closeChannelError: action.payload,
         isClosingChannel: false,
-      }
-    
+      };
   }
 
   return state;

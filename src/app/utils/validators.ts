@@ -22,10 +22,10 @@ export function isValidConnectAddress(address: string) {
 }
 
 export function isPossibleDust(amount: string, address: string, fee: number): boolean {
-  return (address && amount && fee)    // we need all of these values
+  return address && amount && fee // we need all of these values
     ? estimateTransactionSize(address) // get the estimated tx size
-        .mul(new BN(fee))              // multiply it by the fee (sats/B)
-        .gte(new BN(amount))           // is the result >= amount
+        .mul(new BN(fee)) // multiply it by the fee (sats/B)
+        .gte(new BN(amount)) // is the result >= amount
     : false;
 }
 
@@ -48,8 +48,8 @@ export function estimateTransactionSize(address: string): BN {
   // hardcoded numbers are from the bitcoind source code, which
   // are also referenced many other places online
   const txNumBytes = isSegwitAddress(address)
-    ? (67 * numInputs) + (31 * numOutputs) + overhead 
-    : (148 * numInputs) + (34 * numOutputs) + overhead;
+    ? 67 * numInputs + 31 * numOutputs + overhead
+    : 148 * numInputs + 34 * numOutputs + overhead;
 
   return new BN(txNumBytes);
 }

@@ -275,7 +275,7 @@ export interface GetInvoicesResponse {
 export type GetInvoiceResponse = LightningInvoice;
 
 export interface DecodePaymentRequestResponse {
-  timestamp: string;	
+  timestamp: string;
   payment_hash: string;
   description: string;
   expiry: string;
@@ -297,22 +297,24 @@ export interface QueryRoutesResponse {
   routes: Route[];
 }
 
-export type SendPaymentArguments = {
-  payment_request: string;
-  amt?: string;
-  fee_limit?: FeeLimit;
-} | {
-  dest_string: string;
-  amt: string;
-  final_cltv_delta: string;
-  payment_hash_string: string;
-  fee_limit?: FeeLimit;
-};
+export type SendPaymentArguments =
+  | {
+      payment_request: string;
+      amt?: string;
+      fee_limit?: FeeLimit;
+    }
+  | {
+      dest_string: string;
+      amt: string;
+      final_cltv_delta: string;
+      payment_hash_string: string;
+      fee_limit?: FeeLimit;
+    };
 
 export interface SendPaymentResponse {
   payment_route: Route;
   payment_preimage: string;
-};
+}
 
 export interface SendOnChainArguments {
   amount?: string;
@@ -320,11 +322,11 @@ export interface SendOnChainArguments {
   send_all?: boolean;
   sat_per_byte?: string;
   target_conf?: number;
-};
+}
 
 export interface SendOnChainResponse {
   txid: string;
-};
+}
 
 export interface CreateInvoiceArguments {
   value?: string;
@@ -380,7 +382,7 @@ export interface CloseChannelResponse {
 
 export interface SignMessageParams {
   msg: string;
-} 
+}
 
 export interface SignMessageResponse {
   signature?: string;
@@ -389,19 +391,18 @@ export interface SignMessageResponse {
 export interface VerifyMessageParams {
   signature: string;
   msg: string;
-} 
+}
 
 export interface VerifyMessageResponse {
   valid: boolean;
   pubkey: string;
-} 
+}
 
 export interface GetUtxosParams {
   min_confs?: number;
   max_confs?: number;
-} 
+}
 
 export interface GetUtxosResponse {
   utxos: Utxo[];
-} 
-
+}

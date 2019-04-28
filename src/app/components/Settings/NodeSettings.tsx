@@ -32,24 +32,24 @@ interface DispatchProps {
 type Props = StateProps & DispatchProps;
 
 interface State {
-  editingNodeField: null | 'url' | 'macaroons' | 'password',
+  editingNodeField: null | 'url' | 'macaroons' | 'password';
 }
 
 class NodeSettings extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      editingNodeField: null
+      editingNodeField: null,
     };
   }
 
   componentWillUpdate(nextProps: Props) {
-    const { 
-      isNodeChecked, 
-      salt, 
-      isUpdatingMacaroons, 
-      adminMacaroon, 
-      readonlyMacaroon 
+    const {
+      isNodeChecked,
+      salt,
+      isUpdatingMacaroons,
+      adminMacaroon,
+      readonlyMacaroon,
     } = this.props;
     const { editingNodeField } = this.state;
 
@@ -57,8 +57,9 @@ class NodeSettings extends React.Component<Props, State> {
       message.success(`Connected to ${nextProps.url}`, 2);
       this.hideDrawer();
     }
-    const macaroonsChanged = adminMacaroon !== nextProps.adminMacaroon
-                          || readonlyMacaroon !== nextProps.readonlyMacaroon;
+    const macaroonsChanged =
+      adminMacaroon !== nextProps.adminMacaroon ||
+      readonlyMacaroon !== nextProps.readonlyMacaroon;
     if (isUpdatingMacaroons && macaroonsChanged) {
       message.success('Macaroons Updated', 2);
       this.hideDrawer();
@@ -76,21 +77,15 @@ class NodeSettings extends React.Component<Props, State> {
       <>
         <Form.Item label="REST API URL">
           <Input.Group compact className="Settings-input-group">
-            <Input
-              value={url as string}
-              disabled
-            />
-              <Button onClick={this.editNodeUrl}>
-                <Icon type="edit" />
-              </Button>
+            <Input value={url as string} disabled />
+            <Button onClick={this.editNodeUrl}>
+              <Icon type="edit" />
+            </Button>
           </Input.Group>
         </Form.Item>
         <Form.Item label="Admin Macaroon">
           <Input.Group compact className="Settings-input-group">
-            <Input
-              value={adminMacaroon as string || '<encrypted>'}
-              disabled
-            />
+            <Input value={(adminMacaroon as string) || '<encrypted>'} disabled />
             <Button onClick={this.editMacaroons}>
               <Icon type="edit" />
             </Button>
@@ -98,43 +93,35 @@ class NodeSettings extends React.Component<Props, State> {
         </Form.Item>
         <Form.Item label="Readonly Macaroon">
           <Input.Group compact className="Settings-input-group">
-            <Input
-              value={readonlyMacaroon as string}
-              disabled
-            />
+            <Input value={readonlyMacaroon as string} disabled />
             <Button onClick={this.editMacaroons}>
               <Icon type="edit" />
             </Button>
           </Input.Group>
         </Form.Item>
         <Form.Item>
-          <Button
-            type="default"
-            size="large"
-            block
-            onClick={this.editPassword}
-          >
+          <Button type="default" size="large" block onClick={this.editPassword}>
             Change Password
           </Button>
         </Form.Item>
 
         {this.renderDrawer()}
       </>
-    )
+    );
   }
 
   private renderDrawer = () => {
-    const { 
+    const {
       url,
       adminMacaroon,
       readonlyMacaroon,
-      isUpdatingNodeUrl, 
+      isUpdatingNodeUrl,
       updateNodeUrlError,
       isUpdatingMacaroons,
       updateMacaroonsError,
       testCipher,
       salt,
-    } = this.props
+    } = this.props;
     const { editingNodeField } = this.state;
 
     let title;
@@ -158,7 +145,7 @@ class NodeSettings extends React.Component<Props, State> {
           error={updateNodeUrlError}
           isCheckingNode={isUpdatingNodeUrl}
           submitUrl={this.props.updateNodeUrl}
-        />      
+        />
       );
     } else if (editingNodeField === 'macaroons') {
       title = 'Upload Macaroons';
@@ -182,8 +169,8 @@ class NodeSettings extends React.Component<Props, State> {
         title={title}
       >
         {cmp}
-      </Drawer>      
-    )
+      </Drawer>
+    );
   };
 
   private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {

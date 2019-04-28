@@ -8,10 +8,12 @@ import types from './types';
 
 export function* handleGetPeers(): SagaIterator {
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
     const { peers }: Yielded<typeof nodeLib.getPeers> = yield call(nodeLib.getPeers);
     const nodes: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
-      peers.map(p => call(safeGetNodeInfo, nodeLib, p.pub_key))
+      peers.map(p => call(safeGetNodeInfo, nodeLib, p.pub_key)),
     );
     const payload = peers.map((peer, i) => ({
       ...peer,
@@ -21,7 +23,7 @@ export function* handleGetPeers(): SagaIterator {
       type: types.GET_PEERS_SUCCESS,
       payload,
     });
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.GET_PEERS_FAILURE,
       payload: err,
@@ -32,11 +34,13 @@ export function* handleGetPeers(): SagaIterator {
 export function* handleAddPeer(action: ReturnType<typeof addPeer>): SagaIterator {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
     yield call(safeConnectPeer, nodeLib, action.payload);
     yield call(handleGetPeers);
     yield put({ type: types.ADD_PEER_SUCCESS });
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.ADD_PEER_FAILURE,
       payload: err,

@@ -47,9 +47,7 @@ class OnboardingPage extends React.Component<Props, State> {
     const { step } = this.state;
     switch (step) {
       case STEP.SPLASH:
-        return (
-          <Splash handleContinue={() => this.changeStep(STEP.NODE)} />
-        );
+        return <Splash handleContinue={() => this.changeStep(STEP.NODE)} />;
       case STEP.NODE:
         return <SelectNode onConfirmNode={() => this.changeStep(STEP.PASSWORD)} />;
       case STEP.PASSWORD:

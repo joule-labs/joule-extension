@@ -34,7 +34,9 @@ export default class JouleWebLNProvider implements WebLNProvider {
     }
     return this.promptUser<SendPaymentResponse, { paymentRequest: string }>(
       PROMPT_TYPE.PAYMENT,
-      { paymentRequest },
+      {
+        paymentRequest,
+      },
     );
   }
 
@@ -60,10 +62,9 @@ export default class JouleWebLNProvider implements WebLNProvider {
       throw new Error('Provider must be enabled before calling signMessage');
     }
 
-    return this.promptUser<SignMessageResponse, { message: string }>(
-      PROMPT_TYPE.SIGN,
-      { message },
-    );
+    return this.promptUser<SignMessageResponse, { message: string }>(PROMPT_TYPE.SIGN, {
+      message,
+    });
   }
 
   async verifyMessage(signature: string, message: string) {
@@ -71,13 +72,10 @@ export default class JouleWebLNProvider implements WebLNProvider {
       throw new Error('Provider must be enabled before calling verifyMessage');
     }
 
-    return this.promptUser<void, { signature: string, msg: string }>(
-      PROMPT_TYPE.VERIFY,
-      { 
-        signature,
-        msg: message,
-      },
-    );
+    return this.promptUser<void, { signature: string; msg: string }>(PROMPT_TYPE.VERIFY, {
+      signature,
+      msg: message,
+    });
   }
 
   // Internal prompt handler
@@ -90,12 +88,15 @@ export default class JouleWebLNProvider implements WebLNProvider {
     }
 
     return new Promise((resolve, reject) => {
-      window.postMessage({
-        application: 'Joule',
-        prompt: true,
-        type,
-        args,
-      }, '*');
+      window.postMessage(
+        {
+          application: 'Joule',
+          prompt: true,
+          type,
+          args,
+        },
+        '*',
+      );
 
       function handleWindowMessage(ev: MessageEvent) {
         if (!ev.data || ev.data.application !== 'Joule' || ev.data.prompt) {
@@ -108,7 +109,7 @@ export default class JouleWebLNProvider implements WebLNProvider {
         }
         window.removeEventListener('message', handleWindowMessage);
       }
-    
+
       window.addEventListener('message', handleWindowMessage);
     });
   }

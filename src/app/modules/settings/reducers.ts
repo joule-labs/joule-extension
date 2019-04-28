@@ -30,40 +30,34 @@ export default function settingsReducer(
         ...state,
         ...action.payload,
       };
-    
+
     case types.ADD_ENABLED_DOMAIN:
       return {
         ...state,
-        enabledDomains: [
-          ...state.enabledDomains,
-          action.payload,
-        ].filter((domain, idx, arr) => arr.indexOf(domain) === idx),
+        enabledDomains: [...state.enabledDomains, action.payload].filter(
+          (domain, idx, arr) => arr.indexOf(domain) === idx,
+        ),
       };
-    
+
     case types.REMOVE_ENABLED_DOMAIN:
       return {
         ...state,
-        enabledDomains: state.enabledDomains
-          .filter(d => d !== action.payload),
+        enabledDomains: state.enabledDomains.filter(d => d !== action.payload),
       };
-    
+
     case types.ADD_REJECTED_DOMAIN:
       return {
         ...state,
-        rejectedDomains: [
-          ...state.rejectedDomains,
-          action.payload,
-        ].filter((domain, idx, arr) => arr.indexOf(domain) === idx),
+        rejectedDomains: [...state.rejectedDomains, action.payload].filter(
+          (domain, idx, arr) => arr.indexOf(domain) === idx,
+        ),
       };
-    
+
     case types.REMOVE_REJECTED_DOMAIN:
       return {
         ...state,
-        rejectedDomains: state.rejectedDomains
-          .filter(d => d !== action.payload),
+        rejectedDomains: state.rejectedDomains.filter(d => d !== action.payload),
       };
-    
-    
   }
 
   return state;

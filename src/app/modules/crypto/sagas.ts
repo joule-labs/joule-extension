@@ -4,7 +4,14 @@ import { encryptData, TEST_CIPHER_DATA } from 'utils/crypto';
 import { getPasswordCache, setPasswordCache } from 'utils/background';
 import { syncTypes } from 'modules/sync';
 import { selectSalt, selectPassword } from './selectors';
-import { setTestCipher, requestPassword, enterPassword, changePassword, generateSalt, setPassword } from './actions';
+import {
+  setTestCipher,
+  requestPassword,
+  enterPassword,
+  changePassword,
+  generateSalt,
+  setPassword,
+} from './actions';
 import types from './types';
 
 export function* generateTestCipher(): SagaIterator {
@@ -42,7 +49,9 @@ export function* requirePassword(): SagaIterator {
   }
 }
 
-export function* handleChangePassword(action: ReturnType<typeof changePassword>): SagaIterator {
+export function* handleChangePassword(
+  action: ReturnType<typeof changePassword>,
+): SagaIterator {
   try {
     const { newPassword, currPassword } = action.payload;
 
@@ -52,21 +61,21 @@ export function* handleChangePassword(action: ReturnType<typeof changePassword>)
       yield put(enterPassword(currPassword));
       yield take(syncTypes.FINISH_DECRYPT);
     }
-    
+
     // generate a new salt and set the new password
     yield put(generateSalt());
     yield put(setPassword(newPassword));
-    
+
     // cache the new password if the old one was cached
     const cachedPassword = yield call(getPasswordCache);
     yield put(enterPassword(newPassword, !!cachedPassword));
 
-    // update encrypted storage data using new password 
+    // update encrypted storage data using new password
     yield put({ type: types.CHANGE_PASSWORD_SUCCESS });
   } catch (err) {
     yield put({
       type: types.CHANGE_PASSWORD_FAILURE,
-      payload: err
+      payload: err,
     });
   }
 }

@@ -32,7 +32,16 @@ type Props = StateProps & OwnProps;
 
 class TransactionRow extends React.Component<Props> {
   render() {
-    const { pubkey, timestamp, status, delta, onClick, source, title, chain } = this.props;
+    const {
+      pubkey,
+      timestamp,
+      status,
+      delta,
+      onClick,
+      source,
+      title,
+      chain,
+    } = this.props;
 
     let icon;
     if (pubkey !== null && pubkey !== undefined) {
@@ -53,7 +62,7 @@ class TransactionRow extends React.Component<Props> {
 
     return (
       <div
-        className={classnames("TransactionRow", onClick && 'is-clickable')}
+        className={classnames('TransactionRow', onClick && 'is-clickable')}
         onClick={this.handleClick}
       >
         <div className="TransactionRow-avatar">
@@ -68,15 +77,17 @@ class TransactionRow extends React.Component<Props> {
             {moment.unix(timestamp).format('MMM Do, LT')}
           </div>
         </div>
-        {delta &&
-          <div className={
-            classnames(`TransactionRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`)
-          }>
+        {delta && (
+          <div
+            className={classnames(
+              `TransactionRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`,
+            )}
+          >
             <Unit value={delta.toString()} showPlus showFiat />
           </div>
-        }
+        )}
       </div>
-    )
+    );
   }
 
   private handleClick = () => {

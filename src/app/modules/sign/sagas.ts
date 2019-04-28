@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call,  put } from 'redux-saga/effects';
+import { takeLatest, select, call, put } from 'redux-saga/effects';
 import { SignMessageResponse as WebLNSignMessageResponse } from 'webln';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
@@ -14,8 +14,13 @@ import { safeGetNodeInfo } from 'utils/misc';
 export function* handleSignMessage(action: ReturnType<typeof signMessage>): SagaIterator {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    const res: Yielded<LndSignMessageResponse> = yield call(nodeLib.signMessage, action.payload);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
+    const res: Yielded<LndSignMessageResponse> = yield call(
+      nodeLib.signMessage,
+      action.payload,
+    );
 
     if (!res.signature) {
       throw new Error('Message failed to sign, missing signature');
@@ -25,12 +30,12 @@ export function* handleSignMessage(action: ReturnType<typeof signMessage>): Saga
       message: action.payload,
       signature: res.signature,
     };
-    
-    yield put({ 
+
+    yield put({
       type: types.SIGN_MESSAGE_SUCCESS,
       payload,
     });
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.SIGN_MESSAGE_FAILURE,
       payload: err,
@@ -38,28 +43,39 @@ export function* handleSignMessage(action: ReturnType<typeof signMessage>): Saga
   }
 }
 
-export function* handleVerifyMessage(action: ReturnType<typeof verifyMessage>): SagaIterator {
+export function* handleVerifyMessage(
+  action: ReturnType<typeof verifyMessage>,
+): SagaIterator {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(selectNodeLibOrThrow);
-    const verification: Yielded<LndVerifyMessageResponse> = yield call(nodeLib.verifyMessage, action.payload);
-    const nodeInfo: Yielded<typeof nodeLib.getNodeInfo> = yield call(safeGetNodeInfo, nodeLib, verification.pubkey);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
+    const verification: Yielded<LndVerifyMessageResponse> = yield call(
+      nodeLib.verifyMessage,
+      action.payload,
+    );
+    const nodeInfo: Yielded<typeof nodeLib.getNodeInfo> = yield call(
+      safeGetNodeInfo,
+      nodeLib,
+      verification.pubkey,
+    );
     const payload = {
       ...verification,
-      alias: nodeInfo.node.alias
+      alias: nodeInfo.node.alias,
     };
     if (verification.valid) {
-      yield put({ 
+      yield put({
         type: types.VERIFY_MESSAGE_VALID,
         payload,
       });
     } else {
-      yield put({ 
+      yield put({
         type: types.VERIFY_MESSAGE_INVALID,
         payload,
       });
     }
-  } catch(err) {
+  } catch (err) {
     yield put({
       type: types.VERIFY_MESSAGE_FAILURE,
       payload: err,

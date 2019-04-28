@@ -1,4 +1,8 @@
-import { SendPaymentResponse, CreateInvoiceResponse, SendOnChainResponse } from 'lib/lnd-http';
+import {
+  SendPaymentResponse,
+  CreateInvoiceResponse,
+  SendOnChainResponse,
+} from 'lib/lnd-http';
 import types, { PaymentRequestState, OnChainFeeEstimates } from './types';
 
 export interface PaymentState {
@@ -53,7 +57,7 @@ export default function channelsReducers(
         sendError: action.payload,
         isSending: false,
       };
-    
+
     case types.RESET_SEND_PAYMENT:
       return {
         ...state,
@@ -62,7 +66,7 @@ export default function channelsReducers(
         sendError: null,
         isSending: false,
       };
-    
+
     case types.CREATE_INVOICE:
       return {
         ...state,
@@ -82,14 +86,14 @@ export default function channelsReducers(
         invoiceError: action.payload,
         isCreatingInvoice: false,
       };
-    
+
     case types.RESET_CREATE_INVOICE:
       return {
         ...state,
         invoice: null,
         invoiceError: null,
       };
-    
+
     case types.RESET_CREATE_INVOICE:
       return {
         ...state,
@@ -173,8 +177,7 @@ export default function channelsReducers(
         feesError: action.payload,
         isFetchingFees: false,
       };
-    
   }
-  
+
   return state;
 }

@@ -14,22 +14,28 @@ export default class ConfirmNode extends React.Component<Props> {
   render() {
     const { nodeInfo, onConfirm, onCancel } = this.props;
     const chain = nodeInfo.chains[0] as CHAIN_TYPE;
-    const rows = [{
-      label: 'Alias',
-      value: nodeInfo.alias,
-    }, {
-      label: 'Version',
-      value: nodeInfo.version.split(' ')[0],
-    }, {
-      label: 'Chain',
-      value: blockchainDisplayName[chain],
-    }, {
-      label: 'Testnet',
-      value: JSON.stringify(!!nodeInfo.testnet),
-    }, {
-      label: '# of Channels',
-      value: nodeInfo.num_active_channels || 'Unknown'
-    }];
+    const rows = [
+      {
+        label: 'Alias',
+        value: nodeInfo.alias,
+      },
+      {
+        label: 'Version',
+        value: nodeInfo.version.split(' ')[0],
+      },
+      {
+        label: 'Chain',
+        value: blockchainDisplayName[chain],
+      },
+      {
+        label: 'Testnet',
+        value: JSON.stringify(!!nodeInfo.testnet),
+      },
+      {
+        label: '# of Channels',
+        value: nodeInfo.num_active_channels || 'Unknown',
+      },
+    ];
 
     return (
       <div className="ConfirmNode">
@@ -52,6 +58,6 @@ export default class ConfirmNode extends React.Component<Props> {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 }

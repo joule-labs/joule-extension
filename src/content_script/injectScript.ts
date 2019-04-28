@@ -10,7 +10,7 @@ export default function injectScript() {
     scriptEl.setAttribute('type', 'text/javascript');
     scriptEl.setAttribute('src', browser.extension.getURL('inpage_script.js'));
     container.appendChild(scriptEl);
-  } catch(err) {
+  } catch (err) {
     console.error('Joule’s WebLN injection failed', err);
   }
 }
