@@ -45,16 +45,12 @@ class TransactionInfo extends React.Component<Props> {
       return null;
     }
     // Handle testnet
-    if (!node) {
-      return null;
-    }
-    const testnet = node.testnet;
+    const testnet = node === null ? '' : node.testnet;
     const mUrl = 'https://blockstream.info/';
     const tUrl = 'https://blockstream.info/testnet/';
-    let txUrl;
+    let txUrl = '';
     testnet === true ? (txUrl = tUrl) : (txUrl = mUrl);
     // End handle testnet
-    console.log(txUrl);
     let to: TransferParty | undefined;
     let from: TransferParty | undefined;
     let primaryCode;

@@ -18,6 +18,7 @@ import Copy from 'components/Copy';
 
 interface StateProps {
   account: AppState['account']['account'];
+  node: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -40,11 +41,10 @@ class ChannelInfo extends React.Component<Props> {
   }
 
   render() {
-    const { account, channel } = this.props;
+    const { account, channel, node } = this.props;
     if (!account) {
       return null;
     }
-
     let statusClass = `is-${enumToClassName(channel.status)}`;
     if (channel.status === CHANNEL_STATUS.OPEN) {
       statusClass = `${statusClass} is-${channel.active ? 'active' : 'inactive'}`;
@@ -105,14 +105,16 @@ class ChannelInfo extends React.Component<Props> {
   }
 
   private getChannelDetails = (): DetailsRow[] => {
-    const { channel } = this.props;
-
+    const { channel, node } = this.props;
+    // Handle testnet
+    const testnet = node === null ? '' : node.testnet;
+    const mUrl = 'https://blockstream.info/';
+    const tUrl = 'https://blockstream.info/testnet/';
+    let txUrl = '';
+    testnet === true ? (txUrl = tUrl) : (txUrl = mUrl);
+    // End handle testnet
     const txLink = (txid: string) => (
-      <a
-        href={`https://blockstream.info/tx/${txid}`}
-        target="_blank"
-        rel="noopener nofollow"
-      >
+      <a href={`${txUrl}tx/${txid}`} target="_blank" rel="noopener nofollow">
         {ellipsisSandwich(txid, 5)}
       </a>
     );
@@ -203,6 +205,7 @@ class ChannelInfo extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
+    node: state.node.nodeInfo,
   }),
   {
     getAccountInfo,
