@@ -41,7 +41,7 @@ class ChannelInfo extends React.Component<Props> {
   }
 
   render() {
-    const { account, channel, node } = this.props;
+    const { account, channel } = this.props;
     if (!account) {
       return null;
     }
