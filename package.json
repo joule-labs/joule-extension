@@ -2,6 +2,14 @@
   "name": "joule-extension",
   "version": "0.5.0",
   "description": "Lightning charge your browser by connecting your lightning node",
+  "homepage": "https://lightningjoule.com",
+  "bugs": "https://github.com/joule-labs/joule-extension/issues",
+  "repository": "github:joule-labs/joule-extension",
+  "license": "MIT",
+  "author": {
+    "name": "William O'Beirne",
+    "url": "https://twitter.com/wbobeirne"
+  },
   "keywords": [
     "typescript",
     "react",
@@ -21,8 +29,12 @@
     "tsc": "tsc --noEmit",
     "prettier:base": "prettier --parser typescript 'src/**/*.{ts,tsx}'",
     "prettier:check": "npm run prettier:base -- --check",
-    "prettier:write": "npm run prettier:base -- --write",
-    "pre-commit": "pretty-quick --staged"
+    "prettier:write": "npm run prettier:base -- --write"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   },
   "contributors": [
     {
