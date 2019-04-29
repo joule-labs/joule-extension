@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Joule",
   "description": "Make payments and use your Lightning identity in the browser",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
@@ -19,36 +19,21 @@
     "page": "options.html",
     "open_in_tab": true
   },
-  "content_scripts": [{
-    "matches": [
-      "file://*/*",
-      "http://*/*",
-      "https://*/*"
-    ],
-    "js": ["content_script.js"],
-    "run_at": "document_start",
-    "all_frames": true
-  }],
+  "content_scripts": [
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
   "background": {
-    "scripts": [
-      "background_script.js"
-    ],
+    "scripts": ["background_script.js"],
     "persistent": true
   },
-  "web_accessible_resources": [
-    "inpage_script.js"
-  ],
-  "permissions": [
-    "storage",
-    "clipboardWrite",
-    "activeTab",
-    "contextMenus"
-  ],
-  "optional_permissions": [
-    "notifications",
-    "http://*/",
-    "https://*/"
-  ],
+  "web_accessible_resources": ["inpage_script.js"],
+  "permissions": ["storage", "clipboardWrite", "activeTab", "contextMenus"],
+  "optional_permissions": ["notifications", "http://*/", "https://*/"],
   "applications": {
     "gecko": {
       "id": "joule@lightningjoule.com",
