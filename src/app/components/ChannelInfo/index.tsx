@@ -15,6 +15,7 @@ import { channelStatusText } from 'utils/constants';
 import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
 import './index.less';
 import Copy from 'components/Copy';
+import txUrls from '../../utils/txUrls';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -106,15 +107,13 @@ class ChannelInfo extends React.Component<Props> {
 
   private getChannelDetails = (): DetailsRow[] => {
     const { channel, node } = this.props;
-    // Handle testnet
+    // Handle chain/testnet
     const testnet = node === null ? '' : node.testnet;
-    const mUrl = 'https://blockstream.info/';
-    const tUrl = `${mUrl}testnet/`;
-    let txUrl = '';
-    testnet === true ? (txUrl = tUrl) : (txUrl = mUrl);
-    // End handle testnet
+    const chain = node === null ? '' : node.chains[0];
+    const url = txUrls(chain, testnet);
+
     const txLink = (txid: string) => (
-      <a href={`${txUrl}tx/${txid}`} target="_blank" rel="noopener nofollow">
+      <a href={`${url.txUrl}${txid}`} target="_blank" rel="noopener nofollow">
         {ellipsisSandwich(txid, 5)}
       </a>
     );

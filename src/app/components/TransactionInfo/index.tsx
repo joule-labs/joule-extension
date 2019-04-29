@@ -16,6 +16,7 @@ import { unixMoment, LONG_FORMAT } from 'utils/time';
 import { AppState } from 'store/reducers';
 import TransactionArrow from 'static/images/transaction-arrow.svg';
 import './style.less';
+import txUrls from '../../utils/txUrls';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -44,13 +45,12 @@ class TransactionInfo extends React.Component<Props> {
     if (!account) {
       return null;
     }
-    // Handle testnet
+
+    // Handle chain/testnet
     const testnet = node === null ? '' : node.testnet;
-    const mUrl = 'https://blockstream.info/';
-    const tUrl = `${mUrl}testnet/`;
-    let txUrl = '';
-    testnet === true ? (txUrl = tUrl) : (txUrl = mUrl);
-    // End handle testnet
+    const chain = node === null ? '' : node.chains[0];
+    const url = txUrls(chain, testnet);
+
     let to: TransferParty | undefined;
     let from: TransferParty | undefined;
     let primaryCode;
@@ -153,7 +153,7 @@ class TransactionInfo extends React.Component<Props> {
           label: 'Block height',
           value: (
             <a
-              href={`${txUrl}block/${tx.block_hash}`}
+              href={`${url.blockUrl}${tx.block_hash}`}
               target="_blank"
               rel="noopener nofollow"
             >
@@ -164,7 +164,7 @@ class TransactionInfo extends React.Component<Props> {
         {
           label: 'Tx Hash',
           value: (
-            <a href={`${txUrl}tx/${tx.tx_hash}`} target="_blank" rel="noopener nofollow">
+            <a href={`${url.txUrl}${tx.tx_hash}`} target="_blank" rel="noopener nofollow">
               {ellipsisSandwich(tx.tx_hash, 5)}
             </a>
           ),
