@@ -53,16 +53,27 @@ if (document) {
 
       const lightningLink = target.closest('[href^="lightning:"]');
       if (lightningLink) {
+        ev.preventDefault();
+        console.log(lightningLink);
         const href = lightningLink.getAttribute('href') as string;
         const paymentRequest = href.replace('lightning:', '');
-        browser.runtime.sendMessage({
+        const message = {
           application: 'Joule',
           prompt: true,
           type: PROMPT_TYPE.PAYMENT,
           origin: getOriginData(),
           args: { paymentRequest },
+        };
+        respondWithoutPrompt(message).then(didRespond => {
+          if (didRespond) return;
+          browser.runtime.sendMessage({
+            application: 'Joule',
+            prompt: true,
+            type: PROMPT_TYPE.PAYMENT,
+            origin: getOriginData(),
+            args: { paymentRequest },
+          });
         });
-        ev.preventDefault();
       }
     });
   });
@@ -74,7 +85,9 @@ if (document) {
     event => {
       // 2 = right mouse button. may be better to store in a constant
       if (event.button === 2) {
-        let paymentRequest = window.getSelection().toString();
+        const selection = window.getSelection();
+        if (!selection) return;
+        let paymentRequest = selection.toString();
         // if nothing selected, try to get the text of the right-clicked element.
         if (!paymentRequest && event.target) {
           // Cast as HTMLInputElement to get the value if a form element is used

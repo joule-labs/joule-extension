@@ -75,6 +75,7 @@
     "babel-polyfill": "6.26.0",
     "bip39": "2.5.0",
     "bn.js": "4.11.8",
+    "bolt11": "1.2.5",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "4.6.0",
