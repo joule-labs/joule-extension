@@ -115,8 +115,8 @@ Lightning residency, where this was born.
 ## Pay me money pls
 
 <p align="center">
-<a target="_blank" rel="noopener noreferrer" href="https://boltathon.herokuapp.com/user/964883859/tip?site=github">
-<img src="https://boltathon.herokuapp.com/static/images/tip-button-dark.png" alt="Tip wbobeirne on TipHub" height="60">
+<a target="_blank" rel="noopener noreferrer" href="https://tiphub.io/user/964883859/tip?site=github">
+<img src="https://tiphub.io/static/images/tip-button-dark.png" alt="Tip wbobeirne on TipHub" height="60">
 <br />
 My pubkey starts with <code>02458b08</code>
 </a>
