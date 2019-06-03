@@ -6,18 +6,19 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
 import TransferIcons from 'components/TransferIcons';
+import Copy from 'components/Copy';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
 import { closeChannel } from 'modules/channels/actions';
 import { ChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
-import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
+import { ellipsisSandwich, enumToClassName, makeTxUrl } from 'utils/formatters';
 import './index.less';
-import Copy from 'components/Copy';
 
 interface StateProps {
   account: AppState['account']['account'];
+  node: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -44,7 +45,6 @@ class ChannelInfo extends React.Component<Props> {
     if (!account) {
       return null;
     }
-
     let statusClass = `is-${enumToClassName(channel.status)}`;
     if (channel.status === CHANNEL_STATUS.OPEN) {
       statusClass = `${statusClass} is-${channel.active ? 'active' : 'inactive'}`;
@@ -105,11 +105,11 @@ class ChannelInfo extends React.Component<Props> {
   }
 
   private getChannelDetails = (): DetailsRow[] => {
-    const { channel } = this.props;
+    const { channel, node } = this.props;
 
     const txLink = (txid: string) => (
       <a
-        href={`https://blockstream.info/tx/${txid}`}
+        href={node ? makeTxUrl(txid, node.chains[0], node.testnet) : ''}
         target="_blank"
         rel="noopener nofollow"
       >
@@ -203,6 +203,7 @@ class ChannelInfo extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
+    node: state.node.nodeInfo,
   }),
   {
     getAccountInfo,

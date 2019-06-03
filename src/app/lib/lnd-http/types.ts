@@ -130,7 +130,7 @@ export interface Route {
   hops: Hop[];
 }
 
-export interface BitcoinTransaction {
+export interface ChainTransaction {
   amount: string;
   dest_addresses: string[];
   tx_hash: string;
@@ -252,7 +252,7 @@ export interface GetChannelsBalanceResponse {
 }
 
 export interface GetTransactionsResponse {
-  transactions: BitcoinTransaction[];
+  transactions: ChainTransaction[];
 }
 
 export interface GetPaymentsResponse {
