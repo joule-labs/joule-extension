@@ -6,16 +6,15 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
 import TransferIcons from 'components/TransferIcons';
+import Copy from 'components/Copy';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
 import { closeChannel } from 'modules/channels/actions';
 import { ChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
-import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
+import { ellipsisSandwich, enumToClassName, makeTxUrl } from 'utils/formatters';
 import './index.less';
-import Copy from 'components/Copy';
-import txUrls from '../../utils/txUrls';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -107,13 +106,13 @@ class ChannelInfo extends React.Component<Props> {
 
   private getChannelDetails = (): DetailsRow[] => {
     const { channel, node } = this.props;
-    // Handle chain/testnet
-    const testnet = node === null ? '' : node.testnet;
-    const chain = node === null ? '' : node.chains[0];
-    const url = txUrls(chain, testnet);
 
     const txLink = (txid: string) => (
-      <a href={`${url.txUrl}${txid}`} target="_blank" rel="noopener nofollow">
+      <a
+        href={node ? makeTxUrl(txid, node.chains[0], node.testnet) : ''}
+        target="_blank"
+        rel="noopener nofollow"
+      >
         {ellipsisSandwich(txid, 5)}
       </a>
     );

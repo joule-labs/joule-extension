@@ -13,10 +13,10 @@ import { getAccountInfo } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
 import { isPayment, isInvoice, isBitcoinTx } from 'utils/typeguards';
 import { unixMoment, LONG_FORMAT } from 'utils/time';
+import { makeTxUrl, makeBlockUrl } from 'utils/formatters';
 import { AppState } from 'store/reducers';
 import TransactionArrow from 'static/images/transaction-arrow.svg';
 import './style.less';
-import txUrls from '../../utils/txUrls';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -46,10 +46,8 @@ class TransactionInfo extends React.Component<Props> {
       return null;
     }
 
-    // Handle chain/testnet
-    const testnet = node === null ? '' : node.testnet;
-    const chain = node === null ? '' : node.chains[0];
-    const url = txUrls(chain, testnet);
+    const isTestnet = node ? node.testnet : false;
+    const chain = node ? node.chains[0] : '';
 
     let to: TransferParty | undefined;
     let from: TransferParty | undefined;
@@ -153,7 +151,7 @@ class TransactionInfo extends React.Component<Props> {
           label: 'Block height',
           value: (
             <a
-              href={`${url.blockUrl}${tx.block_hash}`}
+              href={makeBlockUrl(tx.block_hash, chain, isTestnet)}
               target="_blank"
               rel="noopener nofollow"
             >
@@ -164,7 +162,11 @@ class TransactionInfo extends React.Component<Props> {
         {
           label: 'Tx Hash',
           value: (
-            <a href={`${url.txUrl}${tx.tx_hash}`} target="_blank" rel="noopener nofollow">
+            <a
+              href={makeTxUrl(tx.tx_hash, chain, isTestnet)}
+              target="_blank"
+              rel="noopener nofollow"
+            >
               {ellipsisSandwich(tx.tx_hash, 5)}
             </a>
           ),

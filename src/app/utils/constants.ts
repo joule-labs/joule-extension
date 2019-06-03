@@ -64,6 +64,40 @@ export const blockchainDisplayName: { [key in CHAIN_TYPE]: string } = {
   litecoin: 'Litecoin',
 };
 
+interface ExplorerUrls {
+  mainnet: {
+    tx: string;
+    block: string;
+  };
+  testnet: {
+    tx: string;
+    block: string;
+  };
+}
+
+export const blockchainExplorers: { [key in CHAIN_TYPE]: ExplorerUrls } = {
+  bitcoin: {
+    mainnet: {
+      tx: 'https://blockstream.info/tx/$TX_ID',
+      block: 'https://blockstream.info/block/$BLOCK_ID',
+    },
+    testnet: {
+      tx: 'https://blockstream.info/testnet/tx/$TX_ID',
+      block: 'https://blockstream.info/testnet/block/$BLOCK_ID',
+    },
+  },
+  litecoin: {
+    mainnet: {
+      tx: 'https://blockchair.com/litecoin/transaction/$TX_ID',
+      block: 'https://blockchair.com/litecoin/block/$BLOCK_ID',
+    },
+    testnet: {
+      tx: 'https://chain.so/tx/LTCTEST/$TX_ID',
+      block: 'https://chain.so/block/LTCTEST/$BLOCK_ID',
+    },
+  },
+};
+
 export enum Denomination {
   SATOSHIS = 'SATOSHIS',
   MILLIBITCOIN = 'MILLIBITCOIN',
