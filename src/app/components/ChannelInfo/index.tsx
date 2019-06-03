@@ -15,9 +15,11 @@ import { channelStatusText } from 'utils/constants';
 import { ellipsisSandwich, enumToClassName } from 'utils/formatters';
 import './index.less';
 import Copy from 'components/Copy';
+import txUrls from '../../utils/txUrls';
 
 interface StateProps {
   account: AppState['account']['account'];
+  node: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -44,7 +46,6 @@ class ChannelInfo extends React.Component<Props> {
     if (!account) {
       return null;
     }
-
     let statusClass = `is-${enumToClassName(channel.status)}`;
     if (channel.status === CHANNEL_STATUS.OPEN) {
       statusClass = `${statusClass} is-${channel.active ? 'active' : 'inactive'}`;
@@ -105,14 +106,14 @@ class ChannelInfo extends React.Component<Props> {
   }
 
   private getChannelDetails = (): DetailsRow[] => {
-    const { channel } = this.props;
+    const { channel, node } = this.props;
+    // Handle chain/testnet
+    const testnet = node === null ? '' : node.testnet;
+    const chain = node === null ? '' : node.chains[0];
+    const url = txUrls(chain, testnet);
 
     const txLink = (txid: string) => (
-      <a
-        href={`https://blockstream.info/tx/${txid}`}
-        target="_blank"
-        rel="noopener nofollow"
-      >
+      <a href={`${url.txUrl}${txid}`} target="_blank" rel="noopener nofollow">
         {ellipsisSandwich(txid, 5)}
       </a>
     );
@@ -203,6 +204,7 @@ class ChannelInfo extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
+    node: state.node.nodeInfo,
   }),
   {
     getAccountInfo,
