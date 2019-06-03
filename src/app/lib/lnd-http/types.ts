@@ -333,6 +333,7 @@ export interface CreateInvoiceArguments {
   memo?: string;
   expiry?: string | number;
   fallback_addr?: string;
+  private?: boolean;
 }
 
 export interface CreateInvoiceResponse {
