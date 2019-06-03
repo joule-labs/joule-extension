@@ -33,8 +33,6 @@ export class LndHttpClient {
       res.chains = res.chains.map((chain: any) => {
         return chain.chain || chain;
       });
-      res.chains = ['litecoin'];
-      res.testnet = true;
       return res;
     });
   };

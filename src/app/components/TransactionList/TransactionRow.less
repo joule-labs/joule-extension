@@ -1,4 +1,4 @@
-@import "~style/variables.less";
+@import '~style/variables.less';
 
 .TransactionRow {
   padding: 0.75rem;
@@ -30,9 +30,8 @@
         justify-content: center;
         align-items: center;
         border-radius: 100%;
-        background: linear-gradient(to top, #F6F6F6, #FFF);
-        box-shadow: 0 0 1px rgba(0, 0, 0, 0.3),
-                    0 1px 2px rgba(0, 0, 0, 0.12);
+        background: linear-gradient(to top, #f6f6f6, #fff);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.12);
       }
 
       &.is-invoice {
@@ -43,11 +42,19 @@
 
       &.is-bitcoin {
         box-shadow: none;
-        background: linear-gradient(to top, darken(#FF9900, 5%), lighten(#FF9900, 5%));
+        background: linear-gradient(to top, darken(#ff9900, 5%), lighten(#ff9900, 5%));
 
         .anticon {
-          color: #FFF;
+          color: #fff;
           transform: rotate(20deg);
+        }
+      }
+
+      &.is-litecoin {
+        background: #00aeff;
+
+        .anticon {
+          color: #fff;
         }
       }
     }
@@ -59,7 +66,7 @@
       width: 0.8rem;
       height: 0.8rem;
       border-radius: 100%;
-      box-shadow: 0 0 0 3px #FFF;
+      box-shadow: 0 0 0 3px #fff;
 
       &.is-complete {
         background: @success-color;
@@ -74,7 +81,7 @@
       }
 
       &.is-expired {
-        background: #AAA;
+        background: #aaa;
       }
     }
   }

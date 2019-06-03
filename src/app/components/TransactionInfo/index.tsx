@@ -11,7 +11,7 @@ import BigMessage from 'components/BigMessage';
 import { ellipsisSandwich } from 'utils/formatters';
 import { getAccountInfo } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
-import { isPayment, isInvoice, isBitcoinTx } from 'utils/typeguards';
+import { isPayment, isInvoice, isChainTx } from 'utils/typeguards';
 import { unixMoment, LONG_FORMAT } from 'utils/time';
 import { makeTxUrl, makeBlockUrl } from 'utils/formatters';
 import { AppState } from 'store/reducers';
@@ -137,7 +137,7 @@ class TransactionInfo extends React.Component<Props> {
             .format(LONG_FORMAT),
         },
       ];
-    } else if (isBitcoinTx(tx)) {
+    } else if (isChainTx(tx)) {
       details = [
         {
           label: 'Amount',
