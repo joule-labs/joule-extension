@@ -1,3 +1,5 @@
+import { CHAIN_TYPE, blockchainExplorers } from './constants';
+
 export function stripHexPrefix(value: string) {
   return value.replace('0x', '');
 }
@@ -89,4 +91,22 @@ export function enumToClassName(key: string) {
 export function urlWithoutPort(fullUrl: string) {
   const url = new URL(fullUrl);
   return `${url.protocol}//${url.hostname}${url.pathname}`;
+}
+
+function getExplorerUrls(chain: string, isTestnet?: boolean) {
+  if (!blockchainExplorers[chain as CHAIN_TYPE]) {
+    return null;
+  }
+  const network = isTestnet ? 'testnet' : 'mainnet';
+  return blockchainExplorers[chain as CHAIN_TYPE][network];
+}
+
+export function makeTxUrl(txid: string, chain: string, isTestnet?: boolean) {
+  const urls = getExplorerUrls(chain, isTestnet);
+  return urls ? urls.tx.replace('$TX_ID', txid) : '';
+}
+
+export function makeBlockUrl(blockid: string, chain: string, isTestnet?: boolean) {
+  const urls = getExplorerUrls(chain, isTestnet);
+  return urls ? urls.block.replace('$BLOCK_ID', blockid) : '';
 }

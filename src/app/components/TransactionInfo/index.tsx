@@ -11,14 +11,16 @@ import BigMessage from 'components/BigMessage';
 import { ellipsisSandwich } from 'utils/formatters';
 import { getAccountInfo } from 'modules/account/actions';
 import { AnyTransaction } from 'modules/account/types';
-import { isPayment, isInvoice, isBitcoinTx } from 'utils/typeguards';
+import { isPayment, isInvoice, isChainTx } from 'utils/typeguards';
 import { unixMoment, LONG_FORMAT } from 'utils/time';
+import { makeTxUrl, makeBlockUrl } from 'utils/formatters';
 import { AppState } from 'store/reducers';
 import TransactionArrow from 'static/images/transaction-arrow.svg';
 import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  node: AppState['node']['nodeInfo'];
 }
 
 interface DispatchProps {
@@ -39,10 +41,13 @@ class TransactionInfo extends React.Component<Props> {
   }
 
   render() {
-    const { tx, account } = this.props;
+    const { tx, account, node } = this.props;
     if (!account) {
       return null;
     }
+
+    const isTestnet = node ? node.testnet : false;
+    const chain = node ? node.chains[0] : '';
 
     let to: TransferParty | undefined;
     let from: TransferParty | undefined;
@@ -132,7 +137,7 @@ class TransactionInfo extends React.Component<Props> {
             .format(LONG_FORMAT),
         },
       ];
-    } else if (isBitcoinTx(tx)) {
+    } else if (isChainTx(tx)) {
       details = [
         {
           label: 'Amount',
@@ -146,7 +151,7 @@ class TransactionInfo extends React.Component<Props> {
           label: 'Block height',
           value: (
             <a
-              href={`https://blockstream.info/block/${tx.block_hash}`}
+              href={makeBlockUrl(tx.block_hash, chain, isTestnet)}
               target="_blank"
               rel="noopener nofollow"
             >
@@ -158,7 +163,7 @@ class TransactionInfo extends React.Component<Props> {
           label: 'Tx Hash',
           value: (
             <a
-              href={`https://blockstream.info/tx/${tx.tx_hash}`}
+              href={makeTxUrl(tx.tx_hash, chain, isTestnet)}
               target="_blank"
               rel="noopener nofollow"
             >
@@ -201,6 +206,7 @@ class TransactionInfo extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
+    node: state.node.nodeInfo,
   }),
   { getAccountInfo },
 )(TransactionInfo);

@@ -1,11 +1,11 @@
 import types, { Account, LightningPaymentWithToNode } from './types';
-import { LightningInvoice, BitcoinTransaction } from 'lib/lnd-http';
+import { LightningInvoice, ChainTransaction } from 'lib/lnd-http';
 
 export interface AccountState {
   account: Account | null;
   payments: LightningPaymentWithToNode[] | null;
   invoices: LightningInvoice[] | null;
-  transactions: BitcoinTransaction[] | null;
+  transactions: ChainTransaction[] | null;
   depositAddress: string | null;
   isFetchingAccountInfo: boolean;
   fetchAccountInfoError: null | Error;

@@ -6,7 +6,7 @@ import { Tooltip, Icon } from 'antd';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { AnyTransaction } from 'modules/account/types';
-import { isInvoice, isBitcoinTx } from 'utils/typeguards';
+import { isInvoice, isChainTx } from 'utils/typeguards';
 import { getNodeChain } from 'modules/node/selectors';
 import { blockchainLogos } from 'utils/constants';
 import './TransactionRow.less';
@@ -52,9 +52,9 @@ class TransactionRow extends React.Component<Props> {
           <Icon type="audit" />
         </div>
       );
-    } else if (isBitcoinTx(source)) {
+    } else if (isChainTx(source)) {
       icon = (
-        <div className="TransactionRow-avatar-img is-icon is-bitcoin">
+        <div className={`TransactionRow-avatar-img is-icon is-chaintx is-${chain}`}>
           <Icon component={blockchainLogos[chain]} />
         </div>
       );

@@ -2,7 +2,7 @@ import {
   LightningNode,
   LightningInvoice,
   LightningPayment,
-  BitcoinTransaction,
+  ChainTransaction,
 } from 'lib/lnd-http';
 
 enum AccountTypes {
@@ -40,4 +40,4 @@ export interface LightningPaymentWithToNode extends LightningPayment {
 export type AnyTransaction =
   | LightningInvoice
   | LightningPaymentWithToNode
-  | BitcoinTransaction;
+  | ChainTransaction;
