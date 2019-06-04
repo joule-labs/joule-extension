@@ -11,13 +11,6 @@ export function getStore(fresh?: boolean) {
   return store;
 }
 
-// Run a selector, but ensure the store has fully synced first
-type Selector<T> = (s: AppState) => T;
-export async function runSelector<T>(selector: Selector<T>): Promise<T> {
-  const state = await waitForStoreState(s => s.sync.hasSynced);
-  return selector(state);
-}
-
 // Returns a promise that only resolves once store state has hit a certain condition
 type WaitStateCheckFunction = (s: AppState) => boolean;
 export async function waitForStoreState(
@@ -39,6 +32,13 @@ export async function waitForStoreState(
       });
     }
   });
+}
+
+// Run a selector, but ensure the store has fully synced first
+type Selector<T> = (s: AppState) => T;
+export async function runSelector<T>(selector: Selector<T>): Promise<T> {
+  const state = await waitForStoreState(s => s.sync.hasSynced);
+  return selector(state);
 }
 
 // Returns a promise that resolves once an action has run and the state has hit

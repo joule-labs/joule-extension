@@ -3,20 +3,26 @@ import { runSelector, runAction } from './store';
 import { PROMPT_TYPE } from '../webln/types';
 import { selectSettings } from 'modules/settings/selectors';
 import { sendPayment } from 'modules/payment/actions';
+import {
+  AnyPromptMessage,
+  AuthorizePromptMessage,
+  PaymentPromptMessage,
+} from '../util/messages';
 
-export default async function respondWithoutPrompt(data: any): Promise<boolean> {
-  switch (data.type) {
+export default async function respondWithoutPrompt(
+  msg: AnyPromptMessage,
+): Promise<boolean> {
+  switch (msg.type) {
     case PROMPT_TYPE.AUTHORIZE:
-      return handleAuthorizePrompt(data);
+      return handleAuthorizePrompt(msg);
     case PROMPT_TYPE.PAYMENT:
-      return handleAutoPayment(data);
+      return handleAutoPayment(msg);
   }
-
   return false;
 }
 
-async function handleAuthorizePrompt(data: any) {
-  const { domain } = data.origin;
+async function handleAuthorizePrompt(msg: AuthorizePromptMessage) {
+  const { domain } = msg.origin;
   const settings = await runSelector(selectSettings);
 
   if (domain) {
@@ -32,10 +38,12 @@ async function handleAuthorizePrompt(data: any) {
   return false;
 }
 
-async function handleAutoPayment(data: any) {
+async function handleAutoPayment(msg: PaymentPromptMessage) {
+  // Disable (for now)
   return false;
+
   // Pop up for non-fixed invoices
-  const decoded = bolt11.decode(data.args.paymentRequest);
+  const decoded = bolt11.decode(msg.args.paymentRequest);
   if (!decoded.satoshis) {
     return false;
   }
@@ -43,7 +51,7 @@ async function handleAutoPayment(data: any) {
   // Attempt to send the payment
   const state = await runAction(
     sendPayment({
-      payment_request: data.args.paymentRequest,
+      payment_request: msg.args.paymentRequest,
       fee_limit: {
         fixed: '10',
       },

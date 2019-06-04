@@ -4,6 +4,7 @@ import injectScript from './injectScript';
 import respondWithoutPrompt from './respondWithoutPrompt';
 import { PROMPT_TYPE } from '../webln/types';
 import { getOriginData } from 'utils/prompt';
+import { isPromptMessage } from '../util/messages';
 
 if (shouldInject()) {
   injectScript();
@@ -14,9 +15,10 @@ if (shouldInject()) {
       return;
     }
 
-    if (ev.data && ev.data.application === 'Joule' && !ev.data.response) {
+    const msg = ev.data;
+    if (isPromptMessage(msg)) {
       const messageWithOrigin = {
-        ...ev.data,
+        ...msg,
         origin: getOriginData(),
       };
 
@@ -54,25 +56,14 @@ if (document) {
       const lightningLink = target.closest('[href^="lightning:"]');
       if (lightningLink) {
         ev.preventDefault();
-        console.log(lightningLink);
         const href = lightningLink.getAttribute('href') as string;
         const paymentRequest = href.replace('lightning:', '');
-        const message = {
+        browser.runtime.sendMessage({
           application: 'Joule',
           prompt: true,
           type: PROMPT_TYPE.PAYMENT,
           origin: getOriginData(),
           args: { paymentRequest },
-        };
-        respondWithoutPrompt(message).then(didRespond => {
-          if (didRespond) return;
-          browser.runtime.sendMessage({
-            application: 'Joule',
-            prompt: true,
-            type: PROMPT_TYPE.PAYMENT,
-            origin: getOriginData(),
-            args: { paymentRequest },
-          });
         });
       }
     });
