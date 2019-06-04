@@ -16,9 +16,9 @@ import {
   resetSendPayment,
 } from 'modules/payment/actions';
 import { PaymentRequestData } from 'modules/payment/types';
+import { getNodeChain } from 'modules/node/selectors';
 import { AppState } from 'store/reducers';
 import './LightningSend.less';
-import { getNodeChain } from 'modules/node/selectors';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
