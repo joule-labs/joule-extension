@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { takeEvery, call, all, select, put } from 'redux-saga/effects';
+import { takeEvery, call, select, put } from 'redux-saga/effects';
 import {
   selectNodeLibOrThrow,
   selectNodeInfo,
@@ -79,14 +79,18 @@ export function* handleCheckPaymentRequest(
   action: ReturnType<typeof checkPaymentRequest>,
 ): SagaIterator {
   const { paymentRequest, amount } = action.payload;
-  let decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest>;
-  let nodeInfo: Yielded<typeof nodeLib.getNodeInfo>;
+  let nodeLib: Yielded<typeof selectNodeLibOrThrow>;
+  let decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest> | undefined;
+  let nodeInfo: Yielded<typeof nodeLib.getNodeInfo> | undefined;
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    decodedRequest = yield call(nodeLib.decodePaymentRequest, paymentRequest);
-    nodeInfo = yield call(nodeLib.getNodeInfo, decodedRequest.destination);
+    nodeLib = yield select(selectNodeLibOrThrow);
+    decodedRequest = (yield call(
+      nodeLib.decodePaymentRequest,
+      paymentRequest,
+    )) as Yielded<typeof nodeLib.decodePaymentRequest>;
+    nodeInfo = (yield call(nodeLib.getNodeInfo, decodedRequest.destination)) as Yielded<
+      typeof nodeLib.getNodeInfo
+    >;
     const routeInfo: Yielded<typeof nodeLib.queryRoutes> = yield call(
       nodeLib.queryRoutes,
       decodedRequest.destination,
