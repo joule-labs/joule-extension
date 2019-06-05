@@ -8,6 +8,7 @@ import {
   Denomination,
   denominationSymbols,
   blockchainDisplayName,
+  COLORS,
 } from 'utils/constants';
 import { getNodeChain } from 'modules/node/selectors';
 import { getChannels } from 'modules/channels/actions';
@@ -121,12 +122,12 @@ class Balances extends React.Component<Props, State> {
                 className="Balances-chart-progress"
                 percent={stats.channelPercent + stats.pendingPercent}
                 type="circle"
-                strokeColor="#7642ff"
+                strokeColor={COLORS.PRIMARY}
                 successPercent={Math.max(
                   0.1,
                   100 - stats.channelPercent - stats.onchainPercent,
                 )}
-                trailColor="#ff9500"
+                trailColor={COLORS.BITCOIN}
                 format={() => `${stats.spendablePercent}%`}
               />
             </Tooltip>
@@ -135,21 +136,21 @@ class Balances extends React.Component<Props, State> {
             <Statistic
               title="Pending"
               value={parseFloat(fromBaseToUnit(stats.pendingTotal, denomination))}
-              valueStyle={{ color: '#858585' }}
+              valueStyle={{ color: COLORS.NEUTRAL }}
               className={statsClass}
               suffix={denomText}
             />
             <Statistic
               title="Lightning"
               value={parseFloat(fromBaseToUnit(stats.channelTotal, denomination))}
-              valueStyle={{ color: '#7642ff' }}
+              valueStyle={{ color: COLORS.PRIMARY }}
               className={statsClass}
               suffix={denomText}
             />
             <Statistic
               title={blockchainDisplayName[chain]}
               value={parseFloat(fromBaseToUnit(stats.onchainTotal, denomination))}
-              valueStyle={{ color: '#ff9500' }}
+              valueStyle={{ color: COLORS.BITCOIN }}
               className={statsClass}
               suffix={denomText}
             />

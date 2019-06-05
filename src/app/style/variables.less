@@ -1,17 +1,29 @@
 // Override ant less variables
-@primary-color: #7642FF;                         // primary color for all components
-@link-color: #7642FF;                            // link color
-@success-color: #52c41a;                         // success state color
-@warning-color: #faad14;                         // warning state color
-@error-color: #f5222d;                           // error state color
-@font-size-base: 14px;                           // major text font size
-@heading-color: rgba(0, 0, 0, .85);              // heading text color
-@text-color: rgba(0, 0, 0, .65);                 // major text color
-@text-color-secondary : rgba(0, 0, 0, .45);      // secondary text color
+@primary-color: #7642ff; // primary color for all components
+@link-color: #7642ff; // link color
+@success-color: #52c41a; // success state color
+@warning-color: #faad14; // warning state color
+@error-color: #f5222d; // error state color
+@font-size-base: 14px; // major text font size
+@heading-color: rgba(0, 0, 0, 0.85); // heading text color
+@text-color: rgba(0, 0, 0, 0.65); // major text color
+@text-color-secondary : rgba(0, 0, 0, .45); // secondary text color
 
-@font-family: "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif,
-"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-@code-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+@font-family: 'Chinese Quote', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+  'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+@code-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 
 @header-height: 2.6rem;
 @drawer-header-height: 3rem;
+
+// Mixins
+.full-height-flex-page() {
+  height: calc(100vh - @header-height);
+  display: flex;
+  flex-direction: column;
+
+  .is-page & {
+    height: 100%;
+  }
+}

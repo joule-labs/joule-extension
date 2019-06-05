@@ -84,6 +84,10 @@ export function removeDomainPrefix(domain: string) {
   return domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
 }
 
+export function normalizeDomain(domain: string) {
+  return removeDomainPrefix(domain).toLowerCase();
+}
+
 export function enumToClassName(key: string) {
   return key.toLowerCase().replace('_', '-');
 }

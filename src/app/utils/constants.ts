@@ -3,6 +3,7 @@ import LitecoinLogo from 'static/images/litecoin.svg';
 import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
+import { Allowance } from 'modules/appconf/types';
 
 export enum NODE_TYPE {
   LOCAL = 'LOCAL',
@@ -172,3 +173,17 @@ export const CHAIN_PREFIXES = [
   'tltc', // Litecoin Testnet
   'rltc', // Litecoin Regtest
 ];
+
+export const DEFAULT_ALLOWANCE: Allowance = {
+  active: true,
+  total: 10000,
+  balance: 10000,
+  maxPerPayment: 100,
+  minIntervalPerPayment: 1,
+};
+
+export const COLORS = {
+  PRIMARY: '#7642ff',
+  BITCOIN: '#ff9500',
+  NEUTRAL: '#858585',
+};

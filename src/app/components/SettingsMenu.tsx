@@ -38,7 +38,14 @@ export default class SettingsMenu extends React.Component<{}, State> {
             <Icon type="pie-chart" /> Balances
           </Link>
         </Menu.Item>
+        <Menu.Item key="allowances">
+          <Link to="/allowances">
+            <Icon type="wallet" /> Allowances
+          </Link>
+        </Menu.Item>
+
         <Menu.Divider />
+
         <Menu.Item key="settings">
           <Link to="/settings">
             <Icon type="setting" /> Settings

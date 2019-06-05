@@ -67,3 +67,7 @@ export function isSegwitAddress(address: string): boolean {
   // check if the address starts with one of the prefixes
   return CHAIN_PREFIXES.some(p => addrPrefix.substring(0, p.length) === p);
 }
+
+export function isSimpleDomain(domain: string): boolean {
+  return /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/.test(domain);
+}

@@ -19,6 +19,9 @@ import nodeTypes from 'modules/node/types';
 import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
 import settingsTypes from 'modules/settings/types';
+import { selectAppconf } from 'modules/appconf/selectors';
+import { setAppconf } from 'modules/appconf/actions';
+import appconfTypes from 'modules/appconf/types';
 import { AppState } from 'store/reducers';
 
 export interface SyncConfig<T> {
@@ -89,6 +92,14 @@ export const syncConfigs: Array<SyncConfig<any>> = [
       settingsTypes.ADD_REJECTED_DOMAIN,
       settingsTypes.REMOVE_REJECTED_DOMAIN,
     ],
+  },
+  {
+    key: 'appconf',
+    version: 1,
+    encrypted: false,
+    selector: selectAppconf,
+    action: setAppconf,
+    triggerActions: [appconfTypes.SET_APP_CONFIG, appconfTypes.DELETE_APP_CONFIG],
   },
 ];
 

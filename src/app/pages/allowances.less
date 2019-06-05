@@ -1,0 +1,48 @@
+@import '~style/variables.less';
+
+.Allowances {
+  .full-height-flex-page();
+
+  &-control {
+    padding: 1rem 0.75rem;
+    display: flex;
+    align-items: center;
+
+    &-select {
+      flex: 1;
+    }
+
+    > * {
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  &-form {
+    flex: 1;
+    background: #fff;
+    border-top: 1px solid rgba(#000, 0.15);
+  }
+
+  &-add {
+    width: 100%;
+
+    &-input {
+      .ant-select-auto-complete & .ant-input,
+      .ant-input-search-button {
+        height: 3rem;
+      }
+
+      .ant-select-auto-complete & .ant-input {
+        font-size: 1.1rem;
+      }
+
+      .ant-input-search-button {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
