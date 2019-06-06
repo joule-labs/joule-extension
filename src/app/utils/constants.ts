@@ -176,6 +176,7 @@ export const CHAIN_PREFIXES = [
 
 export const DEFAULT_ALLOWANCE: Allowance = {
   active: true,
+  notifications: true,
   total: 10000,
   balance: 10000,
   maxPerPayment: 100,

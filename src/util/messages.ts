@@ -1,4 +1,5 @@
 import { RequestInvoiceArgs } from 'webln';
+import { Notifications } from 'webextension-polyfill-ts';
 import { PROMPT_TYPE } from '../webln/types';
 
 export interface BaseMessage {
@@ -66,6 +67,20 @@ export interface ContextMenuMessage extends BaseMessage {
   args: {
     paymentRequest: string;
   };
+}
+
+// Notification messages
+export interface NotificationMessage extends BaseMessage {
+  notification: true;
+  args: {
+    method: 'create' | 'update' | 'clear';
+    id?: string;
+    options?: Notifications.CreateNotificationOptions;
+  };
+}
+
+export function isNotificationMessage(msg: any): msg is NotificationMessage {
+  return msg && msg.application === 'Joule' && msg.notification === true;
 }
 
 // Password messages

@@ -1,5 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
+import { browser } from 'webextension-polyfill-ts';
 import { connect } from 'react-redux';
 import { Button, Input, Switch, Form, Progress, Row, Col, Icon, Modal } from 'antd';
 import { Allowance, AppConfig } from 'modules/appconf/types';
@@ -20,9 +21,25 @@ interface DispatchProps {
 
 type Props = OwnProps & DispatchProps;
 
-class AllowancesPage extends React.Component<Props> {
+interface State {
+  hasNotifPermission: boolean;
+}
+
+class AllowancesPage extends React.Component<Props, State> {
+  state: State = {
+    hasNotifPermission: false,
+  };
+
+  async componentDidMount() {
+    const perms = await browser.permissions.getAll();
+    this.setState({
+      hasNotifPermission: (perms.permissions || []).includes('notifications'),
+    });
+  }
+
   render() {
     const { domain, appConfig } = this.props;
+    const { hasNotifPermission } = this.state;
     const allowance = appConfig.allowance || DEFAULT_ALLOWANCE;
 
     return (
@@ -51,7 +68,12 @@ class AllowancesPage extends React.Component<Props> {
                 onChange={this.handleChangeAllowanceField}
                 addonAfter="sats"
               />
-              <Button type="primary" onClick={this.refillAllowance} block>
+              <Button
+                type="primary"
+                block
+                onClick={this.refillAllowance}
+                disabled={allowance.balance >= allowance.total}
+              >
                 <Icon type="thunderbolt" theme="filled" /> Refill balance
               </Button>
             </div>
@@ -70,7 +92,7 @@ class AllowancesPage extends React.Component<Props> {
             />
           </Form.Item>
           <Row>
-            <Col span={12}>
+            <Col span={9}>
               <Form.Item label="Max payment">
                 <Input
                   name="maxPerPayment"
@@ -80,13 +102,21 @@ class AllowancesPage extends React.Component<Props> {
                 />
               </Form.Item>
             </Col>
-            <Col offset={1} span={11}>
+            <Col offset={1} span={9}>
               <Form.Item label="Cooldown">
                 <Input
                   name="minIntervalPerPayment"
                   value={allowance.minIntervalPerPayment}
                   onChange={this.handleChangeAllowanceField}
-                  addonAfter="seconds"
+                  addonAfter="sec"
+                />
+              </Form.Item>
+            </Col>
+            <Col offset={1} span={4}>
+              <Form.Item label="Notify">
+                <Switch
+                  checked={hasNotifPermission && allowance.notifications}
+                  onChange={this.toggleAllowanceNotifications}
                 />
               </Form.Item>
             </Col>
@@ -127,6 +157,31 @@ class AllowancesPage extends React.Component<Props> {
       allowance: {
         ...allowance,
         active,
+      },
+    });
+  };
+
+  private toggleAllowanceNotifications = async (notifications: boolean) => {
+    const { appConfig, domain } = this.props;
+    const { hasNotifPermission } = this.state;
+    const allowance = appConfig.allowance || DEFAULT_ALLOWANCE;
+
+    // Request permission first, noop if they deny it
+    if (!hasNotifPermission) {
+      const granted = await browser.permissions.request({
+        permissions: ['notifications'],
+      });
+      if (!granted) {
+        return;
+      }
+      this.setState({ hasNotifPermission: true });
+    }
+
+    this.props.setAppConfig(domain, {
+      ...appConfig,
+      allowance: {
+        ...allowance,
+        notifications,
       },
     });
   };

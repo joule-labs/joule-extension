@@ -7,6 +7,7 @@ enum AppconfTypes {
 
 export interface Allowance {
   active: boolean;
+  notifications: boolean;
   total: number;
   balance: number;
   maxPerPayment: number;

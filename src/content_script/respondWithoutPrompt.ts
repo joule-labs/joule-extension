@@ -10,6 +10,9 @@ import {
   AuthorizePromptMessage,
   PaymentPromptMessage,
 } from '../util/messages';
+import { createNotification, updateNotification } from './notifications';
+
+let lastPaymentAttempt = 0;
 
 export default async function respondWithoutPrompt(
   msg: AnyPromptMessage,
@@ -25,7 +28,7 @@ export default async function respondWithoutPrompt(
 
 async function handleAuthorizePrompt(msg: AuthorizePromptMessage) {
   const { domain } = msg.origin;
-  const settings = await runSelector(selectSettings);
+  const settings = await runSelector(selectSettings, true);
 
   if (domain) {
     if (settings.enabledDomains.includes(domain)) {
@@ -41,8 +44,6 @@ async function handleAuthorizePrompt(msg: AuthorizePromptMessage) {
 }
 
 async function handleAutoPayment(msg: PaymentPromptMessage) {
-  console.log(msg);
-
   // Pop up for non-fixed invoices
   const { satoshis } = bolt11.decode(msg.args.paymentRequest);
   if (!satoshis) {
@@ -52,17 +53,36 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
   // Grab the available allowance, if possible
   const config = await runSelector(selectConfigByDomain, msg.origin.domain);
   if (!config || !config.allowance || !config.allowance.active) {
-    return;
+    return false;
   }
 
   // Check that the payment is allowed via our allowance constraints
   const { allowance } = config;
-  console.log('allowance', allowance);
   if (satoshis > allowance.maxPerPayment || satoshis > allowance.balance) {
     return false;
   }
 
-  // Attempt to send the payment
+  // Don't allow payments to happen too fast
+  const last = lastPaymentAttempt;
+  const now = Date.now();
+  lastPaymentAttempt = now;
+  if (last + allowance.minIntervalPerPayment * 1000 > now) {
+    console.warn('Site attempted to make payments too fast for allowance payment');
+    return false;
+  }
+
+  // Attempt to send the payment and show a notification
+  const notifId = Math.random().toString();
+  console.log(notifId);
+  createNotification(
+    {
+      type: 'basic',
+      title: 'Autopaying invoice',
+      message: `Paying ${satoshis} from your allowance`,
+    },
+    notifId,
+  );
+
   const state = await runAction(
     sendPayment({
       payment_request: msg.args.paymentRequest,
@@ -82,23 +102,45 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
     state.crypto.isRequestingPassword ||
     !state.payment.sendLightningReceipt
   ) {
+    let message = 'An unknown error caused the payment to fail';
+    if (state.crypto.isRequestingPassword) {
+      message = 'Joule must be unlocked';
+    } else if (state.payment.sendError) {
+      message = state.payment.sendError.message;
+    }
+    updateNotification(
+      {
+        type: 'basic',
+        title: 'Autopayment failed',
+        message,
+      },
+      notifId,
+    );
     return false;
   }
 
-  // Reduce their allowance balance by cost + fee and return true
-  console.log(allowance.balance);
-  console.log(state.payment.sendLightningReceipt.payment_route);
-  console.log(satoshis);
+  // Reduce their allowance balance by cost + fee and show notification
   const fee = parseInt(state.payment.sendLightningReceipt.payment_route.total_fees, 10);
+  const balance = allowance.balance - satoshis - (fee || 0);
   await runAction(
     setAppConfig(msg.origin.domain, {
       ...config,
       allowance: {
         ...allowance,
-        balance: allowance.balance - satoshis - fee,
+        balance,
       },
     }),
   );
+
+  updateNotification(
+    {
+      type: 'basic',
+      title: 'Payment complete!',
+      message: `${balance} sats of allowance remaining`,
+    },
+    notifId,
+  );
+
   return true;
 }
 
