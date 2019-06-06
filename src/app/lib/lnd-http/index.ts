@@ -264,7 +264,17 @@ export class LndHttpClient {
       }
       return {
         ...res,
+        // Convert base64 preimage to more widely used hex one
         payment_preimage: new Buffer(res.payment_preimage, 'base64').toString('hex'),
+        // Provide default values for route fees & timelock
+        payment_route: {
+          total_amt: '0',
+          total_amt_msat: '0',
+          total_fees: '0',
+          total_fees_msat: '0',
+          total_time_lock: '0',
+          ...res.payment_route,
+        },
       } as T.SendPaymentResponse;
     });
   };

@@ -3,6 +3,8 @@ import { runSelector, runAction } from './store';
 import { PROMPT_TYPE } from '../webln/types';
 import { selectSettings } from 'modules/settings/selectors';
 import { sendPayment } from 'modules/payment/actions';
+import { selectConfigByDomain } from 'modules/appconf/selectors';
+import { setAppConfig } from 'modules/appconf/actions';
 import {
   AnyPromptMessage,
   AuthorizePromptMessage,
@@ -39,12 +41,24 @@ async function handleAuthorizePrompt(msg: AuthorizePromptMessage) {
 }
 
 async function handleAutoPayment(msg: PaymentPromptMessage) {
-  // Disable (for now)
-  return false;
+  console.log(msg);
 
   // Pop up for non-fixed invoices
-  const decoded = bolt11.decode(msg.args.paymentRequest);
-  if (!decoded.satoshis) {
+  const { satoshis } = bolt11.decode(msg.args.paymentRequest);
+  if (!satoshis) {
+    return false;
+  }
+
+  // Grab the available allowance, if possible
+  const config = await runSelector(selectConfigByDomain, msg.origin.domain);
+  if (!config || !config.allowance || !config.allowance.active) {
+    return;
+  }
+
+  // Check that the payment is allowed via our allowance constraints
+  const { allowance } = config;
+  console.log('allowance', allowance);
+  if (satoshis > allowance.maxPerPayment || satoshis > allowance.balance) {
     return false;
   }
 
@@ -62,12 +76,30 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
       !!s.crypto.isRequestingPassword,
   );
 
-  // If it failed for any reason or we need their pw, we'll just open the prompt
-  if (state.payment.sendError || state.crypto.isRequestingPassword) {
+  // If it failed for any reason or we need their password, we'll just open the prompt
+  if (
+    state.payment.sendError ||
+    state.crypto.isRequestingPassword ||
+    !state.payment.sendLightningReceipt
+  ) {
     return false;
-  } else {
-    return true;
   }
+
+  // Reduce their allowance balance by cost + fee and return true
+  console.log(allowance.balance);
+  console.log(state.payment.sendLightningReceipt.payment_route);
+  console.log(satoshis);
+  const fee = parseInt(state.payment.sendLightningReceipt.payment_route.total_fees, 10);
+  await runAction(
+    setAppConfig(msg.origin.domain, {
+      ...config,
+      allowance: {
+        ...allowance,
+        balance: allowance.balance - satoshis - fee,
+      },
+    }),
+  );
+  return true;
 }
 
 function postDataMessage(data: any) {
