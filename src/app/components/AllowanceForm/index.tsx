@@ -22,24 +22,27 @@ interface DispatchProps {
 type Props = OwnProps & DispatchProps;
 
 interface State {
+  checkingNotifPermission: boolean;
   hasNotifPermission: boolean;
 }
 
 class AllowancesPage extends React.Component<Props, State> {
   state: State = {
+    checkingNotifPermission: true,
     hasNotifPermission: false,
   };
 
   async componentDidMount() {
     const perms = await browser.permissions.getAll();
     this.setState({
+      checkingNotifPermission: false,
       hasNotifPermission: (perms.permissions || []).includes('notifications'),
     });
   }
 
   render() {
     const { domain, appConfig } = this.props;
-    const { hasNotifPermission } = this.state;
+    const { checkingNotifPermission, hasNotifPermission } = this.state;
     const allowance = appConfig.allowance || DEFAULT_ALLOWANCE;
 
     return (
@@ -114,10 +117,12 @@ class AllowancesPage extends React.Component<Props, State> {
             </Col>
             <Col offset={1} span={4}>
               <Form.Item label="Notify">
-                <Switch
-                  checked={hasNotifPermission && allowance.notifications}
-                  onChange={this.toggleAllowanceNotifications}
-                />
+                {!checkingNotifPermission && (
+                  <Switch
+                    checked={hasNotifPermission && allowance.notifications}
+                    onChange={this.toggleAllowanceNotifications}
+                  />
+                )}
               </Form.Item>
             </Col>
           </Row>

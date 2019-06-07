@@ -73,12 +73,11 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
 
   // Attempt to send the payment and show a notification
   const notifId = Math.random().toString();
-  console.log(notifId);
   createNotification(
     {
       type: 'basic',
       title: 'Autopaying invoice',
-      message: `Paying ${satoshis} from your allowance`,
+      message: `Paying ${satoshis} from your allowance...`,
     },
     notifId,
   );
