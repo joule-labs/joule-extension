@@ -27,9 +27,11 @@
 
   &-fields {
     padding: 1rem;
+    transition: opacity 200ms ease, filter 200ms ease;
 
     &.is-inactive {
-      opacity: 0.2;
+      opacity: 0.4;
+      filter: grayscale(1);
       pointer-events: none;
     }
 
