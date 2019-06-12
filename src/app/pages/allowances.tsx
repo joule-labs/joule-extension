@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter, RouteComponentProps } from 'react-router';
 import { Select, Button, Modal, AutoComplete, Input, Icon, message } from 'antd';
 import BigMessage from 'components/BigMessage';
 import AllowanceForm from 'components/AllowanceForm';
-import { normalizeDomain } from 'utils/formatters';
-import { isSimpleDomain } from 'utils/validators';
+import { shortDomain, removeDomainPrefix } from 'utils/formatters';
+import { isValidDomain } from 'utils/validators';
 import { DEFAULT_ALLOWANCE } from 'utils/constants';
 import { setAppConfig } from 'modules/appconf/actions';
 import { AppState } from 'store/reducers';
@@ -19,7 +20,7 @@ interface DispatchProps {
   setAppConfig: typeof setAppConfig;
 }
 
-type Props = StateProps & DispatchProps;
+type Props = StateProps & DispatchProps & RouteComponentProps;
 
 interface State {
   domain: string;
@@ -31,6 +32,23 @@ class AllowancesPage extends React.Component<Props, State> {
     domain: '',
     isAdding: false,
   };
+
+  componentDidMount() {
+    // Redirects with domain specified are set by default
+    const { location, appConfigs } = this.props;
+    if (location.state && location.state.domain) {
+      this.setState({ domain: location.state.domain });
+      // If they don't already have an allowance, make an inactive one for them
+      if (!appConfigs[location.state.domain]) {
+        this.props.setAppConfig(location.state.domain, {
+          allowance: {
+            ...DEFAULT_ALLOWANCE,
+            active: false,
+          },
+        });
+      }
+    }
+  }
 
   render() {
     const { appConfigs, enabledDomains } = this.props;
@@ -52,7 +70,7 @@ class AllowancesPage extends React.Component<Props, State> {
           >
             {configDomains.map(d => (
               <Select.Option value={d} key={d}>
-                {d}
+                {shortDomain(d)}
               </Select.Option>
             ))}
           </Select>
@@ -90,10 +108,13 @@ class AllowancesPage extends React.Component<Props, State> {
               className="Allowances-add-input"
               placeholder="Enter or select a domain"
               enterButton={<Icon type="plus" />}
-              onSearch={v => this.submitAddDomain(v)}
+              onSearch={v => {
+                setTimeout(() => this.submitAddDomain(v), 100);
+              }}
               autoFocus
             />
           </AutoComplete>
+          <div className="Allowances-addHint">Must specify http:// or https://</div>
         </Modal>
       </div>
     );
@@ -104,18 +125,23 @@ class AllowancesPage extends React.Component<Props, State> {
   };
 
   private filterAddDomains = (val: string, option: any) => {
-    return option.key.indexOf(val.toLowerCase()) === 0;
+    return (
+      option.key.indexOf(val.toLowerCase()) === 0 ||
+      removeDomainPrefix(option.key).indexOf(val.toLowerCase()) === 0
+    );
   };
 
   private submitAddDomain = (domain: string) => {
-    if (!isSimpleDomain(domain)) {
+    if (!isValidDomain(domain)) {
       message.warn('Invalid domain name');
       return;
     }
 
-    this.props.setAppConfig(domain, {
-      allowance: { ...DEFAULT_ALLOWANCE },
-    });
+    if (!this.props.appConfigs[domain]) {
+      this.props.setAppConfig(domain, {
+        allowance: { ...DEFAULT_ALLOWANCE },
+      });
+    }
     this.setState({ domain });
     this.closeAddModal();
   };
@@ -124,10 +150,12 @@ class AllowancesPage extends React.Component<Props, State> {
   private closeAddModal = () => this.setState({ isAdding: false });
 }
 
-export default connect<StateProps, DispatchProps, {}, AppState>(
+const ConnectedAllowancesPage = connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     appConfigs: state.appconf.configs,
-    enabledDomains: state.settings.enabledDomains.map(normalizeDomain),
+    enabledDomains: state.settings.enabledDomains,
   }),
   { setAppConfig },
 )(AllowancesPage);
+
+export default withRouter(ConnectedAllowancesPage);

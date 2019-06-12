@@ -8,8 +8,9 @@ import SendForm from 'components/SendForm';
 import InvoiceForm from 'components/InvoiceForm';
 import TransactionInfo from 'components/TransactionInfo';
 import ConnectionFailureModal from 'components/ConnectionFailureModal';
-import { AppState } from 'store/reducers';
 import ChannelInfo from 'components/ChannelInfo';
+import ActiveAppBanner from 'components/ActiveAppBanner';
+import { AppState } from 'store/reducers';
 import { ChannelWithNode } from 'modules/channels/types';
 import { AnyTransaction } from 'modules/account/types';
 import { getAccountInfo } from 'modules/account/actions';
@@ -48,6 +49,7 @@ class HomePage extends React.Component<Props, State> {
 
     return (
       <div className="Home">
+        <ActiveAppBanner />
         <AccountInfo
           onSendClick={this.openSendForm}
           onInvoiceClick={this.openInvoiceForm}

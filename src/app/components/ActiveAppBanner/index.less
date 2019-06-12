@@ -1,0 +1,41 @@
+@import '~style/variables.less';
+
+.ActiveAppBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+
+  &.is-enabled {
+    background: @primary-color;
+  }
+
+  &.is-rejected {
+    background: @error-color;
+  }
+
+  &-message {
+    color: #fff;
+    padding: 0.4rem 0;
+    font-size: 0.8rem;
+  }
+
+  &-actions {
+    display: flex;
+
+    &-btn {
+      color: #fff;
+      cursor: pointer;
+      padding: 0 0.4rem;
+      opacity: 0.7;
+      font-size: 1rem;
+      background: none;
+      border: none;
+      outline: none;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -95,7 +95,7 @@ class AllowancesPage extends React.Component<Props, State> {
             />
           </Form.Item>
           <Row>
-            <Col span={9}>
+            <Col span={10}>
               <Form.Item label="Max payment">
                 <Input
                   name="maxPerPayment"
@@ -105,7 +105,7 @@ class AllowancesPage extends React.Component<Props, State> {
                 />
               </Form.Item>
             </Col>
-            <Col offset={1} span={9}>
+            <Col offset={1} span={8}>
               <Form.Item label="Cooldown">
                 <Input
                   name="minIntervalPerPayment"

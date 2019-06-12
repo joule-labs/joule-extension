@@ -68,6 +68,11 @@ export function isSegwitAddress(address: string): boolean {
   return CHAIN_PREFIXES.some(p => addrPrefix.substring(0, p.length) === p);
 }
 
-export function isSimpleDomain(domain: string): boolean {
-  return /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/.test(domain);
+export function isValidDomain(domain: string): boolean {
+  try {
+    new URL(domain); // tslint:disable-line
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
