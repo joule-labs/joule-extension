@@ -30,14 +30,18 @@
       }
     }
 
-    &-status {
+    &-status,
+    &-private {
       position: absolute;
       bottom: 0.1rem;
-      right: 0.1rem;
-      width: 0.8rem;
-      height: 0.8rem;
+      width: 0.9rem;
+      height: 0.9rem;
       border-radius: 100%;
-      box-shadow: 0 0 0 3px #FFF;
+      box-shadow: 0 0 0 3px #fff;
+    }
+
+    &-status {
+      right: 0.1rem;
 
       &.is-open {
         &.is-active {
@@ -51,8 +55,21 @@
       &.is-closing,
       &.is-opening,
       &.is-waiting,
-      &.is-force-closing, {
+      &.is-force-closing {
         background: @warning-color;
+      }
+    }
+
+    &-private {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      left: 0.1rem;
+      background: #666;
+
+      .anticon {
+        color: #fff;
+        font-size: 0.65rem;
       }
     }
   }
@@ -66,7 +83,7 @@
       font-size: 0.95rem;
       margin-bottom: 0.1rem;
     }
-    
+
     &-pubkey {
       font-size: 0.65rem;
       margin-bottom: 0.15rem;

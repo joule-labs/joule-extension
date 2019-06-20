@@ -6,11 +6,16 @@
   }
 
   &-form {
-    &-anyValue {
-      margin-top: -0.25rem;
-      margin-bottom: 0.5rem;
-      transform: scale(0.8);
+    &-anyValue,
+    &-private {
+      margin-bottom: 0.25rem;
+      transform: translateY(-30%) scale(0.8);
       transform-origin: left center;
+    }
+
+    &-private {
+      display: flex;
+      align-items: center;
     }
   }
 
@@ -27,9 +32,8 @@
       padding: 1rem;
       margin-bottom: 0.5rem;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-                  0 0 2px rgba(0, 0, 0, 0.2);
-      
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 2px rgba(0, 0, 0, 0.2);
+
       canvas {
         display: block;
       }

@@ -1,6 +1,6 @@
 import React from 'react';
 import BN from 'bn.js';
-import { Tooltip } from 'antd';
+import { Tooltip, Icon } from 'antd';
 import classnames from 'classnames';
 import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
@@ -36,6 +36,8 @@ export default class ChannelRow extends React.Component<Props> {
       statusClass = `${statusClass} is-${channel.active ? 'active' : 'inactive'}`;
     }
 
+    const isPrivate = channel.status === CHANNEL_STATUS.OPEN ? channel.private : false;
+
     return (
       <div
         className={classnames('ChannelRow', onClick && 'is-clickable')}
@@ -46,6 +48,14 @@ export default class ChannelRow extends React.Component<Props> {
           <Tooltip title={tooltipText}>
             <div className={classnames('ChannelRow-avatar-status', statusClass)} />
           </Tooltip>
+
+          {isPrivate && (
+            <Tooltip title="Private">
+              <div className="ChannelRow-avatar-private">
+                <Icon type="eye-invisible" theme="filled" />
+              </div>
+            </Tooltip>
+          )}
         </div>
         <div className="ChannelRow-info">
           <div className="ChannelRow-info-alias">{node.alias}</div>
