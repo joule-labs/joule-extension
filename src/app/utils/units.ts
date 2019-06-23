@@ -10,8 +10,8 @@ import { commaify } from './formatters';
 
 const decimals: { [key in Denomination]: number } = {
   [Denomination.SATOSHIS]: 0,
-  [Denomination.MILLIBITCOIN]: 3,
-  [Denomination.BITS]: 6,
+  [Denomination.BITS]: 3,
+  [Denomination.MILLIBITCOIN]: 6,
   [Denomination.BITCOIN]: 8,
 };
 
