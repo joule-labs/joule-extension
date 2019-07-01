@@ -1,10 +1,13 @@
 import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
 import types from './types';
 import settingsTypes from 'modules/settings/types';
+import LoopHttpClient from 'lib/loop-http';
 
 export interface NodeState {
   lib: LndHttpClient | null;
+  loopLib: LoopHttpClient | null;
   url: string | null;
+  loopUrl: string | null;
   isNodeChecked: boolean;
   adminMacaroon: Macaroon | null;
   readonlyMacaroon: Macaroon | null;
@@ -25,7 +28,9 @@ export interface NodeState {
 
 export const INITIAL_STATE: NodeState = {
   lib: null,
+  loopLib: null,
   url: null,
+  loopUrl: null,
   isNodeChecked: false,
   adminMacaroon: null,
   readonlyMacaroon: null,
@@ -54,6 +59,7 @@ export default function cryptoReducers(
       return {
         ...state,
         url: null,
+        loopUrl: 'http://localhost:8081',
         isNodeChecked: false,
         isCheckingNode: true,
         checkNodeError: null,
@@ -63,6 +69,7 @@ export default function cryptoReducers(
       return {
         ...state,
         url: action.payload,
+        loopUrl: 'http://localhost:8081',
         isNodeChecked: true,
         isCheckingNode: false,
       };
@@ -83,6 +90,7 @@ export default function cryptoReducers(
       return {
         ...state,
         url: action.payload.url,
+        loopUrl: 'http://localhost:8081',
         nodeInfo: action.payload.response,
         isCheckingAuth: false,
       };
@@ -151,6 +159,7 @@ export default function cryptoReducers(
 
     case types.SET_NODE:
     case types.SYNC_UNENCRYPTED_NODE_STATE:
+    case types.SYNC_UNENCRYPTED_LOOP_STATE:
     case types.SYNC_ENCRYPTED_NODE_STATE:
       return {
         ...state,
@@ -165,6 +174,7 @@ export default function cryptoReducers(
         ...state,
         lib: null,
         url: null,
+        loopUrl: null,
         readonlyMacaroon: null,
         adminMacaroon: null,
       };

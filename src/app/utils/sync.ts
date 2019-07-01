@@ -10,10 +10,12 @@ import cryptoTypes from 'modules/crypto/types';
 import {
   selectSyncedEncryptedNodeState,
   selectSyncedUnencryptedNodeState,
+  selectSyncedUnencryptedLoopState,
 } from 'modules/node/selectors';
 import {
   setSyncedEncryptedNodeState,
   setSyncedUnencryptedNodeState,
+  setSyncedUnencryptedLoopState,
 } from 'modules/node/actions';
 import nodeTypes from 'modules/node/types';
 import { selectSettings } from 'modules/settings/selectors';
@@ -73,6 +75,18 @@ export const syncConfigs: Array<SyncConfig<any>> = [
       nodeTypes.RESET_NODE,
       settingsTypes.CLEAR_SETTINGS,
       cryptoTypes.CHANGE_PASSWORD_SUCCESS,
+    ],
+  },
+  {
+    key: 'loop-unencrypted',
+    version: 1,
+    encrypted: false,
+    selector: selectSyncedUnencryptedLoopState,
+    action: setSyncedUnencryptedLoopState,
+    triggerActions: [
+      nodeTypes.SET_NODE,
+      nodeTypes.RESET_NODE,
+      settingsTypes.CLEAR_SETTINGS,
     ],
   },
   {

@@ -11,6 +11,10 @@ export const selectSyncedEncryptedNodeState = (s: AppState) => ({
   adminMacaroon: s.node.adminMacaroon,
 });
 
+export const selectSyncedUnencryptedLoopState = (s: AppState) => ({
+  loopUrl: s.node.loopUrl,
+});
+
 export const selectNodeLib = (s: AppState) => s.node.lib;
 export const selectNodeLibOrThrow = (s: AppState) => {
   const lib = selectNodeLib(s);
@@ -18,6 +22,15 @@ export const selectNodeLibOrThrow = (s: AppState) => {
     throw new Error('Node must be configured first');
   }
   return lib;
+};
+
+export const selectLoopLib = (s: AppState) => s.node.loopLib;
+export const selectLoopLibOrThrow = (s: AppState) => {
+  const loopLib = selectLoopLib(s);
+  if (!loopLib) {
+    throw new Error('Loop must be configured first');
+  }
+  return loopLib;
 };
 
 export const selectNodeInfo = (s: AppState) => s.node.nodeInfo;

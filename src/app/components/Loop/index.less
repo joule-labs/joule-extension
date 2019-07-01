@@ -1,0 +1,147 @@
+@import '~style/variables.less';
+
+.Loop {
+  background-color: #ffffff;
+  height: 100%;
+
+  &-header {
+    padding: 1rem;
+    text-align: right;
+  }
+
+  &-chart {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1.5rem 0;
+    position: relative;
+
+    &-denoms {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+
+    &-tip {
+      font-size: 0.8rem;
+    }
+
+    &-progress {
+      .ant-progress-circle-path:nth-child(2) {
+        stroke: #d9d9d9 !important;
+      }
+    }
+
+    &-metrics {
+      .ant-statistic:first-child {
+        margin-bottom: 2rem;
+      }
+    }
+  }
+
+  &-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: #fbfbfb;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+
+    @media (max-width: 500px) {
+      .ant-statistic {
+        &.is-small {
+          .ant-statistic-content {
+            font-size: 0.9rem;
+
+            .ant-statistic-content-value-decimal {
+              font-size: 0.7rem;
+            }
+
+            .ant-statistic-content-suffix {
+              // hide the suffix for really large numbers
+              display: none;
+            }
+          }
+        }
+
+        &.is-medium {
+          .ant-statistic-content {
+            font-size: 0.8rem;
+
+            .ant-statistic-content-value-decimal,
+            .ant-statistic-content-suffix {
+              font-size: 0.6rem;
+            }
+          }
+        }
+
+        &.is-large {
+          .ant-statistic-content {
+            font-size: 1rem;
+
+            .ant-statistic-content-value-decimal,
+            .ant-statistic-content-suffix {
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    margin-left: 2rem;
+  }
+}
+
+&-details {
+  // Ant override
+  .ant-tabs {
+    flex: 1;
+    background: #fff;
+  }
+
+  .ant-tabs-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    z-index: 1000;
+    border-top: 1px solid rgba(#000, 0.1);
+  }
+
+  .ant-tabs-nav {
+    width: 100%;
+
+    > div {
+      display: flex;
+      width: 100%;
+    }
+
+    .ant-tabs-tab {
+      margin: 0;
+      flex: 1;
+      text-align: center;
+      font-weight: normal;
+    }
+  }
+
+  .ant-tabs-content {
+    height: 100%;
+    padding-top: 44px; // Height of sticky nav
+
+    .ant-tabs-tabpane {
+      height: 100%;
+      overflow: auto;
+
+      &.ant-tabs-tabpane-inactive {
+        overflow: visible;
+      }
+    }
+  }
+}

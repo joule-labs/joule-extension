@@ -26,11 +26,13 @@ import onchain, {
   OnChainState,
   INITIAL_STATE as onchainInitialState,
 } from 'modules/onchain';
+import loop, { LoopState, INITIAL_STATE as loopInitialState } from 'modules/loop';
 
 export interface AppState {
   crypto: CryptoState;
   sync: SyncState;
   node: NodeState;
+  loop: LoopState;
   channels: ChannelsState;
   account: AccountState;
   payment: PaymentState;
@@ -45,6 +47,7 @@ export const combineInitialState: Partial<AppState> = {
   crypto: cryptoInitialState,
   sync: syncInitialState,
   node: nodeInitialState,
+  loop: loopInitialState,
   channels: channelsInitialState,
   account: accountInitialState,
   payment: paymentInitialState,
@@ -59,6 +62,7 @@ export default combineReducers<AppState>({
   crypto,
   sync,
   node,
+  loop,
   channels,
   account,
   payment,

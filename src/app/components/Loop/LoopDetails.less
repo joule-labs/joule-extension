@@ -1,0 +1,72 @@
+@import '~style/variables.less';
+
+.LoopDetails {
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(#000, 0.08);
+    padding: 0.2rem 0.5rem;
+    margin-top: 1rem;
+  }
+
+  &-row {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(#000, 0.08);
+
+    &-icon {
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      flex-shrink: 0;
+      justify-content: center;
+      align-items: center;
+      border-radius: 100%;
+      background: linear-gradient(to top, darken(#ff9900, 5%), lighten(#ff9900, 5%));
+      margin-right: 1rem;
+
+      .anticon {
+        color: #fff;
+        transform: rotate(20deg);
+      }
+    }
+
+    &-info {
+      flex-grow: 1;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      margin-right: 1.5rem;
+
+      &-comment {
+        font-style: italic;
+        font-size: 0.7rem;
+        padding-bottom: 0.3rem;
+      }
+    }
+
+    &-amount {
+      font-size: 0.9rem;
+      text-align: right;
+      white-space: nowrap;
+      margin-right: 5px;
+
+      &.is-positive .Unit-primary {
+        color: @success-color;
+      }
+
+      &.is-negative .Unit-primary {
+        color: @error-color;
+      }
+    }
+
+    &-close {
+      color: @error-color;
+      margin: 0 0.7rem;
+    }
+  }
+}
