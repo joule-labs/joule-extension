@@ -163,7 +163,7 @@ export function* handleUpdateMacaroons(
     yield call(requirePassword);
 
     // connect to the url to test if it's working
-    yield put(actions.checkAuth(url, loopUrl, admin, readonly));
+    yield put(actions.checkAuth(url, admin, readonly));
     const checkAction = yield take([types.CHECK_AUTH_SUCCESS, types.CHECK_AUTH_FAILURE]);
 
     // check for an error connecting to the node

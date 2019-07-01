@@ -1,5 +1,5 @@
 import types from './types';
 
 export function getLoopTerms() {
-  return { type: types.GET_LOOP_TERMS };
+  return { type: types.GET_LOOP_OUT_TERMS };
 }

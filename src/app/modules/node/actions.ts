@@ -7,11 +7,10 @@ import {
 import types from './types';
 import LoopHttpClient from 'lib/loop-http';
 
-export function checkNode(url: string, loopUrl: string) {
+export function checkNode(url: string) {
   return {
     type: types.CHECK_NODE,
     payload: url,
-    loopUrl,
   };
 }
 
@@ -23,28 +22,21 @@ export function checkNodes(urls: string[], loopUrl: string[]) {
   };
 }
 
-export function checkAuth(
-  url: string,
-  loopUrl: string,
-  admin: Macaroon,
-  readonly: Macaroon,
-) {
+export function checkAuth(url: string, admin: Macaroon, readonly: Macaroon) {
   return {
     type: types.CHECK_AUTH,
     payload: {
       url,
-      loopUrl,
       admin,
       readonly,
     },
   };
 }
 
-export function updateNodeUrl(url: string, loopUrl: string) {
+export function updateNodeUrl(url: string) {
   return {
     type: types.UPDATE_NODE_URL,
     payload: url,
-    loopUrl,
   };
 }
 

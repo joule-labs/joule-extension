@@ -11,6 +11,7 @@ import { AppState } from 'store/reducers';
 
 interface StateProps {
   url: AppState['node']['url'];
+  loopUrl: AppState['node']['loopUrl'];
   readonlyMacaroon: AppState['node']['readonlyMacaroon'];
   adminMacaroon: AppState['node']['adminMacaroon'];
   isNodeChecked: AppState['node']['isNodeChecked'];
@@ -174,8 +175,13 @@ class NodeSettings extends React.Component<Props, State> {
   };
 
   private handleMacaroons = (adminMacaroon: string, readonlyMacaroon: string) => {
-    const { url } = this.props;
-    this.props.updateMacaroons(url as string, adminMacaroon, readonlyMacaroon);
+    const { url, loopUrl } = this.props;
+    this.props.updateMacaroons(
+      url as string,
+      loopUrl as string,
+      adminMacaroon,
+      readonlyMacaroon,
+    );
   };
 
   private editNodeUrl = () => this.setState({ editingNodeField: 'url' });
@@ -187,6 +193,7 @@ class NodeSettings extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     url: state.node.url,
+    loopUrl: state.node.loopUrl,
     readonlyMacaroon: state.node.readonlyMacaroon,
     adminMacaroon: state.node.adminMacaroon,
     isNodeChecked: state.node.isNodeChecked,
