@@ -21,6 +21,7 @@ import InputAddress from './InputAddress';
 
 interface StateProps {
   url: AppState['node']['url'];
+  loopUrl: AppState['node']['loopUrl'];
   isNodeChecked: AppState['node']['isNodeChecked'];
   nodeInfo: AppState['node']['nodeInfo'];
   isCheckingNode: AppState['node']['isCheckingNode'];
@@ -188,13 +189,13 @@ class SelectNode extends React.Component<Props, State> {
   };
 
   private confirmNode = () => {
-    const { url } = this.props;
+    const { url, loopUrl } = this.props;
     const { adminMacaroon, readonlyMacaroon } = this.state;
-    if (!url || !adminMacaroon || !readonlyMacaroon) {
+    if (!url || !loopUrl || !adminMacaroon || !readonlyMacaroon) {
       console.warn('Invalid credentials:', { url, adminMacaroon, readonlyMacaroon });
       return;
     }
-    this.props.setNode(url, adminMacaroon, readonlyMacaroon);
+    this.props.setNode(url, loopUrl, adminMacaroon, readonlyMacaroon);
     this.props.onConfirmNode();
   };
 
@@ -206,6 +207,7 @@ class SelectNode extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     url: state.node.url,
+    loopUrl: state.node.loopUrl,
     isNodeChecked: state.node.isNodeChecked,
     nodeInfo: state.node.nodeInfo,
     isCheckingNode: state.node.isCheckingNode,

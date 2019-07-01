@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
 import { getLoopTerms } from 'modules/loop/actions';
-import { Button, Icon, Tooltip } from 'antd';
+import { Button, Icon } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 
 interface StateProps {
