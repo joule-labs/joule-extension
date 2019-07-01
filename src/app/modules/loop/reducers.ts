@@ -21,16 +21,16 @@ export default function loopReducers(
   action: any,
 ): LoopState {
   switch (action.type) {
-    case types.GET_LOOP_TERMS:
+    case types.GET_LOOP_OUT_TERMS:
       return {
         ...state,
       };
-    case types.GET_LOOP_TERMS_SUCCESS:
+    case types.GET_LOOP_OUT_TERMS_SUCCESS:
       return {
         ...state,
         loopTerms: action.payload,
       };
-    case types.GET_LOOP_TERMS_FAILURE:
+    case types.GET_LOOP_OUT_TERMS_FAILURE:
       return {
         ...state,
       };

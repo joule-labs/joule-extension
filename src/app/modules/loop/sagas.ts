@@ -8,17 +8,17 @@ export function* handleGetLoopTerms(): SagaIterator {
     const loopLib = yield select(selectLoopLibOrThrow);
     const payload = yield call(loopLib.getLoopTerms);
     yield put({
-      type: types.GET_LOOP_TERMS_SUCCESS,
+      type: types.GET_LOOP_OUT_TERMS_SUCCESS,
       payload,
     });
   } catch (err) {
     yield put({
-      type: types.GET_LOOP_TERMS_FAILURE,
+      type: types.GET_LOOP_OUT_TERMS_FAILURE,
       payload: err,
     });
   }
 }
 
 export default function* loopSagas(): SagaIterator {
-  yield takeLatest(types.GET_LOOP_TERMS, handleGetLoopTerms);
+  yield takeLatest(types.GET_LOOP_OUT_TERMS, handleGetLoopTerms);
 }
