@@ -1,6 +1,6 @@
 import React from 'react';
 import { browser } from 'webextension-polyfill-ts';
-import { Button, Form, Input, Alert, message, Drawer } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import { urlWithoutPort } from 'utils/formatters';
 import './InputLoopAddress.less';
 import { setLoop } from 'modules/loop/actions';
