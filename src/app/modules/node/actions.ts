@@ -2,10 +2,8 @@ import LndHttpClient, { Macaroon } from 'lib/lnd-http';
 import {
   selectSyncedUnencryptedNodeState,
   selectSyncedEncryptedNodeState,
-  selectSyncedUnencryptedLoopState,
 } from './selectors';
 import types from './types';
-import LoopHttpClient from 'lib/loop-http';
 
 export function checkNode(url: string) {
   return {
@@ -14,11 +12,10 @@ export function checkNode(url: string) {
   };
 }
 
-export function checkNodes(urls: string[], loopUrl: string[]) {
+export function checkNodes(urls: string[]) {
   return {
     type: types.CHECK_NODES,
     payload: urls,
-    loopUrl,
   };
 }
 
@@ -40,17 +37,11 @@ export function updateNodeUrl(url: string) {
   };
 }
 
-export function updateMacaroons(
-  url: string,
-  loopUrl: string,
-  admin: Macaroon,
-  readonly: Macaroon,
-) {
+export function updateMacaroons(url: string, admin: Macaroon, readonly: Macaroon) {
   return {
     type: types.UPDATE_MACAROONS,
     payload: {
       url,
-      loopUrl,
       admin,
       readonly,
     },
@@ -63,7 +54,6 @@ export function getNodeInfo() {
 
 export function setNode(
   url: string,
-  loopUrl: string,
   adminMacaroon: Macaroon,
   readonlyMacaroon: Macaroon,
 ) {
@@ -71,11 +61,9 @@ export function setNode(
     type: types.SET_NODE,
     payload: {
       url,
-      loopUrl,
       adminMacaroon,
       readonlyMacaroon,
       lib: new LndHttpClient(url, adminMacaroon),
-      loopLib: new LoopHttpClient(loopUrl),
     },
   };
 }
@@ -108,19 +96,6 @@ export function setSyncedEncryptedNodeState(
       url,
       adminMacaroon,
       lib: url ? new LndHttpClient(url as string, adminMacaroon as string) : null,
-    },
-  };
-}
-
-export function setSyncedUnencryptedLoopState(
-  payload: ReturnType<typeof selectSyncedUnencryptedLoopState>,
-) {
-  const { loopUrl } = payload;
-  return {
-    type: types.SYNC_UNENCRYPTED_LOOP_STATE,
-    payload: {
-      loopUrl,
-      loopLib: loopUrl ? new LoopHttpClient(loopUrl as string) : null,
     },
   };
 }

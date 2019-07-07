@@ -1,22 +1,43 @@
 import { stringify } from 'query-string';
 import { NetworkError } from './errors';
-import { parseNodeErrorResponse } from './utils';
+import { parseLoopErrorResponse } from './utils';
 import * as T from './types';
 
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export class LoopHttpClient {
-  loopUrl: string;
+  url: string;
 
-  constructor(loopUrl: string) {
+  constructor(url: string) {
     // Remove trailing slash for consistency
-    this.loopUrl = loopUrl.replace(/\/$/, '');
+    this.url = url.replace(/\/$/, '');
   }
 
   // Public API methods
 
-  getLoopTerms = () => {
-    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/out/terms`);
+  getLoopOutTerms = () => {
+    return this.request<T.GetLoopOutTermsResponse>('GET', `/v1/loop/out/terms`);
+  };
+
+  getLoopOutQuote = (amt: string) => {
+    return this.request<T.GetLoopOutQuoteResponse>(
+      'GET',
+      `/v1/loop/out/quote/${amt}`,
+      undefined,
+      {
+        miner_fee: '',
+        swap_fee: '',
+        prepay_amt: '',
+      },
+    );
+  };
+
+  getLoopOut = (args: T.GetLoopOutArguments) => {
+    return this.request<T.GetLoopOutResponse, T.GetLoopOutArguments>(
+      'POST',
+      '/v1/loop/out',
+      args,
+    );
   };
 
   // Internal fetch function
@@ -39,7 +60,7 @@ export class LoopHttpClient {
       query = `?${stringify(args as any)}`;
     }
 
-    return fetch(this.loopUrl + path + query, {
+    return fetch(this.url + path + query, {
       method,
       headers,
       body,
@@ -53,7 +74,7 @@ export class LoopHttpClient {
           } catch (err) {
             throw new NetworkError(res.statusText, res.status);
           }
-          const error = parseNodeErrorResponse(errBody);
+          const error = parseLoopErrorResponse(errBody);
           throw error;
         }
         return res.json();

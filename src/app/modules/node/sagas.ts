@@ -6,7 +6,6 @@ import {
   selectNodeInfo,
   selectSyncedEncryptedNodeState,
   selectSyncedUnencryptedNodeState,
-  selectSyncedUnencryptedLoopState,
   selectNodeInfoError,
 } from './selectors';
 import { requirePassword } from 'modules/crypto/sagas';
@@ -125,7 +124,6 @@ export function* handleUpdateNodeUrl(
 
     // get current macaroons from state as its needed to store the new url
     const { url, readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
-    const { loopUrl } = yield select(selectSyncedUnencryptedLoopState);
     const { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
 
     // connect to the url to test if it's working
@@ -135,12 +133,12 @@ export function* handleUpdateNodeUrl(
     // check for an error connecting to the node
     if (checkAction.type === types.CHECK_NODE_FAILURE) {
       // reset url in redux because checkNode will set it to null before checking
-      yield put(actions.setNode(url, loopUrl, adminMacaroon, readonlyMacaroon));
+      yield put(actions.setNode(url, adminMacaroon, readonlyMacaroon));
       throw checkAction.payload;
     }
 
     // save the new info in state & storage
-    yield put(actions.setNode(newUrl, loopUrl, adminMacaroon, readonlyMacaroon));
+    yield put(actions.setNode(newUrl, adminMacaroon, readonlyMacaroon));
 
     yield put({
       type: types.UPDATE_NODE_URL_SUCCESS,
@@ -157,7 +155,7 @@ export function* handleUpdateMacaroons(
   action: ReturnType<typeof actions.updateMacaroons>,
 ): SagaIterator {
   try {
-    const { url, loopUrl, admin, readonly } = action.payload;
+    const { url, admin, readonly } = action.payload;
 
     // password is needed to decrypt the admin macaroon
     yield call(requirePassword);
@@ -172,7 +170,7 @@ export function* handleUpdateMacaroons(
     }
 
     // save the new info in state & storage
-    yield put(actions.setNode(url, loopUrl, admin, readonly));
+    yield put(actions.setNode(url, admin, readonly));
 
     // The existing data on the home screen may be for a different node
     // so we need to fetch new data to ensure it is accurate

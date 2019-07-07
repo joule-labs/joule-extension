@@ -6,7 +6,7 @@ export interface ErrorResponse {
   code: number;
 }
 
-export interface GetLoopTermsResponse {
+export interface GetLoopOutTermsResponse {
   swap_payment_dest: string;
   swap_fee_base: string;
   swap_fee_rate: string;
@@ -14,4 +14,26 @@ export interface GetLoopTermsResponse {
   min_swap_amount: string;
   max_swap_amount: string;
   cltv_delta: 0;
+}
+
+export interface GetLoopOutQuoteResponse {
+  swap_fee: string;
+  prepay_amt: string;
+  miner_fee: string;
+}
+
+export interface GetLoopOutArguments {
+  amt: string;
+  dest: string;
+  max_swap_routing_fee: string;
+  max_prepay_routing_fee: string;
+  max_swap_fee: string;
+  max_prepay_amt: string;
+  max_miner_fee: string;
+  loop_out_channel: string;
+}
+
+export interface GetLoopOutResponse {
+  id: string;
+  htlc_address: string;
 }

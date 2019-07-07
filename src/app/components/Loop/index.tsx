@@ -2,72 +2,229 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
-import { getLoopTerms } from 'modules/loop/actions';
-import { Button, Icon } from 'antd';
+import { getLoopOutTerms, setLoop } from 'modules/loop/actions';
+import { Form, Button, Icon, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
+import AmountField from 'components/AmountField';
+import InputLoopAddress from 'components/Loop/InputLoopAddress';
+import QuoteModal from './QuoteModal';
 
 interface StateProps {
-  loopTerms: AppState['loop']['loopTerms'];
+  url: AppState['loop']['url'];
+  lib: AppState['loop']['lib'];
+  loopOutTerms: AppState['loop']['loopOutTerms'];
+  loopOutQuote: AppState['loop']['loopOutQuote'];
+  loopOut: AppState['loop']['loopOut'];
 }
 
 interface DispatchProps {
-  getLoopTerms: typeof getLoopTerms;
+  getLoopOutTerms: typeof getLoopOutTerms;
+  setLoop: typeof setLoop;
 }
+
+interface State {
+  amount: string;
+  isAnyValue: boolean;
+  destination: string;
+  swapRoutingFee: string;
+  swapFee: string;
+  minerFee: string;
+  prepayAmt: string;
+  channel: string;
+  quoteModalIsOpen: boolean;
+}
+
+const INITIAL_STATE = {
+  amount: '',
+  isAnyValue: false,
+  destination: '',
+  swapRoutingFee: '',
+  swapFee: '',
+  minerFee: '',
+  prepayAmt: '',
+  channel: '',
+  quoteModalIsOpen: false,
+};
 
 type Props = StateProps & DispatchProps;
 
 class Loop extends React.Component<Props> {
-  componentWillMount() {
-    this.props.getLoopTerms();
-  }
+  state: State = { ...INITIAL_STATE };
 
   render() {
-    const { loopTerms } = this.props;
+    const { loopOutTerms } = this.props;
+    const {
+      isAnyValue,
+      amount,
+      // destination,
+      // swapRoutingFee,
+      // swapFee,
+      // minerFee,
+      // prepayAmt,
+      // channel
+    } = this.state;
     const actions: ButtonProps[] = [
-      {
-        children: 'Loop Out Quote',
-        icon: '',
-      },
       {
         children: (
           <>
-            <Icon type="thunderbolt" theme="filled" /> Loop Out
+            <Icon type="question-circle" theme="filled" /> Loop Quote
           </>
         ),
         type: 'primary' as any,
       },
     ];
 
-    if (loopTerms === null) {
+    if (loopOutTerms === null) {
       return null;
     }
+
     return (
       <>
         <div className="Loop">
-          <h1 className="Loop-stats">Loop Out Terms</h1>
-          <ul className="Loop-details">
-            <li>Max: {loopTerms.max_swap_amount} sats</li>
-            <li>Min: {loopTerms.min_swap_amount} sats</li>
-            <li>Prepay: {loopTerms.prepay_amt} sats </li>
-            <li>Base Fee: {loopTerms.swap_fee_base} sats </li>
-            <li>Fee Rate: {loopTerms.swap_fee_rate} sats </li>
-          </ul>
+          <InputLoopAddress setLoop={this.props.setLoop} error={null} initialUrl={''} />
+          <Tooltip
+            overlayClassName="Loop-terms-tip"
+            title={`
+                Base fee: ${loopOutTerms.swap_fee_base + ' sats'} |
+                Fee rate: ${loopOutTerms.swap_fee_rate + ' sats'} |
+                Prepay amt: ${loopOutTerms.prepay_amt + ' sats'} |
+                Min Swap amt: ${loopOutTerms.min_swap_amount + ' sats'} |
+                Max Swap amt: ${loopOutTerms.max_swap_amount + ' sats'} |
+                CLTV delta: ${loopOutTerms.cltv_delta}
+              `}
+            placement="topRight"
+            arrowPointAtCenter
+          >
+            <Form
+              className="LoopForm-form"
+              layout="vertical"
+              onSubmit={this.handleSubmit}
+            >
+              {/*
+        // Need to make advanced feature checkbox to unhide these
+        <Form.Item label="Destination">
+          <Input
+            type="url"
+            size="small"
+            value={destination}
+            // onChange={this.handleChangeDestination}
+            placeholder="default: lnd wallet address"
+            autoFocus
+          />
+        </Form.Item>
+        <Form.Item label="Swap Routing Fee">
+          <Input
+            size="small"
+            value={swapRoutingFee}
+            // onChange={this.handleChangeDestination}
+            placeholder="xxxx sats"
+            autoFocus
+          />
+        </Form.Item>
+        <Form.Item label="Swap Fee">
+          <Input
+            size="small"
+            value={swapFee}
+            // onChange={this.handleChangeDestination}
+            placeholder="xxxx sats"
+            autoFocus
+          />
+        </Form.Item>
+        <Form.Item label="Miner Fee">
+          <Input
+            size="small"
+            value={minerFee}
+            // onChange={this.handleChangeDestination}
+            placeholder="xxxx sats"
+            autoFocus
+          />
+        </Form.Item>
+        <Form.Item label="Prepay Amt">
+          <Input
+            size="small"
+            value={prepayAmt}
+            // onChange={this.handleChangeDestination}
+            placeholder="3eibniEINBesbnPEnv"
+            autoFocus
+          />
+        </Form.Item>
+        <Form.Item label="Channel">
+          <Input
+            size="small"
+            value={channel}
+            // onChange={this.handleChangeDestination}
+            placeholder="lnd channel"
+            autoFocus
+          />
+        </Form.Item> */}
+
+              <AmountField
+                label="Amount"
+                amount={amount}
+                required={!isAnyValue}
+                disabled={isAnyValue}
+                onChangeAmount={this.handleChangeAmount}
+                showFiat
+              />
+            </Form>
+          </Tooltip>
           <div className="Loop-actions">
-            {actions.map((props, idx) => (
-              <Button key={idx} {...props} />
-            ))}
+            {/* Don't allow for quote until amount greater than min swap amount is entered and less than max swap amount*/}
+            {this.state.amount !== null &&
+              this.state.amount !== undefined &&
+              parseInt(this.state.amount, 10) >
+                parseInt(loopOutTerms.min_swap_amount, 10) &&
+              parseInt(this.state.amount, 10) <
+                parseInt(loopOutTerms.max_swap_amount, 10) &&
+              actions.map((props, idx) => (
+                <Button
+                  key={idx}
+                  {...props}
+                  onMouseOver={this.props.getLoopOutTerms}
+                  onClick={this.openQuoteModal}
+                />
+              ))}
           </div>
+          <QuoteModal
+            amt={this.state.amount}
+            isOpen={this.state.quoteModalIsOpen}
+            onClose={this.openQuoteModal}
+          />
         </div>
       </>
     );
   }
+
+  private handleChangeAmount = (amount: string) => {
+    this.setState({ amount });
+  };
+
+  // private handleChangeDestination = (destination: string) => {
+  //   this.setState({ destination });
+  // };
+
+  private openQuoteModal = () => {
+    this.setState({
+      ...this.state,
+      quoteModalIsOpen: this.state.quoteModalIsOpen === false ? true : false,
+    });
+  };
+  private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    // sumbit Loop request
+  };
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
-    loopTerms: state.loop.loopTerms,
+    url: state.loop.url,
+    lib: state.loop.lib,
+    loopOutTerms: state.loop.loopOutTerms,
+    loopOutQuote: state.loop.loopOutQuote,
+    loopOut: state.loop.loopOut,
   }),
   {
-    getLoopTerms,
+    getLoopOutTerms,
+    setLoop,
   },
 )(Loop);

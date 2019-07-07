@@ -1,24 +1,70 @@
 import { SagaIterator } from 'redux-saga';
 import { takeLatest, select, call, put } from 'redux-saga/effects';
-import { selectLoopLibOrThrow } from 'modules/node/selectors';
+import { selectLoopLibOrThrow } from 'modules/loop/selectors';
 import types from './types';
+import * as actions from './actions';
+import LoopHttpClient from '../../lib/loop-http';
 
-export function* handleGetLoopTerms(): SagaIterator {
+// Setup Loop URL and Loop Terms
+export function* handleSetLoop(action: ReturnType<typeof actions.setLoop>): SagaIterator {
+  const url = action.payload;
+  const client = new LoopHttpClient(url);
+  const loopOutTermsPayload = yield call(client.getLoopOutTerms);
+  try {
+    yield call(client.getLoopOutTerms);
+  } catch (err) {
+    yield put({ type: types.SET_LOOP_FAILURE, payload: err });
+    return;
+  }
+  yield put({
+    type: types.SET_LOOP_SUCCESS,
+    payload: url,
+  });
+  yield put({
+    type: types.GET_LOOP_OUT_TERMS_SUCCESS,
+    payload: loopOutTermsPayload,
+  });
+}
+
+export function* handleGetLoopOutQuote(
+  action: ReturnType<typeof actions.getLoopOutQuote>,
+): SagaIterator {
+  const amt = action.payload;
+  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
+  let loopQuote: Yielded<typeof loopLib.getLoopOutQuote> | undefined;
+  try {
+    loopLib = yield select(selectLoopLibOrThrow);
+    loopQuote = (yield call(loopLib.getLoopOutQuote, amt)) as Yielded<
+      typeof loopLib.getLoopOutQuote
+    >;
+  } catch (err) {
+    yield put({ type: types.GET_LOOP_OUT_QUOTE_FAILURE, payload: err });
+    return;
+  }
+  yield put({
+    type: types.GET_LOOP_OUT_QUOTE_SUCCESS,
+    payload: loopQuote,
+  });
+}
+
+export function* handleGetLoopOut(): SagaIterator {
   try {
     const loopLib = yield select(selectLoopLibOrThrow);
-    const payload = yield call(loopLib.getLoopTerms);
+    const payload = yield call(loopLib.getLoopOut);
     yield put({
-      type: types.GET_LOOP_OUT_TERMS_SUCCESS,
+      type: types.GET_LOOP_OUT_SUCCESS,
       payload,
     });
   } catch (err) {
     yield put({
-      type: types.GET_LOOP_OUT_TERMS_FAILURE,
+      type: types.GET_LOOP_OUT_FAILURE,
       payload: err,
     });
   }
 }
 
 export default function* loopSagas(): SagaIterator {
-  yield takeLatest(types.GET_LOOP_OUT_TERMS, handleGetLoopTerms);
+  yield takeLatest(types.SET_LOOP, handleSetLoop);
+  yield takeLatest(types.GET_LOOP_OUT_QUOTE, handleGetLoopOutQuote);
+  yield takeLatest(types.GET_LOOP_OUT, handleGetLoopOut);
 }
