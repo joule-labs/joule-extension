@@ -1,6 +1,6 @@
 import React from 'react';
 import { browser } from 'webextension-polyfill-ts';
-import { Button, Form, Input, Alert, message } from 'antd';
+import { Button, Form, Input, Alert, message, Drawer } from 'antd';
 import { urlWithoutPort } from 'utils/formatters';
 import './InputLoopAddress.less';
 import { setLoop } from 'modules/loop/actions';
@@ -9,6 +9,7 @@ interface Props {
   initialUrl?: string;
   error: Error | null;
   setLoop: typeof setLoop;
+  isLoopUrlSet: string | null;
 }
 
 interface State {
@@ -25,8 +26,7 @@ export default class InputLoopAddress extends React.Component<Props, State> {
   };
 
   render() {
-    const { error } = this.props;
-    const { validation, url, submittedUrl } = this.state;
+    const { validation, url } = this.state;
     const validateStatus = url ? (validation ? 'error' : 'success') : undefined;
     return (
       <Form className="InputLoopAddress" onSubmit={this.handleSubmit} layout="vertical">
@@ -40,28 +40,6 @@ export default class InputLoopAddress extends React.Component<Props, State> {
             autoFocus
           />
         </Form.Item>
-
-        {error && (
-          <Alert
-            type="error"
-            message="Failed to connect to node"
-            description={
-              <>
-                <p>Request failed with the message "{error.message}"</p>
-                <p>
-                  If you're sure you've setup your loop correctly, try{' '}
-                  <a href={`${submittedUrl}/v1/loop/out/terms`} target="_blank">
-                    clicking this link
-                  </a>{' '}
-                  and making sure it loads correctly. If there are SSL errors, click
-                  "advanced" and proceed to accept the certificate.
-                </p>
-              </>
-            }
-            showIcon
-            closable
-          />
-        )}
 
         <Button type="primary" size="large" htmlType="submit" disabled={!url} block>
           Set Loop URL
@@ -95,6 +73,17 @@ export default class InputLoopAddress extends React.Component<Props, State> {
         }
         this.setState({ submittedUrl: url });
         this.props.setLoop(this.state.url);
+        setTimeout(() => {
+          if (this.props.isLoopUrlSet === null) {
+            message.error('Failed to set Loop URL!', 2);
+            // Need error handling and reset URL entry here!
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          } else {
+            message.success('Successfully set Loop URL!', 2);
+          }
+        }, 1000);
       });
   };
 }

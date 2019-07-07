@@ -2,7 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal } from 'antd';
 import { AppState } from 'store/reducers';
-import { getLoopOutQuote } from 'modules/loop/actions';
+import { getLoopOutQuote, getLoopOut } from 'modules/loop/actions';
+import { Button, Icon } from 'antd';
+import { ButtonProps } from 'antd/lib/button';
 
 interface StateProps {
   loopOutQuote: AppState['loop']['loopOutQuote'];
@@ -10,6 +12,7 @@ interface StateProps {
 
 interface DispatchProps {
   getLoopOutQuote: typeof getLoopOutQuote;
+  getLoopOut: typeof getLoopOut;
 }
 
 interface OwnProps {
@@ -36,6 +39,16 @@ class QuoteModal extends React.Component<Props> {
   }
   render() {
     const { loopOutQuote, amt, isOpen, onClose } = this.props;
+    const actions: ButtonProps[] = [
+      {
+        children: (
+          <>
+            <Icon type="lightning" theme="filled" /> Loop
+          </>
+        ),
+        type: 'primary' as any,
+      },
+    ];
     if (loopOutQuote === null) {
       return null;
     }
@@ -44,10 +57,13 @@ class QuoteModal extends React.Component<Props> {
     const content = (
       <>
         <div className="QuoteModal">
-          <code>Miner fee: {loopOutQuote.miner_fee} </code>
-          <code>Prepay amt: {loopOutQuote.prepay_amt} </code>
-          <code>Swap fee: {loopOutQuote.swap_fee} </code>
-          <code>Swap amt: {amt} </code>
+          <p>{`Miner fee: ${loopOutQuote.miner_fee} sats |
+               Prepay amt: ${loopOutQuote.prepay_amt} sats |
+               Swap fee: ${loopOutQuote.swap_fee} sats |
+               Swap amt: ${amt} sats`}</p>
+          {actions.map((props, idx) => (
+            <Button key={idx} {...props} onClick={this.props.getLoopOut} />
+          ))}
         </div>
       </>
     );
@@ -72,5 +88,6 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   }),
   {
     getLoopOutQuote,
+    getLoopOut,
   },
 )(QuoteModal);

@@ -81,26 +81,32 @@ class Loop extends React.Component<Props> {
     return (
       <>
         <div className="Loop">
-          <InputLoopAddress setLoop={this.props.setLoop} error={null} initialUrl={''} />
-          <Tooltip
-            overlayClassName="Loop-terms-tip"
-            title={`
-                Base fee: ${loopOutTerms.swap_fee_base + ' sats'} |
-                Fee rate: ${loopOutTerms.swap_fee_rate + ' sats'} |
-                Prepay amt: ${loopOutTerms.prepay_amt + ' sats'} |
-                Min Swap amt: ${loopOutTerms.min_swap_amount + ' sats'} |
-                Max Swap amt: ${loopOutTerms.max_swap_amount + ' sats'} |
+          <InputLoopAddress
+            isLoopUrlSet={this.props.url}
+            setLoop={this.props.setLoop}
+            error={null}
+            initialUrl={''}
+          />
+          {loopOutTerms.swap_fee_base !== '' && (
+            <Tooltip
+              overlayClassName="Loop-terms-tip"
+              title={`
+                Base fee: ${loopOutTerms.swap_fee_base} sats |
+                Fee rate: ${loopOutTerms.swap_fee_rate} sats |
+                Prepay amt: ${loopOutTerms.prepay_amt} sats |
+                Min Swap amt: ${loopOutTerms.min_swap_amount} sats |
+                Max Swap amt: ${loopOutTerms.max_swap_amount} sats |
                 CLTV delta: ${loopOutTerms.cltv_delta}
               `}
-            placement="topRight"
-            arrowPointAtCenter
-          >
-            <Form
-              className="LoopForm-form"
-              layout="vertical"
-              onSubmit={this.handleSubmit}
+              placement="topRight"
+              arrowPointAtCenter
             >
-              {/*
+              <Form
+                className="LoopForm-form"
+                layout="vertical"
+                onSubmit={this.handleSubmit}
+              >
+                {/*
         // Need to make advanced feature checkbox to unhide these
         <Form.Item label="Destination">
           <Input
@@ -158,16 +164,17 @@ class Loop extends React.Component<Props> {
           />
         </Form.Item> */}
 
-              <AmountField
-                label="Amount"
-                amount={amount}
-                required={!isAnyValue}
-                disabled={isAnyValue}
-                onChangeAmount={this.handleChangeAmount}
-                showFiat
-              />
-            </Form>
-          </Tooltip>
+                <AmountField
+                  label="Amount"
+                  amount={amount}
+                  required={!isAnyValue}
+                  disabled={isAnyValue}
+                  onChangeAmount={this.handleChangeAmount}
+                  showFiat
+                />
+              </Form>
+            </Tooltip>
+          )}
           <div className="Loop-actions">
             {/* Don't allow for quote until amount greater than min swap amount is entered and less than max swap amount*/}
             {this.state.amount !== null &&
