@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
 import { getLoopOutTerms, setLoop } from 'modules/loop/actions';
-import { Form, Button, Icon, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
+import { Form, Button, Icon, Radio, Tooltip, Input } from 'antd';
 import AmountField from 'components/AmountField';
 import InputLoopAddress from 'components/Loop/InputLoopAddress';
 import QuoteModal from './QuoteModal';
@@ -24,26 +24,30 @@ interface DispatchProps {
 
 interface State {
   amount: string;
+  advanced: boolean;
   isAnyValue: boolean;
   destination: string;
-  swapRoutingFee: string;
+  swapRoutingFee: string | null;
   swapFee: string;
   minerFee: string;
   prepayAmt: string;
-  channel: string;
+  channel: string | null;
   quoteModalIsOpen: boolean;
+  loopType: string;
 }
 
 const INITIAL_STATE = {
-  amount: '',
+  amount: '0',
+  advanced: false,
   isAnyValue: false,
   destination: '',
   swapRoutingFee: '',
-  swapFee: '',
-  minerFee: '',
-  prepayAmt: '',
+  swapFee: '0',
+  minerFee: '0',
+  prepayAmt: '0',
   channel: '',
   quoteModalIsOpen: false,
+  loopType: 'Loop Out',
 };
 
 type Props = StateProps & DispatchProps;
@@ -53,21 +57,27 @@ class Loop extends React.Component<Props> {
 
   render() {
     const { loopOutTerms } = this.props;
+    if (loopOutTerms === null) {
+      return null;
+    }
     const {
       isAnyValue,
       amount,
-      // destination,
-      // swapRoutingFee,
-      // swapFee,
-      // minerFee,
-      // prepayAmt,
-      // channel
+      loopType,
+      destination,
+      swapRoutingFee,
+      swapFee,
+      minerFee,
+      prepayAmt,
+      channel,
+      quoteModalIsOpen,
+      advanced,
     } = this.state;
     const actions: ButtonProps[] = [
       {
         children: (
           <>
-            <Icon type="question-circle" theme="filled" /> Loop Quote
+            <Icon type="question-circle" theme="filled" /> {`${loopType} Quote`}
           </>
         ),
         type: 'primary' as any,
@@ -80,12 +90,23 @@ class Loop extends React.Component<Props> {
 
     return (
       <>
+        <div>
+          <Radio.Group defaultValue="a" size="large">
+            <Radio.Button value="a" onClick={this.setLoopOutType}>
+              Loop Out
+            </Radio.Button>
+            <Radio.Button value="b" onClick={this.setLoopInType}>
+              Loop In
+            </Radio.Button>
+          </Radio.Group>
+        </div>
         <div className="Loop">
           <InputLoopAddress
             isLoopUrlSet={this.props.url}
             setLoop={this.props.setLoop}
             error={null}
             initialUrl={''}
+            type={this.state.loopType}
           />
           {loopOutTerms.swap_fee_base !== '' && (
             <Tooltip
@@ -101,23 +122,18 @@ class Loop extends React.Component<Props> {
               placement="topRight"
               arrowPointAtCenter
             >
-              <Form
-                className="LoopForm-form"
-                layout="vertical"
-                onSubmit={this.handleSubmit}
-              >
-                {/*
-        // Need to make advanced feature checkbox to unhide these
-        <Form.Item label="Destination">
-          <Input
-            type="url"
-            size="small"
-            value={destination}
-            // onChange={this.handleChangeDestination}
-            placeholder="default: lnd wallet address"
-            autoFocus
-          />
-        </Form.Item>
+              <Form className="LoopForm-form" layout="vertical">
+                <Form.Item label="Destination">
+                  <Input
+                    type="text"
+                    size="small"
+                    onChange={() => this.handleChangeDestination(destination)}
+                    placeholder="off-chain address"
+                    autoFocus
+                  />
+                </Form.Item>
+
+                {/* Need to make advanced feature checkbox to unhide these
         <Form.Item label="Swap Routing Fee">
           <Input
             size="small"
@@ -193,9 +209,17 @@ class Loop extends React.Component<Props> {
               ))}
           </div>
           <QuoteModal
-            amt={this.state.amount}
-            isOpen={this.state.quoteModalIsOpen}
+            amt={amount}
+            isOpen={quoteModalIsOpen}
             onClose={this.openQuoteModal}
+            type={loopType}
+            dest={destination}
+            srf={swapRoutingFee}
+            sf={swapFee}
+            mf={minerFee}
+            pre={prepayAmt}
+            chan={channel}
+            adv={advanced}
           />
         </div>
       </>
@@ -206,9 +230,9 @@ class Loop extends React.Component<Props> {
     this.setState({ amount });
   };
 
-  // private handleChangeDestination = (destination: string) => {
-  //   this.setState({ destination });
-  // };
+  private handleChangeDestination = (destination: string) => {
+    this.setState({ destination });
+  };
 
   private openQuoteModal = () => {
     this.setState({
@@ -216,9 +240,13 @@ class Loop extends React.Component<Props> {
       quoteModalIsOpen: this.state.quoteModalIsOpen === false ? true : false,
     });
   };
-  private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
-    ev.preventDefault();
-    // sumbit Loop request
+
+  private setLoopOutType = () => {
+    this.setState({ loopType: 'Loop Out' });
+  };
+
+  private setLoopInType = () => {
+    this.setState({ loopType: 'Loop In' });
   };
 }
 

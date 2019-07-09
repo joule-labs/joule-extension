@@ -47,20 +47,25 @@ export function* handleGetLoopOutQuote(
   });
 }
 
-export function* handleGetLoopOut(): SagaIterator {
+export function* handleGetLoopOut(
+  action: ReturnType<typeof actions.getLoopOut>,
+): SagaIterator {
+  const payload = action.payload;
+  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
+  let loopOut: Yielded<typeof loopLib.getLoopOut> | undefined;
   try {
-    const loopLib = yield select(selectLoopLibOrThrow);
-    const payload = yield call(loopLib.getLoopOut);
-    yield put({
-      type: types.GET_LOOP_OUT_SUCCESS,
-      payload,
-    });
+    loopLib = yield select(selectLoopLibOrThrow);
+    loopOut = (yield call(loopLib.getLoopOut, payload)) as Yielded<
+      typeof loopLib.getLoopOut
+    >;
   } catch (err) {
-    yield put({
-      type: types.GET_LOOP_OUT_FAILURE,
-      payload: err,
-    });
+    yield put({ type: types.GET_LOOP_OUT_FAILURE, payload: err });
+    return;
   }
+  yield put({
+    type: types.GET_LOOP_OUT_SUCCESS,
+    payload: loopOut,
+  });
 }
 
 export default function* loopSagas(): SagaIterator {

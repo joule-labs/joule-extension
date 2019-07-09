@@ -25,12 +25,12 @@ export interface GetLoopOutQuoteResponse {
 export interface GetLoopOutArguments {
   amt: string;
   dest: string;
-  max_swap_routing_fee: string;
-  max_prepay_routing_fee: string;
+  max_swap_routing_fee: string | null;
+  max_prepay_routing_fee: string | null;
   max_swap_fee: string;
   max_prepay_amt: string;
   max_miner_fee: string;
-  loop_out_channel: string;
+  loop_out_channel: string | null;
 }
 
 export interface GetLoopOutResponse {

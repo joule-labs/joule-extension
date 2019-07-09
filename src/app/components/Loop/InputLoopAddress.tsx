@@ -10,6 +10,7 @@ interface Props {
   error: Error | null;
   setLoop: typeof setLoop;
   isLoopUrlSet: string | null;
+  type: string | null;
 }
 
 interface State {
@@ -27,10 +28,11 @@ export default class InputLoopAddress extends React.Component<Props, State> {
 
   render() {
     const { validation, url } = this.state;
+    const { type } = this.props;
     const validateStatus = url ? (validation ? 'error' : 'success') : undefined;
     return (
       <Form className="InputLoopAddress" onSubmit={this.handleSubmit} layout="vertical">
-        <Form.Item label="Loop URL" validateStatus={validateStatus}>
+        <Form.Item label={`${type} URL`} validateStatus={validateStatus}>
           <Input
             type="url"
             size="small"
@@ -42,7 +44,7 @@ export default class InputLoopAddress extends React.Component<Props, State> {
         </Form.Item>
 
         <Button type="primary" size="large" htmlType="submit" disabled={!url} block>
-          Set Loop URL
+          {`Set ${type} URL`}
         </Button>
       </Form>
     );
@@ -77,9 +79,6 @@ export default class InputLoopAddress extends React.Component<Props, State> {
           if (this.props.isLoopUrlSet === null) {
             message.error('Failed to set Loop URL!', 2);
             // Need error handling and reset URL entry here!
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
           } else {
             message.success('Successfully set Loop URL!', 2);
           }
