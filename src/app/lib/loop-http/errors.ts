@@ -54,51 +54,9 @@ export class NetworkError extends Error {
   }
 }
 
-export class InvalidArgumentError extends Error {
-  constructor(message: string) {
-    super(message);
-    fixError(this, new.target, InvalidArgumentError);
-  }
-}
-
-export class MacaroonAuthError extends Error {
-  constructor(message: string) {
-    super(message);
-    fixError(this, new.target, MacaroonAuthError);
-  }
-}
-
-export class PermissionDeniedError extends Error {
-  constructor(message: string) {
-    super(message);
-    fixError(this, new.target, PermissionDeniedError);
-  }
-}
-
 export class UnknownServerError extends Error {
   constructor(message: string) {
     super(message);
     fixError(this, new.target, UnknownServerError);
-  }
-}
-
-export class SendTransactionError extends Error {
-  constructor(message: string) {
-    super(message);
-    fixError(this, new.target, SendTransactionError);
-  }
-}
-
-export class NoRouteError extends Error {
-  constructor(message: string) {
-    super(message);
-    fixError(this, new.target, NoRouteError);
-  }
-}
-
-export class AlreadyConnectedError extends Error {
-  constructor(message: string) {
-    super(message);
-    fixError(this, new.target, AlreadyConnectedError);
   }
 }

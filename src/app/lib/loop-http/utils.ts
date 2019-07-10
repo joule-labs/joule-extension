@@ -5,22 +5,6 @@ import { ErrorResponse } from './types';
  * Future error handling for LoopLib
  * **/
 export function parseLoopErrorResponse(res: ErrorResponse): Error {
-  if (res.error.includes('')) {
-    return new Errors.MacaroonAuthError('');
-  }
-
-  if (res.error.includes('')) {
-    return new Errors.PermissionDeniedError('');
-  }
-
-  if (res.error.includes('')) {
-    return new Errors.NoRouteError('');
-  }
-
-  if (res.error.includes('')) {
-    return new Errors.AlreadyConnectedError('');
-  }
-
   return new Errors.UnknownServerError(res.error);
 }
 

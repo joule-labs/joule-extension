@@ -5,6 +5,7 @@ import { AppState } from 'store/reducers';
 import { getLoopOutQuote, getLoopOut } from 'modules/loop/actions';
 import { Button, Icon } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
+import { GetLoopOutArguments } from 'lib/loop-http/types';
 
 interface StateProps {
   loopOutQuote: AppState['loop']['loopOutQuote'];
@@ -22,11 +23,11 @@ interface OwnProps {
   isOpen?: boolean;
   type: string;
   dest: string;
-  srf: string | null;
+  srf: string;
   sf: string;
   mf: string;
   pre: string;
-  chan: string | null;
+  chan: string;
   adv: boolean;
   onClose(): void;
 }
@@ -59,41 +60,10 @@ class QuoteModal extends React.Component<Props> {
     }
   }
   render() {
-    const {
-      loopOutQuote,
-      amt,
-      isOpen,
-      onClose,
-      type,
-      srf,
-      /*sf, mf,*/ pre,
-      dest,
-      chan,
-    } = this.props;
+    const { loopOutQuote, amt, isOpen, onClose, type } = this.props;
     if (loopOutQuote === null) {
       return null;
     }
-    const defaultRequest = {
-      amt,
-      dest,
-      max_swap_routing_fee: srf,
-      max_prepay_routing_fee: pre,
-      max_swap_fee: loopOutQuote.swap_fee,
-      max_prepay_amt: loopOutQuote.prepay_amt,
-      max_miner_fee: loopOutQuote.miner_fee,
-      loop_out_channel: chan,
-    };
-    /*
-    const advancedRequest = {
-      amount: amt,
-      dest,
-      srf,
-      sf,
-      mf,
-      pre,
-      chan,
-    }
-    */
     const actions: ButtonProps[] = [
       {
         children: (
@@ -108,12 +78,7 @@ class QuoteModal extends React.Component<Props> {
       return null;
     }
     const isVisible = !!isOpen;
-    const loop =
-      type === 'Loop Out'
-        ? this.props.getLoopOut
-        : () => {
-            console.log('Loop In - Coming Soon!');
-          };
+
     // Placeholders to keep the modal the right size
     const content = (
       <>
@@ -123,7 +88,7 @@ class QuoteModal extends React.Component<Props> {
                Swap fee: ${loopOutQuote.swap_fee} sats |
                Swap amt: ${amt} sats`}</p>
           {actions.map((props, idx) => (
-            <Button key={idx} {...props} onClick={(): any => loop(defaultRequest)} />
+            <Button key={idx} {...props} onClick={this.loopOut} />
           ))}
         </div>
       </>
@@ -141,6 +106,24 @@ class QuoteModal extends React.Component<Props> {
       </Modal>
     );
   }
+
+  private loopOut = () => {
+    const loopOutQuote = this.props.loopOutQuote;
+    if (loopOutQuote === null) {
+      return null;
+    }
+    const req: GetLoopOutArguments = {
+      amt: this.props.amt,
+      dest: this.props.dest,
+      loop_out_channel: this.props.chan,
+      max_miner_fee: loopOutQuote.miner_fee,
+      max_prepay_amt: loopOutQuote.prepay_amt,
+      max_prepay_routing_fee: loopOutQuote.prepay_amt,
+      max_swap_fee: loopOutQuote.swap_fee,
+      max_swap_routing_fee: loopOutQuote.swap_fee,
+    };
+    this.props.getLoopOut(req);
+  };
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(

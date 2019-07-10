@@ -4,7 +4,7 @@ import { AppState } from 'store/reducers';
 import './index.less';
 import { getLoopOutTerms, setLoop } from 'modules/loop/actions';
 import { ButtonProps } from 'antd/lib/button';
-import { Form, Button, Icon, Radio, Tooltip, Input } from 'antd';
+import { Form, Button, Icon, Radio, Tooltip } from 'antd';
 import AmountField from 'components/AmountField';
 import InputLoopAddress from 'components/Loop/InputLoopAddress';
 import QuoteModal from './QuoteModal';
@@ -27,11 +27,11 @@ interface State {
   advanced: boolean;
   isAnyValue: boolean;
   destination: string;
-  swapRoutingFee: string | null;
+  swapRoutingFee: string;
   swapFee: string;
   minerFee: string;
   prepayAmt: string;
-  channel: string | null;
+  channel: string;
   quoteModalIsOpen: boolean;
   loopType: string;
 }
@@ -45,7 +45,7 @@ const INITIAL_STATE = {
   swapFee: '0',
   minerFee: '0',
   prepayAmt: '0',
-  channel: '',
+  channel: '0',
   quoteModalIsOpen: false,
   loopType: 'Loop Out',
 };
@@ -123,17 +123,26 @@ class Loop extends React.Component<Props> {
               arrowPointAtCenter
             >
               <Form className="LoopForm-form" layout="vertical">
+                {/* Need to make advanced feature checkbox to unhide these
+
                 <Form.Item label="Destination">
                   <Input
                     type="text"
                     size="small"
-                    onChange={() => this.handleChangeDestination(destination)}
+                    onChange={this.handleChangeDestination}
                     placeholder="off-chain address"
                     autoFocus
                   />
                 </Form.Item>
-
-                {/* Need to make advanced feature checkbox to unhide these
+                <Form.Item label="Destination">
+                  <Input
+                    type="text"
+                    size="small"
+                    onChange={this.handleChangeChannel}
+                    placeholder="channel id"
+                    autoFocus
+                  />
+                </Form.Item>
         <Form.Item label="Swap Routing Fee">
           <Input
             size="small"
@@ -230,9 +239,13 @@ class Loop extends React.Component<Props> {
     this.setState({ amount });
   };
 
-  private handleChangeDestination = (destination: string) => {
-    this.setState({ destination });
-  };
+  // private handleChangeChannel = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  //   this.setState({ channel: ev.currentTarget.value });
+  // };
+
+  // private handleChangeDestination = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  //   this.setState({ destination: ev.currentTarget.value });
+  // };
 
   private openQuoteModal = () => {
     this.setState({
