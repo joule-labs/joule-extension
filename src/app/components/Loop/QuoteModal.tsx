@@ -36,7 +36,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 class QuoteModal extends React.Component<Props> {
   componentDidUpdate() {
-    const { loopOutQuote, loopOut, isOpen, type, amt, error } = this.props;
+    const { loopOutQuote, loopOut, isOpen, amt } = this.props;
     if (loopOutQuote === null) {
       return null;
     }
@@ -49,14 +49,6 @@ class QuoteModal extends React.Component<Props> {
     }
     if (isOpen === true && swapFee === '') {
       this.props.getLoopOutQuote(amt);
-    }
-    if (loopOut.id !== '') {
-      message.info(`Attempting ${type} to htlc: ${loopOut.htlc_address}`, 10);
-      this.props.onClose();
-    }
-    if (error !== null) {
-      message.error(`Error: ${error}`, 10);
-      this.props.onClose();
     }
   }
   render() {
@@ -79,7 +71,6 @@ class QuoteModal extends React.Component<Props> {
     }
     const isVisible = !!isOpen;
 
-    // Placeholders to keep the modal the right size
     const content = (
       <>
         <div className="QuoteModal">
@@ -108,8 +99,13 @@ class QuoteModal extends React.Component<Props> {
   }
 
   private loopOut = () => {
+    // get values from loopOutQuote for default loopOut
     const loopOutQuote = this.props.loopOutQuote;
+    const loopOut = this.props.loopOut;
     if (loopOutQuote === null) {
+      return null;
+    }
+    if (loopOut === null) {
       return null;
     }
     const req: GetLoopOutArguments = {
@@ -123,6 +119,12 @@ class QuoteModal extends React.Component<Props> {
       max_swap_routing_fee: loopOutQuote.swap_fee,
     };
     this.props.getLoopOut(req);
+    setTimeout(() => {
+      message.info(`Attempting ${this.props.type}`, 2);
+    }, 3000);
+    setTimeout(() => {
+      this.props.onClose();
+    }, 5000);
   };
 }
 
