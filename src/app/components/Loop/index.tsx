@@ -122,6 +122,15 @@ class Loop extends React.Component<Props> {
               placement="topRight"
               arrowPointAtCenter
             >
+              <br />
+              <Button
+                className="Loop-form-advancedToggle"
+                onClick={this.toggleAdvanced}
+                type="primary"
+                ghost
+              >
+                Show advanced fields
+              </Button>
               <Form className="LoopForm-form" layout="vertical">
                 {/* Need to make advanced feature checkbox to unhide these
 
@@ -260,6 +269,10 @@ class Loop extends React.Component<Props> {
 
   private setLoopInType = () => {
     this.setState({ loopType: 'Loop In' });
+  };
+
+  private toggleAdvanced = () => {
+    // use to unhide remaining forms on Loop Out
   };
 }
 
