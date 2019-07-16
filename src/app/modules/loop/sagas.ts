@@ -4,6 +4,7 @@ import { selectLoopLibOrThrow } from 'modules/loop/selectors';
 import types from './types';
 import * as actions from './actions';
 import LoopHttpClient from '../../lib/loop-http';
+import { requirePassword } from 'modules/crypto/sagas';
 
 // Setup Loop URL and Loop Terms
 export function* handleSetLoop(action: ReturnType<typeof actions.setLoop>): SagaIterator {
@@ -33,6 +34,7 @@ export function* handleGetLoopOutQuote(
   let loopLib: Yielded<typeof selectLoopLibOrThrow>;
   let loopQuote: Yielded<typeof loopLib.getLoopOutQuote> | undefined;
   try {
+    yield call(requirePassword);
     loopLib = yield select(selectLoopLibOrThrow);
     loopQuote = (yield call(loopLib.getLoopOutQuote, amt)) as Yielded<
       typeof loopLib.getLoopOutQuote

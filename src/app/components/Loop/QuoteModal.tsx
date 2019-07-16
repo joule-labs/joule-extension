@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, message } from 'antd';
 import { AppState } from 'store/reducers';
-import { getLoopOutQuote, getLoopOut } from 'modules/loop/actions';
-import { Button, Icon } from 'antd';
+import { getLoopOutQuote, getLoopOut, getLoopOutTerms } from 'modules/loop/actions';
+import { Button, Icon, Alert } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { GetLoopOutArguments } from 'lib/loop-http/types';
 
@@ -11,6 +11,7 @@ interface StateProps {
   loopOutQuote: AppState['loop']['loopOutQuote'];
   loopOut: AppState['loop']['loopOut'];
   error: AppState['loop']['error'];
+  hasPassword: boolean;
 }
 
 interface DispatchProps {
@@ -52,7 +53,16 @@ class QuoteModal extends React.Component<Props> {
     }
   }
   render() {
-    const { loopOutQuote, amt, adv, isOpen, onClose, type } = this.props;
+    const {
+      loopOutQuote,
+      amt,
+      adv,
+      isOpen,
+      onClose,
+      type,
+      hasPassword,
+      error,
+    } = this.props;
     if (loopOutQuote === null) {
       return null;
     }
@@ -69,29 +79,35 @@ class QuoteModal extends React.Component<Props> {
     if (loopOutQuote === null) {
       return null;
     }
-    const isVisible = !!isOpen;
+    const isVisible = !!isOpen && !!(hasPassword || error);
 
-    const content = (
-      <>
-        <div className="QuoteModal">
-          <p>{`Miner fee: ${loopOutQuote.miner_fee} sats |
+    let content;
+    if (amt) {
+      content = (
+        <>
+          <div className="QuoteModal">
+            <p>{`Miner fee: ${loopOutQuote.miner_fee} sats |
                Prepay amt: ${loopOutQuote.prepay_amt} sats |
                Swap fee: ${loopOutQuote.swap_fee} sats |
                Swap amt: ${amt} sats`}</p>
-          {/* Default Loop  */}
-          {adv === false &&
-            actions.map((props, idx) => (
-              <Button key={idx} {...props} onClick={this.loopOut} />
-            ))}
-          {/* Advanced Loop */}
-          {adv === true &&
-            actions.map((props, idx) => (
-              <Button key={idx} {...props} onClick={this.advLoopOut} />
-            ))}
-        </div>
-      </>
-    );
-
+            {/* Default Loop  */}
+            {adv === false &&
+              actions.map((props, idx) => (
+                <Button key={idx} {...props} onClick={this.loopOut} />
+              ))}
+            {/* Advanced Loop */}
+            {adv === true &&
+              actions.map((props, idx) => (
+                <Button key={idx} {...props} onClick={this.advLoopOut} />
+              ))}
+          </div>
+        </>
+      );
+    } else if (error) {
+      content = (
+        <Alert type="error" message="Failed to get quote" description={error} showIcon />
+      );
+    }
     return (
       <Modal
         title={`${type} Quote`}
@@ -166,6 +182,7 @@ class QuoteModal extends React.Component<Props> {
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
+    hasPassword: !!state.crypto.password,
     loopOutQuote: state.loop.loopOutQuote,
     loopOut: state.loop.loopOut,
     error: state.loop.error,
