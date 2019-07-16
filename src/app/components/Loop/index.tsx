@@ -4,7 +4,7 @@ import { AppState } from 'store/reducers';
 import './index.less';
 import { getLoopOutTerms, setLoop } from 'modules/loop/actions';
 import { ButtonProps } from 'antd/lib/button';
-import { Form, Button, Icon, Radio, Tooltip } from 'antd';
+import { Form, Button, Icon, Radio, Tooltip, Input } from 'antd';
 import AmountField from 'components/AmountField';
 import InputLoopAddress from 'components/Loop/InputLoopAddress';
 import QuoteModal from './QuoteModal';
@@ -95,7 +95,7 @@ class Loop extends React.Component<Props> {
             <Radio.Button value="a" onClick={this.setLoopOutType}>
               Loop Out
             </Radio.Button>
-            <Radio.Button value="b" onClick={this.setLoopInType}>
+            <Radio.Button value="b" disabled={true} onClick={this.setLoopInType}>
               Loop In
             </Radio.Button>
           </Radio.Group>
@@ -131,82 +131,68 @@ class Loop extends React.Component<Props> {
               >
                 Show advanced fields
               </Button>
-              <Form className="LoopForm-form" layout="vertical">
-                {/* Need to make advanced feature checkbox to unhide these
-
-                <Form.Item label="Destination">
-                  <Input
-                    type="text"
-                    size="small"
-                    onChange={this.handleChangeDestination}
-                    placeholder="off-chain address"
-                    autoFocus
-                  />
-                </Form.Item>
-                <Form.Item label="Destination">
-                  <Input
-                    type="text"
-                    size="small"
-                    onChange={this.handleChangeChannel}
-                    placeholder="channel id"
-                    autoFocus
-                  />
-                </Form.Item>
-        <Form.Item label="Swap Routing Fee">
-          <Input
-            size="small"
-            value={swapRoutingFee}
-            // onChange={this.handleChangeDestination}
-            placeholder="xxxx sats"
-            autoFocus
-          />
-        </Form.Item>
-        <Form.Item label="Swap Fee">
-          <Input
-            size="small"
-            value={swapFee}
-            // onChange={this.handleChangeDestination}
-            placeholder="xxxx sats"
-            autoFocus
-          />
-        </Form.Item>
-        <Form.Item label="Miner Fee">
-          <Input
-            size="small"
-            value={minerFee}
-            // onChange={this.handleChangeDestination}
-            placeholder="xxxx sats"
-            autoFocus
-          />
-        </Form.Item>
-        <Form.Item label="Prepay Amt">
-          <Input
-            size="small"
-            value={prepayAmt}
-            // onChange={this.handleChangeDestination}
-            placeholder="3eibniEINBesbnPEnv"
-            autoFocus
-          />
-        </Form.Item>
-        <Form.Item label="Channel">
-          <Input
-            size="small"
-            value={channel}
-            // onChange={this.handleChangeDestination}
-            placeholder="lnd channel"
-            autoFocus
-          />
-        </Form.Item> */}
-
-                <AmountField
-                  label="Amount"
-                  amount={amount}
-                  required={!isAnyValue}
-                  disabled={isAnyValue}
-                  onChangeAmount={this.handleChangeAmount}
-                  showFiat
-                />
-              </Form>
+              {advanced === true && (
+                <Form className="LoopForm-form" layout="vertical">
+                  <Form.Item label="Destination">
+                    <Input
+                      type="text"
+                      size="small"
+                      onChange={this.handleChangeDestination}
+                      placeholder="off-chain address"
+                      autoFocus
+                    />
+                  </Form.Item>
+                  <Form.Item label="Channel">
+                    <Input
+                      type="text"
+                      size="small"
+                      onChange={this.handleChangeChannel}
+                      placeholder="channel id"
+                      autoFocus
+                    />
+                  </Form.Item>
+                  <Form.Item label="Swap Routing Fee">
+                    <Input
+                      size="small"
+                      onChange={this.handleChangeSwapRoutingFee}
+                      placeholder="xxxx sats"
+                      autoFocus
+                    />
+                  </Form.Item>
+                  <Form.Item label="Swap Fee">
+                    <Input
+                      size="small"
+                      onChange={this.handleChangeSwapFee}
+                      placeholder="xxxx sats"
+                      autoFocus
+                    />
+                  </Form.Item>
+                  <Form.Item label="Miner Fee">
+                    <Input
+                      size="small"
+                      onChange={this.handleChangeMinerFee}
+                      placeholder="xxxx sats"
+                      autoFocus
+                    />
+                  </Form.Item>
+                  <Form.Item label="Prepay Amt">
+                    <Input
+                      size="small"
+                      onChange={this.handleChangePrepayAmt}
+                      placeholder="xxxx sats"
+                      autoFocus
+                    />
+                  </Form.Item>
+                </Form>
+              )}
+              <AmountField
+                label="Amount"
+                amount={amount}
+                required={!isAnyValue}
+                disabled={isAnyValue}
+                onChangeAmount={this.handleChangeAmount}
+                showFiat
+              />
             </Tooltip>
           )}
           <div className="Loop-actions">
@@ -248,13 +234,29 @@ class Loop extends React.Component<Props> {
     this.setState({ amount });
   };
 
-  // private handleChangeChannel = (ev: React.ChangeEvent<HTMLInputElement>) => {
-  //   this.setState({ channel: ev.currentTarget.value });
-  // };
+  private handleChangeChannel = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ channel: ev.currentTarget.value });
+  };
 
-  // private handleChangeDestination = (ev: React.ChangeEvent<HTMLInputElement>) => {
-  //   this.setState({ destination: ev.currentTarget.value });
-  // };
+  private handleChangeDestination = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ destination: ev.currentTarget.value });
+  };
+
+  private handleChangeSwapRoutingFee = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ swapRoutingFee: ev.currentTarget.value });
+  };
+
+  private handleChangeSwapFee = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ swapFee: ev.currentTarget.value });
+  };
+
+  private handleChangeMinerFee = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ minerFee: ev.currentTarget.value });
+  };
+
+  private handleChangePrepayAmt = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ prepayAmt: ev.currentTarget.value });
+  };
 
   private openQuoteModal = () => {
     this.setState({
@@ -272,7 +274,7 @@ class Loop extends React.Component<Props> {
   };
 
   private toggleAdvanced = () => {
-    // use to unhide remaining forms on Loop Out
+    this.setState({ advanced: this.state.advanced === false ? true : false });
   };
 }
 

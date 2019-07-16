@@ -52,7 +52,7 @@ class QuoteModal extends React.Component<Props> {
     }
   }
   render() {
-    const { loopOutQuote, amt, isOpen, onClose, type } = this.props;
+    const { loopOutQuote, amt, adv, isOpen, onClose, type } = this.props;
     if (loopOutQuote === null) {
       return null;
     }
@@ -78,9 +78,16 @@ class QuoteModal extends React.Component<Props> {
                Prepay amt: ${loopOutQuote.prepay_amt} sats |
                Swap fee: ${loopOutQuote.swap_fee} sats |
                Swap amt: ${amt} sats`}</p>
-          {actions.map((props, idx) => (
-            <Button key={idx} {...props} onClick={this.loopOut} />
-          ))}
+          {/* Default Loop  */}
+          {adv === false &&
+            actions.map((props, idx) => (
+              <Button key={idx} {...props} onClick={this.loopOut} />
+            ))}
+          {/* Advanced Loop */}
+          {adv === true &&
+            actions.map((props, idx) => (
+              <Button key={idx} {...props} onClick={this.advLoopOut} />
+            ))}
         </div>
       </>
     );
@@ -121,6 +128,35 @@ class QuoteModal extends React.Component<Props> {
     this.props.getLoopOut(req);
     setTimeout(() => {
       message.info(`Attempting ${this.props.type}`, 2);
+    }, 3000);
+    setTimeout(() => {
+      this.props.onClose();
+    }, 5000);
+  };
+
+  private advLoopOut = () => {
+    // get values from loopOutQuote for default loopOut
+    const loopOutQuote = this.props.loopOutQuote;
+    const loopOut = this.props.loopOut;
+    if (loopOutQuote === null) {
+      return null;
+    }
+    if (loopOut === null) {
+      return null;
+    }
+    const req: GetLoopOutArguments = {
+      amt: this.props.amt,
+      dest: this.props.dest,
+      loop_out_channel: this.props.chan,
+      max_miner_fee: this.props.mf,
+      max_prepay_amt: this.props.pre,
+      max_prepay_routing_fee: this.props.pre,
+      max_swap_fee: this.props.sf,
+      max_swap_routing_fee: this.props.srf,
+    };
+    this.props.getLoopOut(req);
+    setTimeout(() => {
+      message.info(`Attempting advanced ${this.props.type}`, 2);
     }, 3000);
     setTimeout(() => {
       this.props.onClose();
