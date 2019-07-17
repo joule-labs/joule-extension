@@ -7,7 +7,7 @@ export interface LoopState {
   loopOut: null | LoopOutPayload;
   lib: null | LoopHttpClient;
   url: null | string;
-  error: null | string;
+  error: null | Error;
 }
 
 export const INITIAL_STATE: LoopState = {
@@ -71,6 +71,7 @@ export default function loopReducers(
     case types.GET_LOOP_OUT_QUOTE:
       return {
         ...state,
+        error: null,
       };
     case types.GET_LOOP_OUT_QUOTE_SUCCESS:
       return {

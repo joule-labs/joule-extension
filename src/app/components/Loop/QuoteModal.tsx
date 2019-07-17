@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, message } from 'antd';
 import { AppState } from 'store/reducers';
-import { getLoopOutQuote, getLoopOut, getLoopOutTerms } from 'modules/loop/actions';
+import { getLoopOutQuote, getLoopOut } from 'modules/loop/actions';
 import { Button, Icon, Alert } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { GetLoopOutArguments } from 'lib/loop-http/types';
@@ -36,20 +36,10 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps;
 
 class QuoteModal extends React.Component<Props> {
-  componentDidUpdate() {
-    const { loopOutQuote, loopOut, isOpen, amt } = this.props;
-    if (loopOutQuote === null) {
-      return null;
-    }
-    if (loopOut === null) {
-      return null;
-    }
-    const swapFee = loopOutQuote.swap_fee;
-    if (swapFee === null) {
-      return null;
-    }
-    if (isOpen === true && swapFee === '') {
-      this.props.getLoopOutQuote(amt);
+  componentWillUpdate(nextProps: Props) {
+    if (!this.props.isOpen && nextProps.isOpen) {
+      // Fire even if amt is in store in case we need to cycle
+      this.props.getLoopOutQuote(this.props.amt);
     }
   }
   render() {
@@ -82,7 +72,7 @@ class QuoteModal extends React.Component<Props> {
     const isVisible = !!isOpen && !!(hasPassword || error);
 
     let content;
-    if (amt) {
+    if (loopOutQuote.miner_fee !== '') {
       content = (
         <>
           <div className="QuoteModal">
@@ -105,7 +95,12 @@ class QuoteModal extends React.Component<Props> {
       );
     } else if (error) {
       content = (
-        <Alert type="error" message="Failed to get quote" description={error} showIcon />
+        <Alert
+          type="error"
+          message="Failed to get quote"
+          description={error.message}
+          showIcon
+        />
       );
     }
     return (
