@@ -76,10 +76,11 @@ class QuoteModal extends React.Component<Props> {
       content = (
         <>
           <div className="QuoteModal">
-            <p>{`Miner fee: ${loopOutQuote.miner_fee} sats |
-               Prepay amt: ${loopOutQuote.prepay_amt} sats |
-               Swap fee: ${loopOutQuote.swap_fee} sats |
-               Swap amt: ${amt} sats`}</p>
+            <p>{`Miner fee: ${loopOutQuote.miner_fee} sats`}</p>
+            <p>{`Prepay amt: ${loopOutQuote.prepay_amt} sats`}</p>
+            <p>{`Swap fee: ${loopOutQuote.swap_fee} sats`}</p>
+            <p>{`Swap amt: ${amt} sats`}</p>
+
             {/* Default Loop  */}
             {adv === false &&
               actions.map((props, idx) => (
