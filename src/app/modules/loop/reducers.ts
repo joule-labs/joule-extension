@@ -42,17 +42,20 @@ export default function loopReducers(
     case types.SET_LOOP:
       return {
         ...state,
+        error: null,
       };
     case types.SET_LOOP_SUCCESS:
       return {
         ...state,
         url: action.payload,
         lib: new LoopHttpClient(action.payload),
+        error: null,
       };
     case types.SET_LOOP_FAILURE:
       return {
         ...state,
         error: action.payload,
+        lib: null,
       };
     case types.GET_LOOP_OUT_TERMS:
       return {

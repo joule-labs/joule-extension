@@ -15,6 +15,7 @@ interface StateProps {
   loopOutTerms: AppState['loop']['loopOutTerms'];
   loopOutQuote: AppState['loop']['loopOutQuote'];
   loopOut: AppState['loop']['loopOut'];
+  error: AppState['loop']['error'];
 }
 
 interface DispatchProps {
@@ -56,7 +57,7 @@ class Loop extends React.Component<Props> {
   state: State = { ...INITIAL_STATE };
 
   render() {
-    const { loopOutTerms } = this.props;
+    const { loopOutTerms, error } = this.props;
     if (loopOutTerms === null) {
       return null;
     }
@@ -98,14 +99,16 @@ class Loop extends React.Component<Props> {
             <Radio.Button value="b" disabled={true} onClick={this.setLoopInType}>
               Loop In
             </Radio.Button>
+            <Radio.Button value="b" disabled={true}>
+              Loop Monitor
+            </Radio.Button>
           </Radio.Group>
         </div>
         <div className="Loop">
           <InputLoopAddress
-            isLoopUrlSet={this.props.url}
             setLoop={this.props.setLoop}
-            error={null}
-            initialUrl={''}
+            error={error}
+            initialUrl={this.props.url}
             type={this.state.loopType}
           />
           {loopOutTerms.swap_fee_base !== '' && (
@@ -285,6 +288,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     loopOutTerms: state.loop.loopOutTerms,
     loopOutQuote: state.loop.loopOutQuote,
     loopOut: state.loop.loopOut,
+    error: state.loop.error,
   }),
   {
     getLoopOutTerms,

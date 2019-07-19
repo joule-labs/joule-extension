@@ -9,10 +9,10 @@ import { requirePassword } from 'modules/crypto/sagas';
 // Setup Loop URL and Loop Terms
 export function* handleSetLoop(action: ReturnType<typeof actions.setLoop>): SagaIterator {
   const url = action.payload;
-  const client = new LoopHttpClient(url);
-  const loopOutTermsPayload = yield call(client.getLoopOutTerms);
+  let loopOutTermsPayload;
   try {
-    yield call(client.getLoopOutTerms);
+    const client = new LoopHttpClient(url);
+    loopOutTermsPayload = yield call(client.getLoopOutTerms);
   } catch (err) {
     yield put({ type: types.SET_LOOP_FAILURE, payload: err });
     return;

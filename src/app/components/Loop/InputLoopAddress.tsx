@@ -6,10 +6,9 @@ import './InputLoopAddress.less';
 import { setLoop } from 'modules/loop/actions';
 
 interface Props {
-  initialUrl?: string;
+  initialUrl?: string | null;
   error: Error | null;
   setLoop: typeof setLoop;
-  isLoopUrlSet: string | null;
   type: string | null;
 }
 
@@ -25,6 +24,17 @@ export default class InputLoopAddress extends React.Component<Props, State> {
     submittedUrl: this.props.initialUrl || '',
     validation: '',
   };
+
+  componentDidUpdate(nextProps: Props) {
+    // Handle errors for incorrect URL
+    const { error, initialUrl } = this.props;
+    if (error !== null && nextProps.error === null) {
+      message.error(`Error setting URL!`, 2);
+    }
+    if (initialUrl !== null && nextProps.initialUrl === null) {
+      message.success(`Loop URL set successfully!`, 2);
+    }
+  }
 
   render() {
     const { validation, url } = this.state;
@@ -75,14 +85,6 @@ export default class InputLoopAddress extends React.Component<Props, State> {
         }
         this.setState({ submittedUrl: url });
         this.props.setLoop(this.state.url);
-        setTimeout(() => {
-          if (this.props.isLoopUrlSet === null) {
-            message.error('Failed to set Loop URL!', 2);
-            // Need error handling and reset URL entry here!
-          } else {
-            message.success('Successfully set Loop URL!', 2);
-          }
-        }, 1000);
       });
   };
 }
