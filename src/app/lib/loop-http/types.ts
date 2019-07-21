@@ -13,7 +13,7 @@ export interface GetLoopOutTermsResponse {
   prepay_amt: string;
   min_swap_amount: string;
   max_swap_amount: string;
-  cltv_delta: 0;
+  cltv_delta: number;
 }
 
 export interface GetLoopOutQuoteResponse {
