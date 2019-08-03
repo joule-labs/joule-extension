@@ -19,10 +19,15 @@ export class LoopHttpClient {
     return this.request<T.GetLoopOutTermsResponse>('GET', `/v1/loop/out/terms`);
   };
 
+  /**
+   * TODO: Update API call for conf target
+   * Loop 2.2 requires conf_target minimum of 2
+   * Temporary hard coded value
+   */
   getLoopOutQuote = (amt: string) => {
     return this.request<T.GetLoopOutQuoteResponse>(
       'GET',
-      `/v1/loop/out/quote/${amt}`,
+      `/v1/loop/out/quote/${amt}?conf_target=2`,
       undefined,
       {
         miner_fee: '',
