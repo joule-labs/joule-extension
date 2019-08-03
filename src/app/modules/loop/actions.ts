@@ -9,8 +9,8 @@ export function getLoopOutTerms() {
   return { type: types.GET_LOOP_OUT_TERMS };
 }
 
-export function getLoopOutQuote(amt: string) {
-  return { type: types.GET_LOOP_OUT_QUOTE, payload: amt };
+export function getLoopOutQuote(amt: string, conf: string) {
+  return { type: types.GET_LOOP_OUT_QUOTE, payload: amt, conf };
 }
 
 export function getLoopOut(payload: GetLoopOutArguments) {

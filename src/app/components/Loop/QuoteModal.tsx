@@ -21,6 +21,7 @@ interface DispatchProps {
 
 interface OwnProps {
   amt: string;
+  sct: string;
   isOpen?: boolean;
   type: string;
   dest: string;
@@ -39,13 +40,14 @@ class QuoteModal extends React.Component<Props> {
   componentWillUpdate(nextProps: Props) {
     if (!this.props.isOpen && nextProps.isOpen) {
       // Fire even if amt is in store in case we need to cycle
-      this.props.getLoopOutQuote(this.props.amt);
+      this.props.getLoopOutQuote(this.props.amt, this.props.sct);
     }
   }
   render() {
     const {
       loopOutQuote,
       amt,
+      sct,
       adv,
       isOpen,
       onClose,
@@ -80,6 +82,7 @@ class QuoteModal extends React.Component<Props> {
             <p>{`Prepay amt: ${loopOutQuote.prepay_amt} sats`}</p>
             <p>{`Swap fee: ${loopOutQuote.swap_fee} sats`}</p>
             <p>{`Swap amt: ${amt} sats`}</p>
+            <p>{`Sweep Conf. Target: ${sct}`}</p>
 
             {/* Default Loop  */}
             {adv === false &&
@@ -136,6 +139,7 @@ class QuoteModal extends React.Component<Props> {
       max_prepay_routing_fee: loopOutQuote.prepay_amt,
       max_swap_fee: loopOutQuote.swap_fee,
       max_swap_routing_fee: loopOutQuote.swap_fee,
+      sweep_conf_target: this.props.sct,
     };
     this.props.getLoopOut(req);
     setTimeout(() => {
@@ -165,14 +169,15 @@ class QuoteModal extends React.Component<Props> {
       max_prepay_routing_fee: this.props.pre,
       max_swap_fee: this.props.sf,
       max_swap_routing_fee: this.props.srf,
+      sweep_conf_target: this.props.sct,
     };
     this.props.getLoopOut(req);
     setTimeout(() => {
       message.info(`Attempting advanced ${this.props.type}`, 2);
-    }, 3000);
+    }, 1000);
     setTimeout(() => {
       this.props.onClose();
-    }, 5000);
+    }, 3000);
   };
 }
 

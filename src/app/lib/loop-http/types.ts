@@ -31,6 +31,7 @@ export interface GetLoopOutArguments {
   max_prepay_amt: string | null;
   max_miner_fee: string | null;
   loop_out_channel: string;
+  sweep_conf_target: string;
 }
 
 export interface GetLoopOutResponse {

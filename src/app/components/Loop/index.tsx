@@ -33,6 +33,7 @@ interface State {
   minerFee: string;
   prepayAmt: string;
   channel: string;
+  conf: string;
   quoteModalIsOpen: boolean;
   loopType: string;
 }
@@ -47,6 +48,7 @@ const INITIAL_STATE = {
   minerFee: '0',
   prepayAmt: '0',
   channel: '0',
+  conf: '2',
   quoteModalIsOpen: false,
   loopType: 'Loop Out',
 };
@@ -73,6 +75,7 @@ class Loop extends React.Component<Props> {
       channel,
       quoteModalIsOpen,
       advanced,
+      conf,
     } = this.state;
     const actions: ButtonProps[] = [
       {
@@ -132,72 +135,83 @@ class Loop extends React.Component<Props> {
                 type="primary"
                 ghost
               >
-                Show advanced fields
+                {this.state.advanced === true
+                  ? 'Hide advanced fields'
+                  : 'Show advanced fields'}
               </Button>
-              {advanced === true && (
-                <Form className="LoopForm-form" layout="vertical">
-                  <Form.Item label="Destination">
-                    <Input
-                      type="text"
-                      size="small"
-                      onChange={this.handleChangeDestination}
-                      placeholder="off-chain address"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item label="Channel">
-                    <Input
-                      type="text"
-                      size="small"
-                      onChange={this.handleChangeChannel}
-                      placeholder="channel id"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item label="Swap Routing Fee">
-                    <Input
-                      size="small"
-                      onChange={this.handleChangeSwapRoutingFee}
-                      placeholder="xxxx sats"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item label="Swap Fee">
-                    <Input
-                      size="small"
-                      onChange={this.handleChangeSwapFee}
-                      placeholder="xxxx sats"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item label="Miner Fee">
-                    <Input
-                      size="small"
-                      onChange={this.handleChangeMinerFee}
-                      placeholder="xxxx sats"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item label="Prepay Amt">
-                    <Input
-                      size="small"
-                      onChange={this.handleChangePrepayAmt}
-                      placeholder="xxxx sats"
-                      autoFocus
-                    />
-                  </Form.Item>
-                </Form>
-              )}
-              <AmountField
-                label="Amount"
-                amount={amount}
-                required={!isAnyValue}
-                disabled={isAnyValue}
-                onChangeAmount={this.handleChangeAmount}
-                showFiat
-              />
             </Tooltip>
           )}
+          {advanced === true && (
+            <Form className="Loop" layout="vertical">
+              <Form.Item>
+                <Input
+                  type="text"
+                  size="small"
+                  onChange={this.handleChangeDestination}
+                  placeholder="off-chain address"
+                  autoFocus
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  type="text"
+                  size="small"
+                  onChange={this.handleChangeChannel}
+                  placeholder="channel id"
+                  autoFocus
+                />
+              </Form.Item>
+              <Form.Item label="">
+                <Input
+                  size="small"
+                  onChange={this.handleChangeSwapRoutingFee}
+                  placeholder="swap routing fee"
+                  autoFocus
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  width="50%"
+                  size="small"
+                  onChange={this.handleChangeSwapFee}
+                  placeholder="swap fee"
+                  autoFocus
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  size="small"
+                  onChange={this.handleChangeMinerFee}
+                  placeholder="miner fee"
+                  autoFocus
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  size="small"
+                  onChange={this.handleChangePrepayAmt}
+                  placeholder="prepay amt"
+                  autoFocus
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  size="small"
+                  onChange={this.handleChangeConfTarget}
+                  placeholder="sweep confirmation target"
+                  autoFocus
+                />
+              </Form.Item>
+            </Form>
+          )}
+          <AmountField
+            label="Amount"
+            amount={amount}
+            required={!isAnyValue}
+            disabled={isAnyValue}
+            onChangeAmount={this.handleChangeAmount}
+            showFiat
+          />
           <div className="Loop-actions">
             {/* Don't allow for quote until amount greater than min swap amount is entered and less than max swap amount*/}
             {this.state.amount !== null &&
@@ -227,6 +241,7 @@ class Loop extends React.Component<Props> {
             pre={prepayAmt}
             chan={channel}
             adv={advanced}
+            sct={conf}
           />
         </div>
       </>
@@ -259,6 +274,10 @@ class Loop extends React.Component<Props> {
 
   private handleChangePrepayAmt = (ev: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ prepayAmt: ev.currentTarget.value });
+  };
+
+  private handleChangeConfTarget = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ conf: ev.currentTarget.value });
   };
 
   private openQuoteModal = () => {

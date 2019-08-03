@@ -31,12 +31,13 @@ export function* handleGetLoopOutQuote(
   action: ReturnType<typeof actions.getLoopOutQuote>,
 ): SagaIterator {
   const amt = action.payload;
+  const conf = action.payload;
   let loopLib: Yielded<typeof selectLoopLibOrThrow>;
   let loopQuote: Yielded<typeof loopLib.getLoopOutQuote> | undefined;
   try {
     yield call(requirePassword);
     loopLib = yield select(selectLoopLibOrThrow);
-    loopQuote = (yield call(loopLib.getLoopOutQuote, amt)) as Yielded<
+    loopQuote = (yield call(loopLib.getLoopOutQuote, amt, conf)) as Yielded<
       typeof loopLib.getLoopOutQuote
     >;
   } catch (err) {
