@@ -269,7 +269,7 @@ class Loop extends React.Component<Props> {
             pre={prepayAmt}
             chan={channel}
             adv={advanced}
-            htc={htlc}
+            htlc={htlc}
             /**
              * TODO update as needed for future iterations
              * of loop
