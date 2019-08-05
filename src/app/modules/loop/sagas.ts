@@ -27,6 +27,28 @@ export function* handleSetLoop(action: ReturnType<typeof actions.setLoop>): Saga
   });
 }
 
+export function* handleSetLoopIn(
+  action: ReturnType<typeof actions.setLoop>,
+): SagaIterator {
+  const url = action.payload;
+  let loopInTermsPayload;
+  try {
+    const client = new LoopHttpClient(url);
+    loopInTermsPayload = yield call(client.getLoopInTerms);
+  } catch (err) {
+    yield put({ type: types.SET_LOOP_FAILURE, payload: err });
+    return;
+  }
+  yield put({
+    type: types.SET_LOOP_SUCCESS,
+    payload: url,
+  });
+  yield put({
+    type: types.GET_LOOP_IN_TERMS_SUCCESS,
+    payload: loopInTermsPayload,
+  });
+}
+
 export function* handleGetLoopOutQuote(
   action: ReturnType<typeof actions.getLoopOutQuote>,
 ): SagaIterator {
@@ -46,6 +68,29 @@ export function* handleGetLoopOutQuote(
   }
   yield put({
     type: types.GET_LOOP_OUT_QUOTE_SUCCESS,
+    payload: loopQuote,
+  });
+}
+
+export function* handleGetLoopInQuote(
+  action: ReturnType<typeof actions.getLoopInQuote>,
+): SagaIterator {
+  const amt = action.payload;
+  /*const conf = action.payload;*/
+  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
+  let loopQuote: Yielded<typeof loopLib.getLoopInQuote> | undefined;
+  try {
+    yield call(requirePassword);
+    loopLib = yield select(selectLoopLibOrThrow);
+    loopQuote = (yield call(loopLib.getLoopInQuote, amt /*, conf*/)) as Yielded<
+      typeof loopLib.getLoopInQuote
+    >;
+  } catch (err) {
+    yield put({ type: types.GET_LOOP_IN_QUOTE_FAILURE, payload: err });
+    return;
+  }
+  yield put({
+    type: types.GET_LOOP_IN_QUOTE_SUCCESS,
     payload: loopQuote,
   });
 }
@@ -71,8 +116,32 @@ export function* handleGetLoopOut(
   });
 }
 
+export function* handleGetLoopIn(
+  action: ReturnType<typeof actions.getLoopIn>,
+): SagaIterator {
+  const payload = action.payload;
+  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
+  let loopIn: Yielded<typeof loopLib.getLoopIn> | undefined;
+  try {
+    loopLib = yield select(selectLoopLibOrThrow);
+    loopIn = (yield call(loopLib.getLoopIn, payload)) as Yielded<
+      typeof loopLib.getLoopIn
+    >;
+  } catch (err) {
+    yield put({ type: types.GET_LOOP_IN_FAILURE, payload: err });
+    return;
+  }
+  yield put({
+    type: types.GET_LOOP_IN_SUCCESS,
+    payload: loopIn,
+  });
+}
+
 export default function* loopSagas(): SagaIterator {
   yield takeLatest(types.SET_LOOP, handleSetLoop);
+  yield takeLatest(types.SET_LOOP, handleSetLoopIn);
   yield takeLatest(types.GET_LOOP_OUT_QUOTE, handleGetLoopOutQuote);
+  yield takeLatest(types.GET_LOOP_IN_QUOTE, handleGetLoopInQuote);
   yield takeLatest(types.GET_LOOP_OUT, handleGetLoopOut);
+  yield takeLatest(types.GET_LOOP_IN, handleGetLoopIn);
 }

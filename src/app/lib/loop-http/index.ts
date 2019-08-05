@@ -16,11 +16,15 @@ export class LoopHttpClient {
   // Public API methods
 
   getLoopOutTerms = () => {
-    return this.request<T.GetLoopOutTermsResponse>('GET', `/v1/loop/out/terms`);
+    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/out/terms`);
+  };
+
+  getLoopInTerms = () => {
+    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/in/terms`);
   };
 
   getLoopOutQuote = (amt: string, conf: string) => {
-    return this.request<T.GetLoopOutQuoteResponse>(
+    return this.request<T.GetLoopQuoteResponse>(
       'GET',
       `/v1/loop/out/quote/${amt}?conf_target=${conf}`,
       undefined,
@@ -32,10 +36,36 @@ export class LoopHttpClient {
     );
   };
 
+  /**
+   * TODO: Add confirmation target as required
+   * in future iterations for Loop
+   */
+  getLoopInQuote = (amt: string /*, conf: string*/) => {
+    return this.request<T.GetLoopQuoteResponse>(
+      'GET',
+      // `/v1/loop/out/quote/${amt}?conf_target=${conf}`,
+      `/v1/loop/out/quote/${amt}`,
+      undefined,
+      {
+        miner_fee: '',
+        swap_fee: '',
+        prepay_amt: '',
+      },
+    );
+  };
+
   getLoopOut = (args: T.GetLoopOutArguments) => {
-    return this.request<T.GetLoopOutResponse, T.GetLoopOutArguments>(
+    return this.request<T.GetLoopResponse, T.GetLoopOutArguments>(
       'POST',
       '/v1/loop/out',
+      args,
+    );
+  };
+
+  getLoopIn = (args: T.GetLoopInArguments) => {
+    return this.request<T.GetLoopResponse, T.GetLoopInArguments>(
+      'POST',
+      '/v1/loop/in',
       args,
     );
   };

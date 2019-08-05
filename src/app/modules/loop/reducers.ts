@@ -1,10 +1,10 @@
-import types, { LoopOutTermsPayload, LoopOutQuotePayload, LoopOutPayload } from './types';
+import types, { LoopTermsPayload, LoopQuotePayload, LoopPayload } from './types';
 import LoopHttpClient from 'lib/loop-http';
 
 export interface LoopState {
-  loopOutTerms: null | LoopOutTermsPayload;
-  loopOutQuote: null | LoopOutQuotePayload;
-  loopOut: null | LoopOutPayload;
+  loopTerms: null | LoopTermsPayload;
+  loopQuote: null | LoopQuotePayload;
+  loop: null | LoopPayload;
   lib: null | LoopHttpClient;
   url: null | string;
   error: null | Error;
@@ -14,7 +14,7 @@ export const INITIAL_STATE: LoopState = {
   lib: null,
   url: null,
   error: null,
-  loopOutTerms: {
+  loopTerms: {
     swap_payment_dest: '',
     swap_fee_base: '',
     swap_fee_rate: '',
@@ -23,12 +23,12 @@ export const INITIAL_STATE: LoopState = {
     max_swap_amount: '',
     cltv_delta: 0,
   },
-  loopOutQuote: {
+  loopQuote: {
     swap_fee: '',
     prepay_amt: '',
     miner_fee: '',
   },
-  loopOut: {
+  loop: {
     id: '',
     htlc_address: '',
   },
@@ -64,7 +64,7 @@ export default function loopReducers(
     case types.GET_LOOP_OUT_TERMS_SUCCESS:
       return {
         ...state,
-        loopOutTerms: action.payload,
+        loopTerms: action.payload,
       };
     case types.GET_LOOP_OUT_TERMS_FAILURE:
       return {
@@ -79,7 +79,7 @@ export default function loopReducers(
     case types.GET_LOOP_OUT_QUOTE_SUCCESS:
       return {
         ...state,
-        loopOutQuote: action.payload,
+        loopQuote: action.payload,
       };
     case types.GET_LOOP_OUT_QUOTE_FAILURE:
       return {
@@ -93,9 +93,96 @@ export default function loopReducers(
     case types.GET_LOOP_OUT_SUCCESS:
       return {
         ...state,
-        loopOut: action.payload,
+        loop: action.payload,
       };
     case types.GET_LOOP_OUT_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+      };
+    // handle loop in actions
+    case types.GET_LOOP_IN_TERMS:
+      return {
+        ...state,
+      };
+    case types.GET_LOOP_IN_TERMS_SUCCESS:
+      return {
+        ...state,
+        loopTerms: action.payload,
+      };
+    case types.GET_LOOP_IN_TERMS_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case types.GET_LOOP_IN_QUOTE:
+      return {
+        ...state,
+        error: null,
+      };
+    case types.GET_LOOP_IN_QUOTE_SUCCESS:
+      return {
+        ...state,
+        loopQuote: action.payload,
+      };
+    case types.GET_LOOP_IN_QUOTE_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case types.GET_LOOP_IN:
+    case types.GET_LOOP_OUT_TERMS:
+      return {
+        ...state,
+      };
+    case types.GET_LOOP_OUT_TERMS_SUCCESS:
+      return {
+        ...state,
+        loopTerms: action.payload,
+      };
+    case types.GET_LOOP_OUT_TERMS_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case types.GET_LOOP_OUT_QUOTE:
+      return {
+        ...state,
+        error: null,
+      };
+    case types.GET_LOOP_OUT_QUOTE_SUCCESS:
+      return {
+        ...state,
+        loopQuote: action.payload,
+      };
+    case types.GET_LOOP_OUT_QUOTE_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case types.GET_LOOP_OUT:
+      return {
+        ...state,
+      };
+    case types.GET_LOOP_OUT_SUCCESS:
+      return {
+        ...state,
+        loop: action.payload,
+      };
+    case types.GET_LOOP_IN_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+      };
+      return {
+        ...state,
+      };
+    case types.GET_LOOP_IN_SUCCESS:
+      return {
+        ...state,
+        loop: action.payload,
+      };
+    case types.GET_LOOP_IN_FAILURE:
       return {
         ...state,
         error: action.payload,

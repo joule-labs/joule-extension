@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
-import { getLoopOutTerms, setLoop } from 'modules/loop/actions';
+import { getLoopOutTerms, setLoop, getLoopInTerms } from 'modules/loop/actions';
 import { ButtonProps } from 'antd/lib/button';
-import { Form, Button, Icon, Radio, Tooltip, Input } from 'antd';
+import { Form, Button, Icon, Radio, Tooltip, Input, Switch, message } from 'antd';
 import AmountField from 'components/AmountField';
 import InputLoopAddress from 'components/Loop/InputLoopAddress';
 import QuoteModal from './QuoteModal';
@@ -12,14 +12,15 @@ import QuoteModal from './QuoteModal';
 interface StateProps {
   url: AppState['loop']['url'];
   lib: AppState['loop']['lib'];
-  loopOutTerms: AppState['loop']['loopOutTerms'];
-  loopOutQuote: AppState['loop']['loopOutQuote'];
-  loopOut: AppState['loop']['loopOut'];
+  loopTerms: AppState['loop']['loopTerms'];
+  loopQuote: AppState['loop']['loopQuote'];
+  loop: AppState['loop']['loop'];
   error: AppState['loop']['error'];
 }
 
 interface DispatchProps {
   getLoopOutTerms: typeof getLoopOutTerms;
+  getLoopInTerms: typeof getLoopInTerms;
   setLoop: typeof setLoop;
 }
 
@@ -34,6 +35,7 @@ interface State {
   prepayAmt: string;
   channel: string;
   conf: string;
+  htlc: boolean;
   quoteModalIsOpen: boolean;
   loopType: string;
 }
@@ -47,8 +49,9 @@ const INITIAL_STATE = {
   swapFee: '0',
   minerFee: '0',
   prepayAmt: '0',
-  channel: '0',
+  channel: '',
   conf: '2',
+  htlc: false,
   quoteModalIsOpen: false,
   loopType: 'Loop Out',
 };
@@ -59,8 +62,8 @@ class Loop extends React.Component<Props> {
   state: State = { ...INITIAL_STATE };
 
   render() {
-    const { loopOutTerms, error } = this.props;
-    if (loopOutTerms === null) {
+    const { loopTerms, error } = this.props;
+    if (loopTerms === null) {
       return null;
     }
     const {
@@ -76,6 +79,7 @@ class Loop extends React.Component<Props> {
       quoteModalIsOpen,
       advanced,
       conf,
+      htlc,
     } = this.state;
     const actions: ButtonProps[] = [
       {
@@ -88,7 +92,7 @@ class Loop extends React.Component<Props> {
       },
     ];
 
-    if (loopOutTerms === null) {
+    if (loopTerms === null) {
       return null;
     }
 
@@ -99,7 +103,7 @@ class Loop extends React.Component<Props> {
             <Radio.Button value="a" onClick={this.setLoopOutType}>
               Loop Out
             </Radio.Button>
-            <Radio.Button value="b" disabled={true} onClick={this.setLoopInType}>
+            <Radio.Button value="b" onClick={this.setLoopInType}>
               Loop In
             </Radio.Button>
             <Radio.Button value="b" disabled={true}>
@@ -114,16 +118,16 @@ class Loop extends React.Component<Props> {
             initialUrl={this.props.url}
             type={this.state.loopType}
           />
-          {loopOutTerms.swap_fee_base !== '' && (
+          {loopTerms.swap_fee_base !== '' && (
             <Tooltip
               overlayClassName="Loop-terms-tip"
               title={`
-                Base fee: ${loopOutTerms.swap_fee_base} sats |
-                Fee rate: ${loopOutTerms.swap_fee_rate} sats |
-                Prepay amt: ${loopOutTerms.prepay_amt} sats |
-                Min Swap amt: ${loopOutTerms.min_swap_amount} sats |
-                Max Swap amt: ${loopOutTerms.max_swap_amount} sats |
-                CLTV delta: ${loopOutTerms.cltv_delta}
+                Base fee: ${loopTerms.swap_fee_base} sats |
+                Fee rate: ${loopTerms.swap_fee_rate} sats |
+                Prepay amt: ${loopTerms.prepay_amt} sats |
+                Min Swap amt: ${loopTerms.min_swap_amount} sats |
+                Max Swap amt: ${loopTerms.max_swap_amount} sats |
+                CLTV delta: ${loopTerms.cltv_delta}
               `}
               placement="topRight"
               arrowPointAtCenter
@@ -141,8 +145,8 @@ class Loop extends React.Component<Props> {
               </Button>
             </Tooltip>
           )}
-          {advanced === true && (
-            <Form className="Loop" layout="vertical">
+          <Form className="Loop" layout="vertical">
+            {advanced === true && loopType === 'Loop Out' && (
               <Form.Item>
                 <Input
                   type="text"
@@ -152,15 +156,17 @@ class Loop extends React.Component<Props> {
                   autoFocus
                 />
               </Form.Item>
-              <Form.Item>
-                <Input
-                  type="text"
-                  size="small"
-                  onChange={this.handleChangeChannel}
-                  placeholder="channel id"
-                  autoFocus
-                />
-              </Form.Item>
+            )}
+            <Form.Item>
+              <Input
+                type="text"
+                size="small"
+                onChange={this.handleChangeChannel}
+                placeholder="channel id"
+                autoFocus
+              />
+            </Form.Item>
+            {advanced === true && (
               <Form.Item label="">
                 <Input
                   size="small"
@@ -169,6 +175,8 @@ class Loop extends React.Component<Props> {
                   autoFocus
                 />
               </Form.Item>
+            )}
+            {advanced === true && (
               <Form.Item>
                 <Input
                   width="50%"
@@ -178,6 +186,8 @@ class Loop extends React.Component<Props> {
                   autoFocus
                 />
               </Form.Item>
+            )}
+            {advanced === true && (
               <Form.Item>
                 <Input
                   size="small"
@@ -186,6 +196,8 @@ class Loop extends React.Component<Props> {
                   autoFocus
                 />
               </Form.Item>
+            )}
+            {advanced === true && (
               <Form.Item>
                 <Input
                   size="small"
@@ -194,6 +206,8 @@ class Loop extends React.Component<Props> {
                   autoFocus
                 />
               </Form.Item>
+            )}
+            {advanced === true && loopType === 'Loop Out' && (
               <Form.Item>
                 <Input
                   size="small"
@@ -202,8 +216,20 @@ class Loop extends React.Component<Props> {
                   autoFocus
                 />
               </Form.Item>
-            </Form>
-          )}
+            )}
+            {advanced === true && loopType === 'Loop In' && (
+              <span>
+                <p>External HTLC?</p>
+                <Form.Item>
+                  <Switch
+                    checkedChildren="true"
+                    unCheckedChildren="false"
+                    onChange={this.handleChangeHtlc}
+                  />
+                </Form.Item>
+              </span>
+            )}
+          </Form>
           <AmountField
             label="Amount"
             amount={amount}
@@ -216,15 +242,17 @@ class Loop extends React.Component<Props> {
             {/* Don't allow for quote until amount greater than min swap amount is entered and less than max swap amount*/}
             {this.state.amount !== null &&
               this.state.amount !== undefined &&
-              parseInt(this.state.amount, 10) >
-                parseInt(loopOutTerms.min_swap_amount, 10) &&
-              parseInt(this.state.amount, 10) <
-                parseInt(loopOutTerms.max_swap_amount, 10) &&
+              parseInt(this.state.amount, 10) > parseInt(loopTerms.min_swap_amount, 10) &&
+              parseInt(this.state.amount, 10) < parseInt(loopTerms.max_swap_amount, 10) &&
               actions.map((props, idx) => (
                 <Button
                   key={idx}
                   {...props}
-                  onMouseOver={this.props.getLoopOutTerms}
+                  onMouseOver={
+                    this.state.advanced === true
+                      ? this.props.getLoopOutTerms
+                      : this.props.getLoopInTerms
+                  }
                   onClick={this.openQuoteModal}
                 />
               ))}
@@ -241,7 +269,12 @@ class Loop extends React.Component<Props> {
             pre={prepayAmt}
             chan={channel}
             adv={advanced}
-            sct={conf}
+            htc={htlc}
+            /**
+             * TODO update as needed for future iterations
+             * of loop
+             */
+            sct={this.state.loopType === 'Loop Out' ? conf : ''}
           />
         </div>
       </>
@@ -280,11 +313,21 @@ class Loop extends React.Component<Props> {
     this.setState({ conf: ev.currentTarget.value });
   };
 
-  private openQuoteModal = () => {
+  private handleChangeHtlc = (checked: boolean) => {
     this.setState({
-      ...this.state,
-      quoteModalIsOpen: this.state.quoteModalIsOpen === false ? true : false,
+      htlc: checked,
     });
+  };
+
+  private openQuoteModal = () => {
+    if (this.state.channel === '' && this.state.loopType == 'Loop In') {
+      message.warn('Please set Channel Id', 2);
+    } else {
+      this.setState({
+        ...this.state,
+        quoteModalIsOpen: this.state.quoteModalIsOpen === false ? true : false,
+      });
+    }
   };
 
   private setLoopOutType = () => {
@@ -304,13 +347,14 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     url: state.loop.url,
     lib: state.loop.lib,
-    loopOutTerms: state.loop.loopOutTerms,
-    loopOutQuote: state.loop.loopOutQuote,
-    loopOut: state.loop.loopOut,
+    loopTerms: state.loop.loopTerms,
+    loopQuote: state.loop.loopQuote,
+    loop: state.loop.loop,
     error: state.loop.error,
   }),
   {
     getLoopOutTerms,
+    getLoopInTerms,
     setLoop,
   },
 )(Loop);

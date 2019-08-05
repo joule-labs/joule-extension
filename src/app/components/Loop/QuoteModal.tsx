@@ -2,14 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, message } from 'antd';
 import { AppState } from 'store/reducers';
-import { getLoopOutQuote, getLoopOut } from 'modules/loop/actions';
+import { getLoopOutQuote, getLoopOut, getLoopIn } from 'modules/loop/actions';
 import { Button, Icon, Alert } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
-import { GetLoopOutArguments } from 'lib/loop-http/types';
+import { GetLoopOutArguments, GetLoopInArguments } from 'lib/loop-http/types';
 
 interface StateProps {
-  loopOutQuote: AppState['loop']['loopOutQuote'];
-  loopOut: AppState['loop']['loopOut'];
+  loopQuote: AppState['loop']['loopQuote'];
+  loop: AppState['loop']['loop'];
   error: AppState['loop']['error'];
   hasPassword: boolean;
 }
@@ -17,6 +17,7 @@ interface StateProps {
 interface DispatchProps {
   getLoopOutQuote: typeof getLoopOutQuote;
   getLoopOut: typeof getLoopOut;
+  getLoopIn: typeof getLoopIn;
 }
 
 interface OwnProps {
@@ -31,6 +32,7 @@ interface OwnProps {
   pre: string;
   chan: string;
   adv: boolean;
+  htlc: boolean;
   onClose(): void;
 }
 
@@ -45,7 +47,7 @@ class QuoteModal extends React.Component<Props> {
   }
   render() {
     const {
-      loopOutQuote,
+      loopQuote,
       amt,
       sct,
       adv,
@@ -55,7 +57,7 @@ class QuoteModal extends React.Component<Props> {
       hasPassword,
       error,
     } = this.props;
-    if (loopOutQuote === null) {
+    if (loopQuote === null) {
       return null;
     }
     const actions: ButtonProps[] = [
@@ -68,31 +70,41 @@ class QuoteModal extends React.Component<Props> {
         type: 'primary' as any,
       },
     ];
-    if (loopOutQuote === null) {
+    if (loopQuote === null) {
       return null;
     }
     const isVisible = !!isOpen && !!(hasPassword || error);
 
     let content;
-    if (loopOutQuote.miner_fee !== '') {
+    if (loopQuote.miner_fee !== '') {
       content = (
         <>
           <div className="QuoteModal">
-            <p>{`Miner fee: ${loopOutQuote.miner_fee} sats`}</p>
-            <p>{`Prepay amt: ${loopOutQuote.prepay_amt} sats`}</p>
-            <p>{`Swap fee: ${loopOutQuote.swap_fee} sats`}</p>
+            <p>{`Miner fee: ${loopQuote.miner_fee} sats`}</p>
+            <p>{`Prepay amt: ${loopQuote.prepay_amt} sats`}</p>
+            <p>{`Swap fee: ${loopQuote.swap_fee} sats`}</p>
             <p>{`Swap amt: ${amt} sats`}</p>
             <p>{`Sweep Conf. Target: ${sct}`}</p>
 
             {/* Default Loop  */}
             {adv === false &&
               actions.map((props, idx) => (
-                <Button key={idx} {...props} onClick={this.loopOut} />
+                <Button
+                  key={idx}
+                  {...props}
+                  onClick={this.props.type === 'Loop Out' ? this.loopOut : this.loopIn}
+                />
               ))}
             {/* Advanced Loop */}
             {adv === true &&
               actions.map((props, idx) => (
-                <Button key={idx} {...props} onClick={this.advLoopOut} />
+                <Button
+                  key={idx}
+                  {...props}
+                  onClick={
+                    this.props.type === 'Loop Out' ? this.advLoopOut : this.advLoopIn
+                  }
+                />
               ))}
           </div>
         </>
@@ -122,8 +134,8 @@ class QuoteModal extends React.Component<Props> {
 
   private loopOut = () => {
     // get values from loopOutQuote for default loopOut
-    const loopOutQuote = this.props.loopOutQuote;
-    const loopOut = this.props.loopOut;
+    const loopOutQuote = this.props.loopQuote;
+    const loopOut = this.props.loop;
     if (loopOutQuote === null) {
       return null;
     }
@@ -144,16 +156,46 @@ class QuoteModal extends React.Component<Props> {
     this.props.getLoopOut(req);
     setTimeout(() => {
       message.info(`Attempting ${this.props.type}`, 2);
-    }, 3000);
+    }, 1000);
     setTimeout(() => {
       this.props.onClose();
-    }, 5000);
+    }, 3000);
+  };
+
+  private loopIn = () => {
+    // get values from loopOutQuote for default loopOut
+    const loopInQuote = this.props.loopQuote;
+    const loopIn = this.props.loop;
+    if (loopInQuote === null) {
+      return null;
+    }
+    if (loopIn === null) {
+      return null;
+    }
+    const req: GetLoopInArguments = {
+      amt: this.props.amt,
+      loop_in_channel: this.props.chan,
+      max_miner_fee: loopInQuote.miner_fee,
+      max_prepay_amt: loopInQuote.prepay_amt,
+      max_prepay_routing_fee: loopInQuote.prepay_amt,
+      max_swap_fee: loopInQuote.swap_fee,
+      max_swap_routing_fee: loopInQuote.swap_fee,
+      external_htlc: this.props.htlc,
+    };
+
+    this.props.getLoopIn(req);
+    setTimeout(() => {
+      message.info(`Attempting ${this.props.type}`, 2);
+    }, 1000);
+    setTimeout(() => {
+      this.props.onClose();
+    }, 3000);
   };
 
   private advLoopOut = () => {
     // get values from loopOutQuote for default loopOut
-    const loopOutQuote = this.props.loopOutQuote;
-    const loopOut = this.props.loopOut;
+    const loopOutQuote = this.props.loopQuote;
+    const loopOut = this.props.loop;
     if (loopOutQuote === null) {
       return null;
     }
@@ -179,17 +221,48 @@ class QuoteModal extends React.Component<Props> {
       this.props.onClose();
     }, 3000);
   };
+
+  private advLoopIn = () => {
+    // get values from loopOutQuote for default loopOut
+    const loopInQuote = this.props.loopQuote;
+    const loopIn = this.props.loop;
+    if (loopInQuote === null) {
+      return null;
+    }
+    if (loopIn === null) {
+      return null;
+    }
+    const req: GetLoopInArguments = {
+      amt: this.props.amt,
+      loop_in_channel: this.props.chan,
+      max_miner_fee: this.props.mf,
+      max_prepay_amt: this.props.pre,
+      max_prepay_routing_fee: this.props.pre,
+      max_swap_fee: this.props.sf,
+      max_swap_routing_fee: this.props.srf,
+      external_htlc: this.props.htlc,
+    };
+
+    this.props.getLoopIn(req);
+    setTimeout(() => {
+      message.info(`Attempting ${this.props.type}`, 2);
+    }, 1000);
+    setTimeout(() => {
+      this.props.onClose();
+    }, 3000);
+  };
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     hasPassword: !!state.crypto.password,
-    loopOutQuote: state.loop.loopOutQuote,
-    loopOut: state.loop.loopOut,
+    loopQuote: state.loop.loopQuote,
+    loop: state.loop.loop,
     error: state.loop.error,
   }),
   {
     getLoopOutQuote,
+    getLoopIn,
     getLoopOut,
   },
 )(QuoteModal);
