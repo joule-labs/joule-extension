@@ -320,7 +320,7 @@ class Loop extends React.Component<Props> {
   };
 
   private openQuoteModal = () => {
-    if (this.state.channel === '' && this.state.loopType == 'Loop In') {
+    if (this.state.channel === '' && this.state.loopType === 'Loop In') {
       message.warn('Please set Channel Id', 2);
     } else {
       this.setState({
