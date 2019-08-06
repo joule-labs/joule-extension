@@ -3,13 +3,14 @@ import { browser } from 'webextension-polyfill-ts';
 import { Button, Form, Input, message } from 'antd';
 import { urlWithoutPort } from 'utils/formatters';
 import './InputLoopAddress.less';
-import { setLoop } from 'modules/loop/actions';
+import { setLoop, setLoopIn } from 'modules/loop/actions';
 
 interface Props {
   initialUrl?: string | null;
   error: Error | null;
   setLoop: typeof setLoop;
-  type: string | null;
+  setLoopIn: typeof setLoopIn;
+  type: string;
 }
 
 interface State {
@@ -74,6 +75,7 @@ export default class InputLoopAddress extends React.Component<Props, State> {
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     const url = this.state.url.replace(/\/$/, '');
+    const loop = this.props;
     ev.preventDefault();
     browser.permissions
       .request({
@@ -84,7 +86,9 @@ export default class InputLoopAddress extends React.Component<Props, State> {
           message.warn('Permission denied, connection may fail');
         }
         this.setState({ submittedUrl: url });
-        this.props.setLoop(this.state.url);
+        loop.type === 'Loop Out'
+          ? loop.setLoop(this.state.url)
+          : loop.setLoopIn(this.state.url);
       });
   };
 }

@@ -7,12 +7,14 @@ import LoopHttpClient from '../../lib/loop-http';
 import { requirePassword } from 'modules/crypto/sagas';
 
 // Setup Loop URL and Loop Terms
-export function* handleSetLoop(action: ReturnType<typeof actions.setLoop>): SagaIterator {
+export function* handleSetLoopOut(
+  action: ReturnType<typeof actions.setLoop>,
+): SagaIterator {
   const url = action.payload;
-  let loopOutTermsPayload;
+  let loopTermsPayload;
   try {
     const client = new LoopHttpClient(url);
-    loopOutTermsPayload = yield call(client.getLoopOutTerms);
+    loopTermsPayload = yield call(client.getLoopInTerms);
   } catch (err) {
     yield put({ type: types.SET_LOOP_FAILURE, payload: err });
     return;
@@ -23,29 +25,29 @@ export function* handleSetLoop(action: ReturnType<typeof actions.setLoop>): Saga
   });
   yield put({
     type: types.GET_LOOP_OUT_TERMS_SUCCESS,
-    payload: loopOutTermsPayload,
+    payload: loopTermsPayload,
   });
 }
 
 export function* handleSetLoopIn(
-  action: ReturnType<typeof actions.setLoop>,
+  action: ReturnType<typeof actions.setLoopIn>,
 ): SagaIterator {
   const url = action.payload;
-  let loopInTermsPayload;
+  let loopTermsPayload;
   try {
     const client = new LoopHttpClient(url);
-    loopInTermsPayload = yield call(client.getLoopInTerms);
+    loopTermsPayload = yield call(client.getLoopInTerms);
   } catch (err) {
-    yield put({ type: types.SET_LOOP_FAILURE, payload: err });
+    yield put({ type: types.SET_LOOP_IN_FAILURE, payload: err });
     return;
   }
   yield put({
-    type: types.SET_LOOP_SUCCESS,
+    type: types.SET_LOOP_IN_SUCCESS,
     payload: url,
   });
   yield put({
     type: types.GET_LOOP_IN_TERMS_SUCCESS,
-    payload: loopInTermsPayload,
+    payload: loopTermsPayload,
   });
 }
 
@@ -138,8 +140,8 @@ export function* handleGetLoopIn(
 }
 
 export default function* loopSagas(): SagaIterator {
-  yield takeLatest(types.SET_LOOP, handleSetLoop);
-  yield takeLatest(types.SET_LOOP, handleSetLoopIn);
+  yield takeLatest(types.SET_LOOP, handleSetLoopOut);
+  yield takeLatest(types.SET_LOOP_IN, handleSetLoopIn);
   yield takeLatest(types.GET_LOOP_OUT_QUOTE, handleGetLoopOutQuote);
   yield takeLatest(types.GET_LOOP_IN_QUOTE, handleGetLoopInQuote);
   yield takeLatest(types.GET_LOOP_OUT, handleGetLoopOut);

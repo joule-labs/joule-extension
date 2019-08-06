@@ -81,7 +81,9 @@ class QuoteModal extends React.Component<Props> {
         <>
           <div className="QuoteModal">
             <p>{`Miner fee: ${loopQuote.miner_fee} sats`}</p>
-            <p>{`Prepay amt: ${loopQuote.prepay_amt} sats`}</p>
+            <p>{`Prepay amt: ${
+              loopQuote.prepay_amt === undefined ? '1337' : loopQuote.prepay_amt
+            } sats`}</p>
             <p>{`Swap fee: ${loopQuote.swap_fee} sats`}</p>
             <p>{`Swap amt: ${amt} sats`}</p>
             <p>{`Sweep Conf. Target: ${sct}`}</p>

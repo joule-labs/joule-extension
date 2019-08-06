@@ -5,6 +5,10 @@ export function setLoop(url: string) {
   return { type: types.SET_LOOP, payload: url };
 }
 
+export function setLoopIn(url: string) {
+  return { type: types.SET_LOOP_IN, payload: url };
+}
+
 export function getLoopOutTerms() {
   return { type: types.GET_LOOP_OUT_TERMS };
 }

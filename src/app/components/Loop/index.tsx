@@ -2,7 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
-import { getLoopOutTerms, setLoop, getLoopInTerms } from 'modules/loop/actions';
+import {
+  getLoopOutTerms,
+  setLoop,
+  getLoopInTerms,
+  setLoopIn,
+} from 'modules/loop/actions';
 import { ButtonProps } from 'antd/lib/button';
 import { Form, Button, Icon, Radio, Tooltip, Input, Switch, message } from 'antd';
 import AmountField from 'components/AmountField';
@@ -22,6 +27,7 @@ interface DispatchProps {
   getLoopOutTerms: typeof getLoopOutTerms;
   getLoopInTerms: typeof getLoopInTerms;
   setLoop: typeof setLoop;
+  setLoopIn: typeof setLoopIn;
 }
 
 interface State {
@@ -106,17 +112,15 @@ class Loop extends React.Component<Props> {
             <Radio.Button value="b" onClick={this.setLoopInType}>
               Loop In
             </Radio.Button>
-            <Radio.Button value="b" disabled={true}>
-              Loop Monitor
-            </Radio.Button>
           </Radio.Group>
         </div>
         <div className="Loop">
           <InputLoopAddress
             setLoop={this.props.setLoop}
+            setLoopIn={this.props.setLoopIn}
             error={error}
             initialUrl={this.props.url}
-            type={this.state.loopType}
+            type={loopType}
           />
           {loopTerms.swap_fee_base !== '' && (
             <Tooltip
@@ -124,7 +128,9 @@ class Loop extends React.Component<Props> {
               title={`
                 Base fee: ${loopTerms.swap_fee_base} sats |
                 Fee rate: ${loopTerms.swap_fee_rate} sats |
-                Prepay amt: ${loopTerms.prepay_amt} sats |
+                Prepay amt: ${
+                  loopTerms.prepay_amt === undefined ? '1337' : loopTerms.prepay_amt
+                }
                 Min Swap amt: ${loopTerms.min_swap_amount} sats |
                 Max Swap amt: ${loopTerms.max_swap_amount} sats |
                 CLTV delta: ${loopTerms.cltv_delta}
@@ -166,7 +172,7 @@ class Loop extends React.Component<Props> {
                 autoFocus
               />
             </Form.Item>
-            {advanced === true && (
+            {advanced === true && loopType === 'Loop Out' && (
               <Form.Item label="">
                 <Input
                   size="small"
@@ -197,7 +203,7 @@ class Loop extends React.Component<Props> {
                 />
               </Form.Item>
             )}
-            {advanced === true && (
+            {advanced === true && loopType === 'Loop Out' && (
               <Form.Item>
                 <Input
                   size="small"
@@ -356,5 +362,6 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     getLoopOutTerms,
     getLoopInTerms,
     setLoop,
+    setLoopIn,
   },
 )(Loop);
