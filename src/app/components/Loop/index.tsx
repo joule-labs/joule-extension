@@ -77,23 +77,40 @@ class Loop extends React.Component<Props> {
       return null;
     }
 
-    // Only return channels with enough loot
-    const openChannels = channels.filter(
+    // Only return channels with enough loot for looping out
+    const openChannelsLoopOut = channels.filter(
       o =>
         o.status === 'OPEN' &&
         parseInt(o.local_balance, 10) > parseInt(loopTerms.min_swap_amount, 10),
     );
+    // Only return channels with enough loot for looping in
+    const openChannelsLoopIn = channels.filter(
+      o =>
+        o.status === 'OPEN' &&
+        parseInt(o.capacity, 10) - parseInt(o.local_balance, 10) >
+          parseInt(loopTerms.min_swap_amount, 10),
+    );
 
     // Get channels to choose from
-    const items = openChannels.map(c => (
+    const loopOutItems = openChannelsLoopOut.map(c => (
       <Menu.Item
         key={c.channel_point}
-        onClick={() => this.handleSetChannelId(c.channel_point, openChannels)}
+        onClick={() => this.handleSetChannelId(c.channel_point, openChannelsLoopOut)}
       >
         {`${c.node.alias} => ${c.local_balance} sats available`}
       </Menu.Item>
     ));
-    const menu = <Menu>{items}</Menu>;
+    const loopInItems = openChannelsLoopIn.map(c => (
+      <Menu.Item
+        key={c.channel_point}
+        onClick={() => this.handleSetChannelId(c.channel_point, openChannelsLoopIn)}
+      >
+        {`${c.node.alias} => ${c.local_balance} sats available`}
+      </Menu.Item>
+    ));
+
+    const loopInMenu = <Menu>{loopInItems}</Menu>;
+    const loopOutMenu = <Menu>{loopOutItems}</Menu>;
 
     // Destructure the state
     const {
@@ -176,9 +193,18 @@ class Loop extends React.Component<Props> {
             </Tooltip>
           )}
           <Form className="Loop" layout="vertical">
-            {url !== null && (
+            {url !== null && loopType === 'Loop Out' && (
               <Form.Item>
-                <Dropdown overlay={menu}>
+                <Dropdown overlay={loopOutMenu}>
+                  <a className="ant-dropdown-link" href="#">
+                    Select Channel
+                  </a>
+                </Dropdown>
+              </Form.Item>
+            )}
+            {url !== null && loopType === 'Loop In' && (
+              <Form.Item>
+                <Dropdown overlay={loopInMenu}>
                   <a className="ant-dropdown-link" href="#">
                     Select Channel
                   </a>
