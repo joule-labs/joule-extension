@@ -317,9 +317,9 @@ class Loop extends React.Component<Props> {
     const keys = Object.keys(match);
     const jsonClone = JSON.parse(JSON.stringify(match));
     const key = keys[0];
-    const id = jsonClone[key].chan_id;
+    const channelId = jsonClone[key].chan_id;
     message.success('Channel set successfully!');
-    this.setState({ channel: id });
+    this.setState({ channel: channelId });
   }
 
   private handleChangeAmount = (amount: string) => {
