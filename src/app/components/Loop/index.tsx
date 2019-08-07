@@ -13,8 +13,11 @@ import { Form, Button, Icon, Radio, Tooltip, Input, Switch, message } from 'antd
 import AmountField from 'components/AmountField';
 import InputLoopAddress from 'components/Loop/InputLoopAddress';
 import QuoteModal from './QuoteModal';
+import { Menu, Dropdown } from 'antd';
+import { ChannelWithNode } from 'modules/channels/types';
 
 interface StateProps {
+  channels: AppState['channels']['channels'];
   url: AppState['loop']['url'];
   lib: AppState['loop']['lib'];
   loopTerms: AppState['loop']['loopTerms'];
@@ -68,10 +71,31 @@ class Loop extends React.Component<Props> {
   state: State = { ...INITIAL_STATE };
 
   render() {
-    const { loopTerms, error } = this.props;
-    if (loopTerms === null) {
+    const { url, loopTerms, channels, error } = this.props;
+
+    if (channels === null || loopTerms === null) {
       return null;
     }
+
+    // Only return channels with enough loot
+    const openChannels = channels.filter(
+      o =>
+        o.status === 'OPEN' &&
+        parseInt(o.local_balance, 10) > parseInt(loopTerms.min_swap_amount, 10),
+    );
+
+    // Get channels to choose from
+    const items = openChannels.map(c => (
+      <Menu.Item
+        key={c.channel_point}
+        onClick={() => this.handleSetChannelId(c.channel_point, openChannels)}
+      >
+        {`${c.node.alias} => ${c.local_balance} sats available`}
+      </Menu.Item>
+    ));
+    const menu = <Menu>{items}</Menu>;
+
+    // Destructure the state
     const {
       isAnyValue,
       amount,
@@ -152,6 +176,15 @@ class Loop extends React.Component<Props> {
             </Tooltip>
           )}
           <Form className="Loop" layout="vertical">
+            {url !== null && (
+              <Form.Item>
+                <Dropdown overlay={menu}>
+                  <a className="ant-dropdown-link" href="#">
+                    Select Channel
+                  </a>
+                </Dropdown>
+              </Form.Item>
+            )}
             {advanced === true && loopType === 'Loop Out' && (
               <Form.Item>
                 <Input
@@ -163,15 +196,6 @@ class Loop extends React.Component<Props> {
                 />
               </Form.Item>
             )}
-            <Form.Item>
-              <Input
-                type="text"
-                size="small"
-                onChange={this.handleChangeChannel}
-                placeholder="channel id"
-                autoFocus
-              />
-            </Form.Item>
             {advanced === true && loopType === 'Loop Out' && (
               <Form.Item label="">
                 <Input
@@ -287,12 +311,19 @@ class Loop extends React.Component<Props> {
     );
   }
 
+  private handleSetChannelId(point: string, openChannels: ChannelWithNode[]) {
+    // Work-around to grab channel id and pass to Loop API
+    const match = openChannels.filter(id => id.channel_point === point);
+    const keys = Object.keys(match);
+    const jsonClone = JSON.parse(JSON.stringify(match));
+    const key = keys[0];
+    const id = jsonClone[key].chan_id;
+    message.success('Channel set successfully!');
+    this.setState({ channel: id });
+  }
+
   private handleChangeAmount = (amount: string) => {
     this.setState({ amount });
-  };
-
-  private handleChangeChannel = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ channel: ev.currentTarget.value });
   };
 
   private handleChangeDestination = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -326,8 +357,8 @@ class Loop extends React.Component<Props> {
   };
 
   private openQuoteModal = () => {
-    if (this.state.channel === '' && this.state.loopType === 'Loop In') {
-      message.warn('Please set Channel Id', 2);
+    if (this.state.channel === '') {
+      message.warn('Please set Channel', 2);
     } else {
       this.setState({
         ...this.state,
@@ -351,6 +382,7 @@ class Loop extends React.Component<Props> {
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
+    channels: state.channels.channels,
     url: state.loop.url,
     lib: state.loop.lib,
     loopTerms: state.loop.loopTerms,
