@@ -178,10 +178,7 @@ class QuoteModal extends React.Component<Props> {
       amt: this.props.amt,
       loop_in_channel: this.props.chan,
       max_miner_fee: loopInQuote.miner_fee,
-      max_prepay_amt: loopInQuote.prepay_amt,
-      max_prepay_routing_fee: loopInQuote.prepay_amt,
       max_swap_fee: loopInQuote.swap_fee,
-      max_swap_routing_fee: loopInQuote.swap_fee,
       external_htlc: this.props.htlc,
     };
 
@@ -238,10 +235,7 @@ class QuoteModal extends React.Component<Props> {
       amt: this.props.amt,
       loop_in_channel: this.props.chan,
       max_miner_fee: this.props.mf,
-      max_prepay_amt: this.props.pre,
-      max_prepay_routing_fee: this.props.pre,
       max_swap_fee: this.props.sf,
-      max_swap_routing_fee: this.props.srf,
       external_htlc: this.props.htlc,
     };
 

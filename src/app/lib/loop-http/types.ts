@@ -36,10 +36,7 @@ export interface GetLoopOutArguments {
 
 export interface GetLoopInArguments {
   amt: string;
-  max_swap_routing_fee: string | null;
-  max_prepay_routing_fee: string | null;
   max_swap_fee: string | null;
-  max_prepay_amt: string | null;
   max_miner_fee: string | null;
   loop_in_channel: string;
   external_htlc: boolean;
