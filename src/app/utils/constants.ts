@@ -14,8 +14,8 @@ export enum NODE_TYPE {
 }
 
 export enum LOOP_TYPE {
-  LOOP_OUT = 'LOOP_OUT',
-  LOOP_IN = 'LOOP_IN',
+  LOOP_OUT = 'Loop Out',
+  LOOP_IN = 'Loop In',
 }
 
 export const DEFAULT_NODE_URLS = {

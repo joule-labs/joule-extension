@@ -197,7 +197,7 @@ class Loop extends React.Component<Props> {
           <div className="Loop-terms">
             {loopTerms.swap_fee_base !== '' && (
               <Collapse bordered={false} defaultActiveKey={['1']}>
-                <Panel header="View Loop Terms" key="1">
+                <Panel header={`View ${loopType} Terms`} key="1">
                   <p>{loopTermsText}</p>
                 </Panel>
               </Collapse>
