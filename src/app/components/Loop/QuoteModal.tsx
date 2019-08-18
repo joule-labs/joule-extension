@@ -56,7 +56,7 @@ class QuoteModal extends React.Component<Props> {
       hasPassword,
       error,
     } = this.props;
-    if (loopQuote === null) {
+    if (!loopQuote) {
       return null;
     }
     const actions: ButtonProps[] = [
@@ -69,9 +69,6 @@ class QuoteModal extends React.Component<Props> {
         type: 'primary' as any,
       },
     ];
-    if (loopQuote === null) {
-      return null;
-    }
     const isVisible = !!isOpen && !!(hasPassword || error);
 
     let content;
@@ -124,10 +121,10 @@ class QuoteModal extends React.Component<Props> {
     const loopOutQuote = this.props.loopQuote;
     const loopOut = this.props.loop;
     const { advanced, minerFee, prepayAmount, swapFee } = this.props;
-    if (loopOutQuote === null) {
+    if (!loopOutQuote) {
       return null;
     }
-    if (loopOut === null) {
+    if (!loopOut) {
       return null;
     }
     const req: GetLoopOutArguments = {
@@ -151,14 +148,14 @@ class QuoteModal extends React.Component<Props> {
   };
 
   private loopIn = () => {
-    // get values from loopOutQuote for default loopIn
+    // get values from loopInQuote for default loopIn
     const loopInQuote = this.props.loopQuote;
     const loopIn = this.props.loop;
     const { advanced, minerFee, swapFee } = this.props;
-    if (loopInQuote === null) {
+    if (!loopInQuote) {
       return null;
     }
-    if (loopIn === null) {
+    if (!loopIn) {
       return null;
     }
     const req: GetLoopInArguments = {

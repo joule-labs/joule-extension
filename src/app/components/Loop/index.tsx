@@ -90,7 +90,7 @@ class Loop extends React.Component<Props> {
       error,
     } = this.props;
 
-    if (channels === null || !loopOutTerms || !loopInTerms) {
+    if (!channels || !loopOutTerms || !loopInTerms) {
       return null;
     }
 
