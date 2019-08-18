@@ -2,33 +2,40 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
-import {
-  getLoopOutTerms,
-  setLoop,
-  getLoopInTerms,
-  setLoopIn,
-} from 'modules/loop/actions';
+import { setLoop, setLoopIn } from 'modules/loop/actions';
 import { ButtonProps } from 'antd/lib/button';
-import { Form, Button, Icon, Radio, Tooltip, Input, Switch, message } from 'antd';
+import {
+  Menu,
+  Select,
+  Form,
+  Button,
+  Icon,
+  Radio,
+  Collapse,
+  Input,
+  Switch,
+  message,
+} from 'antd';
+const { Panel } = Collapse;
 import AmountField from 'components/AmountField';
 import InputLoopAddress from 'components/Loop/InputLoopAddress';
 import QuoteModal from './QuoteModal';
-import { Menu, Dropdown } from 'antd';
 import { ChannelWithNode } from 'modules/channels/types';
+import { LOOP_TYPE } from 'utils/constants';
 
 interface StateProps {
   channels: AppState['channels']['channels'];
+  isCheckingLoop: AppState['loop']['isCheckingLoop'];
   url: AppState['loop']['url'];
   lib: AppState['loop']['lib'];
-  loopTerms: AppState['loop']['loopTerms'];
+  loopOutTerms: AppState['loop']['loopOutTerms'];
+  loopInTerms: AppState['loop']['loopInTerms'];
   loopQuote: AppState['loop']['loopQuote'];
   loop: AppState['loop']['loop'];
   error: AppState['loop']['error'];
 }
 
 interface DispatchProps {
-  getLoopOutTerms: typeof getLoopOutTerms;
-  getLoopInTerms: typeof getLoopInTerms;
   setLoop: typeof setLoop;
   setLoopIn: typeof setLoopIn;
 }
@@ -38,7 +45,6 @@ interface State {
   advanced: boolean;
   isAnyValue: boolean;
   destination: string;
-  swapRoutingFee: string;
   swapFee: string;
   minerFee: string;
   prepayAmt: string;
@@ -54,7 +60,6 @@ const INITIAL_STATE = {
   advanced: false,
   isAnyValue: false,
   destination: '',
-  swapRoutingFee: '',
   swapFee: '0',
   minerFee: '0',
   prepayAmt: '0',
@@ -62,7 +67,7 @@ const INITIAL_STATE = {
   conf: '2',
   htlc: false,
   quoteModalIsOpen: false,
-  loopType: 'Loop Out',
+  loopType: LOOP_TYPE.LOOP_OUT,
 };
 
 type Props = StateProps & DispatchProps;
@@ -70,10 +75,24 @@ type Props = StateProps & DispatchProps;
 class Loop extends React.Component<Props> {
   state: State = { ...INITIAL_STATE };
 
+  componentDidMount() {
+    const loopUrl = this.props.url;
+    if (loopUrl !== null) {
+      this.props.setLoop(loopUrl);
+      this.props.setLoopIn(loopUrl);
+    }
+  }
   render() {
-    const { url, loopTerms, channels, error } = this.props;
+    const {
+      url,
+      loopOutTerms,
+      loopInTerms,
+      channels,
+      isCheckingLoop,
+      error,
+    } = this.props;
 
-    if (channels === null || loopTerms === null) {
+    if (channels === null || !loopOutTerms || !loopInTerms) {
       return null;
     }
 
@@ -81,14 +100,14 @@ class Loop extends React.Component<Props> {
     const openChannelsLoopOut = channels.filter(
       o =>
         o.status === 'OPEN' &&
-        parseInt(o.local_balance, 10) > parseInt(loopTerms.min_swap_amount, 10),
+        parseInt(o.local_balance, 10) > parseInt(loopOutTerms.min_swap_amount, 10),
     );
     // Only return channels with enough loot for looping in
     const openChannelsLoopIn = channels.filter(
       o =>
         o.status === 'OPEN' &&
         parseInt(o.capacity, 10) - parseInt(o.local_balance, 10) >
-          parseInt(loopTerms.min_swap_amount, 10),
+          parseInt(loopInTerms.min_swap_amount, 10),
     );
 
     // Get channels to choose from
@@ -109,16 +128,11 @@ class Loop extends React.Component<Props> {
       </Menu.Item>
     ));
 
-    const loopInMenu = <Menu>{loopInItems}</Menu>;
-    const loopOutMenu = <Menu>{loopOutItems}</Menu>;
-
-    // Destructure the state
     const {
       isAnyValue,
       amount,
       loopType,
       destination,
-      swapRoutingFee,
       swapFee,
       minerFee,
       prepayAmt,
@@ -128,6 +142,23 @@ class Loop extends React.Component<Props> {
       conf,
       htlc,
     } = this.state;
+
+    const loopItems = loopType === LOOP_TYPE.LOOP_OUT ? loopOutItems : loopInItems;
+    const loopMenu = <Select defaultValue={'Select Channel'}>{loopItems}</Select>;
+
+    const loopTerms = loopType === LOOP_TYPE.LOOP_OUT ? loopOutTerms : loopInTerms;
+    const loopTermsText = (
+      <>
+        <strong>Base Fee</strong> : {loopTerms.swap_fee_base} sats <br />
+        <strong>Fee Rate</strong> : {loopTerms.swap_fee_rate} sats <br />
+        <strong>Prepay Amount</strong> :{' '}
+        {loopTerms.prepay_amt === undefined ? '1337' : loopTerms.prepay_amt} sats <br />
+        <strong> Min Swap Amount</strong> : {loopTerms.min_swap_amount} sats <br />
+        <strong>Max Swap Amount</strong> : {loopTerms.max_swap_amount} sats <br />
+        <strong>CLTV Delta</strong> : {loopTerms.cltv_delta} blocks
+      </>
+    );
+
     const actions: ButtonProps[] = [
       {
         children: (
@@ -156,124 +187,94 @@ class Loop extends React.Component<Props> {
           </Radio.Group>
         </div>
         <div className="Loop">
-          <InputLoopAddress
-            setLoop={this.props.setLoop}
-            setLoopIn={this.props.setLoopIn}
-            error={error}
-            initialUrl={this.props.url}
-            type={loopType}
-          />
-          {loopTerms.swap_fee_base !== '' && (
-            <Tooltip
-              overlayClassName="Loop-terms-tip"
-              title={`
-                Base fee: ${loopTerms.swap_fee_base} sats |
-                Fee rate: ${loopTerms.swap_fee_rate} sats |
-                Prepay amt: ${
-                  loopTerms.prepay_amt === undefined ? '1337' : loopTerms.prepay_amt
-                }
-                Min Swap amt: ${loopTerms.min_swap_amount} sats |
-                Max Swap amt: ${loopTerms.max_swap_amount} sats |
-                CLTV delta: ${loopTerms.cltv_delta}
-              `}
-              placement="topRight"
-              arrowPointAtCenter
-            >
-              <br />
-              <Button
-                className="Loop-form-advancedToggle"
-                onClick={this.toggleAdvanced}
-                type="primary"
-                ghost
-              >
-                {this.state.advanced === true
-                  ? 'Hide advanced fields'
-                  : 'Show advanced fields'}
-              </Button>
-            </Tooltip>
+          {url === null && (
+            <InputLoopAddress
+              setLoop={this.props.setLoop}
+              setLoopIn={this.props.setLoopIn}
+              isCheckingLoop={isCheckingLoop}
+              error={error}
+              initialUrl={this.props.url}
+              type={loopType}
+            />
           )}
+          <div className="Loop-terms">
+            {loopTerms.swap_fee_base !== '' && (
+              <Collapse bordered={false} defaultActiveKey={['1']}>
+                <Panel header="View Loop Terms" key="1">
+                  <p>{loopTermsText}</p>
+                </Panel>
+              </Collapse>
+            )}
+          </div>
+          <br />
+          <Button
+            className="Loop-form-advancedToggle"
+            onClick={this.toggleAdvanced}
+            type="primary"
+            ghost
+          >
+            {this.state.advanced ? 'Hide advanced fields' : 'Show advanced fields'}
+          </Button>
           <Form className="Loop" layout="vertical">
-            {url !== null && loopType === 'Loop Out' && (
-              <Form.Item>
-                <Dropdown overlay={loopOutMenu}>
-                  <a className="ant-dropdown-link" href="#">
-                    Select Channel
-                  </a>
-                </Dropdown>
-              </Form.Item>
-            )}
-            {url !== null && loopType === 'Loop In' && (
-              <Form.Item>
-                <Dropdown overlay={loopInMenu}>
-                  <a className="ant-dropdown-link" href="#">
-                    Select Channel
-                  </a>
-                </Dropdown>
-              </Form.Item>
-            )}
-            {advanced === true && loopType === 'Loop Out' && (
+            {url !== null && <Form.Item>{loopMenu}</Form.Item>}
+            {advanced && loopType === LOOP_TYPE.LOOP_OUT && (
               <Form.Item>
                 <Input
                   type="text"
                   size="small"
-                  onChange={this.handleChangeDestination}
+                  name={destination}
+                  onChange={this.handleChangeField}
                   placeholder="off-chain address"
                   autoFocus
                 />
               </Form.Item>
             )}
-            {advanced === true && loopType === 'Loop Out' && (
-              <Form.Item label="">
-                <Input
-                  size="small"
-                  onChange={this.handleChangeSwapRoutingFee}
-                  placeholder="swap routing fee"
-                  autoFocus
-                />
-              </Form.Item>
-            )}
-            {advanced === true && (
+            {advanced && (
               <Form.Item>
                 <Input
                   width="50%"
                   size="small"
-                  onChange={this.handleChangeSwapFee}
+                  name={swapFee}
+                  onChange={this.handleChangeField}
                   placeholder="swap fee"
                   autoFocus
                 />
               </Form.Item>
             )}
-            {advanced === true && (
+            {advanced && (
               <Form.Item>
                 <Input
                   size="small"
-                  onChange={this.handleChangeMinerFee}
+                  name={minerFee}
+                  onChange={this.handleChangeField}
                   placeholder="miner fee"
                   autoFocus
                 />
               </Form.Item>
             )}
-            {advanced === true && loopType === 'Loop Out' && (
+            {advanced && loopType === LOOP_TYPE.LOOP_OUT && (
               <Form.Item>
                 <Input
                   size="small"
-                  onChange={this.handleChangePrepayAmt}
+                  name={prepayAmt}
+                  onChange={this.handleChangeField}
                   placeholder="prepay amt"
                   autoFocus
                 />
               </Form.Item>
             )}
-            {advanced === true && loopType === 'Loop Out' && (
+            {advanced && loopType === LOOP_TYPE.LOOP_OUT && (
               <Form.Item>
                 <Input
                   size="small"
-                  onChange={this.handleChangeConfTarget}
+                  name={conf}
+                  onChange={this.handleChangeField}
                   placeholder="sweep confirmation target"
                   autoFocus
                 />
               </Form.Item>
             )}
-            {advanced === true && loopType === 'Loop In' && (
+            {advanced && loopType === LOOP_TYPE.LOOP_IN && (
               <span>
                 <p>External HTLC?</p>
                 <Form.Item>
@@ -301,36 +302,28 @@ class Loop extends React.Component<Props> {
               parseInt(this.state.amount, 10) > parseInt(loopTerms.min_swap_amount, 10) &&
               parseInt(this.state.amount, 10) < parseInt(loopTerms.max_swap_amount, 10) &&
               actions.map((props, idx) => (
-                <Button
-                  key={idx}
-                  {...props}
-                  onMouseOver={
-                    this.state.advanced === true
-                      ? this.props.getLoopOutTerms
-                      : this.props.getLoopInTerms
-                  }
-                  onClick={this.openQuoteModal}
-                />
+                <Button key={idx} {...props} onClick={this.openQuoteModal} />
               ))}
           </div>
           <QuoteModal
-            amt={amount}
+            amount={amount}
             isOpen={quoteModalIsOpen}
             onClose={this.openQuoteModal}
             type={loopType}
-            dest={destination}
-            srf={swapRoutingFee}
-            sf={swapFee}
-            mf={minerFee}
-            pre={prepayAmt}
-            chan={channel}
-            adv={advanced}
+            destination={destination}
+            swapFee={swapFee}
+            minerFee={minerFee}
+            prepayAmount={prepayAmt}
+            channel={channel}
+            advanced={advanced}
             htlc={htlc}
             /**
              * TODO update as needed for future iterations
              * of loop
              */
-            sct={this.state.loopType === 'Loop Out' ? conf : ''}
+            sweepConfirmationTarget={
+              this.state.loopType === LOOP_TYPE.LOOP_OUT ? conf : ''
+            }
           />
         </div>
       </>
@@ -352,28 +345,8 @@ class Loop extends React.Component<Props> {
     this.setState({ amount });
   };
 
-  private handleChangeDestination = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ destination: ev.currentTarget.value });
-  };
-
-  private handleChangeSwapRoutingFee = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ swapRoutingFee: ev.currentTarget.value });
-  };
-
-  private handleChangeSwapFee = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ swapFee: ev.currentTarget.value });
-  };
-
-  private handleChangeMinerFee = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ minerFee: ev.currentTarget.value });
-  };
-
-  private handleChangePrepayAmt = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ prepayAmt: ev.currentTarget.value });
-  };
-
-  private handleChangeConfTarget = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ conf: ev.currentTarget.value });
+  private handleChangeField = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ name: ev.currentTarget.value });
   };
 
   private handleChangeHtlc = (checked: boolean) => {
@@ -394,11 +367,11 @@ class Loop extends React.Component<Props> {
   };
 
   private setLoopOutType = () => {
-    this.setState({ loopType: 'Loop Out' });
+    this.setState({ loopType: LOOP_TYPE.LOOP_OUT });
   };
 
   private setLoopInType = () => {
-    this.setState({ loopType: 'Loop In' });
+    this.setState({ loopType: LOOP_TYPE.LOOP_IN });
   };
 
   private toggleAdvanced = () => {
@@ -409,16 +382,16 @@ class Loop extends React.Component<Props> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     channels: state.channels.channels,
+    isCheckingLoop: state.loop.isCheckingLoop,
     url: state.loop.url,
     lib: state.loop.lib,
-    loopTerms: state.loop.loopTerms,
+    loopOutTerms: state.loop.loopOutTerms,
+    loopInTerms: state.loop.loopInTerms,
     loopQuote: state.loop.loopQuote,
     loop: state.loop.loop,
     error: state.loop.error,
   }),
   {
-    getLoopOutTerms,
-    getLoopInTerms,
     setLoop,
     setLoopIn,
   },

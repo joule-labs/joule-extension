@@ -20,6 +20,9 @@ import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
 import settingsTypes from 'modules/settings/types';
 import { AppState } from 'store/reducers';
+import { selectSyncedLoopState } from 'modules/loop/selectors';
+import { setSyncedLoopState } from 'modules/loop/actions';
+import { loopTypes } from 'modules/loop';
 
 export interface SyncConfig<T> {
   key: string;
@@ -49,6 +52,18 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     selector: selectSyncedCryptoState,
     action: setSyncedCryptoState,
     triggerActions: [cryptoTypes.SET_PASSWORD, settingsTypes.CLEAR_SETTINGS],
+  },
+  {
+    key: 'loop',
+    version: 1,
+    encrypted: false,
+    selector: selectSyncedLoopState,
+    action: setSyncedLoopState,
+    triggerActions: [
+      loopTypes.SET_LOOP,
+      loopTypes.GET_LOOP_IN_TERMS_SUCCESS,
+      loopTypes.GET_LOOP_OUT_TERMS_SUCCESS,
+    ],
   },
   {
     key: 'node-unencrypted',

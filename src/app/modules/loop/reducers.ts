@@ -2,7 +2,9 @@ import types, { LoopTermsPayload, LoopQuotePayload, LoopPayload } from './types'
 import LoopHttpClient from 'lib/loop-http';
 
 export interface LoopState {
-  loopTerms: null | LoopTermsPayload;
+  isCheckingLoop: boolean;
+  loopOutTerms: LoopTermsPayload;
+  loopInTerms: LoopTermsPayload;
   loopQuote: null | LoopQuotePayload;
   loop: null | LoopPayload;
   lib: null | LoopHttpClient;
@@ -14,7 +16,17 @@ export const INITIAL_STATE: LoopState = {
   lib: null,
   url: null,
   error: null,
-  loopTerms: {
+  isCheckingLoop: false,
+  loopOutTerms: {
+    swap_payment_dest: '',
+    swap_fee_base: '',
+    swap_fee_rate: '',
+    prepay_amt: '',
+    min_swap_amount: '',
+    max_swap_amount: '',
+    cltv_delta: 0,
+  },
+  loopInTerms: {
     swap_payment_dest: '',
     swap_fee_base: '',
     swap_fee_rate: '',
@@ -42,11 +54,13 @@ export default function loopReducers(
     case types.SET_LOOP:
       return {
         ...state,
+        isCheckingLoop: true,
         error: null,
       };
     case types.SET_LOOP_SUCCESS:
       return {
         ...state,
+        isCheckingLoop: false,
         url: action.payload,
         lib: new LoopHttpClient(action.payload),
         error: null,
@@ -54,17 +68,14 @@ export default function loopReducers(
     case types.SET_LOOP_FAILURE:
       return {
         ...state,
+        isCheckingLoop: false,
         error: action.payload,
         lib: null,
-      };
-    case types.GET_LOOP_OUT_TERMS:
-      return {
-        ...state,
       };
     case types.GET_LOOP_OUT_TERMS_SUCCESS:
       return {
         ...state,
-        loopTerms: action.payload,
+        loopOutTerms: action.payload,
       };
     case types.GET_LOOP_OUT_TERMS_FAILURE:
       return {
@@ -86,16 +97,12 @@ export default function loopReducers(
         ...state,
         error: action.payload,
       };
-    case types.GET_LOOP_OUT:
-      return {
-        ...state,
-      };
-    case types.GET_LOOP_OUT_SUCCESS:
+    case types.LOOP_OUT_SUCCESS:
       return {
         ...state,
         loop: action.payload,
       };
-    case types.GET_LOOP_OUT_FAILURE:
+    case types.LOOP_OUT_FAILURE:
       return {
         ...state,
         error: action.payload,
@@ -119,14 +126,10 @@ export default function loopReducers(
         error: action.payload,
         lib: null,
       };
-    case types.GET_LOOP_IN_TERMS:
-      return {
-        ...state,
-      };
     case types.GET_LOOP_IN_TERMS_SUCCESS:
       return {
         ...state,
-        loopTerms: action.payload,
+        loopInTerms: action.payload,
       };
     case types.GET_LOOP_IN_TERMS_FAILURE:
       return {
@@ -148,64 +151,21 @@ export default function loopReducers(
         ...state,
         error: action.payload,
       };
-    case types.GET_LOOP_IN:
-    case types.GET_LOOP_OUT_TERMS:
-      return {
-        ...state,
-      };
-    case types.GET_LOOP_OUT_TERMS_SUCCESS:
-      return {
-        ...state,
-        loopTerms: action.payload,
-      };
-    case types.GET_LOOP_OUT_TERMS_FAILURE:
-      return {
-        ...state,
-        error: action.payload,
-      };
-    case types.GET_LOOP_OUT_QUOTE:
-      return {
-        ...state,
-        error: null,
-      };
-    case types.GET_LOOP_OUT_QUOTE_SUCCESS:
-      return {
-        ...state,
-        loopQuote: action.payload,
-      };
-    case types.GET_LOOP_OUT_QUOTE_FAILURE:
-      return {
-        ...state,
-        error: action.payload,
-      };
-    case types.GET_LOOP_OUT:
-      return {
-        ...state,
-      };
-    case types.GET_LOOP_OUT_SUCCESS:
+    case types.LOOP_IN_SUCCESS:
       return {
         ...state,
         loop: action.payload,
       };
-    case types.GET_LOOP_IN_FAILURE:
+    case types.LOOP_IN_FAILURE:
       return {
         ...state,
         error: action.payload,
       };
+    case types.SYNC_LOOP_STATE:
       return {
         ...state,
-      };
-    case types.GET_LOOP_IN_SUCCESS:
-      return {
-        ...state,
-        loop: action.payload,
-      };
-    case types.GET_LOOP_IN_FAILURE:
-      return {
-        ...state,
-        error: action.payload,
+        ...action.payload,
       };
   }
-
   return state;
 }

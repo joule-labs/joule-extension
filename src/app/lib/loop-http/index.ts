@@ -24,10 +24,10 @@ export class LoopHttpClient {
   };
 
   getLoopOutQuote = (amt: string, conf: string) => {
-    return this.request<T.GetLoopQuoteResponse>(
+    return this.request<T.GetLoopQuoteResponse, any>(
       'GET',
-      `/v1/loop/out/quote/${amt}?conf_target=${conf}`,
-      undefined,
+      `/v1/loop/out/quote/${amt}`,
+      { conf_target: conf },
       {
         miner_fee: '',
         swap_fee: '',
@@ -45,6 +45,7 @@ export class LoopHttpClient {
       'GET',
       // `/v1/loop/out/quote/${amt}?conf_target=${conf}`,
       `/v1/loop/out/quote/${amt}`,
+      // {conf_target: conf}
       undefined,
       {
         miner_fee: '',
@@ -54,7 +55,7 @@ export class LoopHttpClient {
     );
   };
 
-  getLoopOut = (args: T.GetLoopOutArguments) => {
+  loopOut = (args: T.GetLoopOutArguments) => {
     return this.request<T.GetLoopResponse, T.GetLoopOutArguments>(
       'POST',
       '/v1/loop/out',
@@ -62,7 +63,7 @@ export class LoopHttpClient {
     );
   };
 
-  getLoopIn = (args: T.GetLoopInArguments) => {
+  loopIn = (args: T.GetLoopInArguments) => {
     return this.request<T.GetLoopResponse, T.GetLoopInArguments>(
       'POST',
       '/v1/loop/in',

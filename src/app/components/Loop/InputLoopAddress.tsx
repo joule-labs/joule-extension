@@ -7,6 +7,7 @@ import { setLoop, setLoopIn } from 'modules/loop/actions';
 
 interface Props {
   initialUrl?: string | null;
+  isCheckingLoop: boolean;
   error: Error | null;
   setLoop: typeof setLoop;
   setLoopIn: typeof setLoopIn;
@@ -28,22 +29,19 @@ export default class InputLoopAddress extends React.Component<Props, State> {
 
   componentDidUpdate(nextProps: Props) {
     // Handle errors for incorrect URL
-    const { error, initialUrl } = this.props;
+    const { error } = this.props;
     if (error !== null && nextProps.error === null) {
       message.error(`Error setting URL!`, 2);
-    }
-    if (initialUrl !== null && nextProps.initialUrl === null) {
-      message.success(`Loop URL set successfully!`, 2);
     }
   }
 
   render() {
     const { validation, url } = this.state;
-    const { type } = this.props;
+    const { isCheckingLoop } = this.props;
     const validateStatus = url ? (validation ? 'error' : 'success') : undefined;
     return (
       <Form className="InputLoopAddress" onSubmit={this.handleSubmit} layout="vertical">
-        <Form.Item label={`${type} URL`} validateStatus={validateStatus}>
+        <Form.Item label={`Loop URL`} validateStatus={validateStatus}>
           <Input
             type="url"
             size="small"
@@ -54,8 +52,15 @@ export default class InputLoopAddress extends React.Component<Props, State> {
           />
         </Form.Item>
 
-        <Button type="primary" size="large" htmlType="submit" disabled={!url} block>
-          {`Set ${type} URL`}
+        <Button
+          type="primary"
+          size="large"
+          htmlType="submit"
+          disabled={!url}
+          loading={isCheckingLoop}
+          block
+        >
+          {`Set Loop URL`}
         </Button>
       </Form>
     );
@@ -86,9 +91,8 @@ export default class InputLoopAddress extends React.Component<Props, State> {
           message.warn('Permission denied, connection may fail');
         }
         this.setState({ submittedUrl: url });
-        loop.type === 'Loop Out'
-          ? loop.setLoop(this.state.url)
-          : loop.setLoopIn(this.state.url);
+        loop.setLoop(url);
+        loop.setLoopIn(url);
       });
   };
 }
