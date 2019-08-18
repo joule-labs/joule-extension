@@ -108,24 +108,6 @@ export default function loopReducers(
         error: action.payload,
       };
     // handle loop in actions
-    case types.SET_LOOP_IN:
-      return {
-        ...state,
-        error: null,
-      };
-    case types.SET_LOOP_IN_SUCCESS:
-      return {
-        ...state,
-        url: action.payload,
-        lib: new LoopHttpClient(action.payload),
-        error: null,
-      };
-    case types.SET_LOOP_IN_FAILURE:
-      return {
-        ...state,
-        error: action.payload,
-        lib: null,
-      };
     case types.GET_LOOP_IN_TERMS_SUCCESS:
       return {
         ...state,

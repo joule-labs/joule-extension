@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
-import { setLoop, setLoopIn } from 'modules/loop/actions';
+import { setLoop } from 'modules/loop/actions';
 import { ButtonProps } from 'antd/lib/button';
 import {
   Menu,
@@ -37,7 +37,6 @@ interface StateProps {
 
 interface DispatchProps {
   setLoop: typeof setLoop;
-  setLoopIn: typeof setLoopIn;
 }
 
 interface State {
@@ -79,7 +78,6 @@ class Loop extends React.Component<Props> {
     const loopUrl = this.props.url;
     if (loopUrl !== null) {
       this.props.setLoop(loopUrl);
-      this.props.setLoopIn(loopUrl);
     }
   }
   render() {
@@ -190,7 +188,6 @@ class Loop extends React.Component<Props> {
           {url === null && (
             <InputLoopAddress
               setLoop={this.props.setLoop}
-              setLoopIn={this.props.setLoopIn}
               isCheckingLoop={isCheckingLoop}
               error={error}
               initialUrl={this.props.url}
@@ -393,6 +390,5 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
   }),
   {
     setLoop,
-    setLoopIn,
   },
 )(Loop);

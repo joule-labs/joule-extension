@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call, put } from 'redux-saga/effects';
+import { takeLatest, select, call, all, put } from 'redux-saga/effects';
 import { selectLoopLibOrThrow } from 'modules/loop/selectors';
 import types from './types';
 import * as actions from './actions';
@@ -11,10 +11,14 @@ export function* handleSetLoopOut(
   action: ReturnType<typeof actions.setLoop>,
 ): SagaIterator {
   const url = action.payload;
-  let loopTermsPayload;
+  let loopOutTermsPayload;
+  let loopInTermsPayload;
   try {
     const client = new LoopHttpClient(url);
-    loopTermsPayload = yield call(client.getLoopOutTerms);
+    [loopOutTermsPayload, loopInTermsPayload] = yield all([
+      yield call(client.getLoopOutTerms),
+      yield call(client.getLoopInTerms),
+    ]);
   } catch (err) {
     yield put({ type: types.SET_LOOP_FAILURE, payload: err });
     return;
@@ -25,29 +29,11 @@ export function* handleSetLoopOut(
   });
   yield put({
     type: types.GET_LOOP_OUT_TERMS_SUCCESS,
-    payload: loopTermsPayload,
-  });
-}
-
-export function* handleSetLoopIn(
-  action: ReturnType<typeof actions.setLoopIn>,
-): SagaIterator {
-  const url = action.payload;
-  let loopTermsPayload;
-  try {
-    const client = new LoopHttpClient(url);
-    loopTermsPayload = yield call(client.getLoopInTerms);
-  } catch (err) {
-    yield put({ type: types.SET_LOOP_IN_FAILURE, payload: err });
-    return;
-  }
-  yield put({
-    type: types.SET_LOOP_IN_SUCCESS,
-    payload: url,
+    payload: loopOutTermsPayload,
   });
   yield put({
     type: types.GET_LOOP_IN_TERMS_SUCCESS,
-    payload: loopTermsPayload,
+    payload: loopInTermsPayload,
   });
 }
 
@@ -137,7 +123,6 @@ export function* handleGetLoopIn(
 
 export default function* loopSagas(): SagaIterator {
   yield takeLatest(types.SET_LOOP, handleSetLoopOut);
-  yield takeLatest(types.SET_LOOP_IN, handleSetLoopIn);
   yield takeLatest(types.GET_LOOP_OUT_QUOTE, handleGetLoopOutQuote);
   yield takeLatest(types.GET_LOOP_IN_QUOTE, handleGetLoopInQuote);
   yield takeLatest(types.LOOP_OUT, handleGetLoopOut);

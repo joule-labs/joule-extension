@@ -3,14 +3,13 @@ import { browser } from 'webextension-polyfill-ts';
 import { Button, Form, Input, message } from 'antd';
 import { urlWithoutPort } from 'utils/formatters';
 import './InputLoopAddress.less';
-import { setLoop, setLoopIn } from 'modules/loop/actions';
+import { setLoop } from 'modules/loop/actions';
 
 interface Props {
   initialUrl?: string | null;
   isCheckingLoop: boolean;
   error: Error | null;
   setLoop: typeof setLoop;
-  setLoopIn: typeof setLoopIn;
   type: string;
 }
 
@@ -92,7 +91,6 @@ export default class InputLoopAddress extends React.Component<Props, State> {
         }
         this.setState({ submittedUrl: url });
         loop.setLoop(url);
-        loop.setLoopIn(url);
       });
   };
 }
