@@ -82,7 +82,7 @@ const routeConfigs: RouteConfig[] = [
       component: LoopPage,
     },
     template: {
-      title: 'Loop',
+      title: 'Lightning Loop',
       showBack: true,
     },
   },

@@ -40,7 +40,7 @@ export default class SettingsMenu extends React.Component<{}, State> {
         </Menu.Item>
         <Menu.Item key="loop">
           <Link to="/loop">
-            <Icon type="exclamation-circle" /> Loop
+            <Icon type="retweet" /> Loop In / Out
           </Link>
         </Menu.Item>
         <Menu.Divider />
