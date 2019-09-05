@@ -9,15 +9,19 @@ import { connect } from 'react-redux';
 
 interface StateProps {
   url: AppState['loop']['url'];
-  isCheckingLoop: AppState['loop']['isCheckingLoop'];
-  error: AppState['loop']['error'];
+  isCheckingUrl: AppState['loop']['isCheckingUrl'];
+  error: AppState['loop']['checkUrlError'];
 }
 
 interface DispatchProps {
   setLoop: typeof setLoop;
 }
 
-type Props = StateProps & DispatchProps;
+interface OwnProps {
+  onSubmitUrl(url: string): void;
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   url: string;
@@ -42,7 +46,7 @@ class LoopSetup extends React.Component<Props, State> {
 
   render() {
     const { validation, url } = this.state;
-    const { isCheckingLoop } = this.props;
+    const { isCheckingUrl } = this.props;
     const validateStatus = url ? (validation ? 'error' : 'success') : undefined;
     return (
       <div className="LoopSetup">
@@ -88,7 +92,7 @@ class LoopSetup extends React.Component<Props, State> {
             size="large"
             htmlType="submit"
             disabled={!url}
-            loading={isCheckingLoop}
+            loading={isCheckingUrl}
             block
           >
             Set Loop URL
@@ -131,8 +135,8 @@ class LoopSetup extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     url: state.loop.url,
-    isCheckingLoop: state.loop.isCheckingLoop,
-    error: state.loop.error,
+    isCheckingUrl: state.loop.isCheckingUrl,
+    error: state.loop.checkUrlError,
   }),
   { setLoop },
 )(LoopSetup);

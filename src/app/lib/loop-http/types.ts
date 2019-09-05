@@ -22,7 +22,7 @@ export interface GetLoopQuoteResponse {
   miner_fee: string;
 }
 
-export interface GetLoopOutArguments {
+export interface LoopOutArguments {
   amt: string;
   dest: string;
   max_swap_routing_fee: string | null;
@@ -34,7 +34,7 @@ export interface GetLoopOutArguments {
   sweep_conf_target: string;
 }
 
-export interface GetLoopInArguments {
+export interface LoopInArguments {
   amt: string;
   max_swap_fee: string | null;
   max_miner_fee: string | null;
@@ -42,7 +42,7 @@ export interface GetLoopInArguments {
   external_htlc: boolean;
 }
 
-export interface GetLoopResponse {
+export interface LoopResponse {
   id: string;
   htlc_address: string;
 }

@@ -1,26 +1,38 @@
 import types from './types';
-import { GetLoopOutArguments, GetLoopInArguments } from 'lib/loop-http/types';
+import { LoopOutArguments, LoopInArguments } from 'lib/loop-http/types';
 import { selectSyncedLoopState } from './selectors';
 import LoopHttpClient from 'lib/loop-http';
 
 export function setLoop(url: string) {
-  return { type: types.SET_LOOP, payload: url };
+  return { type: types.SET_LOOP_URL, payload: url };
 }
 
-export function getLoopOutQuote(amt: string, conf: string) {
-  return { type: types.GET_LOOP_OUT_QUOTE, payload: amt, conf };
+export function getLoopOutTerms() {
+  return { type: types.GET_LOOP_OUT_TERMS };
 }
 
-export function getLoopInQuote(amt: string /*, conf: string*/) {
-  return { type: types.GET_LOOP_IN_QUOTE, payload: amt /*, conf*/ };
+export function getLoopInTerms() {
+  return { type: types.GET_LOOP_IN_TERMS };
 }
 
-export function getLoopOut(payload: GetLoopOutArguments) {
+export function getLoopOutQuote(amt: string | number) {
+  return { type: types.GET_LOOP_OUT_QUOTE, payload: amt };
+}
+
+export function getLoopInQuote(amt: string | number) {
+  return { type: types.GET_LOOP_IN_QUOTE, payload: amt };
+}
+
+export function loopOut(payload: LoopOutArguments) {
   return { type: types.LOOP_OUT, payload };
 }
 
-export function getLoopIn(payload: GetLoopInArguments) {
+export function loopIn(payload: LoopInArguments) {
   return { type: types.LOOP_IN, payload };
+}
+
+export function resetLoop() {
+  return { type: types.RESET_LOOP };
 }
 
 export function setSyncedLoopState(payload: ReturnType<typeof selectSyncedLoopState>) {
@@ -29,7 +41,7 @@ export function setSyncedLoopState(payload: ReturnType<typeof selectSyncedLoopSt
     type: types.SYNC_LOOP_STATE,
     payload: {
       url,
-      loop: url ? new LoopHttpClient(url as string) : null,
+      lib: url ? new LoopHttpClient(url as string) : null,
     },
   };
 }

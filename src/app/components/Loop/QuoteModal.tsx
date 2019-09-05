@@ -1,31 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, message } from 'antd';
+import { Modal } from 'antd';
 import { AppState } from 'store/reducers';
-import { getLoopOutQuote, getLoopOut, getLoopIn } from 'modules/loop/actions';
+import { getLoopOutQuote, loopOut, loopIn, getLoopInQuote } from 'modules/loop/actions';
 import { Button, Icon, Alert } from 'antd';
-import { ButtonProps } from 'antd/lib/button';
-import { GetLoopOutArguments, GetLoopInArguments } from 'lib/loop-http/types';
+import { LoopOutArguments, LoopInArguments } from 'lib/loop-http/types';
 import { LOOP_TYPE } from 'utils/constants';
+import Loader from 'components/Loader';
+import DetailsTable from 'components/DetailsTable';
+import './QuoteModal.less';
 
 interface StateProps {
-  loopQuote: AppState['loop']['loopQuote'];
-  loop: AppState['loop']['loop'];
-  error: AppState['loop']['error'];
-  hasPassword: boolean;
+  out: AppState['loop']['out'];
+  in: AppState['loop']['in'];
 }
 
 interface DispatchProps {
   getLoopOutQuote: typeof getLoopOutQuote;
-  getLoopOut: typeof getLoopOut;
-  getLoopIn: typeof getLoopIn;
+  getLoopInQuote: typeof getLoopInQuote;
+  loopOut: typeof loopOut;
+  loopIn: typeof loopIn;
 }
 
 interface OwnProps {
+  loopType: LOOP_TYPE;
   amount: string;
   sweepConfirmationTarget: string;
   isOpen?: boolean;
-  type: string;
   destination: string;
   swapFee: string;
   minerFee: string;
@@ -34,158 +35,185 @@ interface OwnProps {
   advanced: boolean;
   htlc: boolean;
   onClose(): void;
+  onComplete(): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
 
 class QuoteModal extends React.Component<Props> {
   componentWillUpdate(nextProps: Props) {
-    if (!this.props.isOpen && nextProps.isOpen) {
-      // Fire even if amt is in store in case we need to cycle
-      this.props.getLoopOutQuote(this.props.amount, this.props.sweepConfirmationTarget);
+    const p = this.props;
+    if (!p.isOpen && nextProps.isOpen) {
+      const action =
+        p.loopType === LOOP_TYPE.LOOP_OUT ? p.getLoopOutQuote : p.getLoopInQuote;
+      action(p.amount);
     }
   }
   render() {
     const {
-      loopQuote,
+      loopType,
       amount,
       sweepConfirmationTarget,
       isOpen,
       onClose,
-      type,
-      hasPassword,
-      error,
+      onComplete,
     } = this.props;
-    if (!loopQuote) {
-      return null;
-    }
-    const actions: ButtonProps[] = [
-      {
-        children: (
-          <>
-            <Icon type="lightning" theme="filled" /> {`${type}`}
-          </>
-        ),
-        type: 'primary' as any,
-      },
-    ];
-    const isVisible = !!isOpen && !!(hasPassword || error);
+
+    const isOut = loopType === LOOP_TYPE.LOOP_OUT;
+    const loop = isOut ? this.props.out : this.props.in;
+    console.log(loop, 'loop');
 
     let content;
-    if (loopQuote.miner_fee !== '') {
+    if (loop.isFetchingTerms || loop.isLooping) {
       content = (
-        <div className="QuoteModal">
-          <p>{`Miner fee: ${loopQuote.miner_fee} sats`}</p>
-          <p>{`Prepay amt: ${
-            loopQuote.prepay_amt === undefined ? '1337' : loopQuote.prepay_amt
-          } sats`}</p>
-          <p>{`Swap fee: ${loopQuote.swap_fee} sats`}</p>
-          <p>{`Swap amt: ${amount} sats`}</p>
-          <p>{`Sweep Conf. Target: ${sweepConfirmationTarget}`}</p>
-          {actions.map((props, idx) => (
-            <Button
-              key={idx}
-              {...props}
-              onClick={
-                this.props.type === LOOP_TYPE.LOOP_OUT ? this.loopOut : this.loopIn
-              }
-            />
-          ))}
+        <div className="QuoteModal-loader">
+          <Loader />
         </div>
       );
-    } else if (error) {
+    } else if (loop.fetchQuoteError) {
       content = (
         <Alert
           type="error"
           message="Failed to get quote"
-          description={error.message}
+          description={loop.fetchQuoteError.message}
           showIcon
         />
       );
+    } else if (loop.loopError) {
+      content = (
+        <Alert
+          type="error"
+          message="Failed to start loop"
+          description={loop.loopError.message}
+          showIcon
+        />
+      );
+    } else if (loop.loopReceipt) {
+      const details = [
+        {
+          label: 'Loop ID',
+          value: loop.loopReceipt.id,
+        },
+        {
+          label: 'HTLC Address',
+          value: loop.loopReceipt.htlc_address,
+        },
+      ];
+      content = (
+        <>
+          <h2>Your loop has been submitted</h2>
+          <DetailsTable details={details} />
+          <p>
+            It will take some time for the on-chain transactions to show up, so don't
+            worry if your balances don't seem correct for the next few hours.
+          </p>
+          <Button type="primary" size="large" onClick={onComplete}>
+            OK
+          </Button>
+        </>
+      );
+    } else if (loop.quote) {
+      const details = [
+        {
+          label: 'Miner fee',
+          value: `${loop.quote.miner_fee} sats`,
+        },
+        {
+          label: 'Prepay amount',
+          value: `${loop.quote.prepay_amt} sats`,
+        },
+        {
+          label: 'Swap fee',
+          value: `${loop.quote.swap_fee} sats`,
+        },
+        {
+          label: 'Swap amount',
+          value: `${amount} sats`,
+        },
+        {
+          label: 'Sweep conf. target',
+          value: `${sweepConfirmationTarget} blocks`,
+        },
+      ];
+      content = (
+        <>
+          <DetailsTable details={details} />
+          <div className="QuoteModal-buttons">
+            <Button
+              size="large"
+              type="primary"
+              onClick={isOut ? this.loopOut : this.loopIn}
+            >
+              <Icon type="lightning" theme="filled" /> Start loop
+            </Button>
+          </div>
+        </>
+      );
     }
+
     return (
       <Modal
-        title={`${type} Quote`}
-        visible={isVisible}
+        title="Loop Quote"
+        visible={isOpen}
         onCancel={onClose}
-        okButtonProps={{ style: { display: 'none' } }}
+        footer={null}
+        closable={!loop.isLooping && !loop.loopReceipt}
         centered
       >
-        <div className="QuoteModal-content">{content}</div>
+        <div className="QuoteModal">{content}</div>
       </Modal>
     );
   }
 
   private loopOut = () => {
-    // get values from loopOutQuote for default loopOut
-    const loopOutQuote = this.props.loopQuote;
-    const loopOut = this.props.loop;
-    const { advanced, minerFee, prepayAmount, swapFee } = this.props;
-    if (!loopOutQuote) {
+    const p = this.props;
+    const { quote } = p.out;
+    if (!quote) {
       return null;
     }
-    if (!loopOut) {
-      return null;
-    }
-    const req: GetLoopOutArguments = {
-      amt: this.props.amount,
-      dest: this.props.destination,
-      loop_out_channel: this.props.channel,
-      max_miner_fee: advanced ? minerFee : loopOutQuote.miner_fee,
-      max_prepay_amt: advanced ? prepayAmount : loopOutQuote.prepay_amt,
-      max_prepay_routing_fee: advanced ? prepayAmount : loopOutQuote.prepay_amt,
-      max_swap_fee: advanced ? swapFee : loopOutQuote.swap_fee,
-      max_swap_routing_fee: advanced ? swapFee : loopOutQuote.swap_fee,
-      sweep_conf_target: this.props.sweepConfirmationTarget,
+
+    const req: LoopOutArguments = {
+      amt: p.amount,
+      dest: p.destination,
+      loop_out_channel: p.channel,
+      max_miner_fee: p.advanced ? p.minerFee : quote.miner_fee,
+      max_prepay_amt: p.advanced ? p.prepayAmount : quote.prepay_amt,
+      max_prepay_routing_fee: p.advanced ? p.prepayAmount : quote.prepay_amt,
+      max_swap_fee: p.advanced ? p.swapFee : quote.swap_fee,
+      max_swap_routing_fee: p.advanced ? p.swapFee : quote.swap_fee,
+      sweep_conf_target: p.sweepConfirmationTarget,
     };
-    this.props.getLoopOut(req);
-    setTimeout(() => {
-      message.info(`Attempting ${this.props.type}`, 2);
-    }, 1000);
-    setTimeout(() => {
-      this.props.onClose();
-    }, 3000);
+    p.loopOut(req);
   };
 
   private loopIn = () => {
     // get values from loopInQuote for default loopIn
-    const loopInQuote = this.props.loopQuote;
-    const loopIn = this.props.loop;
-    const { advanced, minerFee, swapFee } = this.props;
-    if (!loopInQuote) {
+    const p = this.props;
+    const { quote } = p.in;
+    if (!quote) {
       return null;
     }
-    if (!loopIn) {
-      return null;
-    }
-    const req: GetLoopInArguments = {
-      amt: this.props.amount,
-      loop_in_channel: this.props.channel,
-      max_miner_fee: advanced ? minerFee : loopInQuote.miner_fee,
-      max_swap_fee: advanced ? swapFee : loopInQuote.swap_fee,
-      external_htlc: this.props.htlc,
-    };
 
-    this.props.getLoopIn(req);
-    setTimeout(() => {
-      message.info(`Attempting ${this.props.type}`, 2);
-    }, 1000);
-    setTimeout(() => {
-      this.props.onClose();
-    }, 3000);
+    const req: LoopInArguments = {
+      amt: p.amount,
+      loop_in_channel: p.channel,
+      max_miner_fee: p.advanced ? p.minerFee : quote.miner_fee,
+      max_swap_fee: p.advanced ? p.swapFee : quote.swap_fee,
+      external_htlc: p.htlc,
+    };
+    this.props.loopIn(req);
   };
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
-    hasPassword: !!state.crypto.password,
-    loopQuote: state.loop.loopQuote,
-    loop: state.loop.loop,
-    error: state.loop.error,
+    out: state.loop.out,
+    in: state.loop.in,
   }),
   {
     getLoopOutQuote,
-    getLoopIn,
-    getLoopOut,
+    getLoopInQuote,
+    loopIn,
+    loopOut,
   },
 )(QuoteModal);

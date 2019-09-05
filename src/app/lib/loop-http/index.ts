@@ -2,6 +2,8 @@ import { stringify } from 'query-string';
 import { NetworkError } from './errors';
 import { parseLoopErrorResponse } from './utils';
 import * as T from './types';
+export * from './errors';
+export * from './types';
 
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -16,59 +18,57 @@ export class LoopHttpClient {
   // Public API methods
 
   getLoopOutTerms = () => {
-    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/out/terms`);
+    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/out/terms`, undefined, {
+      swap_fee_base: '0',
+      swap_fee_rate: '0',
+      prepay_amt: '0',
+      min_swap_amount: '0',
+      max_swap_amount: '0',
+    });
   };
 
   getLoopInTerms = () => {
-    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/in/terms`);
+    return this.request<T.GetLoopTermsResponse>('GET', `/v1/loop/in/terms`, undefined, {
+      swap_fee_base: '0',
+      swap_fee_rate: '0',
+      prepay_amt: '0',
+      min_swap_amount: '0',
+      max_swap_amount: '0',
+    });
   };
 
-  getLoopOutQuote = (amt: string, conf: string) => {
+  getLoopOutQuote = (amt: string, confTarget: number = 6) => {
     return this.request<T.GetLoopQuoteResponse, any>(
       'GET',
       `/v1/loop/out/quote/${amt}`,
-      { conf_target: conf },
+      { conf_target: confTarget },
       {
-        miner_fee: '',
-        swap_fee: '',
-        prepay_amt: '',
+        miner_fee: '0',
+        swap_fee: '0',
+        prepay_amt: '0',
       },
     );
   };
 
-  /**
-   * TODO: Add confirmation target as required
-   * in future iterations for Loop
-   */
-  getLoopInQuote = (amt: string /*, conf: string*/) => {
-    return this.request<T.GetLoopQuoteResponse>(
+  getLoopInQuote = (amt: string, confTarget: number = 6) => {
+    return this.request<T.GetLoopQuoteResponse, any>(
       'GET',
-      // `/v1/loop/out/quote/${amt}?conf_target=${conf}`,
       `/v1/loop/out/quote/${amt}`,
-      // {conf_target: conf}
-      undefined,
+      { conf_target: confTarget },
       {
-        miner_fee: '',
-        swap_fee: '',
-        prepay_amt: '',
+        miner_fee: '0',
+        swap_fee: '0',
+        prepay_amt: '0',
       },
     );
   };
 
-  loopOut = (args: T.GetLoopOutArguments) => {
-    return this.request<T.GetLoopResponse, T.GetLoopOutArguments>(
-      'POST',
-      '/v1/loop/out',
-      args,
-    );
+  loopOut = (args: T.LoopOutArguments) => {
+    return this.request<T.LoopResponse, T.LoopOutArguments>('POST', '/v1/loop/out', args);
   };
 
-  loopIn = (args: T.GetLoopInArguments) => {
-    return this.request<T.GetLoopResponse, T.GetLoopInArguments>(
-      'POST',
-      '/v1/loop/in',
-      args,
-    );
+  loopIn = (args: T.LoopInArguments) => {
+    return this.request<T.LoopResponse, T.LoopInArguments>('POST', '/v1/loop/in', args);
   };
 
   // Internal fetch function

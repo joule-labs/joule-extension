@@ -6,125 +6,104 @@ import * as actions from './actions';
 import LoopHttpClient from '../../lib/loop-http';
 import { requirePassword } from 'modules/crypto/sagas';
 
-// Setup Loop URL and Loop Terms
-export function* handleSetLoopOut(
+// Setup Loop URL and make a request to check that it works
+export function* handleSetLoopURL(
   action: ReturnType<typeof actions.setLoop>,
 ): SagaIterator {
   const url = action.payload;
-  let loopOutTermsPayload;
-  let loopInTermsPayload;
+  let loopOutTermsPayload: Yielded<LoopHttpClient['getLoopOutTerms']>;
+
   try {
     const client = new LoopHttpClient(url);
-    [loopOutTermsPayload, loopInTermsPayload] = yield all([
-      yield call(client.getLoopOutTerms),
-      yield call(client.getLoopInTerms),
-    ]);
+    loopOutTermsPayload = yield call(client.getLoopOutTerms);
   } catch (err) {
-    yield put({ type: types.SET_LOOP_FAILURE, payload: err });
+    yield put({ type: types.SET_LOOP_URL_FAILURE, payload: err });
     return;
   }
   yield put({
-    type: types.SET_LOOP_SUCCESS,
+    type: types.SET_LOOP_URL_SUCCESS,
     payload: url,
   });
   yield put({
     type: types.GET_LOOP_OUT_TERMS_SUCCESS,
     payload: loopOutTermsPayload,
   });
-  yield put({
-    type: types.GET_LOOP_IN_TERMS_SUCCESS,
-    payload: loopInTermsPayload,
-  });
 }
 
-export function* handleGetLoopOutQuote(
-  action: ReturnType<typeof actions.getLoopOutQuote>,
+export function* handleGetLoopTerms(
+  action: ReturnType<typeof actions.getLoopOutQuote | typeof actions.getLoopInQuote>,
 ): SagaIterator {
-  const amt = action.payload;
-  const conf = action.payload;
-  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
-  let loopQuote: Yielded<typeof loopLib.getLoopOutQuote> | undefined;
+  const isOut = action.type === types.GET_LOOP_OUT_TERMS;
+  let type;
+  let payload;
+
+  try {
+    const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
+      selectLoopLibOrThrow,
+    );
+    const libCall = isOut ? loopLib.getLoopOutTerms : loopLib.getLoopInTerms;
+    payload = (yield call(libCall, action.payload)) as Yielded<typeof libCall>;
+    type = isOut ? types.GET_LOOP_OUT_TERMS_SUCCESS : types.GET_LOOP_IN_TERMS_SUCCESS;
+  } catch (err) {
+    payload = err;
+    type = isOut ? types.GET_LOOP_OUT_TERMS_FAILURE : types.GET_LOOP_IN_TERMS_FAILURE;
+  }
+
+  yield put({ type, payload });
+}
+
+export function* handleGetLoopQuote(
+  action: ReturnType<typeof actions.getLoopOutQuote | typeof actions.getLoopInQuote>,
+): SagaIterator {
+  const isOut = action.type === types.GET_LOOP_OUT_QUOTE;
+  let type;
+  let payload;
+
+  try {
+    const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
+      selectLoopLibOrThrow,
+    );
+    const libCall = isOut ? loopLib.getLoopOutQuote : loopLib.getLoopInQuote;
+    payload = (yield call(libCall, action.payload)) as Yielded<typeof libCall>;
+    type = isOut ? types.GET_LOOP_OUT_QUOTE_SUCCESS : types.GET_LOOP_IN_QUOTE_SUCCESS;
+  } catch (err) {
+    payload = err;
+    type = isOut ? types.GET_LOOP_OUT_QUOTE_FAILURE : types.GET_LOOP_IN_QUOTE_FAILURE;
+  }
+
+  yield put({ type, payload });
+}
+
+export function* handleLoop(
+  action: ReturnType<typeof actions.loopOut | typeof actions.loopIn>,
+): SagaIterator {
+  const isOut = action.type === types.LOOP_OUT;
+  let type;
+  let payload;
+
   try {
     yield call(requirePassword);
-    loopLib = yield select(selectLoopLibOrThrow);
-    loopQuote = (yield call(loopLib.getLoopOutQuote, amt, conf)) as Yielded<
-      typeof loopLib.getLoopOutQuote
-    >;
+    const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
+      selectLoopLibOrThrow,
+    );
+    const libCall = isOut ? loopLib.loopOut : loopLib.loopIn;
+    payload = (yield call(libCall as any, action.payload)) as Yielded<typeof libCall>;
+    type = isOut ? types.LOOP_OUT_SUCCESS : types.LOOP_IN_SUCCESS;
   } catch (err) {
-    yield put({ type: types.GET_LOOP_OUT_QUOTE_FAILURE, payload: err });
-    return;
-  }
-  yield put({
-    type: types.GET_LOOP_OUT_QUOTE_SUCCESS,
-    payload: loopQuote,
-  });
-}
-
-export function* handleGetLoopInQuote(
-  action: ReturnType<typeof actions.getLoopInQuote>,
-): SagaIterator {
-  const amt = action.payload;
-  /*const conf = action.payload;*/
-  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
-  let loopQuote: Yielded<typeof loopLib.getLoopInQuote> | undefined;
-  try {
-    yield call(requirePassword);
-    loopLib = yield select(selectLoopLibOrThrow);
-    loopQuote = (yield call(loopLib.getLoopInQuote, amt /*, conf*/)) as Yielded<
-      typeof loopLib.getLoopInQuote
-    >;
-  } catch (err) {
-    yield put({ type: types.GET_LOOP_IN_QUOTE_FAILURE, payload: err });
-    return;
-  }
-  yield put({
-    type: types.GET_LOOP_IN_QUOTE_SUCCESS,
-    payload: loopQuote,
-  });
-}
-
-export function* handleGetLoopOut(
-  action: ReturnType<typeof actions.getLoopOut>,
-): SagaIterator {
-  const payload = action.payload;
-  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
-  let loopOut: Yielded<typeof loopLib.loopOut> | undefined;
-  try {
-    loopLib = yield select(selectLoopLibOrThrow);
-    loopOut = (yield call(loopLib.loopOut, payload)) as Yielded<typeof loopLib.loopOut>;
-  } catch (err) {
+    type = isOut ? types.LOOP_OUT_FAILURE : types.LOOP_IN_FAILURE;
     yield put({ type: types.LOOP_OUT_FAILURE, payload: err });
     return;
   }
-  yield put({
-    type: types.LOOP_OUT_SUCCESS,
-    payload: loopOut,
-  });
-}
 
-export function* handleGetLoopIn(
-  action: ReturnType<typeof actions.getLoopIn>,
-): SagaIterator {
-  const payload = action.payload;
-  let loopLib: Yielded<typeof selectLoopLibOrThrow>;
-  let loopIn: Yielded<typeof loopLib.loopIn> | undefined;
-  try {
-    loopLib = yield select(selectLoopLibOrThrow);
-    loopIn = (yield call(loopLib.loopIn, payload)) as Yielded<typeof loopLib.loopIn>;
-  } catch (err) {
-    yield put({ type: types.LOOP_IN_FAILURE, payload: err });
-    return;
-  }
-  yield put({
-    type: types.LOOP_IN_SUCCESS,
-    payload: loopIn,
-  });
+  yield put({ type, payload });
 }
 
 export default function* loopSagas(): SagaIterator {
-  yield takeLatest(types.SET_LOOP, handleSetLoopOut);
-  yield takeLatest(types.GET_LOOP_OUT_QUOTE, handleGetLoopOutQuote);
-  yield takeLatest(types.GET_LOOP_IN_QUOTE, handleGetLoopInQuote);
-  yield takeLatest(types.LOOP_OUT, handleGetLoopOut);
-  yield takeLatest(types.LOOP_IN, handleGetLoopIn);
+  yield takeLatest(types.SET_LOOP_URL, handleSetLoopURL);
+  yield takeLatest(types.GET_LOOP_OUT_TERMS, handleGetLoopTerms);
+  yield takeLatest(types.GET_LOOP_IN_TERMS, handleGetLoopTerms);
+  yield takeLatest(types.GET_LOOP_OUT_QUOTE, handleGetLoopQuote);
+  yield takeLatest(types.GET_LOOP_IN_QUOTE, handleGetLoopQuote);
+  yield takeLatest(types.LOOP_OUT, handleLoop);
+  yield takeLatest(types.LOOP_IN, handleLoop);
 }

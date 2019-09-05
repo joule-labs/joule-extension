@@ -59,11 +59,7 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     encrypted: false,
     selector: selectSyncedLoopState,
     action: setSyncedLoopState,
-    triggerActions: [
-      loopTypes.SET_LOOP,
-      loopTypes.GET_LOOP_IN_TERMS_SUCCESS,
-      loopTypes.GET_LOOP_OUT_TERMS_SUCCESS,
-    ],
+    triggerActions: [loopTypes.SET_LOOP_URL_SUCCESS],
   },
   {
     key: 'node-unencrypted',

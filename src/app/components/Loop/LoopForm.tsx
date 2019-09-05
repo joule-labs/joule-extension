@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
 import './index.less';
-import { ButtonProps } from 'antd/lib/button';
 import {
   Menu,
   Select,
@@ -18,22 +17,43 @@ import {
 const { Panel } = Collapse;
 import AmountField from 'components/AmountField';
 import QuoteModal from './QuoteModal';
-import { ChannelWithNode } from 'modules/channels/types';
+import { getChannels } from 'modules/channels/actions';
+import { OpenChannelWithNode } from 'modules/channels/types';
+import {
+  getLoopOutQuote,
+  getLoopInQuote,
+  getLoopOutTerms,
+  getLoopInTerms,
+  resetLoop,
+} from 'modules/loop/actions';
 import { LOOP_TYPE } from 'utils/constants';
+import { CHANNEL_STATUS } from 'lib/lnd-http';
+import Loader from 'components/Loader';
+import BigMessage from 'components/BigMessage';
+import { RadioChangeEvent } from 'antd/lib/radio';
 
 interface StateProps {
   channels: AppState['channels']['channels'];
-  isCheckingLoop: AppState['loop']['isCheckingLoop'];
   url: AppState['loop']['url'];
   lib: AppState['loop']['lib'];
-  loopOutTerms: AppState['loop']['loopOutTerms'];
-  loopInTerms: AppState['loop']['loopInTerms'];
-  loopQuote: AppState['loop']['loopQuote'];
-  loop: AppState['loop']['loop'];
-  error: AppState['loop']['error'];
+  loopOut: AppState['loop']['out'];
+  loopIn: AppState['loop']['in'];
 }
 
-type Props = StateProps;
+interface DispatchProps {
+  getChannels: typeof getChannels;
+  getLoopOutTerms: typeof getLoopOutTerms;
+  getLoopInTerms: typeof getLoopInTerms;
+  getLoopOutQuote: typeof getLoopOutQuote;
+  getLoopInQuote: typeof getLoopInQuote;
+  resetLoop: typeof resetLoop;
+}
+
+interface OwnProps {
+  changeUrl(): void;
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {
   amount: string;
@@ -47,7 +67,7 @@ interface State {
   conf: string;
   htlc: boolean;
   quoteModalIsOpen: boolean;
-  loopType: string;
+  loopType: LOOP_TYPE;
 }
 
 const INITIAL_STATE = {
@@ -68,45 +88,24 @@ const INITIAL_STATE = {
 class LoopForm extends React.Component<Props> {
   state: State = { ...INITIAL_STATE };
 
-  render() {
-    const { loopOutTerms, loopInTerms, channels } = this.props;
-
-    if (!channels || !loopOutTerms || !loopInTerms) {
-      return null;
+  componentDidMount() {
+    if (!this.props.channels) {
+      this.props.getChannels();
     }
+    this.componentDidUpdate();
+  }
 
-    // Only return channels with enough loot for looping out
-    const openChannelsLoopOut = channels.filter(
-      o =>
-        o.status === 'OPEN' &&
-        parseInt(o.local_balance, 10) > parseInt(loopOutTerms.min_swap_amount, 10),
-    );
-    // Only return channels with enough loot for looping in
-    const openChannelsLoopIn = channels.filter(
-      o =>
-        o.status === 'OPEN' &&
-        parseInt(o.capacity, 10) - parseInt(o.local_balance, 10) >
-          parseInt(loopInTerms.min_swap_amount, 10),
-    );
+  componentDidUpdate() {
+    const isOut = this.state.loopType === LOOP_TYPE.LOOP_OUT;
+    const loop = isOut ? this.props.loopOut : this.props.loopIn;
+    const getTerms = isOut ? this.props.getLoopOutTerms : this.props.getLoopInTerms;
+    if (!loop.terms && !loop.isFetchingTerms && !loop.fetchTermsError) {
+      getTerms();
+    }
+  }
 
-    // Get channels to choose from
-    const loopOutItems = openChannelsLoopOut.map(c => (
-      <Menu.Item
-        key={c.channel_point}
-        onClick={() => this.handleSetChannelId(c.channel_point, openChannelsLoopOut)}
-      >
-        {`${c.node.alias} => ${c.local_balance} sats available`}
-      </Menu.Item>
-    ));
-    const loopInItems = openChannelsLoopIn.map(c => (
-      <Menu.Item
-        key={c.channel_point}
-        onClick={() => this.handleSetChannelId(c.channel_point, openChannelsLoopIn)}
-      >
-        {`${c.node.alias} => ${c.local_balance} sats available`}
-      </Menu.Item>
-    ));
-
+  render() {
+    const { loopOut, loopIn, channels } = this.props;
     const {
       isAnyValue,
       amount,
@@ -122,190 +121,230 @@ class LoopForm extends React.Component<Props> {
       htlc,
     } = this.state;
 
-    const loopItems = loopType === LOOP_TYPE.LOOP_OUT ? loopOutItems : loopInItems;
-    const loopMenu = <Select defaultValue={'Select Channel'}>{loopItems}</Select>;
+    // Show things based on selected loop type
+    const isOut = loopType === LOOP_TYPE.LOOP_OUT;
+    const loop = isOut ? loopOut : loopIn;
+    let content;
 
-    const loopTerms = loopType === LOOP_TYPE.LOOP_OUT ? loopOutTerms : loopInTerms;
-    const loopTermsText = (
-      <>
-        <strong>Base Fee</strong> : {loopTerms.swap_fee_base} sats <br />
-        <strong>Fee Rate</strong> : {loopTerms.swap_fee_rate} sats <br />
-        <strong>Prepay Amount</strong> :{' '}
-        {loopTerms.prepay_amt === undefined ? '1337' : loopTerms.prepay_amt} sats <br />
-        <strong> Min Swap Amount</strong> : {loopTerms.min_swap_amount} sats <br />
-        <strong>Max Swap Amount</strong> : {loopTerms.max_swap_amount} sats <br />
-        <strong>CLTV Delta</strong> : {loopTerms.cltv_delta} blocks
-      </>
-    );
+    // Possible errors or loader states to show
+    if (channels && !channels.length) {
+      content = (
+        <BigMessage
+          type="error"
+          title="No channels to loop"
+          message={`
+            Looping requires you to have at least one chanel open. Try opening
+            a channel and coming back.
+          `}
+        />
+      );
+    } else if (loop.fetchTermsError) {
+      content = (
+        <BigMessage
+          type="error"
+          title="Failed to fetch terms"
+          message={`
+            The following error occured while fetching loop terms from the
+            loop server: "${loop.fetchTermsError.message}"
+          `}
+          button={{
+            children: 'Configure Loop server',
+            onClick: this.props.changeUrl,
+          }}
+        />
+      );
+    } else if (!channels) {
+      content = <Loader />;
+    } else if (!loop.terms) {
+      content = <Loader />;
+    } else {
+      // Only show open channels that can handle the minimum swap amount
+      const minSwapAmount = parseInt(loop.terms.min_swap_amount, 10);
+      const maxSwapAmount = parseInt(loop.terms.max_swap_amount, 10);
 
-    const actions: ButtonProps[] = [
-      {
-        children: (
-          <>
-            <Icon type="question-circle" theme="filled" /> {`${loopType} Quote`}
-          </>
-        ),
-        type: 'primary' as any,
-      },
-    ];
+      const openChannels = channels.filter(c => {
+        if (c.status !== CHANNEL_STATUS.OPEN) {
+          return false;
+        }
+        // Loop out needs local balance, loop in needs remote balance
+        return isOut
+          ? parseInt(c.local_balance, 10) > minSwapAmount
+          : parseInt(c.remote_balance, 10) > minSwapAmount;
+      }) as OpenChannelWithNode[];
 
-    if (loopTerms === null) {
-      return null;
+      const loopTermsText = (
+        <>
+          <strong>Base Fee</strong> : {loop.terms.swap_fee_base} sats <br />
+          <strong>Fee Rate</strong> : {loop.terms.swap_fee_rate} sats <br />
+          <strong>Prepay Amount</strong> : {loop.terms.prepay_amt} sats <br />
+          <strong> Min Swap Amount</strong> : {loop.terms.min_swap_amount} sats <br />
+          <strong>Max Swap Amount</strong> : {loop.terms.max_swap_amount} sats <br />
+          <strong>CLTV Delta</strong> : {loop.terms.cltv_delta} blocks
+        </>
+      );
+
+      const amountInt = parseInt(amount, 10);
+      const isQuoteDisabled =
+        !amount || amountInt < minSwapAmount || amountInt > maxSwapAmount;
+
+      content = (
+        <>
+          <div className="LoopForm-terms">
+            {loop.terms.swap_fee_base !== '' && (
+              <Collapse bordered={false} defaultActiveKey={['1']}>
+                <Panel header={`View ${loopType} Terms`} key="1">
+                  <p>{loopTermsText}</p>
+                </Panel>
+              </Collapse>
+            )}
+          </div>
+
+          <Button
+            className="LoopForm-advancedToggle"
+            onClick={this.toggleAdvanced}
+            type="primary"
+            ghost
+          >
+            {this.state.advanced ? 'Hide advanced fields' : 'Show advanced fields'}
+          </Button>
+
+          <Form className="LoopForm-form" layout="vertical">
+            <Form.Item>
+              <Select defaultValue="Select Channel">
+                {openChannels.map(c => (
+                  <Menu.Item
+                    key={c.chan_id}
+                    onClick={() => this.handleSetChannelId(c.chan_id)}
+                  >
+                    {`${c.node.alias} (${c.local_balance} sats available)`}
+                  </Menu.Item>
+                ))}
+              </Select>
+            </Form.Item>
+            <AmountField
+              label="Amount"
+              amount={amount}
+              required={!isAnyValue}
+              disabled={isAnyValue}
+              onChangeAmount={this.handleChangeAmount}
+              showFiat
+            />
+
+            <div className="Loop-actions">
+              <Button
+                type="primary"
+                onClick={this.openQuoteModal}
+                disabled={isQuoteDisabled}
+              >
+                <Icon type="question-circle" theme="filled" /> {`${loopType} Quote`}
+              </Button>
+            </div>
+
+            {advanced && (
+              <div className="LoopForm-advanced">
+                {isOut && (
+                  <Form.Item>
+                    <Input
+                      type="text"
+                      size="small"
+                      name={destination}
+                      onChange={this.handleChangeField}
+                      placeholder="Off-chain address"
+                      autoFocus
+                    />
+                  </Form.Item>
+                )}
+                <Form.Item>
+                  <Input
+                    width="50%"
+                    size="small"
+                    name={swapFee}
+                    onChange={this.handleChangeField}
+                    placeholder="Swap fee"
+                    autoFocus
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <Input
+                    size="small"
+                    name={minerFee}
+                    onChange={this.handleChangeField}
+                    placeholder="Miner fee"
+                    autoFocus
+                  />
+                </Form.Item>
+                {isOut && (
+                  <Form.Item>
+                    <Input
+                      size="small"
+                      name={prepayAmt}
+                      onChange={this.handleChangeField}
+                      placeholder="Prepay amount"
+                      autoFocus
+                    />
+                  </Form.Item>
+                )}
+                {isOut && (
+                  <Form.Item>
+                    <Input
+                      size="small"
+                      name={conf}
+                      onChange={this.handleChangeField}
+                      placeholder="Sweep conf. target"
+                      autoFocus
+                    />
+                  </Form.Item>
+                )}
+                {!isOut && (
+                  <span>
+                    <p>External HTLC?</p>
+                    <Form.Item>
+                      <Switch
+                        checkedChildren="true"
+                        unCheckedChildren="false"
+                        onChange={this.handleChangeHtlc}
+                      />
+                    </Form.Item>
+                  </span>
+                )}
+              </div>
+            )}
+          </Form>
+
+          <QuoteModal
+            isOpen={quoteModalIsOpen}
+            loopType={loopType}
+            amount={amount}
+            destination={destination}
+            swapFee={swapFee}
+            minerFee={minerFee}
+            prepayAmount={prepayAmt}
+            channel={channel}
+            advanced={advanced}
+            htlc={htlc}
+            sweepConfirmationTarget={conf}
+            onClose={this.closeQuoteModal}
+            onComplete={this.resetState}
+          />
+        </>
+      );
     }
 
     return (
       <div className="LoopForm">
         <div className="LoopForm-type">
-          <Radio.Group defaultValue="a" size="large">
-            <Radio.Button value="a" onClick={this.setLoopOutType}>
-              Loop Out
-            </Radio.Button>
-            <Radio.Button value="b" onClick={this.setLoopInType}>
-              Loop In
-            </Radio.Button>
+          <Radio.Group value={loopType} onChange={this.setLoopType} size="large">
+            <Radio.Button value={LOOP_TYPE.LOOP_OUT}>Loop Out</Radio.Button>
+            <Radio.Button value={LOOP_TYPE.LOOP_IN}>Loop In</Radio.Button>
           </Radio.Group>
         </div>
-        <div className="LoopForm-terms">
-          {loopTerms.swap_fee_base !== '' && (
-            <Collapse bordered={false} defaultActiveKey={['1']}>
-              <Panel header={`View ${loopType} Terms`} key="1">
-                <p>{loopTermsText}</p>
-              </Panel>
-            </Collapse>
-          )}
-        </div>
-
-        <Button
-          className="LoopForm-advancedToggle"
-          onClick={this.toggleAdvanced}
-          type="primary"
-          ghost
-        >
-          {this.state.advanced ? 'Hide advanced fields' : 'Show advanced fields'}
-        </Button>
-
-        <Form className="LoopForm-form" layout="vertical">
-          <Form.Item>{loopMenu}</Form.Item>
-          <AmountField
-            label="Amount"
-            amount={amount}
-            required={!isAnyValue}
-            disabled={isAnyValue}
-            onChangeAmount={this.handleChangeAmount}
-            showFiat
-          />
-          <div className="Loop-actions">
-            {/* Don't allow for quote until amount greater than min swap amount is entered and less than max swap amount*/}
-            {this.state.amount !== null &&
-              this.state.amount !== undefined &&
-              parseInt(this.state.amount, 10) > parseInt(loopTerms.min_swap_amount, 10) &&
-              parseInt(this.state.amount, 10) < parseInt(loopTerms.max_swap_amount, 10) &&
-              actions.map((props, idx) => (
-                <Button key={idx} {...props} onClick={this.openQuoteModal} />
-              ))}
-          </div>
-          {advanced && (
-            <div className="LoopForm-form-advanced">
-              {loopType === LOOP_TYPE.LOOP_OUT && (
-                <Form.Item>
-                  <Input
-                    type="text"
-                    size="small"
-                    name={destination}
-                    onChange={this.handleChangeField}
-                    placeholder="off-chain address"
-                    autoFocus
-                  />
-                </Form.Item>
-              )}
-              <Form.Item>
-                <Input
-                  width="50%"
-                  size="small"
-                  name={swapFee}
-                  onChange={this.handleChangeField}
-                  placeholder="swap fee"
-                  autoFocus
-                />
-              </Form.Item>
-              <Form.Item>
-                <Input
-                  size="small"
-                  name={minerFee}
-                  onChange={this.handleChangeField}
-                  placeholder="miner fee"
-                  autoFocus
-                />
-              </Form.Item>
-              {loopType === LOOP_TYPE.LOOP_OUT && (
-                <Form.Item>
-                  <Input
-                    size="small"
-                    name={prepayAmt}
-                    onChange={this.handleChangeField}
-                    placeholder="prepay amt"
-                    autoFocus
-                  />
-                </Form.Item>
-              )}
-              {loopType === LOOP_TYPE.LOOP_OUT && (
-                <Form.Item>
-                  <Input
-                    size="small"
-                    name={conf}
-                    onChange={this.handleChangeField}
-                    placeholder="sweep confirmation target"
-                    autoFocus
-                  />
-                </Form.Item>
-              )}
-              {loopType === LOOP_TYPE.LOOP_IN && (
-                <span>
-                  <p>External HTLC?</p>
-                  <Form.Item>
-                    <Switch
-                      checkedChildren="true"
-                      unCheckedChildren="false"
-                      onChange={this.handleChangeHtlc}
-                    />
-                  </Form.Item>
-                </span>
-              )}
-            </div>
-          )}
-        </Form>
-
-        <QuoteModal
-          amount={amount}
-          isOpen={quoteModalIsOpen}
-          onClose={this.openQuoteModal}
-          type={loopType}
-          destination={destination}
-          swapFee={swapFee}
-          minerFee={minerFee}
-          prepayAmount={prepayAmt}
-          channel={channel}
-          advanced={advanced}
-          htlc={htlc}
-          /**
-           * TODO update as needed for future iterations
-           * of loop
-           */
-          sweepConfirmationTarget={this.state.loopType === LOOP_TYPE.LOOP_OUT ? conf : ''}
-        />
+        {content}
       </div>
     );
   }
 
-  private handleSetChannelId(point: string, openChannels: ChannelWithNode[]) {
-    // Work-around to grab channel id and pass to Loop API
-    const match = openChannels.filter(id => id.channel_point === point);
-    const keys = Object.keys(match);
-    const jsonClone = JSON.parse(JSON.stringify(match));
-    const key = keys[0];
-    const channelId = jsonClone[key].chan_id;
-    message.success('Channel set successfully!');
-    this.setState({ channel: channelId });
+  private handleSetChannelId(channel: string) {
+    this.setState({ channel });
   }
 
   private handleChangeAmount = (amount: string) => {
@@ -316,29 +355,29 @@ class LoopForm extends React.Component<Props> {
     this.setState({ name: ev.currentTarget.value });
   };
 
-  private handleChangeHtlc = (checked: boolean) => {
-    this.setState({
-      htlc: checked,
-    });
+  private handleChangeHtlc = (htlc: boolean) => {
+    this.setState({ htlc });
   };
 
   private openQuoteModal = () => {
     if (this.state.channel === '') {
       message.warn('Please set Channel', 2);
     } else {
-      this.setState({
-        ...this.state,
-        quoteModalIsOpen: this.state.quoteModalIsOpen === false ? true : false,
-      });
+      this.setState({ quoteModalIsOpen: true });
     }
   };
 
-  private setLoopOutType = () => {
-    this.setState({ loopType: LOOP_TYPE.LOOP_OUT });
+  private closeQuoteModal = () => {
+    this.setState({ quoteModalIsOpen: false });
   };
 
-  private setLoopInType = () => {
-    this.setState({ loopType: LOOP_TYPE.LOOP_IN });
+  private resetState = () => {
+    this.props.resetLoop();
+    this.setState({ ...INITIAL_STATE });
+  };
+
+  private setLoopType = (ev: RadioChangeEvent) => {
+    this.setState({ loopType: ev.target.value });
   };
 
   private toggleAdvanced = () => {
@@ -346,14 +385,20 @@ class LoopForm extends React.Component<Props> {
   };
 }
 
-export default connect<StateProps, {}, {}, AppState>(state => ({
-  channels: state.channels.channels,
-  isCheckingLoop: state.loop.isCheckingLoop,
-  url: state.loop.url,
-  lib: state.loop.lib,
-  loopOutTerms: state.loop.loopOutTerms,
-  loopInTerms: state.loop.loopInTerms,
-  loopQuote: state.loop.loopQuote,
-  loop: state.loop.loop,
-  error: state.loop.error,
-}))(LoopForm);
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(
+  state => ({
+    channels: state.channels.channels,
+    url: state.loop.url,
+    lib: state.loop.lib,
+    loopOut: state.loop.out,
+    loopIn: state.loop.in,
+  }),
+  {
+    getChannels,
+    getLoopOutTerms,
+    getLoopInTerms,
+    getLoopOutQuote,
+    getLoopInQuote,
+    resetLoop,
+  },
+)(LoopForm);
