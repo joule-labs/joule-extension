@@ -37,10 +37,10 @@ export class LoopHttpClient {
     });
   };
 
-  getLoopOutQuote = (amt: string, confTarget: number = 6) => {
+  getLoopOutQuote = (amount: number | string, confTarget: number | string = 6) => {
     return this.request<T.GetLoopQuoteResponse, any>(
       'GET',
-      `/v1/loop/out/quote/${amt}`,
+      `/v1/loop/out/quote/${amount}`,
       { conf_target: confTarget },
       {
         miner_fee: '0',
@@ -50,10 +50,10 @@ export class LoopHttpClient {
     );
   };
 
-  getLoopInQuote = (amt: string, confTarget: number = 6) => {
+  getLoopInQuote = (amount: number | string, confTarget: number | string = 6) => {
     return this.request<T.GetLoopQuoteResponse, any>(
       'GET',
-      `/v1/loop/out/quote/${amt}`,
+      `/v1/loop/out/quote/${amount}`,
       { conf_target: confTarget },
       {
         miner_fee: '0',

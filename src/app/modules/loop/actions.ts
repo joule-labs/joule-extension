@@ -15,12 +15,12 @@ export function getLoopInTerms() {
   return { type: types.GET_LOOP_IN_TERMS };
 }
 
-export function getLoopOutQuote(amt: string | number) {
-  return { type: types.GET_LOOP_OUT_QUOTE, payload: amt };
+export function getLoopOutQuote(amount: string | number, confTarget?: string | number) {
+  return { type: types.GET_LOOP_OUT_QUOTE, payload: { amount, confTarget } };
 }
 
-export function getLoopInQuote(amt: string | number) {
-  return { type: types.GET_LOOP_IN_QUOTE, payload: amt };
+export function getLoopInQuote(amount: string | number, confTarget?: string | number) {
+  return { type: types.GET_LOOP_IN_QUOTE, payload: { amount, confTarget } };
 }
 
 export function loopOut(payload: LoopOutArguments) {

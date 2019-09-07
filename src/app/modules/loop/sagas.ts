@@ -64,7 +64,11 @@ export function* handleGetLoopQuote(
       selectLoopLibOrThrow,
     );
     const libCall = isOut ? loopLib.getLoopOutQuote : loopLib.getLoopInQuote;
-    payload = (yield call(libCall, action.payload)) as Yielded<typeof libCall>;
+    payload = (yield call(
+      libCall,
+      action.payload.amount,
+      action.payload.confTarget,
+    )) as Yielded<typeof libCall>;
     type = isOut ? types.GET_LOOP_OUT_QUOTE_SUCCESS : types.GET_LOOP_IN_QUOTE_SUCCESS;
   } catch (err) {
     payload = err;

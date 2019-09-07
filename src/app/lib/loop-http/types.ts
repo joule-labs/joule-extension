@@ -24,22 +24,22 @@ export interface GetLoopQuoteResponse {
 
 export interface LoopOutArguments {
   amt: string;
-  dest: string;
-  max_swap_routing_fee: string | null;
-  max_prepay_routing_fee: string | null;
-  max_swap_fee: string | null;
-  max_prepay_amt: string | null;
-  max_miner_fee: string | null;
-  loop_out_channel: string;
-  sweep_conf_target: string;
+  dest?: string;
+  max_swap_routing_fee?: string;
+  max_prepay_routing_fee?: string;
+  max_swap_fee?: string;
+  max_prepay_amt?: string;
+  max_miner_fee?: string;
+  loop_out_channel?: string;
+  sweep_conf_target?: string;
 }
 
 export interface LoopInArguments {
   amt: string;
-  max_swap_fee: string | null;
-  max_miner_fee: string | null;
-  loop_in_channel: string;
-  external_htlc: boolean;
+  max_swap_fee?: string | null;
+  max_miner_fee?: string | null;
+  loop_in_channel?: string;
+  external_htlc?: boolean;
 }
 
 export interface LoopResponse {

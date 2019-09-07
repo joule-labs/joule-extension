@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'antd';
 import { AppState } from 'store/reducers';
 import { getLoopOutQuote, loopOut, loopIn, getLoopInQuote } from 'modules/loop/actions';
-import { Button, Icon, Alert } from 'antd';
+import { Button, Alert } from 'antd';
 import { LoopOutArguments, LoopInArguments } from 'lib/loop-http/types';
 import { LOOP_TYPE } from 'utils/constants';
 import Loader from 'components/Loader';
@@ -25,15 +25,14 @@ interface DispatchProps {
 interface OwnProps {
   loopType: LOOP_TYPE;
   amount: string;
-  sweepConfirmationTarget: string;
+  channel?: string;
   isOpen?: boolean;
-  destination: string;
-  swapFee: string;
-  minerFee: string;
-  prepayAmount: string;
-  channel: string;
-  advanced: boolean;
-  htlc: boolean;
+  destination?: string;
+  maxSwapFee?: string;
+  maxMinerFee?: string;
+  maxPrepayAmount?: string;
+  sweepConfirmationTarget?: string;
+  htlc?: boolean;
   onClose(): void;
   onComplete(): void;
 }
@@ -46,22 +45,15 @@ class QuoteModal extends React.Component<Props> {
     if (!p.isOpen && nextProps.isOpen) {
       const action =
         p.loopType === LOOP_TYPE.LOOP_OUT ? p.getLoopOutQuote : p.getLoopInQuote;
-      action(p.amount);
+      action(p.amount, p.sweepConfirmationTarget);
     }
   }
+
   render() {
-    const {
-      loopType,
-      amount,
-      sweepConfirmationTarget,
-      isOpen,
-      onClose,
-      onComplete,
-    } = this.props;
+    const { loopType, amount, isOpen, onClose, onComplete } = this.props;
 
     const isOut = loopType === LOOP_TYPE.LOOP_OUT;
     const loop = isOut ? this.props.out : this.props.in;
-    console.log(loop, 'loop');
 
     let content;
     if (loop.isFetchingTerms || loop.isLooping) {
@@ -113,26 +105,37 @@ class QuoteModal extends React.Component<Props> {
         </>
       );
     } else if (loop.quote) {
+      const totalFees =
+        parseInt(loop.quote.miner_fee, 10) + parseInt(loop.quote.swap_fee, 10);
       const details = [
         {
-          label: 'Miner fee',
-          value: `${loop.quote.miner_fee} sats`,
-        },
-        {
-          label: 'Prepay amount',
-          value: `${loop.quote.prepay_amt} sats`,
+          label: 'Miner fee (Estimate)',
+          value: `~${loop.quote.miner_fee} sats`,
+          help: `
+            Amount in on-chain fees to do the loop. Miner fees may be more
+            than quoted if the transaction doesn't confirm within the sweep
+            window.
+          `,
         },
         {
           label: 'Swap fee',
           value: `${loop.quote.swap_fee} sats`,
+          help: `
+            How much the Loop liquidity provider is charging for their service.
+          `,
         },
         {
-          label: 'Swap amount',
-          value: `${amount} sats`,
+          label: 'Prepay fee',
+          value: `${loop.quote.prepay_amt} sats`,
+          help: `
+            Some of the swap fee is prepaid to avoid spam and abuse of the
+            Loop liquidity provider. This goes towards the total swap fee.
+            This will not be refunded if the swap doesn't complete.
+          `,
         },
         {
-          label: 'Sweep conf. target',
-          value: `${sweepConfirmationTarget} blocks`,
+          label: 'Total fees',
+          value: `${totalFees} sats`,
         },
       ];
       content = (
@@ -143,8 +146,9 @@ class QuoteModal extends React.Component<Props> {
               size="large"
               type="primary"
               onClick={isOut ? this.loopOut : this.loopIn}
+              block
             >
-              <Icon type="lightning" theme="filled" /> Start loop
+              {`Start looping ${isOut ? 'out' : 'in'} ${amount} sats`}
             </Button>
           </div>
         </>
@@ -176,11 +180,11 @@ class QuoteModal extends React.Component<Props> {
       amt: p.amount,
       dest: p.destination,
       loop_out_channel: p.channel,
-      max_miner_fee: p.advanced ? p.minerFee : quote.miner_fee,
-      max_prepay_amt: p.advanced ? p.prepayAmount : quote.prepay_amt,
-      max_prepay_routing_fee: p.advanced ? p.prepayAmount : quote.prepay_amt,
-      max_swap_fee: p.advanced ? p.swapFee : quote.swap_fee,
-      max_swap_routing_fee: p.advanced ? p.swapFee : quote.swap_fee,
+      max_miner_fee: p.maxMinerFee || quote.miner_fee,
+      max_prepay_amt: p.maxPrepayAmount || quote.prepay_amt,
+      max_prepay_routing_fee: p.maxPrepayAmount || quote.prepay_amt,
+      max_swap_fee: p.maxSwapFee || quote.swap_fee,
+      max_swap_routing_fee: p.maxSwapFee || quote.swap_fee,
       sweep_conf_target: p.sweepConfirmationTarget,
     };
     p.loopOut(req);
@@ -197,8 +201,8 @@ class QuoteModal extends React.Component<Props> {
     const req: LoopInArguments = {
       amt: p.amount,
       loop_in_channel: p.channel,
-      max_miner_fee: p.advanced ? p.minerFee : quote.miner_fee,
-      max_swap_fee: p.advanced ? p.swapFee : quote.swap_fee,
+      max_miner_fee: p.maxMinerFee || quote.miner_fee,
+      max_swap_fee: p.maxSwapFee || quote.swap_fee,
       external_htlc: p.htlc,
     };
     this.props.loopIn(req);
