@@ -1,3 +1,4 @@
+import { NewAddressArguments } from 'lib/lnd-http';
 import types from './types';
 
 export function getAccountInfo() {
@@ -8,6 +9,9 @@ export function getTransactions() {
   return { type: types.GET_TRANSACTIONS };
 }
 
-export function getDepositAddress() {
-  return { type: types.GET_DEPOSIT_ADDRESS };
+export function getDepositAddress(payload: NewAddressArguments) {
+  return {
+    type: types.GET_DEPOSIT_ADDRESS,
+    payload,
+  };
 }

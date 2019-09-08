@@ -6,7 +6,7 @@ import Loader from 'components/Loader';
 import Copy from 'components/Copy';
 import { getDepositAddress } from 'modules/account/actions';
 import { getNodeChain } from 'modules/node/selectors';
-import { coinSymbols } from 'utils/constants';
+import { coinSymbols, depositAddressType } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './DepositModal.less';
 
@@ -31,9 +31,12 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 class DepositModal extends React.Component<Props> {
   componentWillUpdate(nextProps: Props) {
+    const { chain } = this.props;
     if (!this.props.isOpen && nextProps.isOpen) {
       // Fire even if depositAddress is in store in case we need to cycle
-      this.props.getDepositAddress();
+      this.props.getDepositAddress({
+        type: depositAddressType[chain],
+      });
     }
   }
 

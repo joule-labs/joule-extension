@@ -6,6 +6,7 @@ import { getNodePubKey } from 'modules/node/sagas';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, UNKNOWN_NODE } from 'utils/misc';
 import types, { Account } from './types';
+import { getDepositAddress } from './actions';
 
 export function* handleGetAccountInfo(): SagaIterator {
   try {
@@ -118,13 +119,18 @@ export function* handleGetTransactions(): SagaIterator {
   }
 }
 
-export function* handleGetDepositAddress(): SagaIterator {
+export function* handleGetDepositAddress(
+  action: ReturnType<typeof getDepositAddress>,
+): SagaIterator {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
       selectNodeLibOrThrow,
     );
-    const res: Yielded<typeof nodeLib.getAddress> = yield call(nodeLib.getAddress);
+    const res: Yielded<typeof nodeLib.getAddress> = yield call(
+      nodeLib.getAddress,
+      action.payload,
+    );
     yield put({
       type: types.GET_DEPOSIT_ADDRESS_SUCCESS,
       payload: res.address,

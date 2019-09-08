@@ -277,11 +277,11 @@ export class LndHttpClient {
     );
   };
 
-  getAddress = (_: T.AddressType = 'p2wkh') => {
+  getAddress = (args: T.NewAddressArguments) => {
     return this.request<T.NewAddressResponse, T.NewAddressArguments>(
       'GET',
       '/v1/newaddress',
-      // { type },
+      args,
     );
   };
 
