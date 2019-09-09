@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'store/reducers';
-import { Select, Form, Button, Radio, Input, Icon } from 'antd';
+import { Select, Form, Button, Radio, Input } from 'antd';
 import AmountField from 'components/AmountField';
 import QuoteModal from './QuoteModal';
 import { getChannels } from 'modules/channels/actions';

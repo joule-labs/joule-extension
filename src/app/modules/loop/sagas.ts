@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call, all, put } from 'redux-saga/effects';
+import { takeLatest, select, call, put } from 'redux-saga/effects';
 import { selectLoopLibOrThrow } from 'modules/loop/selectors';
 import types from './types';
 import * as actions from './actions';
