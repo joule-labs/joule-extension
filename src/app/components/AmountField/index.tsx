@@ -25,9 +25,10 @@ interface OwnProps {
   warn?: React.ReactNode;
   required?: boolean;
   showFiat?: boolean;
-  minimumSats?: string;
-  maximumSats?: string;
+  minimumSats?: string | number;
+  maximumSats?: string | number;
   showMax?: boolean;
+  showConstraints?: boolean;
   onChangeAmount(amount: string): void;
 }
 
@@ -94,6 +95,7 @@ class AmountField extends React.Component<Props, State> {
       showFiat,
       maximumSats,
       showMax,
+      showConstraints,
       isNoFiat,
       fiat,
       rates,
@@ -104,11 +106,12 @@ class AmountField extends React.Component<Props, State> {
     } = this.props;
     const { value, valueFiat, denomination } = this.state;
     const valueError = this.getValueError();
+    const constraints = !valueError && showConstraints && this.getConstraints();
 
     return (
       <Form.Item
         label={label}
-        help={valueError || warn || help}
+        help={valueError || warn || constraints || help}
         validateStatus={value && valueError ? 'error' : warn ? 'warning' : undefined}
         className="AmountField"
         required={required}
@@ -186,7 +189,7 @@ class AmountField extends React.Component<Props, State> {
     }
     if (minimumSats) {
       const min = new BN(minimumSats);
-      if (min.gte(valueBN)) {
+      if (min.gt(valueBN)) {
         const minAmount = `${fromBaseToUnit(min.toString(), denomination)} ${
           denominationSymbols[chain][denomination]
         }`;
@@ -196,6 +199,31 @@ class AmountField extends React.Component<Props, State> {
     if (valueBN.ltn(0)) {
       return 'Amount cannot be negative';
     }
+  };
+
+  private getConstraints = () => {
+    const { minimumSats, maximumSats, chain } = this.props;
+    const { denomination } = this.state;
+    const pieces = [];
+
+    if (minimumSats) {
+      pieces.push(
+        <span key="min" className="AmountField-constraint">
+          <strong>Min:</strong> {fromBaseToUnit(minimumSats.toString(), denomination)}{' '}
+          {denominationSymbols[chain][denomination]}
+        </span>,
+      );
+    }
+    if (maximumSats) {
+      pieces.push(
+        <span key="max" className="AmountField-constraint">
+          <strong>Max:</strong> {fromBaseToUnit(maximumSats.toString(), denomination)}{' '}
+          {denominationSymbols[chain][denomination]}
+        </span>,
+      );
+    }
+
+    return pieces;
   };
 
   private handleChangeValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +263,7 @@ class AmountField extends React.Component<Props, State> {
     const { maximumSats } = this.props;
     const { denomination } = this.state;
     if (maximumSats) {
-      const value = fromBaseToUnit(maximumSats, denomination);
+      const value = fromBaseToUnit(maximumSats.toString(), denomination);
       this.updateBothValues('value', value);
     }
   };

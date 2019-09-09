@@ -12,12 +12,19 @@ export enum NODE_TYPE {
   LIGHTNING_APP = 'LIGHTNING_APP',
   ZAP_DESKTOP = 'ZAP_DESKTOP',
   BTCPAY_SERVER = 'BTCPAY_SERVER',
+  LOOP = 'LIGHTNING LOOP',
+}
+
+export enum LOOP_TYPE {
+  LOOP_OUT = 'Loop Out',
+  LOOP_IN = 'Loop In',
 }
 
 export const DEFAULT_NODE_URLS = {
   [NODE_TYPE.LOCAL]: 'https://localhost:8080',
   [NODE_TYPE.LIGHTNING_APP]: 'https://localhost:8086',
   [NODE_TYPE.ZAP_DESKTOP]: 'https://localhost:8180',
+  [NODE_TYPE.LOOP]: 'http://localhost:8081',
 } as { [key in NODE_TYPE]: string | undefined };
 
 interface LndDirectories {

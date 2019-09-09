@@ -15,6 +15,7 @@ import HomePage from 'pages/home';
 import OnboardingPage from 'pages/onboarding';
 import SettingsPage from 'pages/settings';
 import BalancesPage from 'pages/balances';
+import LoopPage from 'pages/loop';
 import FourOhFourPage from 'pages/fourohfour';
 import Template, { Props as TemplateProps } from 'components/Template';
 
@@ -71,6 +72,17 @@ const routeConfigs: RouteConfig[] = [
     },
     template: {
       title: 'Balances',
+      showBack: true,
+    },
+  },
+  {
+    // Loop
+    route: {
+      path: '/loop',
+      component: LoopPage,
+    },
+    template: {
+      title: 'Lightning Loop',
       showBack: true,
     },
   },

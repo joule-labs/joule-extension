@@ -38,6 +38,11 @@ export default class SettingsMenu extends React.Component<{}, State> {
             <Icon type="pie-chart" /> Balances
           </Link>
         </Menu.Item>
+        <Menu.Item key="loop">
+          <Link to="/loop">
+            <Icon type="retweet" /> Loop Out / In
+          </Link>
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="settings">
           <Link to="/settings">
