@@ -63,7 +63,7 @@ class LoopSetup extends React.Component<Props, State> {
               <p>
                 In order to use Loop, you must run your own Loop server, similar to
                 running your own Lightning node. You can find setup and installation
-                instructions on the
+                instructions on the{' '}
                 <a href="https://github.com/lightninglabs/loop" target="_blank">
                   Loop GitHub project
                 </a>
