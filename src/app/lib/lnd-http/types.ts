@@ -3,7 +3,7 @@ export type Macaroon = string;
 
 export type Response<T> = Promise<T>;
 
-export type AddressType = 'np2wkh' | 'p2wkh';
+export type AddressType = '0' | '2';
 
 export type UtxoAddressType = 'NESTED_PUBKEY_HASH' | 'WITNESS_PUBKEY_HASH';
 
