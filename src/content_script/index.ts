@@ -74,7 +74,7 @@ if (document) {
     event => {
       // 2 = right mouse button. may be better to store in a constant
       if (event.button === 2) {
-        let paymentRequest = window.getSelection().toString();
+        let paymentRequest = (window.getSelection() || '').toString();
         // if nothing selected, try to get the text of the right-clicked element.
         if (!paymentRequest && event.target) {
           // Cast as HTMLInputElement to get the value if a form element is used

@@ -58,7 +58,7 @@ class Settings extends React.Component<Props> {
               size="large"
               value={settings.denomination}
               disabled={settings.isNoFiat && settings.isFiatPrimary}
-              onChange={v => this.handleChangeSelect('denomination', v)}
+              onChange={(v: Denomination) => this.handleChangeSelect('denomination', v)}
             >
               {typedKeys(Denomination).map(d => (
                 <Select.Option key={d} value={d}>
@@ -72,7 +72,7 @@ class Settings extends React.Component<Props> {
               size="large"
               disabled={settings.isNoFiat && !settings.isFiatPrimary}
               value={settings.fiat}
-              onChange={v => this.handleChangeSelect('fiat', v)}
+              onChange={(v: Fiat) => this.handleChangeSelect('fiat', v)}
             >
               {typedKeys(Fiat).map(f => (
                 <Select.Option key={f} value={f}>

@@ -4,7 +4,7 @@ import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { GetUtxosResponse } from 'lib/lnd-http/types';
 import types from './types';
 
-export function* handleGetUtxos(): SagaIterator {
+export function* handleGetUtxos() {
   try {
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
       selectNodeLibOrThrow,

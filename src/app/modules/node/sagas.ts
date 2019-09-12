@@ -14,9 +14,7 @@ import { channelsTypes } from 'modules/channels';
 import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
 import types from './types';
 
-export function* handleCheckNode(
-  action: ReturnType<typeof actions.checkNode>,
-): SagaIterator {
+export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>) {
   const url = action.payload;
   const client = new LndHttpClient(url);
   try {
@@ -30,9 +28,7 @@ export function* handleCheckNode(
   yield put({ type: types.CHECK_NODE_SUCCESS, payload: url });
 }
 
-export function* handleCheckNodes(
-  action: ReturnType<typeof actions.checkNodes>,
-): SagaIterator {
+export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>) {
   const urls = action.payload;
   try {
     // Use Promise.all with custom catch here, because we expect some
@@ -65,9 +61,7 @@ export function* handleCheckNodes(
   }
 }
 
-export function* handleCheckAuth(
-  action: ReturnType<typeof actions.checkAuth>,
-): SagaIterator {
+export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>) {
   const { url, admin, readonly } = action.payload;
 
   // Check read-only by making sure request doesn't error
@@ -113,9 +107,7 @@ export function* handleCheckAuth(
   });
 }
 
-export function* handleUpdateNodeUrl(
-  action: ReturnType<typeof actions.updateNodeUrl>,
-): SagaIterator {
+export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNodeUrl>) {
   try {
     const newUrl = action.payload;
 
@@ -123,8 +115,17 @@ export function* handleUpdateNodeUrl(
     yield call(requirePassword);
 
     // get current macaroons from state as its needed to store the new url
-    const { url, readonlyMacaroon } = yield select(selectSyncedUnencryptedNodeState);
-    const { adminMacaroon } = yield select(selectSyncedEncryptedNodeState);
+    const {
+      url,
+      readonlyMacaroon,
+    }: Yielded<typeof selectSyncedUnencryptedNodeState> = yield select(
+      selectSyncedUnencryptedNodeState,
+    );
+    const {
+      adminMacaroon,
+    }: Yielded<typeof selectSyncedEncryptedNodeState> = yield select(
+      selectSyncedEncryptedNodeState,
+    );
 
     // connect to the url to test if it's working
     yield put(actions.checkNode(newUrl));
@@ -133,12 +134,20 @@ export function* handleUpdateNodeUrl(
     // check for an error connecting to the node
     if (checkAction.type === types.CHECK_NODE_FAILURE) {
       // reset url in redux because checkNode will set it to null before checking
-      yield put(actions.setNode(url, adminMacaroon, readonlyMacaroon));
+      yield put(
+        actions.setNode(
+          url as string,
+          adminMacaroon as string,
+          readonlyMacaroon as string,
+        ),
+      );
       throw checkAction.payload;
     }
 
     // save the new info in state & storage
-    yield put(actions.setNode(newUrl, adminMacaroon, readonlyMacaroon));
+    yield put(
+      actions.setNode(newUrl, adminMacaroon as string, readonlyMacaroon as string),
+    );
 
     yield put({
       type: types.UPDATE_NODE_URL_SUCCESS,
@@ -153,7 +162,7 @@ export function* handleUpdateNodeUrl(
 
 export function* handleUpdateMacaroons(
   action: ReturnType<typeof actions.updateMacaroons>,
-): SagaIterator {
+) {
   try {
     const { url, admin, readonly } = action.payload;
 
@@ -193,10 +202,12 @@ export function* handleUpdateMacaroons(
   }
 }
 
-export function* handleGetNodeInfo(): SagaIterator {
+export function* handleGetNodeInfo() {
   try {
-    const nodeLib = yield select(selectNodeLibOrThrow);
-    const payload = yield call(nodeLib.getInfo);
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
+      selectNodeLibOrThrow,
+    );
+    const payload: Yielded<typeof nodeLib.getInfo> = yield call(nodeLib.getInfo);
     yield put({
       type: types.GET_NODE_INFO_SUCCESS,
       payload,
@@ -210,18 +221,18 @@ export function* handleGetNodeInfo(): SagaIterator {
 }
 
 // Helper function, gets node pubKey from store or fetches it
-export function* getNodePubKey(): SagaIterator {
-  let nodeInfo = yield select(selectNodeInfo);
+export function* getNodePubKey() {
+  let nodeInfo: Yielded<typeof selectNodeInfo> = yield select(selectNodeInfo);
   if (!nodeInfo) {
     yield call(handleGetNodeInfo);
     nodeInfo = yield select(selectNodeInfo);
   }
   if (!nodeInfo) {
     // if the fetch fails (bad cert) then throw the error
-    const nodeError = yield select(selectNodeInfoError);
-    if (nodeError) {
-      throw nodeError;
-    }
+    const nodeError: Yielded<typeof selectNodeInfoError> = yield select(
+      selectNodeInfoError,
+    );
+    throw nodeError || new Error();
   }
   return nodeInfo.identity_pubkey;
 }

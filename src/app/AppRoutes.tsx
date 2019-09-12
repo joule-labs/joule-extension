@@ -106,7 +106,7 @@ class Routes extends React.Component<Props> {
       routeConfigs.find(config => !!matchPath(pathname, config.route)) ||
       routeConfigs[routeConfigs.length - 1];
     const routeComponents = routeConfigs.map(config => (
-      <Route key={config.route.path} {...config.route} />
+      <Route key={config.route.path as string} {...config.route} />
     ));
 
     return (

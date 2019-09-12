@@ -13,7 +13,7 @@ import types from './types';
 import { CHAIN_TYPE } from 'utils/constants';
 import { NoRouteError } from 'lib/lnd-http/errors';
 
-export function* handleSendPayment(action: ReturnType<typeof sendPayment>): SagaIterator {
+export function* handleSendPayment(action: ReturnType<typeof sendPayment>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -32,7 +32,7 @@ export function* handleSendPayment(action: ReturnType<typeof sendPayment>): Saga
   }
 }
 
-export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>): SagaIterator {
+export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -54,9 +54,7 @@ export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>): Saga
   }
 }
 
-export function* handleCreateInvoice(
-  action: ReturnType<typeof createInvoice>,
-): SagaIterator {
+export function* handleCreateInvoice(action: ReturnType<typeof createInvoice>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -77,7 +75,7 @@ export function* handleCreateInvoice(
 
 export function* handleCheckPaymentRequest(
   action: ReturnType<typeof checkPaymentRequest>,
-): SagaIterator {
+) {
   const { paymentRequest, amount } = action.payload;
   let nodeLib: Yielded<typeof selectNodeLibOrThrow>;
   let decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest> | undefined;
@@ -139,7 +137,7 @@ export function* handleCheckPaymentRequest(
   }
 }
 
-export function* handleFetchChainFees(): SagaIterator {
+export function* handleFetchChainFees() {
   try {
     const chain: Yielded<typeof getNodeChain> = yield select(getNodeChain);
     const nodeInfo: Yielded<typeof selectNodeInfo> = yield select(selectNodeInfo);

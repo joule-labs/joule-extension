@@ -118,11 +118,31 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              plugins: [
-                '@babel/plugin-proposal-object-rest-spread',
-                '@babel/plugin-proposal-class-properties',
+              presets: [
+                '@babel/preset-env',
+                '@babel/preset-typescript',
+                '@babel/preset-react',
               ],
-              presets: ['@babel/react', ['@babel/env', { useBuiltIns: 'entry' }]],
+              overrides: [
+                {
+                  presets: [
+                    [
+                      '@babel/preset-env',
+                      {
+                        useBuiltIns: 'usage',
+                        corejs: {
+                          version: 3,
+                          proposals: true,
+                        },
+                        targets: {
+                          chrome: '65',
+                          firefox: '60',
+                        },
+                      },
+                    ],
+                  ],
+                },
+              ],
             },
           },
           {
@@ -136,12 +156,12 @@ module.exports = {
       cssLoaderClient,
       svgLoaderClient,
       urlLoaderClient,
-      mp3LoaderClient
+      mp3LoaderClient,
     ],
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.mjs', '.json'],
-    modules: [srcApp, path.join(__dirname, 'node_modules')],
+    modules: [srcApp, 'node_modules'],
     alias: {
       api: `${srcApp}/api`,
       components: `${srcApp}/components`,
@@ -182,19 +202,27 @@ module.exports = {
       reactDevToolsUrl,
     }),
     new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
-    isDev && new CopyWebpackPlugin([{
-      from: 'static/manifest.json',
-      force: true,
-      transform: (content) => {
-        return JSON.stringify({
-          ...JSON.parse(content),
-          content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`
-        }, null, 2);
-      }
-    }]),
+    isDev &&
+      new CopyWebpackPlugin([
+        {
+          from: 'static/manifest.json',
+          force: true,
+          transform: content => {
+            return JSON.stringify(
+              {
+                ...JSON.parse(content),
+                content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`,
+              },
+              null,
+              2,
+            );
+          },
+        },
+      ]),
     isDev && new WriteFilePlugin(),
-    !isDev && new ZipPlugin({
-      filename: `joule-v${packageJson.version}.zip`,
-    }),
+    !isDev &&
+      new ZipPlugin({
+        filename: `joule-v${packageJson.version}.zip`,
+      }),
   ].filter(p => !!p),
 };
