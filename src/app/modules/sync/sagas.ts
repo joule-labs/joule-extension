@@ -29,7 +29,7 @@ import types from './types';
 
 export function* encryptAndSync(syncConfig: SyncConfig<any>) {
   // Debounce by a bit in case of rapid calls
-  yield call(delay, 300);
+  yield delay(300);
 
   let data = yield select(syncConfig.selector);
 
