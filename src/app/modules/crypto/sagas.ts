@@ -14,21 +14,23 @@ import {
 } from './actions';
 import types from './types';
 
-export function* generateTestCipher(): SagaIterator {
-  const password = yield select(selectPassword);
-  const salt = yield select(selectSalt);
-  const testCipher = encryptData(TEST_CIPHER_DATA, password, salt);
-  yield put(setTestCipher(testCipher));
+export function* generateTestCipher() {
+  const password: Yielded<typeof selectPassword> = yield select(selectPassword);
+  const salt: Yielded<typeof selectSalt> = yield select(selectSalt);
+  if (password && salt) {
+    const testCipher = encryptData(TEST_CIPHER_DATA, password, salt);
+    yield put(setTestCipher(testCipher));
+  }
 }
 
-export function* cachePassword(action: ReturnType<typeof enterPassword>): SagaIterator {
+export function* cachePassword(action: ReturnType<typeof enterPassword>) {
   if (action.payload.save) {
     yield call(setPasswordCache, action.payload.password);
   }
 }
 
-export function* requirePassword(): SagaIterator {
-  let password = yield select(selectPassword);
+export function* requirePassword() {
+  let password: Yielded<typeof selectPassword> = yield select(selectPassword);
 
   // First try to pull it out of the background cache
   if (!password) {
@@ -49,13 +51,11 @@ export function* requirePassword(): SagaIterator {
   }
 }
 
-export function* handleChangePassword(
-  action: ReturnType<typeof changePassword>,
-): SagaIterator {
+export function* handleChangePassword(action: ReturnType<typeof changePassword>) {
   try {
     const { newPassword, currPassword } = action.payload;
 
-    const password = yield select(selectPassword);
+    const password: Yielded<typeof selectPassword> = yield select(selectPassword);
     if (!password) {
       // enter the current password to be sure the storage data is decrypted
       yield put(enterPassword(currPassword));

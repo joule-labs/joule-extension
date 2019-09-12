@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import './style.less';
 import React from 'react';
 import { Provider } from 'react-redux';

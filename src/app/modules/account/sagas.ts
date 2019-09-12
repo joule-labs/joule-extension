@@ -8,10 +8,10 @@ import { safeGetNodeInfo, UNKNOWN_NODE } from 'utils/misc';
 import types, { Account } from './types';
 import { getDepositAddress } from './actions';
 
-export function* handleGetAccountInfo(): SagaIterator {
+export function* handleGetAccountInfo() {
   try {
     const myPubKey: string = yield call(getNodePubKey);
-    const nodeLib: ReturnType<typeof selectNodeLibOrThrow> = yield select(
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
       selectNodeLibOrThrow,
     );
     const calls = [
@@ -50,7 +50,7 @@ export function* handleGetAccountInfo(): SagaIterator {
   }
 }
 
-export function* handleGetTransactions(): SagaIterator {
+export function* handleGetTransactions() {
   try {
     // Get various transactions info
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -119,9 +119,7 @@ export function* handleGetTransactions(): SagaIterator {
   }
 }
 
-export function* handleGetDepositAddress(
-  action: ReturnType<typeof getDepositAddress>,
-): SagaIterator {
+export function* handleGetDepositAddress(action: ReturnType<typeof getDepositAddress>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(

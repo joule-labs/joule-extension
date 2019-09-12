@@ -11,7 +11,7 @@ import {
 } from 'lib/lnd-http/types';
 import { safeGetNodeInfo } from 'utils/misc';
 
-export function* handleSignMessage(action: ReturnType<typeof signMessage>): SagaIterator {
+export function* handleSignMessage(action: ReturnType<typeof signMessage>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -43,9 +43,7 @@ export function* handleSignMessage(action: ReturnType<typeof signMessage>): Saga
   }
 }
 
-export function* handleVerifyMessage(
-  action: ReturnType<typeof verifyMessage>,
-): SagaIterator {
+export function* handleVerifyMessage(action: ReturnType<typeof verifyMessage>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
