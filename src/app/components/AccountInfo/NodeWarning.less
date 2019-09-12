@@ -1,0 +1,45 @@
+@import '~style/variables.less';
+
+.NodeWarning {
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  margin-bottom: -0.75rem;
+  margin-top: 1rem;
+  padding: 0.3rem;
+  color: #fff;
+  text-align: center;
+  font-size: 0.8rem;
+  background: @warning-color;
+
+  &.is-error {
+    background: @error-color;
+  }
+
+  &.is-info {
+    background: @primary-color;
+  }
+
+  > a {
+    &,
+    &:hover,
+    &:focus {
+      color: #fff;
+      text-decoration: underline;
+    }
+  }
+
+  &-moreModal {
+    ul {
+      padding-left: 1.5rem;
+      font-size: 0.8rem;
+
+      li {
+        margin-bottom: 0.15rem;
+      }
+    }
+
+    .ant-modal-body:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
