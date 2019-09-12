@@ -1,5 +1,14 @@
-import { SagaIterator, delay } from 'redux-saga';
-import { takeLatest, takeEvery, call, put, select, take, fork } from 'redux-saga/effects';
+import { SagaIterator } from 'redux-saga';
+import {
+  takeLatest,
+  takeEvery,
+  call,
+  put,
+  select,
+  take,
+  fork,
+  delay,
+} from 'redux-saga/effects';
 import { browser } from 'webextension-polyfill-ts';
 import {
   selectSalt,
@@ -18,7 +27,7 @@ import { encryptData, decryptData } from 'utils/crypto';
 import { startSync, finishSync } from './actions';
 import types from './types';
 
-export function* encryptAndSync(syncConfig: SyncConfig<any>): SagaIterator {
+export function* encryptAndSync(syncConfig: SyncConfig<any>) {
   // Debounce by a bit in case of rapid calls
   yield call(delay, 300);
 
@@ -27,10 +36,10 @@ export function* encryptAndSync(syncConfig: SyncConfig<any>): SagaIterator {
   if (syncConfig.encrypted) {
     // Get things needed for encryption, hang if we don't yet have
     const salt = yield select(selectSalt);
-    let password = yield select(selectPassword);
+    let password: Yielded<typeof selectPassword> = yield select(selectPassword);
     if (!password) {
       yield take(cryptoTypes.SET_PASSWORD);
-      password = yield select(selectPassword);
+      password = (yield select(selectPassword)) as string;
     }
 
     // Encrypt the desired data
@@ -41,11 +50,11 @@ export function* encryptAndSync(syncConfig: SyncConfig<any>): SagaIterator {
   yield call(storageSyncSet, syncConfig.key, data);
 }
 
-export function* watchForSync(syncConfig: SyncConfig<any>): SagaIterator {
+export function* watchForSync(syncConfig: SyncConfig<any>) {
   yield takeLatest(syncConfig.triggerActions as any, encryptAndSync, syncConfig);
 }
 
-export function* sync(): SagaIterator {
+export function* sync() {
   yield put(startSync());
 
   const keys = syncConfigs.map(c => c.key);
@@ -70,7 +79,7 @@ export function* clearData(): SagaIterator {
   window.close();
 }
 
-export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): SagaIterator {
+export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any) {
   // Bail out if they haven't signed up yet
   const hasSetPassword = yield select(selectHasSetPassword);
   if (!hasSetPassword) {
@@ -79,12 +88,12 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any): Saga
 
   // Get things needed for decryption
   const salt = yield select(selectSalt);
-  let password = yield select(selectPassword);
+  let password: Yielded<typeof selectPassword> = yield select(selectPassword);
 
   // Wait on password if we don't have it
   if (!password) {
     yield take(cryptoTypes.ENTER_PASSWORD);
-    password = yield select(selectPassword);
+    password = (yield select(selectPassword)) as string;
   }
 
   // Migrate the data once it's decrypted & call the config action

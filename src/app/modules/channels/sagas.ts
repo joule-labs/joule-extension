@@ -6,7 +6,7 @@ import { safeGetNodeInfo, safeConnectPeer, sleep } from 'utils/misc';
 import { openChannel, getChannels, closeChannel } from './actions';
 import types from './types';
 
-export function* handleGetChannels(): SagaIterator {
+export function* handleGetChannels() {
   try {
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
       selectNodeLibOrThrow,
@@ -62,7 +62,7 @@ export function* handleGetChannels(): SagaIterator {
   }
 }
 
-export function* handleOpenChannel(action: ReturnType<typeof openChannel>): SagaIterator {
+export function* handleOpenChannel(action: ReturnType<typeof openChannel>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -105,9 +105,7 @@ export function* handleOpenChannel(action: ReturnType<typeof openChannel>): Saga
   }
 }
 
-export function* handleCloseChannel(
-  action: ReturnType<typeof closeChannel>,
-): SagaIterator {
+export function* handleCloseChannel(action: ReturnType<typeof closeChannel>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
