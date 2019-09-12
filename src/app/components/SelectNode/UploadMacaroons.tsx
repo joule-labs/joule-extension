@@ -5,7 +5,7 @@ import { DEFAULT_LND_DIRS, NODE_TYPE } from 'utils/constants';
 import './UploadMacaroons.less';
 
 interface Props {
-  error?: string;
+  error?: Error | null;
   isSaving?: boolean;
   initialAdmin?: string;
   initialReadonly?: string;
@@ -17,7 +17,7 @@ interface State {
   admin: string;
   readonly: string;
   isShowingHexInputs: boolean;
-  error?: string;
+  error: Error | null;
 }
 
 export default class UploadMacaroon extends React.Component<Props, State> {
@@ -25,12 +25,12 @@ export default class UploadMacaroon extends React.Component<Props, State> {
     admin: this.props.initialAdmin || '',
     readonly: this.props.initialReadonly || '',
     isShowingHexInputs: false,
-    error: this.props.error,
+    error: this.props.error || null,
   };
 
   componentDidUpdate(prevProps: Props) {
     if (prevProps.error !== this.props.error) {
-      this.setState({ error: this.props.error });
+      this.setState({ error: this.props.error || null });
     }
   }
 
@@ -110,22 +110,23 @@ export default class UploadMacaroon extends React.Component<Props, State> {
           </>
         )}
 
-        {error && (
-          <Alert
-            message="Invalid macaroon"
-            description={error}
-            type="error"
-            closable
-            showIcon
-          />
-        )}
-
         <div className="UploadMacaroons-toggle">
           {isShowingHexInputs
             ? 'Have macaroon files instead?'
             : 'Have hex strings instead?'}{' '}
           <a onClick={this.toggleHexInputs}>Click here to switch</a>.
         </div>
+
+        {error && (
+          <Alert
+            className="UploadMacaroons-error"
+            message="Invalid macaroon"
+            description={error.message}
+            type="error"
+            closable
+            showIcon
+          />
+        )}
 
         <Button
           disabled={!admin || !readonly}
@@ -142,11 +143,11 @@ export default class UploadMacaroon extends React.Component<Props, State> {
   }
 
   private handleMacaroonUpload = (key: 'admin' | 'readonly', file: File) => {
-    this.setState({ error: undefined });
+    this.setState({ error: null });
     if (file) {
       blobToHex(file)
         .then(hex => this.setState({ [key]: hex } as any))
-        .catch(err => this.setState({ error: err.message }));
+        .catch(error => this.setState({ error }));
     }
     return false;
   };
