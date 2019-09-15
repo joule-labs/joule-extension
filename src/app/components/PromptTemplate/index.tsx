@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { Button, message, Alert } from 'antd';
+import { Button, Alert } from 'antd';
 import { confirmPrompt, rejectPrompt } from 'utils/prompt';
 import './style.less';
 
