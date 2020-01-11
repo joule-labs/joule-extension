@@ -1,6 +1,7 @@
 import BitcoinLogo from 'static/images/bitcoin.svg';
 import LitecoinLogo from 'static/images/litecoin.svg';
 import DecredLogo from 'static/images/decred.svg';
+import GroestlcoinLogo from 'static/images/groestlcoin.svg';
 import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
@@ -47,12 +48,14 @@ export const DEFAULT_LND_DIRS = {
 export enum CHAIN_TYPE {
   BITCOIN = 'bitcoin',
   DECRED = 'decred',
+  GROESTLCOIN = 'groestlcoin',
   LITECOIN = 'litecoin',
 }
 
 export const coinSymbols: { [key in CHAIN_TYPE]: string } = {
   bitcoin: 'BTC',
   decred: 'DCR',
+  groestlcoin: 'GRS',
   litecoin: 'LTC',
 };
 
@@ -61,12 +64,14 @@ export const blockchainLogos: {
 } = {
   bitcoin: BitcoinLogo,
   decred: DecredLogo,
+  groestlcoin: GroestlcoinLogo,
   litecoin: LitecoinLogo,
 };
 
 export const blockchainDisplayName: { [key in CHAIN_TYPE]: string } = {
   bitcoin: 'Bitcoin',
   decred: 'Decred',
+  groestlcoin: 'Groestlcoin',
   litecoin: 'Litecoin',
 };
 
@@ -75,6 +80,7 @@ export const blockchainDisplayName: { [key in CHAIN_TYPE]: string } = {
 export const depositAddressType: { [key in CHAIN_TYPE]: AddressType } = {
   bitcoin: '0', // p2wkh
   decred: '2', // p2pkh
+  groestlcoin: '0', // p2wkh
   litecoin: '0', // p2wkh
 };
 
@@ -108,6 +114,16 @@ export const blockchainExplorers: { [key in CHAIN_TYPE]: ExplorerUrls } = {
     testnet: {
       tx: 'https://testnet.decred.org/tx/$TX_ID',
       block: 'https://testnet.decred.org/block/$BLOCK_ID',
+    },
+  },
+  groestlcoin: {
+    mainnet: {
+      tx: 'https://chainz.cryptoid.info/grs/tx.dws?$TX_ID',
+      block: 'https://chainz.cryptoid.info/grs/block.dws?$BLOCK_ID',
+    },
+    testnet: {
+      tx: 'https://chainz.cryptoid.info/grs-test/tx.dws?$TX_ID',
+      block: 'https://chainz.cryptoid.info/grs-test/block.dws?$BLOCK_ID',
     },
   },
   litecoin: {
@@ -144,6 +160,12 @@ export const denominationSymbols: { [key in CHAIN_TYPE]: DenominationMap } = {
     MILLIBITCOIN: 'mDCR',
     BITCOIN: 'DCR',
   },
+  groestlcoin: {
+    SATOSHIS: 'gros',
+    BITS: 'groestls',
+    MILLIBITCOIN: 'mGRS',
+    BITCOIN: 'GRS',
+  },
   litecoin: {
     SATOSHIS: 'lits',
     BITS: 'mł',
@@ -164,6 +186,12 @@ export const denominationNames: { [key in CHAIN_TYPE]: DenominationMap } = {
     BITS: 'Microdecred',
     MILLIBITCOIN: 'Millidecred',
     BITCOIN: 'Decred',
+  },
+  groestlcoin: {
+    SATOSHIS: 'Gros',
+    BITS: 'Microgroestlcoin',
+    MILLIBITCOIN: 'Milligroestlcoin',
+    BITCOIN: 'Groestlcoin',
   },
   litecoin: {
     SATOSHIS: 'Litoshis',
@@ -210,6 +238,9 @@ export const CHAIN_PREFIXES = [
   'tdcr', // Decred Testnet
   'sdcr', // Decred Simnet
   'rdcr', // Decred Regnet
+  'grs', // Groestlcoin Mainnet
+  'tgrs', // Groestlcoin Testnet
+  'grsrt', // Groestlcoin Regtest
   'ltc', // Litecoin Mainnet
   'tltc', // Litecoin Testnet
   'rltc', // Litecoin Regtest
