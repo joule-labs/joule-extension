@@ -17,6 +17,7 @@
     "lightning",
     "bitcoin",
     "decred",
+    "groestlcoin",
     "litecoin"
   ],
   "scripts": {
