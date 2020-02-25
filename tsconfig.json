@@ -25,7 +25,7 @@
       "prompts/*": ["./src/app/prompts/*"],
       "static/*": ["./src/app/static/*"],
       "store/*": ["./src/app/store/*"],
-      "styles/*": ["./src/app/styles/*"],
+      "style/*": ["./src/app/style/*"],
       "typings/*": ["./src/app/typings/*"],
       "utils/*": ["./src/app/utils/*"]
     }

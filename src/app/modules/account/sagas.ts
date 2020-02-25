@@ -19,7 +19,11 @@ export function* handleGetAccountInfo() {
       call(nodeLib.getBlockchainBalance),
       call(nodeLib.getChannelsBalance),
     ];
-    const [nodeInfo, chainBalances, channelsBalances] = yield all(calls);
+    const [nodeInfo, chainBalances, channelsBalances]: [
+      Yielded<typeof nodeLib.getNodeInfo>,
+      Yielded<typeof nodeLib.getBlockchainBalance>,
+      Yielded<typeof nodeLib.getChannelsBalance>
+    ] = yield all(calls);
     const payload: Account = {
       pubKey: myPubKey,
       alias: nodeInfo.node.alias,

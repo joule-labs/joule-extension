@@ -85,12 +85,6 @@ const urlLoaderClient = {
   },
 };
 
-const mp3LoaderClient = {
-  test: /\.mp3$/,
-  exclude: [/node_modules/],
-  loader: 'file-loader',
-};
-
 module.exports = {
   mode: isDev ? 'development' : 'production',
   name: 'client',
@@ -118,11 +112,7 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets: [
-                '@babel/preset-env',
-                '@babel/preset-typescript',
-                '@babel/preset-react',
-              ],
+              presets: ['@babel/preset-env', '@babel/preset-react'],
               overrides: [
                 {
                   presets: [
@@ -134,10 +124,7 @@ module.exports = {
                           version: 3,
                           proposals: true,
                         },
-                        targets: {
-                          chrome: '65',
-                          firefox: '60',
-                        },
+                        targets: 'last 2 chrome versions, last 2 firefox versions',
                       },
                     ],
                   ],
@@ -147,7 +134,7 @@ module.exports = {
           },
           {
             loader: 'ts-loader',
-            options: { transpileOnly: isDev },
+            // options: { transpileOnly: isDev },
           },
         ],
       },
@@ -156,7 +143,6 @@ module.exports = {
       cssLoaderClient,
       svgLoaderClient,
       urlLoaderClient,
-      mp3LoaderClient,
     ],
   },
   resolve: {
@@ -171,7 +157,7 @@ module.exports = {
       prompts: `${srcApp}/prompts`,
       static: `${srcApp}/static`,
       store: `${srcApp}/store`,
-      styles: `${srcApp}/styles`,
+      style: `${srcApp}/style`,
       typings: `${srcApp}/typings`,
       utils: `${srcApp}/utils`,
     },
@@ -201,6 +187,7 @@ module.exports = {
       inject: true,
       reactDevToolsUrl,
     }),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
     isDev &&
       new CopyWebpackPlugin([
