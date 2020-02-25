@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Form, Input, Button, Checkbox, Icon, Alert, message } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import Result from 'ant-design-pro/lib/Result';
+import Result from 'antd/lib/Result';
 import AmountField from 'components/AmountField';
 import FeeSelectField from 'components/FeeSelectField';
 import { isValidConnectAddress } from 'utils/validators';
@@ -102,10 +102,10 @@ class OpenChannelModal extends React.Component<Props, State> {
     if (successfulTxId) {
       content = (
         <Result
-          type="success"
+          status="success"
           title="Channel transaction sent"
-          description="Your channel should be ready in about an hour, once your transaction has been confirmed"
-          actions={[
+          subTitle="Your channel should be ready in about an hour, once your transaction has been confirmed"
+          extra={[
             <Button key="back" size="large" onClick={this.resetForm}>
               Open another
             </Button>,
@@ -205,7 +205,7 @@ class OpenChannelModal extends React.Component<Props, State> {
         onOk={this.openChannel}
         closable={!isOpeningChannel}
         maskClosable={!isOpeningChannel}
-        cancelButtonDisabled={isOpeningChannel}
+        cancelButtonProps={{ disabled: isOpeningChannel }}
         confirmLoading={isOpeningChannel}
         footer={hideFooter ? '' : undefined}
         className="OpenChannel"
@@ -241,7 +241,9 @@ class OpenChannelModal extends React.Component<Props, State> {
     this.setState({ isShowingAdvanced: true });
   };
 
-  private openChannel = (ev?: React.FormEvent<HTMLFormElement>) => {
+  private openChannel = (
+    ev?: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
+  ) => {
     if (ev) {
       ev.preventDefault();
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
-import Result from 'ant-design-pro/lib/Result';
+import Result from 'antd/lib/Result';
 import Loader from 'components/Loader';
 import './SendState.less';
 
@@ -41,16 +41,17 @@ const SendState: React.SFC<Props> = props => {
   return (
     <div className="SendState">
       <Result
-        type={type}
+        status={type}
         title={type === 'success' ? 'Succesfully sent!' : 'Failed to send'}
-        description={
+        subTitle={
           type === 'success'
             ? 'See below for more about your transaction'
             : 'See below for the full error'
         }
-        extra={errorMessage || props.result}
-        actions={actions}
-      />
+        extra={actions}
+      >
+        {errorMessage || props.result}
+      </Result>
     </div>
   );
 };

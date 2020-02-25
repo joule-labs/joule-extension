@@ -134,7 +134,7 @@ module.exports = {
           },
           {
             loader: 'ts-loader',
-            // options: { transpileOnly: isDev },
+            options: { transpileOnly: isDev },
           },
         ],
       },
