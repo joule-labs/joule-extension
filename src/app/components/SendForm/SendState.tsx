@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button } from 'antd';
-import Result from 'antd/lib/Result';
+import { Button, Result } from 'antd';
 import Loader from 'components/Loader';
 import './SendState.less';
 

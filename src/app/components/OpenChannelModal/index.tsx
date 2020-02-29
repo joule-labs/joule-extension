@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Form, Input, Button, Checkbox, Icon, Alert, message } from 'antd';
+import { Modal, Form, Input, Button, Checkbox, Icon, Alert, Result, message } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import Result from 'antd/lib/Result';
 import AmountField from 'components/AmountField';
 import FeeSelectField from 'components/FeeSelectField';
 import { isValidConnectAddress } from 'utils/validators';
