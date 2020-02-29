@@ -448,6 +448,19 @@ export interface LndAPIRequestMessage<M extends LndAPIMethod> {
   args: Parameters<LndAPI[M]>;
 }
 
+export interface LndAPIResponseNetworkError {
+  statusText: string;
+  status: number;
+}
+
+export type LndAPIResponseError =
+  // Fetch error
+  | LndAPIResponseNetworkError
+  // LND error
+  | ErrorResponse
+  // Generic error
+  | string;
+
 export type LndAPIResponseMessage<M extends LndAPIMethod> =
   | {
       type: 'lnd-api-response';
@@ -458,6 +471,6 @@ export type LndAPIResponseMessage<M extends LndAPIMethod> =
   | {
       type: 'lnd-api-response';
       method: M;
-      error: string;
+      error: LndAPIResponseError;
       data: undefined;
     };

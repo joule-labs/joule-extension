@@ -1,6 +1,5 @@
 import { stringify } from 'query-string';
-import { parseNodeErrorResponse, txIdBytesToHex } from './utils';
-import { NetworkError, SendTransactionError } from '../errors';
+import { txIdBytesToHex } from '../utils';
 import * as T from '../types';
 export * from '../errors';
 export * from '../types';
@@ -260,7 +259,8 @@ export class LndHttpClient implements T.LndAPI {
       args,
     ).then(res => {
       if (res.payment_error) {
-        throw new SendTransactionError(res.payment_error);
+        // Make it easy to convert on the other side
+        throw new Error(`SendTransactionError: ${res.payment_error}`);
       }
       return {
         ...res,
@@ -404,10 +404,13 @@ export class LndHttpClient implements T.LndAPI {
             throw new Error();
           }
         } catch (err) {
-          throw new NetworkError(res.statusText, res.status);
+          throw {
+            statusText: res.statusText,
+            status: res.status,
+          } as T.LndAPIResponseError;
         }
-        const error = parseNodeErrorResponse(errBody);
-        throw error;
+        console.log('errBody', errBody);
+        throw errBody as T.LndAPIResponseError;
       }
       const json = await res.json();
       if (defaultValues) {
@@ -417,7 +420,11 @@ export class LndHttpClient implements T.LndAPI {
       return json as R;
     } catch (err) {
       console.error(`API error calling ${method} ${path}`, err);
-      throw err;
+      // Thrown errors must be JSON serializable, so include metadata if possible
+      if (err.code || err.status || !err.message) {
+        throw err;
+      }
+      throw err.message;
     }
   }
 }

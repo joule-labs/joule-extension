@@ -1,4 +1,5 @@
 import { browser } from 'webextension-polyfill-ts';
+import { parseResponseError } from '../utils';
 import * as T from '../types';
 export * from '../types';
 export * from '../errors';
@@ -57,10 +58,11 @@ class LndMessageClient implements T.LndAPI {
       args,
     };
     const res: T.LndAPIResponseMessage<M> = await browser.runtime.sendMessage(message);
+    console.log(res);
     if (res.data) {
       return res.data;
     }
-    throw new Error(res.error);
+    throw parseResponseError(res.error || 'Unknown response from extension');
   }
 }
 

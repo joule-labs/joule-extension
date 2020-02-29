@@ -4,6 +4,7 @@ import {
   LndAPIRequestMessage,
   LndAPIResponseMessage,
   LndAPIMethod,
+  LndAPIResponseError,
 } from '../lnd/http';
 
 function isLndRequestMessage(req: any): req is LndAPIRequestMessage<LndAPIMethod> {
@@ -32,11 +33,11 @@ export default function handleLndHttp() {
           data,
         } as LndAPIResponseMessage<typeof request.method>;
       })
-      .catch((err: Error) => {
+      .catch((err: LndAPIResponseError) => {
         return {
           type: 'lnd-api-response',
           method: request.method,
-          error: err.message,
+          error: err,
         } as LndAPIResponseMessage<typeof request.method>;
       });
   });
