@@ -7,7 +7,7 @@ import Unit from 'components/Unit';
 import DetailsTable, { DetailsRow } from 'components/DetailsTable';
 import TransferIcons from 'components/TransferIcons';
 import Copy from 'components/Copy';
-import { CHANNEL_STATUS } from 'lib/lnd-http';
+import { CHANNEL_STATUS } from 'lnd/message';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
 import { closeChannel } from 'modules/channels/actions';

@@ -4,8 +4,8 @@ import DecredLogo from 'static/images/decred.svg';
 import GroestlcoinLogo from 'static/images/groestlcoin.svg';
 import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
-import { CHANNEL_STATUS } from 'lib/lnd-http';
-import { AddressType } from 'lib/lnd-http/types';
+import { CHANNEL_STATUS } from 'lnd/message';
+import { AddressType } from 'lnd/types';
 
 export enum NODE_TYPE {
   LOCAL = 'LOCAL',

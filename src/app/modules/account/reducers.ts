@@ -1,5 +1,5 @@
 import types, { Account, LightningPaymentWithToNode } from './types';
-import { LightningInvoice, ChainTransaction } from 'lib/lnd-http';
+import { LightningInvoice, ChainTransaction } from 'lnd/message';
 
 export interface AccountState {
   account: Account | null;
