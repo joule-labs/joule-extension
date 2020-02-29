@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, Input, Button, Row, Col, Alert, Checkbox } from 'antd';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import QRCode from 'qrcode.react';
 import Copy from 'components/Copy';
 import AmountField from 'components/AmountField';
+import Help from 'components/Help';
 import { createInvoice, resetCreateInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
-import './style.less';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { getNodeChain } from 'modules/node/selectors';
+import './style.less';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -34,6 +35,7 @@ interface State {
   memo: string;
   fallbackAddress: string;
   expiry: string;
+  privateHints: boolean;
 }
 
 const INITIAL_STATE = {
@@ -42,6 +44,7 @@ const INITIAL_STATE = {
   memo: '',
   fallbackAddress: '',
   expiry: '24',
+  privateHints: true,
 };
 
 class InvoiceForm extends React.Component<Props, State> {
@@ -53,7 +56,14 @@ class InvoiceForm extends React.Component<Props, State> {
 
   render() {
     const { invoice, isCreatingInvoice, invoiceError, close } = this.props;
-    const { isAnyValue, memo, expiry, fallbackAddress, amount } = this.state;
+    const {
+      isAnyValue,
+      memo,
+      expiry,
+      fallbackAddress,
+      amount,
+      privateHints,
+    } = this.state;
     const disabled = (!amount && !isAnyValue) || !parseInt(expiry, 10);
 
     let content;
@@ -129,6 +139,25 @@ class InvoiceForm extends React.Component<Props, State> {
               </Form.Item>
             </Col>
           </Row>
+          <div className="InvoiceForm-form-private">
+            <Checkbox onChange={this.handleChangePrivate} checked={privateHints}>
+              Include private channel hints
+            </Checkbox>
+            <Help title="Private channel hints">
+              <p>
+                Your invoice can have information about your private channels embedded
+                into it, so that the sender can know to route through them.
+              </p>
+              <p>
+                Unchecking this may make the invoice unpayable. Leaving it checked will
+                allow anyone with the invoice to know your private channels.
+              </p>
+              <p>
+                If you have many private channels, the invoice string may be quite longer
+                than normal.
+              </p>
+            </Help>
+          </div>
 
           {invoiceError && (
             <Alert
@@ -175,14 +204,28 @@ class InvoiceForm extends React.Component<Props, State> {
     });
   };
 
+  private handleChangePrivate = (ev: CheckboxChangeEvent) => {
+    this.setState({
+      privateHints: ev.target.checked,
+    });
+  };
+
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    const { amount, memo, fallbackAddress, expiry, isAnyValue } = this.state;
+    const {
+      amount,
+      memo,
+      fallbackAddress,
+      expiry,
+      isAnyValue,
+      privateHints,
+    } = this.state;
     this.props.createInvoice({
       value: isAnyValue ? undefined : amount,
       memo,
       fallback_addr: fallbackAddress,
       expiry: parseInt(expiry, 10) * 3600,
+      private: privateHints,
     });
   };
 

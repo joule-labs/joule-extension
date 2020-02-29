@@ -1,10 +1,5 @@
-import { validateMnemonic } from 'bip39';
 import BN from 'bn.js';
 import { CHAIN_PREFIXES } from './constants';
-
-export function isValidMnemonic(mnemonic: string) {
-  return validateMnemonic(mnemonic);
-}
 
 export function isValidPaymentReq(paymentReq: string) {
   // must start with 'ln'

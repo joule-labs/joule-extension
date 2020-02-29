@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Spin, message } from 'antd';
+import { message } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
 import UploadMacaroons from './UploadMacaroons';
 import ConfirmNode from './ConfirmNode';
 import BTCPayServer, { BTCPayServerConfig } from './BTCPayServer';
 import SelectType from './SelectType';
+import Loader from 'components/Loader';
 import { NODE_TYPE, DEFAULT_NODE_URLS } from 'utils/constants';
 import { urlWithoutPort } from 'utils/formatters';
 import {
@@ -87,8 +88,8 @@ class SelectNode extends React.Component<Props, State> {
     let content: React.ReactNode;
     let title: React.ReactNode;
     if (nodeType) {
-      if (isCheckingAuth || isRequestingPermission || isScanningLocal) {
-        content = <Spin />;
+      if (isRequestingPermission || isScanningLocal) {
+        content = <Loader />;
       } else if (nodeInfo) {
         title = 'Confirm your node';
         content = (
@@ -101,7 +102,12 @@ class SelectNode extends React.Component<Props, State> {
       } else if (isNodeChecked) {
         title = 'Upload Macaroons';
         content = (
-          <UploadMacaroons onUploaded={this.handleMacaroons} nodeType={nodeType} />
+          <UploadMacaroons
+            onUploaded={this.handleMacaroons}
+            nodeType={nodeType}
+            error={checkAuthError}
+            isSaving={isCheckingAuth}
+          />
         );
       } else if (nodeType === NODE_TYPE.BTCPAY_SERVER) {
         title = 'Connect to your BTCPay Server';

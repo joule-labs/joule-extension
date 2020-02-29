@@ -85,12 +85,6 @@ const urlLoaderClient = {
   },
 };
 
-const mp3LoaderClient = {
-  test: /\.mp3$/,
-  exclude: [/node_modules/],
-  loader: 'file-loader',
-};
-
 module.exports = {
   mode: isDev ? 'development' : 'production',
   name: 'client',
@@ -118,11 +112,24 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              plugins: [
-                '@babel/plugin-proposal-object-rest-spread',
-                '@babel/plugin-proposal-class-properties',
+              presets: ['@babel/preset-env', '@babel/preset-react'],
+              overrides: [
+                {
+                  presets: [
+                    [
+                      '@babel/preset-env',
+                      {
+                        useBuiltIns: 'usage',
+                        corejs: {
+                          version: 3,
+                          proposals: true,
+                        },
+                        targets: 'last 2 chrome versions, last 2 firefox versions',
+                      },
+                    ],
+                  ],
+                },
               ],
-              presets: ['@babel/react', ['@babel/env', { useBuiltIns: 'entry' }]],
             },
           },
           {
@@ -136,12 +143,11 @@ module.exports = {
       cssLoaderClient,
       svgLoaderClient,
       urlLoaderClient,
-      mp3LoaderClient
     ],
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.mjs', '.json'],
-    modules: [srcApp, path.join(__dirname, 'node_modules')],
+    modules: [srcApp, 'node_modules'],
     alias: {
       api: `${srcApp}/api`,
       components: `${srcApp}/components`,
@@ -151,9 +157,10 @@ module.exports = {
       prompts: `${srcApp}/prompts`,
       static: `${srcApp}/static`,
       store: `${srcApp}/store`,
-      styles: `${srcApp}/styles`,
+      style: `${srcApp}/style`,
       typings: `${srcApp}/typings`,
       utils: `${srcApp}/utils`,
+      lnd: `${src}/lnd`,
     },
   },
   plugins: [
@@ -181,20 +188,29 @@ module.exports = {
       inject: true,
       reactDevToolsUrl,
     }),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
-    isDev && new CopyWebpackPlugin([{
-      from: 'static/manifest.json',
-      force: true,
-      transform: (content) => {
-        return JSON.stringify({
-          ...JSON.parse(content),
-          content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`
-        }, null, 2);
-      }
-    }]),
+    isDev &&
+      new CopyWebpackPlugin([
+        {
+          from: 'static/manifest.json',
+          force: true,
+          transform: content => {
+            return JSON.stringify(
+              {
+                ...JSON.parse(content),
+                content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`,
+              },
+              null,
+              2,
+            );
+          },
+        },
+      ]),
     isDev && new WriteFilePlugin(),
-    !isDev && new ZipPlugin({
-      filename: `joule-v${packageJson.version}.zip`,
-    }),
+    !isDev &&
+      new ZipPlugin({
+        filename: `joule-v${packageJson.version}.zip`,
+      }),
   ].filter(p => !!p),
 };

@@ -1,13 +1,12 @@
 import { stringify } from 'query-string';
-import { parseNodeErrorResponse, txIdBytesToHex } from './utils';
-import { NetworkError, SendTransactionError } from './errors';
-import * as T from './types';
-export * from './errors';
-export * from './types';
+import { txIdBytesToHex } from '../utils';
+import * as T from '../types';
+export * from '../errors';
+export * from '../types';
 
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-export class LndHttpClient {
+export class LndHttpClient implements T.LndAPI {
   url: string;
   macaroon: undefined | T.Macaroon;
 
@@ -260,7 +259,8 @@ export class LndHttpClient {
       args,
     ).then(res => {
       if (res.payment_error) {
-        throw new SendTransactionError(res.payment_error);
+        // Make it easy to convert on the other side
+        throw new Error(`SendTransactionError: ${res.payment_error}`);
       }
       return {
         ...res,
@@ -287,11 +287,11 @@ export class LndHttpClient {
     );
   };
 
-  getAddress = (_: T.AddressType = 'p2wkh') => {
+  getAddress = (args: T.NewAddressArguments) => {
     return this.request<T.NewAddressResponse, T.NewAddressArguments>(
       'GET',
       '/v1/newaddress',
-      // { type },
+      args,
     );
   };
 
@@ -377,12 +377,12 @@ export class LndHttpClient {
   };
 
   // Internal fetch function
-  protected request<R extends object, A extends object | undefined = undefined>(
+  protected async request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,
     path: string,
     args?: A,
     defaultValues?: Partial<R>,
-  ): T.Response<R> {
+  ): Promise<R> {
     let body = null;
     let query = '';
     const headers = new Headers();
@@ -400,36 +400,42 @@ export class LndHttpClient {
       headers.append('Grpc-Metadata-macaroon', this.macaroon);
     }
 
-    return fetch(this.url + path + query, {
-      method,
-      headers,
-      body,
-    })
-      .then(async res => {
-        if (!res.ok) {
-          let errBody: any;
-          try {
-            errBody = await res.json();
-            if (!errBody.error) throw new Error();
-          } catch (err) {
-            throw new NetworkError(res.statusText, res.status);
-          }
-          const error = parseNodeErrorResponse(errBody);
-          throw error;
-        }
-        return res.json();
-      })
-      .then((res: Partial<R>) => {
-        if (defaultValues) {
-          // TS can't handle generic spreadables
-          return { ...(defaultValues as any), ...(res as any) } as R;
-        }
-        return res as R;
-      })
-      .catch(err => {
-        console.error(`API error calling ${method} ${path}`, err);
-        throw err;
+    try {
+      const res = await fetch(this.url + path + query, {
+        method,
+        headers,
+        body,
       });
+      if (!res.ok) {
+        let errBody: any;
+        try {
+          errBody = await res.json();
+          if (!errBody.error) {
+            throw new Error();
+          }
+        } catch (err) {
+          throw {
+            statusText: res.statusText,
+            status: res.status,
+          } as T.LndAPIResponseError;
+        }
+        console.log('errBody', errBody);
+        throw errBody as T.LndAPIResponseError;
+      }
+      const json = await res.json();
+      if (defaultValues) {
+        // TS can't handle generic spreadables
+        return { ...(defaultValues as any), ...(json as any) } as R;
+      }
+      return json as R;
+    } catch (err) {
+      console.error(`API error calling ${method} ${path}`, err);
+      // Thrown errors must be JSON serializable, so include metadata if possible
+      if (err.code || err.status || !err.message) {
+        throw err;
+      }
+      throw err.message;
+    }
   }
 }
 

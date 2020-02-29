@@ -1,9 +1,11 @@
 import React from 'react';
 import BN from 'bn.js';
 import { connect } from 'react-redux';
-import { Form, Input, Select, Button } from 'antd';
+import { Form, Input, Select, Button, Row, Col, Checkbox } from 'antd';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { RequestInvoiceArgs, RequestInvoiceResponse } from 'webln';
 import PromptTemplate from 'components/PromptTemplate';
+import Help from 'components/Help';
 import {
   getPromptArgs,
   getPromptOrigin,
@@ -16,9 +18,9 @@ import { typedKeys } from 'utils/ts';
 import { fromBaseToUnit, fromUnitToBase, fromUnitToFiat } from 'utils/units';
 import { createInvoice } from 'modules/payment/actions';
 import { AppState } from 'store/reducers';
-import './invoice.less';
 import { getNodeChain } from 'modules/node/selectors';
 import { getChainRates } from 'modules/rates/selectors';
+import './invoice.less';
 
 interface StateProps {
   invoice: AppState['payment']['invoice'];
@@ -43,6 +45,7 @@ interface State {
   denomination: Denomination;
   fallbackAddress: string;
   expiry: string;
+  privateHints: boolean;
   isShowingAdvanced: boolean;
 }
 
@@ -71,6 +74,7 @@ class InvoicePrompt extends React.Component<Props, State> {
       memo: this.args.defaultMemo || '',
       fallbackAddress: '',
       expiry: '',
+      privateHints: true,
       isShowingAdvanced: false,
     };
   }
@@ -82,6 +86,7 @@ class InvoicePrompt extends React.Component<Props, State> {
       memo,
       fallbackAddress,
       expiry,
+      privateHints,
       isShowingAdvanced,
     } = this.state;
     const { chain } = this.props;
@@ -148,29 +153,67 @@ class InvoicePrompt extends React.Component<Props, State> {
 
             {isShowingAdvanced ? (
               <div className="InvoicePrompt-form-advanced">
-                <Form.Item
-                  label="Fallback"
-                  help="An on-chain address to falback to for if the payment fails"
-                >
-                  <Input
-                    value={fallbackAddress}
-                    name="fallbackAddress"
-                    onChange={this.handleChangeField}
-                    placeholder="Optional"
-                  />
-                </Form.Item>
-                <Form.Item
-                  label="Expiry"
-                  help="How long the invoice is valid for, in seconds"
-                >
-                  <Input
-                    value={expiry}
-                    name="expiry"
-                    onChange={this.handleChangeField}
-                    placeholder="Defaults to 1"
-                    addonAfter="hours"
-                  />
-                </Form.Item>
+                <Row>
+                  <Col span={12}>
+                    <Form.Item
+                      label={
+                        <>
+                          Fallback
+                          <Help>
+                            An on-chain address to falback to for if the payment cannot be
+                            made.
+                          </Help>
+                        </>
+                      }
+                    >
+                      <Input
+                        value={fallbackAddress}
+                        name="fallbackAddress"
+                        onChange={this.handleChangeField}
+                        placeholder="Optional"
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col offset={1} span={11}>
+                    <Form.Item
+                      label={
+                        <>
+                          Expiry
+                          <Help>
+                            How long the invoice is available to be paid for, in hours.
+                          </Help>
+                        </>
+                      }
+                    >
+                      <Input
+                        value={expiry}
+                        name="expiry"
+                        onChange={this.handleChangeField}
+                        placeholder="Defaults to 1"
+                        addonAfter="hours"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <div className="InvoicePrompt-form-advanced-private">
+                  <Checkbox onChange={this.handleChangePrivate} checked={privateHints}>
+                    Include private channel hints
+                  </Checkbox>
+                  <Help title="Private channel hints">
+                    <p>
+                      Your invoice can have information about your private channels
+                      embedded into it, so that the sender can know to route through them.
+                    </p>
+                    <p>
+                      Unchecking this may make the invoice unpayable. Leaving it checked
+                      will allow anyone with the invoice to know your private channels.
+                    </p>
+                    <p>
+                      If you have many private channels, the invoice string may be quite
+                      longer than normal.
+                    </p>
+                  </Help>
+                </div>
               </div>
             ) : (
               <Button
@@ -273,14 +316,19 @@ class InvoicePrompt extends React.Component<Props, State> {
     this.setState({ [ev.target.name]: ev.target.value } as any);
   };
 
+  private handleChangePrivate = (ev: CheckboxChangeEvent) => {
+    this.setState({ privateHints: ev.target.checked });
+  };
+
   private generateInvoice = async (): Promise<RequestInvoiceResponse> => {
-    const { memo, fallbackAddress, expiry, denomination } = this.state;
+    const { memo, fallbackAddress, expiry, denomination, privateHints } = this.state;
     const value = fromUnitToBase(this.state.value, denomination);
     this.props.createInvoice({
       value,
       memo,
       fallback_addr: fallbackAddress,
       expiry: parseInt(expiry, 10) * 3600,
+      private: privateHints,
     });
 
     const response = await watchUntilPropChange(

@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { takeEvery, call, all, select, put } from 'redux-saga/effects';
+import { takeEvery, call, select, put } from 'redux-saga/effects';
 import {
   selectNodeLibOrThrow,
   selectNodeInfo,
@@ -11,8 +11,9 @@ import { checkPaymentRequest, sendPayment, createInvoice, sendOnChain } from './
 import { apiFetchOnChainFees } from 'lib/earn';
 import types from './types';
 import { CHAIN_TYPE } from 'utils/constants';
+import { NoRouteError } from 'lnd/errors';
 
-export function* handleSendPayment(action: ReturnType<typeof sendPayment>): SagaIterator {
+export function* handleSendPayment(action: ReturnType<typeof sendPayment>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -31,7 +32,7 @@ export function* handleSendPayment(action: ReturnType<typeof sendPayment>): Saga
   }
 }
 
-export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>): SagaIterator {
+export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -53,9 +54,7 @@ export function* handleSendOnChain(action: ReturnType<typeof sendOnChain>): Saga
   }
 }
 
-export function* handleCreateInvoice(
-  action: ReturnType<typeof createInvoice>,
-): SagaIterator {
+export function* handleCreateInvoice(action: ReturnType<typeof createInvoice>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -76,25 +75,26 @@ export function* handleCreateInvoice(
 
 export function* handleCheckPaymentRequest(
   action: ReturnType<typeof checkPaymentRequest>,
-): SagaIterator {
+) {
   const { paymentRequest, amount } = action.payload;
+  let nodeLib: Yielded<typeof selectNodeLibOrThrow>;
+  let decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest> | undefined;
+  let nodeInfo: Yielded<typeof nodeLib.getNodeInfo> | undefined;
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest> = yield call(
+    nodeLib = yield select(selectNodeLibOrThrow);
+    decodedRequest = (yield call(
       nodeLib.decodePaymentRequest,
       paymentRequest,
+    )) as Yielded<typeof nodeLib.decodePaymentRequest>;
+    nodeInfo = (yield call(nodeLib.getNodeInfo, decodedRequest.destination)) as Yielded<
+      typeof nodeLib.getNodeInfo
+    >;
+    const routeInfo: Yielded<typeof nodeLib.queryRoutes> = yield call(
+      nodeLib.queryRoutes,
+      decodedRequest.destination,
+      amount || decodedRequest.num_satoshis || '1',
+      { num_routes: 1 },
     );
-    const [nodeInfo, routeInfo] = yield all([
-      call(nodeLib.getNodeInfo, decodedRequest.destination),
-      call(
-        nodeLib.queryRoutes,
-        decodedRequest.destination,
-        amount || decodedRequest.num_satoshis || '1',
-        { num_routes: 1 },
-      ),
-    ]);
     yield put({
       type: types.CHECK_PAYMENT_REQUEST_SUCCESS,
       payload: {
@@ -105,6 +105,28 @@ export function* handleCheckPaymentRequest(
       },
     });
   } catch (err) {
+    // QueryRoutes doesn't allow hints, so give them the go-ahead if routing
+    // fails but the invoice has hints. TODO: Remove once this PR is merged
+    // https://github.com/lightningnetwork/lnd/pull/2186
+    if (decodedRequest && nodeInfo && err.constructor === NoRouteError) {
+      yield put({
+        type: types.CHECK_PAYMENT_REQUEST_SUCCESS,
+        payload: {
+          paymentRequest,
+          request: decodedRequest,
+          node: nodeInfo.node,
+          route: {
+            total_amt: '?',
+            total_amt_msat: '?',
+            total_fees: '?',
+            total_fees_msat: '?',
+            total_time_lock: '?',
+            hops: [],
+          },
+        },
+      });
+      return;
+    }
     yield put({
       type: types.CHECK_PAYMENT_REQUEST_FAILURE,
       payload: {
@@ -115,7 +137,7 @@ export function* handleCheckPaymentRequest(
   }
 }
 
-export function* handleFetchChainFees(): SagaIterator {
+export function* handleFetchChainFees() {
   try {
     const chain: Yielded<typeof getNodeChain> = yield select(getNodeChain);
     const nodeInfo: Yielded<typeof selectNodeInfo> = yield select(selectNodeInfo);

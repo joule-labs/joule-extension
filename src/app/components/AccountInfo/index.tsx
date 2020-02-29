@@ -8,22 +8,20 @@ import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import DepositModal from './DepositModal';
 import NodeUriModal from './NodeUriModal';
+import NodeWarning from './NodeWarning';
 import { getAccountInfo } from 'modules/account/actions';
-import { getNodeInfo } from 'modules/node/actions';
-import { getNodeChain, selectNodeInfo } from 'modules/node/selectors';
+import { getNodeChain } from 'modules/node/selectors';
 import { blockchainDisplayName } from 'utils/constants';
 import { AppState } from 'store/reducers';
 import './style.less';
 
 interface StateProps {
   account: AppState['account']['account'];
-  nodeInfo: ReturnType<typeof selectNodeInfo>;
   chain: ReturnType<typeof getNodeChain>;
 }
 
 interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
-  getNodeInfo: typeof getNodeInfo;
 }
 
 interface OwnProps {
@@ -48,13 +46,10 @@ class AccountInfo extends React.Component<Props, State> {
     if (!this.props.account) {
       this.props.getAccountInfo();
     }
-    if (!this.props.nodeInfo) {
-      this.props.getNodeInfo();
-    }
   }
 
   render() {
-    const { account, nodeInfo, chain } = this.props;
+    const { account, chain } = this.props;
     const { isDepositModalOpen, isNodeUriModalOpen } = this.state;
     const actions: ButtonProps[] = [
       {
@@ -141,11 +136,7 @@ class AccountInfo extends React.Component<Props, State> {
           ))}
         </div>
 
-        {nodeInfo && !nodeInfo.synced_to_chain && (
-          <div className="AccountInfo-syncWarning">
-            <Icon type="warning" /> Node is syncing to chain, balances may be incorrect
-          </div>
-        )}
+        <NodeWarning />
 
         {account && (
           <DepositModal isOpen={isDepositModalOpen} onClose={this.closeDepositModal} />
@@ -168,11 +159,7 @@ class AccountInfo extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, {}, AppState>(
   state => ({
     account: state.account.account,
-    nodeInfo: selectNodeInfo(state),
     chain: getNodeChain(state),
   }),
-  {
-    getNodeInfo,
-    getAccountInfo,
-  },
+  { getAccountInfo },
 )(AccountInfo);

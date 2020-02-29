@@ -7,7 +7,7 @@
     text-transform: uppercase;
     font-weight: bold;
     letter-spacing: 0.1rem;
-    opacity: 0.7;
+    color: @text-color-secondary;
   }
 
   &-header {
@@ -15,8 +15,8 @@
     align-items: center;
     padding: 1rem;
     margin-bottom: 1rem;
-    background: #FFF;
-    border-bottom: 1px solid #EEE;
+    background: #fff;
+    border-bottom: 1px solid #eee;
 
     &-icon {
       img {
@@ -73,7 +73,11 @@
     }
 
     &-advanced {
-      display: flex;
+      &-private {
+        display: flex;
+        align-items: center;
+        transform: translateY(-1rem);
+      }
 
       .ant-form-item {
         flex: 1;
@@ -88,8 +92,14 @@
         padding-bottom: 0;
 
         label {
+          display: flex;
+          align-items: center;
           font-size: 0.7rem;
           letter-spacing: 0.08rem;
+
+          .Help {
+            margin-left: 0.25rem;
+          }
         }
       }
 

@@ -40,6 +40,11 @@ class Unit extends React.Component<Props> {
       chain,
     } = this.props;
 
+    // If we get a non-number, just early return with it plaintext
+    if (Number.isNaN(parseInt(value, 10))) {
+      return <span className="Unit">{value}</span>;
+    }
+
     // Store & remove negative
     const prefix = value[0] === '-' ? '-' : showPlus ? '+' : '';
     value = value.replace('-', '');

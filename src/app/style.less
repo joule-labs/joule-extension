@@ -1,6 +1,5 @@
 // Import libraries
 @import '~antd/dist/antd.less';
-@import '~ant-design-pro/dist/ant-design-pro.css';
 
 // Import variables
 @import '~style/variables.less';
@@ -11,7 +10,7 @@ body {
   padding: 0;
   font-family: @font-family;
   color: #4d4d4d;
-  background: #FBFBFB;
+  background: #fbfbfb;
 
   @media (min-width: 500px) {
     background-image: url('~static/images/bg.png');
@@ -56,6 +55,7 @@ body {
 }
 
 // ensure modals display above drawers
-.ant-modal-mask, .ant-modal-wrap {
+.ant-modal-mask,
+.ant-modal-wrap {
   z-index: 1001;
 }

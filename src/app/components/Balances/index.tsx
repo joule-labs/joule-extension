@@ -123,6 +123,7 @@ class Balances extends React.Component<Props, State> {
                 percent={stats.channelPercent + stats.pendingPercent}
                 type="circle"
                 strokeColor={COLORS.PRIMARY}
+                strokeLinecap="square"
                 successPercent={Math.max(
                   0.1,
                   100 - stats.channelPercent - stats.onchainPercent,

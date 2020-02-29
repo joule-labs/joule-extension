@@ -155,7 +155,7 @@ class NodeSettings extends React.Component<Props, State> {
           isSaving={isUpdatingMacaroons}
           initialAdmin={adminMacaroon || undefined}
           initialReadonly={readonlyMacaroon || undefined}
-          error={updateMacaroonsError ? updateMacaroonsError.message : undefined}
+          error={updateMacaroonsError}
         />
       );
     }
