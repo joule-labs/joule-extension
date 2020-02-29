@@ -27,7 +27,8 @@
       "store/*": ["./src/app/store/*"],
       "style/*": ["./src/app/style/*"],
       "typings/*": ["./src/app/typings/*"],
-      "utils/*": ["./src/app/utils/*"]
+      "utils/*": ["./src/app/utils/*"],
+      "lnd/*": ["./src/lnd/*"]
     }
   },
   "include": ["src", "webpack.config.ts"]

@@ -1,5 +1,5 @@
 import { AnyTransaction, LightningPaymentWithToNode } from 'modules/account/types';
-import { LightningInvoice, ChainTransaction } from 'lib/lnd-http';
+import { LightningInvoice, ChainTransaction } from 'lnd/message';
 
 export function isInvoice(source: AnyTransaction): source is LightningInvoice {
   return !!(source as LightningInvoice).expiry;

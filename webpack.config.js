@@ -160,6 +160,7 @@ module.exports = {
       style: `${srcApp}/style`,
       typings: `${srcApp}/typings`,
       utils: `${srcApp}/utils`,
+      lnd: `${src}/lnd`,
     },
   },
   plugins: [

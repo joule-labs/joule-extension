@@ -1,5 +1,5 @@
 import types from './types';
-import { Utxo } from 'lib/lnd-http';
+import { Utxo } from 'lnd/message';
 
 export interface OnChainState {
   utxos: Utxo[] | null;

@@ -11,7 +11,7 @@ import { checkPaymentRequest, sendPayment, createInvoice, sendOnChain } from './
 import { apiFetchOnChainFees } from 'lib/earn';
 import types from './types';
 import { CHAIN_TYPE } from 'utils/constants';
-import { NoRouteError } from 'lib/lnd-http/errors';
+import { NoRouteError } from 'lnd/errors';
 
 export function* handleSendPayment(action: ReturnType<typeof sendPayment>) {
   try {

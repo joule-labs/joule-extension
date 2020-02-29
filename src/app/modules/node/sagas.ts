@@ -11,12 +11,12 @@ import {
 import { requirePassword } from 'modules/crypto/sagas';
 import { accountTypes } from 'modules/account';
 import { channelsTypes } from 'modules/channels';
-import LndHttpClient, { MacaroonAuthError, PermissionDeniedError } from 'lib/lnd-http';
+import LndMessageClient, { MacaroonAuthError, PermissionDeniedError } from 'lnd/message';
 import types from './types';
 
 export function* handleCheckNode(action: ReturnType<typeof actions.checkNode>) {
   const url = action.payload;
-  const client = new LndHttpClient(url);
+  const client = new LndMessageClient(url);
   try {
     yield call(client.getInfo);
   } catch (err) {
@@ -36,7 +36,7 @@ export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>)
     const requests = urls.map(url => {
       return new Promise<string | null>(async resolve => {
         try {
-          const client = new LndHttpClient(url);
+          const client = new LndMessageClient(url);
           await client.getInfo();
           resolve(url);
         } catch (err) {
@@ -65,7 +65,7 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>) {
   const { url, admin, readonly } = action.payload;
 
   // Check read-only by making sure request doesn't error
-  let client = new LndHttpClient(url, readonly);
+  let client = new LndMessageClient(url, readonly);
   let nodeInfo;
   try {
     nodeInfo = yield call(client.getInfo);
@@ -81,7 +81,7 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>) {
   // Test admin by intentionally send an invalid payment,
   // but make sure we didn't error out with a macaroon auth error
   // TODO: Replace with sign message once REST supports it
-  client = new LndHttpClient(url, admin);
+  client = new LndMessageClient(url, admin);
   try {
     yield call(client.sendPayment, { payment_request: 'testing admin' });
   } catch (err) {

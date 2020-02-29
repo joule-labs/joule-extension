@@ -8,7 +8,7 @@ import types from './types';
 import {
   SignMessageResponse as LndSignMessageResponse,
   VerifyMessageResponse as LndVerifyMessageResponse,
-} from 'lib/lnd-http/types';
+} from 'lnd/types';
 import { safeGetNodeInfo } from 'utils/misc';
 
 export function* handleSignMessage(action: ReturnType<typeof signMessage>) {

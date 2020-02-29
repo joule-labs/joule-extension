@@ -1,9 +1,8 @@
-import {
-  LndHttpClient,
+import LndMessageClient, {
   GetNodeInfoResponse,
   AlreadyConnectedError,
   LightningNode,
-} from 'lib/lnd-http';
+} from 'lnd/message';
 
 export function sleep(time: number) {
   return new Promise(resolve => {
@@ -29,7 +28,7 @@ export const UNKNOWN_NODE: LightningNode = {
 
 // Run getNodeInfo, but if it fails, return a spoofed node object
 export async function safeGetNodeInfo(
-  lib: LndHttpClient,
+  lib: LndMessageClient,
   pubkey: string,
 ): Promise<GetNodeInfoResponse> {
   if (!pubkey) {
@@ -56,7 +55,10 @@ export async function safeGetNodeInfo(
 }
 
 // Run connectPeer, but if it fails due to duplicate, just ignore
-export async function safeConnectPeer(lib: LndHttpClient, address: string): Promise<any> {
+export async function safeConnectPeer(
+  lib: LndMessageClient,
+  address: string,
+): Promise<any> {
   try {
     lib.connectPeer(address);
   } catch (err) {

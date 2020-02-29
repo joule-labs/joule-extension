@@ -1,4 +1,4 @@
-import LndHttpClient, { Macaroon } from 'lib/lnd-http';
+import LndMessageClient, { Macaroon } from 'lnd/message';
 import {
   selectSyncedUnencryptedNodeState,
   selectSyncedEncryptedNodeState,
@@ -63,7 +63,7 @@ export function setNode(
       url,
       adminMacaroon,
       readonlyMacaroon,
-      lib: new LndHttpClient(url, adminMacaroon),
+      lib: new LndMessageClient(url, adminMacaroon),
     },
   };
 }
@@ -81,7 +81,7 @@ export function setSyncedUnencryptedNodeState(
     payload: {
       url,
       readonlyMacaroon,
-      lib: url ? new LndHttpClient(url as string, readonlyMacaroon as string) : null,
+      lib: url ? new LndMessageClient(url as string, readonlyMacaroon as string) : null,
     },
   };
 }
@@ -95,7 +95,7 @@ export function setSyncedEncryptedNodeState(
     payload: {
       url,
       adminMacaroon,
-      lib: url ? new LndHttpClient(url as string, adminMacaroon as string) : null,
+      lib: url ? new LndMessageClient(url as string, adminMacaroon as string) : null,
     },
   };
 }
