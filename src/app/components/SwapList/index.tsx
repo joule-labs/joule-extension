@@ -6,7 +6,7 @@ import BigMessage from 'components/BigMessage';
 import SwapRow from './SwapRow';
 import { AppState } from 'store/reducers';
 import { listSwaps } from 'modules/loop/actions';
-import { GetSwapsResponse } from 'lib/loop-http';
+import { SwapResponse } from 'lib/loop-http';
 
 interface SwapRowData {
   timestamp: number;
@@ -24,7 +24,7 @@ interface DispatchProps {
 }
 
 interface OwnProps {
-  onClick?(swaps: GetSwapsResponse): void;
+  onClick?(swap: SwapResponse): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
