@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { GetSwapsResponse } from 'lib/loop-http';
 
 interface StateProps {
-  chain: ReturnType<typeof getNodeChain>;
+  swapInfo: AppState['loop']['swapInfo'];
 }
 
 interface OwnProps {
@@ -30,7 +30,7 @@ type Props = StateProps & OwnProps;
 
 class SwapRow extends React.Component<Props> {
   render() {
-    const { timestamp, status, delta, onClick, title } = this.props;
+    const { timestamp, status, delta, onClick, type } = this.props;
 
     let icon;
     icon = (
@@ -51,7 +51,7 @@ class SwapRow extends React.Component<Props> {
           </Tooltip>
         </div>
         <div className="SwapRow-info">
-          <div className="SwapRow-info-title">{title}</div>
+          <div className="SwapRow-info-title">{type}</div>
           <div className="SwapRow-info-time">
             {moment.unix(timestamp / 1000000).format('MMM Do, LT')}
           </div>
@@ -77,5 +77,5 @@ class SwapRow extends React.Component<Props> {
 }
 
 export default connect<StateProps, {}, OwnProps, AppState>(state => ({
-  chain: getNodeChain(state),
+  swapInfo: state.loop.swapInfo,
 }))(SwapRow);
