@@ -4,9 +4,11 @@ import { Tabs, Icon, Drawer } from 'antd';
 import AccountInfo from 'components/AccountInfo';
 import ChannelList from 'components/ChannelList';
 import TransactionList from 'components/TransactionList';
+import SwapList from 'components/SwapList';
 import SendForm from 'components/SendForm';
 import InvoiceForm from 'components/InvoiceForm';
 import TransactionInfo from 'components/TransactionInfo';
+import SwapInfo from 'components/SwapInfo';
 import ConnectionFailureModal from 'components/ConnectionFailureModal';
 import { AppState } from 'store/reducers';
 import ChannelInfo from 'components/ChannelInfo';
@@ -15,6 +17,7 @@ import { AnyTransaction } from 'modules/account/types';
 import { getAccountInfo } from 'modules/account/actions';
 import { getChannels } from 'modules/channels/actions';
 import './home.less';
+import { GetSwapsResponse } from 'lib/loop-http';
 
 interface StateProps {
   nodeUrl: AppState['node']['url'];
@@ -72,6 +75,16 @@ class HomePage extends React.Component<Props, State> {
             key="transactions"
           >
             <TransactionList onClick={this.handleTransactionClick} />
+          </Tabs.TabPane>
+          <Tabs.TabPane
+            tab={
+              <>
+                <Icon type="monitor" /> Swaps
+              </>
+            }
+            key="swaps"
+          >
+            <SwapList onClick={this.handleSwapsClick} />
           </Tabs.TabPane>
         </Tabs>
 
@@ -136,6 +149,10 @@ class HomePage extends React.Component<Props, State> {
 
   private handleTransactionClick = (tx: AnyTransaction) => {
     this.openDrawer(<TransactionInfo tx={tx} />, 'Transaction Details');
+  };
+
+  private handleSwapsClick = (swaps: GetSwapsResponse) => {
+    this.openDrawer(<SwapInfo swaps={swaps} />, 'Swap Details');
   };
 
   private retryConnection = () => {

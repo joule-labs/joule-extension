@@ -71,6 +71,10 @@ export class LoopHttpClient {
     return this.request<T.LoopResponse, T.LoopInArguments>('POST', '/v1/loop/in', args);
   };
 
+  listSwaps = () => {
+    return this.request<T.GetSwapsResponse>('GET', '/v1/loop/swaps');
+  };
+
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(
     method: ApiMethod,

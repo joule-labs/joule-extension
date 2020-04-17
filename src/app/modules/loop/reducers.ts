@@ -3,6 +3,7 @@ import LoopHttpClient, {
   LoopResponse,
   GetLoopQuoteResponse,
   GetLoopTermsResponse,
+  GetSwapsResponse,
 } from 'lib/loop-http';
 
 interface LoopTypeState {
@@ -25,6 +26,10 @@ export interface LoopState {
 
   isCheckingUrl: boolean;
   checkUrlError: null | Error;
+
+  swapInfo: null | GetSwapsResponse;
+  isFetchingSwaps: boolean;
+  fetchingSwapsError: null | Error;
 
   out: LoopTypeState;
   in: LoopTypeState;
@@ -49,6 +54,10 @@ export const INITIAL_STATE: LoopState = {
   url: null,
   isCheckingUrl: false,
   checkUrlError: null,
+
+  swapInfo: null,
+  isFetchingSwaps: false,
+  fetchingSwapsError: null,
 
   out: { ...INITIAL_LOOP_TYPE_STATE },
   in: { ...INITIAL_LOOP_TYPE_STATE },
@@ -183,6 +192,28 @@ export default function loopReducers(
           loopError: action.payload,
           isLooping: false,
         },
+      };
+
+    case types.LIST_SWAPS:
+      return {
+        ...state,
+        swapInfo: null,
+        isFetchingSwaps: true,
+        fetchingSwapsError: null,
+      };
+    case types.LIST_SWAPS_SUCCESS:
+      return {
+        ...state,
+        swapInfo: action.payload,
+        isFetchingSwaps: false,
+        fetchingSwapsError: null,
+      };
+    case types.LIST_SWAPS_FAILURE:
+      return {
+        ...state,
+        swapInfo: null,
+        isFetchingSwaps: false,
+        fetchingSwapsError: action.payload,
       };
 
     case types.RESET_LOOP:

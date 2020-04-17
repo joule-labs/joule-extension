@@ -1,0 +1,132 @@
+@import '~style/variables.less';
+
+.SwapsRow {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(#000, 0.08);
+
+  &.is-clickable:hover {
+    cursor: pointer;
+  }
+
+  &-avatar {
+    position: relative;
+    flex-shrink: 0;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin-right: 1rem;
+
+    &-img {
+      width: 100%;
+      height: 100%;
+
+      .anticon {
+        font-size: 1.6rem;
+      }
+
+      &.is-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 100%;
+        background: linear-gradient(to top, #f6f6f6, #fff);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.12);
+      }
+
+      &.is-invoice {
+        .anticon {
+          opacity: 0.6;
+        }
+      }
+
+      &.is-bitcoin {
+        box-shadow: none;
+        background: linear-gradient(to top, darken(#ff9900, 5%), lighten(#ff9900, 5%));
+
+        .anticon {
+          color: #fff;
+          transform: rotate(20deg);
+        }
+      }
+
+      &.is-litecoin {
+        background: #00aeff;
+
+        .anticon {
+          color: #fff;
+        }
+      }
+    }
+
+    &-status {
+      position: absolute;
+      bottom: 0.1rem;
+      right: 0.1rem;
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 100%;
+      box-shadow: 0 0 0 3px #fff;
+
+      &.is-complete {
+        background: @success-color;
+      }
+
+      &.is-pending {
+        background: @warning-color;
+      }
+
+      &.is-rejected {
+        background: @error-color;
+      }
+
+      &.is-expired {
+        background: #aaa;
+      }
+    }
+  }
+
+  &-info {
+    flex: 1;
+    min-width: 0;
+    padding-right: 1rem;
+
+    &-title {
+      margin-bottom: 0.1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      code {
+        font-size: 0.8rem;
+      }
+    }
+
+    &-time {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  }
+
+  &-delta {
+    font-size: 0.9rem;
+    text-align: right;
+
+    &.is-positive .Unit-primary {
+      color: @success-color;
+    }
+
+    &.is-negative .Unit-primary {
+      color: @error-color;
+    }
+
+    .Unit-secondary {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+  }
+}

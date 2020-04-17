@@ -31,6 +31,10 @@ export function loopIn(payload: LoopInArguments) {
   return { type: types.LOOP_IN, payload };
 }
 
+export function listSwaps() {
+  return { type: types.LIST_SWAPS };
+}
+
 export function resetLoop() {
   return { type: types.RESET_LOOP };
 }
