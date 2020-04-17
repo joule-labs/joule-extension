@@ -30,6 +30,22 @@ export function* handleSetLoopURL(
   });
 }
 
+// list swap history and status
+export function* handleSwaps(): SagaIterator {
+  let payload;
+  try {
+    const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
+      selectLoopLibOrThrow,
+    );
+    const libCall = loopLib.listSwaps;
+    payload = (yield call(libCall as any)) as Yielded<typeof libCall>;
+  } catch (err) {
+    yield put({ type: types.LIST_SWAPS_FAILURE, payload: err });
+    return;
+  }
+  yield put({ type: types.LIST_SWAPS_SUCCESS, payload });
+}
+
 export function* handleGetLoopTerms(
   action: ReturnType<typeof actions.getLoopOutQuote | typeof actions.getLoopInQuote>,
 ): SagaIterator {
@@ -110,4 +126,5 @@ export default function* loopSagas(): SagaIterator {
   yield takeLatest(types.GET_LOOP_IN_QUOTE, handleGetLoopQuote);
   yield takeLatest(types.LOOP_OUT, handleLoop);
   yield takeLatest(types.LOOP_IN, handleLoop);
+  yield takeLatest(types.LIST_SWAPS, handleSwaps);
 }

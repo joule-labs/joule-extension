@@ -46,3 +46,21 @@ export interface LoopResponse {
   id: string;
   htlc_address: string;
 }
+
+export interface GetSwapsResponse {
+  swaps: SwapResponse[];
+}
+
+export interface SwapResponse {
+  amt: string;
+  id: string;
+  id_bytes: string;
+  type: string;
+  state: string;
+  initiation_time: string;
+  last_update_time: string;
+  htlc_address: string;
+  cost_server: string;
+  cost_onchain: string;
+  cost_offchain: string;
+}

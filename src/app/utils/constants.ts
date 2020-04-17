@@ -18,6 +18,13 @@ export enum LOOP_TYPE {
   LOOP_IN = 'Loop In',
 }
 
+export enum SWAP_STATUS {
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+  INITIATED = 'INITIATED',
+  HTLC_PUBLISHED = 'HTLC_PUBLISHED',
+}
+
 export const DEFAULT_NODE_URLS = {
   [NODE_TYPE.LOCAL]: 'https://localhost:8080',
   [NODE_TYPE.LIGHTNING_APP]: 'https://localhost:8086',

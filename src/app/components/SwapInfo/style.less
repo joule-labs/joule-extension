@@ -1,0 +1,66 @@
+@import '~style/variables.less';
+@icon-size: 4.6rem;
+
+.SwapInfo {
+  padding-bottom: 1rem;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+
+  &-qr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 2px rgba(0, 0, 0, 0.2);
+
+    canvas {
+      display: block;
+    }
+  }
+
+  &-copy {
+    display: block;
+    width: 240px;
+    padding: 0.25rem;
+    margin: 0 auto 1.5rem;
+    font-size: 0.6rem;
+    text-align: center;
+    border-radius: 4px;
+    opacity: 0.7;
+
+    &:hover {
+      cursor: pointer;
+      background: rgba(#000, 0.05);
+    }
+  }
+
+  &-route {
+    &-title {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    &-routes {
+      padding: 1.2rem 0.5rem 0;
+      border: 1px solid rgba(#000, 0.08);
+      border-radius: 4px;
+
+      .ant-timeline-item:last-child {
+        padding-bottom: 0;
+      }
+
+      code {
+        font-size: 0.8rem;
+      }
+    }
+
+    .BigMessage {
+      padding: 1rem;
+    }
+  }
+}
