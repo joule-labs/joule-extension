@@ -4,12 +4,11 @@ import moment from 'moment';
 import classnames from 'classnames';
 import { Tooltip, Icon } from 'antd';
 import Unit from 'components/Unit';
-import { getNodeChain } from 'modules/node/selectors';
-import { LOOP_TYPE } from 'utils/constants';
 import './SwapRow.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
 import { GetSwapsResponse } from 'lib/loop-http';
+import { LOOP_TYPE } from 'utils/constants';
 
 interface StateProps {
   swapInfo: AppState['loop']['swapInfo'];
@@ -18,9 +17,9 @@ interface StateProps {
 interface OwnProps {
   source: GetSwapsResponse;
   title: React.ReactNode;
-  type: LOOP_TYPE.LOOP_IN | LOOP_TYPE.LOOP_OUT;
+  type: string;
   timestamp: number;
-  status: 'INITIATED' | 'SUCCESS' | 'FAILED' | 'HTLC_PUBLISHED';
+  status: string;
   id?: string;
   delta?: BN | false | null;
   onClick?(source: GetSwapsResponse): void;
@@ -59,7 +58,7 @@ class SwapRow extends React.Component<Props> {
         {delta && (
           <div
             className={classnames(
-              `SwapRow-delta is-${delta.gtn(0) ? 'positive' : 'negative'}`,
+              `SwapRow-delta is-${type === 'LOOP_IN' ? 'positive' : 'negative'}`,
             )}
           >
             <Unit value={delta.toString()} showPlus showFiat />
