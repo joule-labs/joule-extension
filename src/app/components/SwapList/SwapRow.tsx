@@ -7,33 +7,32 @@ import Unit from 'components/Unit';
 import './SwapRow.less';
 import { AppState } from 'store/reducers';
 import { connect } from 'react-redux';
-import { GetSwapsResponse } from 'lib/loop-http';
-import { LOOP_TYPE } from 'utils/constants';
+import { SwapResponse } from 'lib/loop-http';
 
 interface StateProps {
   swapInfo: AppState['loop']['swapInfo'];
 }
 
 interface OwnProps {
-  source: GetSwapsResponse;
+  source: SwapResponse;
   title: React.ReactNode;
   type: string;
   timestamp: number;
+  htlc: string;
   status: string;
-  id?: string;
   delta?: BN | false | null;
-  onClick?(source: GetSwapsResponse): void;
+  onClick?(source: SwapResponse): void;
 }
 
 type Props = StateProps & OwnProps;
 
 class SwapRow extends React.Component<Props> {
   render() {
-    const { timestamp, status, delta, onClick, type } = this.props;
+    const { htlc, timestamp, status, delta, onClick, type } = this.props;
 
     let icon;
     icon = (
-      <div className="SwapRow-avatar-img is-icon is-loop">
+      <div className="SwapRow-avatar-img">
         <Icon type="audit" />
       </div>
     );
@@ -50,7 +49,7 @@ class SwapRow extends React.Component<Props> {
           </Tooltip>
         </div>
         <div className="SwapRow-info">
-          <div className="SwapRow-info-title">{type}</div>
+          <div className="SwapRow-info-title">{htlc}</div>
           <div className="SwapRow-info-time">
             {moment.unix(timestamp / 1000000).format('MMM Do, LT')}
           </div>

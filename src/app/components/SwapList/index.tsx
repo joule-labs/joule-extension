@@ -71,7 +71,7 @@ class SwapList extends React.Component<Props> {
       }
     }
 
-    return <div className="TransactionsList">{content}</div>;
+    return <div className="SwapList">{content}</div>;
   }
 
   private renderSwapRows = () => {

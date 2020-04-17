@@ -17,7 +17,7 @@ import { AnyTransaction } from 'modules/account/types';
 import { getAccountInfo } from 'modules/account/actions';
 import { getChannels } from 'modules/channels/actions';
 import './home.less';
-import { GetSwapsResponse } from 'lib/loop-http';
+import { SwapResponse } from 'lib/loop-http';
 
 interface StateProps {
   nodeUrl: AppState['node']['url'];
@@ -151,8 +151,8 @@ class HomePage extends React.Component<Props, State> {
     this.openDrawer(<TransactionInfo tx={tx} />, 'Transaction Details');
   };
 
-  private handleSwapsClick = (swaps: GetSwapsResponse) => {
-    this.openDrawer(<SwapInfo swaps={swaps} />, 'Swap Details');
+  private handleSwapsClick = (swap: SwapResponse) => {
+    this.openDrawer(<SwapInfo swap={swap} />, 'Swap Details');
   };
 
   private retryConnection = () => {
