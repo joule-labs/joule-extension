@@ -6,11 +6,12 @@ import { getNodePubKey } from 'modules/node/sagas';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, UNKNOWN_NODE } from 'utils/misc';
 import types, { Account } from './types';
+import { getDepositAddress } from './actions';
 
-export function* handleGetAccountInfo(): SagaIterator {
+export function* handleGetAccountInfo() {
   try {
     const myPubKey: string = yield call(getNodePubKey);
-    const nodeLib: ReturnType<typeof selectNodeLibOrThrow> = yield select(
+    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
       selectNodeLibOrThrow,
     );
     const calls = [
@@ -18,7 +19,11 @@ export function* handleGetAccountInfo(): SagaIterator {
       call(nodeLib.getBlockchainBalance),
       call(nodeLib.getChannelsBalance),
     ];
-    const [nodeInfo, chainBalances, channelsBalances] = yield all(calls);
+    const [nodeInfo, chainBalances, channelsBalances]: [
+      Yielded<typeof nodeLib.getNodeInfo>,
+      Yielded<typeof nodeLib.getBlockchainBalance>,
+      Yielded<typeof nodeLib.getChannelsBalance>
+    ] = yield all(calls);
     const payload: Account = {
       pubKey: myPubKey,
       alias: nodeInfo.node.alias,
@@ -49,7 +54,7 @@ export function* handleGetAccountInfo(): SagaIterator {
   }
 }
 
-export function* handleGetTransactions(): SagaIterator {
+export function* handleGetTransactions() {
   try {
     // Get various transactions info
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
@@ -118,13 +123,16 @@ export function* handleGetTransactions(): SagaIterator {
   }
 }
 
-export function* handleGetDepositAddress(): SagaIterator {
+export function* handleGetDepositAddress(action: ReturnType<typeof getDepositAddress>) {
   try {
     yield call(requirePassword);
     const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
       selectNodeLibOrThrow,
     );
-    const res: Yielded<typeof nodeLib.getAddress> = yield call(nodeLib.getAddress);
+    const res: Yielded<typeof nodeLib.getAddress> = yield call(
+      nodeLib.getAddress,
+      action.payload,
+    );
     yield put({
       type: types.GET_DEPOSIT_ADDRESS_SUCCESS,
       payload: res.address,

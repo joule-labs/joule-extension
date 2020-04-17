@@ -1,0 +1,26 @@
+@import '~style/variables.less';
+
+.FourOhFour {
+  height: 100%;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  &-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &-message {
+    font-size: 1rem;
+    color: @text-color-secondary;
+  }
+
+  &-buttons {
+    .ant-btn {
+      margin: 1.5rem 0.25rem 0;
+    }
+  }
+}

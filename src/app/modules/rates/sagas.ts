@@ -5,7 +5,7 @@ import { fetchRates } from './actions';
 import { apiFetchRates } from 'lib/cryptocompare';
 import types from './types';
 
-export function* handleFetchRates(): SagaIterator {
+export function* handleFetchRates() {
   try {
     const fiats = Object.keys(Fiat);
     const coins = Object.values(CHAIN_TYPE);

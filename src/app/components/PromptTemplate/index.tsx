@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { Button, message } from 'antd';
+import { Button, Alert } from 'antd';
 import { confirmPrompt, rejectPrompt } from 'utils/prompt';
 import './style.less';
 
@@ -17,21 +17,33 @@ interface Props {
 interface State {
   isConfirming: boolean;
   isRejecting: boolean;
+  error: Error | null;
 }
 
 export default class PromptTemplate extends React.Component<Props, State> {
   state: State = {
     isConfirming: false,
     isRejecting: false,
+    error: null,
   };
 
   render() {
     const { children, isConfirmDisabled, isContentCentered, hasNoButtons } = this.props;
-    const { isConfirming, isRejecting } = this.state;
+    const { isConfirming, isRejecting, error } = this.state;
     const confirmDisabled = isConfirmDisabled || isRejecting;
 
     return (
       <div className="PromptTemplate">
+        {error && (
+          <Alert
+            className="PromptTemplate-error"
+            type="error"
+            message={error.message}
+            onClose={this.closeError}
+            closable
+            banner
+          />
+        )}
         <div
           className={classnames(
             'PromptTemplate-content',
@@ -88,12 +100,18 @@ export default class PromptTemplate extends React.Component<Props, State> {
     if (this.props.getConfirmData) {
       try {
         data = await this.props.getConfirmData();
-      } catch (err) {
-        this.setState({ isConfirming: false });
-        message.error(err.message, 3);
+      } catch (error) {
+        this.setState({
+          isConfirming: false,
+          error,
+        });
         return;
       }
     }
     confirmPrompt(data);
+  };
+
+  private closeError = () => {
+    this.setState({ error: null });
   };
 }

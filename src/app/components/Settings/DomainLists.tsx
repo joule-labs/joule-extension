@@ -32,7 +32,7 @@ export default class DomainLists extends React.Component<Props> {
         titles={[APPROVED, REJECTED]}
         dataSource={data}
         targetKeys={rejected}
-        render={item => removeDomainPrefix(item.title)}
+        render={item => removeDomainPrefix(item.title as string)}
         footer={this.renderFooter}
         locale={{
           itemUnit: 'site',

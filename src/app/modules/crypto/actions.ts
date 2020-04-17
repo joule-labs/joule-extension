@@ -6,7 +6,7 @@ export function generateSalt() {
   let array = new Uint8Array(32);
   window.crypto.getRandomValues(array);
   array = array.map(x => validChars.charCodeAt(x % validChars.length));
-  const salt = String.fromCharCode.apply(null, array);
+  const salt = String.fromCharCode.apply(null, array as any);
 
   return {
     type: types.GENERATE_SALT,

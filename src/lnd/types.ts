@@ -1,9 +1,7 @@
 // Shared Types
 export type Macaroon = string;
 
-export type Response<T> = Promise<T>;
-
-export type AddressType = 'np2wkh' | 'p2wkh';
+export type AddressType = '0' | '2';
 
 export type UtxoAddressType = 'NESTED_PUBKEY_HASH' | 'WITNESS_PUBKEY_HASH';
 
@@ -407,3 +405,72 @@ export interface GetUtxosParams {
 export interface GetUtxosResponse {
   utxos: Utxo[];
 }
+
+// Shared API interface
+export interface LndAPI {
+  getInfo(): Promise<GetInfoResponse>;
+  getNodeInfo(pubKey: string): Promise<GetNodeInfoResponse>;
+  getChannels(): Promise<GetChannelsResponse>;
+  getPendingChannels(): Promise<GetPendingChannelsResponse>;
+  getBlockchainBalance(): Promise<GetBlockchainBalanceResponse>;
+  getChannelsBalance(): Promise<GetChannelsBalanceResponse>;
+  getTransactions(): Promise<GetTransactionsResponse>;
+  getPayments(): Promise<GetPaymentsResponse>;
+  getInvoices(args?: GetInvoicesArguments): Promise<GetInvoicesResponse>;
+  getInvoice(paymentHash: string): Promise<GetInvoiceResponse>;
+  createInvoice(args: CreateInvoiceArguments): Promise<CreateInvoiceResponse>;
+  decodePaymentRequest(paymentRequest: string): Promise<DecodePaymentRequestResponse>;
+  queryRoutes(
+    pubKey: string,
+    amount: string,
+    args: QueryRoutesArguments,
+  ): Promise<QueryRoutesResponse>;
+  sendPayment(args: SendPaymentArguments): Promise<SendPaymentResponse>;
+  sendOnChain(args: SendOnChainArguments): Promise<SendOnChainResponse>;
+  getAddress(args: NewAddressArguments): Promise<NewAddressResponse>;
+  getPeers(): Promise<GetPeersResponse>;
+  connectPeer(address: string, perm?: boolean): Promise<{}>;
+  openChannel(params: OpenChannelParams): Promise<OpenChannelResponse>;
+  closeChannel(fundingTxid: string, outputIndex: string): Promise<CloseChannelResponse>;
+  signMessage(message: string): Promise<SignMessageResponse>;
+  verifyMessage(params: VerifyMessageParams): Promise<VerifyMessageResponse>;
+  getUtxos(params?: GetUtxosParams): Promise<GetUtxosResponse>;
+}
+
+export type LndAPIMethod = keyof LndAPI;
+
+// Browser message interface
+export interface LndAPIRequestMessage<M extends LndAPIMethod> {
+  type: 'lnd-api-request';
+  url: string;
+  macaroon: undefined | Macaroon;
+  method: M;
+  args: Parameters<LndAPI[M]>;
+}
+
+export interface LndAPIResponseNetworkError {
+  statusText: string;
+  status: number;
+}
+
+export type LndAPIResponseError =
+  // Fetch error
+  | LndAPIResponseNetworkError
+  // LND error
+  | ErrorResponse
+  // Generic error
+  | string;
+
+export type LndAPIResponseMessage<M extends LndAPIMethod> =
+  | {
+      type: 'lnd-api-response';
+      method: M;
+      data: ReturnType<LndAPI[M]>;
+      error: undefined;
+    }
+  | {
+      type: 'lnd-api-response';
+      method: M;
+      error: LndAPIResponseError;
+      data: undefined;
+    };

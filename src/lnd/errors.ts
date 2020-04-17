@@ -1,8 +1,6 @@
 /* tslint:disable:max-classes-per-file */
 
-interface ErrorConstructor {
-  new (...args: any[]): Error;
-}
+type ErrorConstructor = new (...args: any[]) => Error;
 
 /**
  * Workaround for custom errors when compiling typescript targeting 'ES5'.

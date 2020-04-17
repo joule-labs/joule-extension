@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "target": "es5",
+    "target": "es6",
     "jsx": "preserve",
     "moduleResolution": "node",
     "outDir": "dist/tsc_output",
@@ -25,9 +25,10 @@
       "prompts/*": ["./src/app/prompts/*"],
       "static/*": ["./src/app/static/*"],
       "store/*": ["./src/app/store/*"],
-      "styles/*": ["./src/app/styles/*"],
+      "style/*": ["./src/app/style/*"],
       "typings/*": ["./src/app/typings/*"],
-      "utils/*": ["./src/app/utils/*"]
+      "utils/*": ["./src/app/utils/*"],
+      "lnd/*": ["./src/lnd/*"]
     }
   },
   "include": ["src", "webpack.config.ts"]
