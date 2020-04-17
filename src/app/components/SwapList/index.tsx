@@ -7,7 +7,6 @@ import SwapRow from './SwapRow';
 import { AppState } from 'store/reducers';
 import { listSwaps } from 'modules/loop/actions';
 import { GetSwapsResponse } from 'lib/loop-http';
-import { stat } from 'fs';
 
 interface SwapRowData {
   timestamp: number;
@@ -76,7 +75,7 @@ class SwapList extends React.Component<Props> {
   }
 
   private renderSwapRows = () => {
-    const { swapInfo } = this.props;
+    const { swapInfo, onClick } = this.props;
     if (!swapInfo) {
       return [];
     }
@@ -95,7 +94,7 @@ class SwapList extends React.Component<Props> {
             timestamp={parseInt(swap.initiation_time, 10)}
             status={swap.state}
             delta={new BN(`-${swap.amt}`)}
-            // onClick={onClick}
+            onClick={onClick}
           />
         ),
       })),

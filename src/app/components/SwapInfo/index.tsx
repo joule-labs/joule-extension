@@ -1,49 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Timeline, Icon } from 'antd';
-import { getAccountInfo } from 'modules/account/actions';
-import { AnyTransaction } from 'modules/account/types';
 import { AppState } from 'store/reducers';
 import './style.less';
+import { GetSwapsResponse } from 'lib/loop-http';
 
 interface StateProps {
-  account: AppState['account']['account'];
-  node: AppState['node']['nodeInfo'];
-}
-
-interface DispatchProps {
-  getAccountInfo: typeof getAccountInfo;
+  swaps: AppState['loop']['swapInfo'];
 }
 
 interface OwnProps {
-  tx: AnyTransaction;
+  swap: GetSwapsResponse;
 }
 
-type Props = StateProps & DispatchProps & OwnProps;
+type Props = StateProps & OwnProps;
 
 class SwapInfo extends React.Component<Props> {
-  componentWillMount() {
-    if (!this.props.account) {
-      this.props.getAccountInfo();
-    }
-  }
-
   render() {
-    const { tx, account, node } = this.props;
-    if (!account) {
-      return null;
-    }
-
     let pathEl;
 
     return <div className="SwapInfo">{pathEl}</div>;
   }
 }
 
-export default connect<StateProps, DispatchProps, OwnProps, AppState>(
+export default connect<StateProps, {}, OwnProps, AppState>(
   state => ({
-    account: state.account.account,
-    node: state.node.nodeInfo,
+    swaps: state.loop.swapInfo,
   }),
-  { getAccountInfo },
+  {},
 )(SwapInfo);

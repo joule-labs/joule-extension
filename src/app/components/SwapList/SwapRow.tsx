@@ -3,7 +3,6 @@ import BN from 'bn.js';
 import moment from 'moment';
 import classnames from 'classnames';
 import { Tooltip, Icon } from 'antd';
-import Identicon from 'components/Identicon';
 import Unit from 'components/Unit';
 import { getNodeChain } from 'modules/node/selectors';
 import { LOOP_TYPE } from 'utils/constants';
@@ -21,7 +20,7 @@ interface OwnProps {
   title: React.ReactNode;
   type: LOOP_TYPE.LOOP_IN | LOOP_TYPE.LOOP_OUT;
   timestamp: number;
-  status: 'INITIATED' | 'SUCCESS' | 'FAILED';
+  status: 'INITIATED' | 'SUCCESS' | 'FAILED' | 'HTLC_PUBLISHED';
   id?: string;
   delta?: BN | false | null;
   onClick?(source: GetSwapsResponse): void;
@@ -31,12 +30,14 @@ type Props = StateProps & OwnProps;
 
 class SwapRow extends React.Component<Props> {
   render() {
-    const { id, timestamp, status, delta, onClick, title } = this.props;
+    const { timestamp, status, delta, onClick, title } = this.props;
 
     let icon;
-    if (id !== null && id !== undefined) {
-      icon = <Identicon className="SwapRow-avatar-img" pubkey={id} />;
-    }
+    icon = (
+      <div className="SwapRow-avatar-img is-icon is-loop">
+        <Icon type="audit" />
+      </div>
+    );
 
     return (
       <div
@@ -52,7 +53,7 @@ class SwapRow extends React.Component<Props> {
         <div className="SwapRow-info">
           <div className="SwapRow-info-title">{title}</div>
           <div className="SwapRow-info-time">
-            {moment.unix(timestamp).format('MMM Do, LT')}
+            {moment.unix(timestamp / 1000000).format('MMM Do, LT')}
           </div>
         </div>
         {delta && (
