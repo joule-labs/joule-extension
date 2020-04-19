@@ -282,7 +282,7 @@ class ChannelInfo extends React.Component<Props> {
    */
   private forceDeactivateCHARM = () => {
     this.setState({ isCharmActive: false });
-    deactivateCharm();
+    this.props.deactivateCharm();
   };
 
   /**
