@@ -10,6 +10,7 @@ import OpenChannelModal from 'components/OpenChannelModal';
 
 interface StateProps {
   channels: AppState['channels']['channels'];
+  charm: AppState['loop']['charm'];
   isFetchingChannels: AppState['channels']['isFetchingChannels'];
   fetchChannelsError: AppState['channels']['fetchChannelsError'];
 }
@@ -39,7 +40,13 @@ class ChannelList extends React.Component<Props, State> {
   }
 
   render() {
-    const { channels, isFetchingChannels, fetchChannelsError, onClick } = this.props;
+    const {
+      channels,
+      isFetchingChannels,
+      fetchChannelsError,
+      onClick,
+      charm,
+    } = this.props;
     const { isChannelModalOpen } = this.state;
 
     let content;
@@ -47,7 +54,12 @@ class ChannelList extends React.Component<Props, State> {
       content = <Loader />;
     } else if (channels && channels.length) {
       content = channels.map((c, i) => (
-        <ChannelRow key={i} channel={c} onClick={onClick} />
+        <ChannelRow
+          key={i}
+          channel={c}
+          charm={charm != null && charm.point === c.channel_point ? true : false}
+          onClick={onClick}
+        />
       ));
     } else if (fetchChannelsError) {
       content = (
@@ -91,6 +103,7 @@ class ChannelList extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     channels: state.channels.channels,
+    charm: state.loop.charm,
     isFetchingChannels: state.channels.isFetchingChannels,
     fetchChannelsError: state.channels.fetchChannelsError,
   }),

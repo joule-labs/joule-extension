@@ -12,12 +12,13 @@ import './ChannelRow.less';
 
 interface Props {
   channel: ChannelWithNode;
+  charm: boolean;
   onClick?(channel: ChannelWithNode): void;
 }
 
 export default class ChannelRow extends React.Component<Props> {
   render() {
-    const { channel, onClick } = this.props;
+    const { channel, onClick, charm } = this.props;
     const { local_balance, capacity, node } = channel;
     const capacityPct = new BN(local_balance)
       .muln(100)
@@ -69,10 +70,18 @@ export default class ChannelRow extends React.Component<Props> {
             <Unit value={channel.capacity} />
           </div>
           <div className="ChannelRow-info-progress">
-            <div
-              className="ChannelRow-info-progress-inner"
-              style={{ width: `${capacityPct}%` }}
-            />
+            {/* identifier for charm activated channels */}
+            {!charm ? (
+              <div
+                className="ChannelRow-info-progress-inner"
+                style={{ width: `${capacityPct}%` }}
+              />
+            ) : (
+              <div
+                className="ChannelRow-info-progress-inner-charm"
+                style={{ width: `${capacityPct}%` }}
+              />
+            )}
           </div>
         </div>
       </div>
