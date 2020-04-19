@@ -2,6 +2,7 @@ import { stringify } from 'query-string';
 import { NetworkError } from './errors';
 import { parseLoopErrorResponse } from './utils';
 import * as T from './types';
+import { CharmPayload } from 'modules/loop/types';
 export * from './errors';
 export * from './types';
 
@@ -74,6 +75,11 @@ export class LoopHttpClient {
   listSwaps = () => {
     return this.request<T.GetSwapsResponse>('GET', '/v1/loop/swaps');
   };
+
+  // CHARM methods
+  activateCharm = (charm: CharmPayload) => charm;
+
+  deactivateCharm = () => null;
 
   // Internal fetch function
   protected request<R extends object, A extends object | undefined = undefined>(

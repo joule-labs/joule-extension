@@ -46,6 +46,38 @@ export function* handleSwaps(): SagaIterator {
   yield put({ type: types.LIST_SWAPS_SUCCESS, payload });
 }
 
+// activate CHARM
+export function* handleActivateCharm(): SagaIterator {
+  let payload;
+  try {
+    const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
+      selectLoopLibOrThrow,
+    );
+    const libCall = loopLib.activateCharm;
+    payload = (yield call(libCall as any)) as Yielded<typeof libCall>;
+  } catch (err) {
+    yield put({ type: types.ACTIVATE_CHARM_FAILURE, payload: err });
+    return;
+  }
+  yield put({ type: types.ACTIVATE_CHARM_SUCCESS, payload });
+}
+
+// deactivate CHARM
+export function* handleDeactivateCharm(): SagaIterator {
+  let payload;
+  try {
+    const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
+      selectLoopLibOrThrow,
+    );
+    const libCall = loopLib.deactivateCharm;
+    payload = (yield call(libCall as any)) as Yielded<typeof libCall>;
+  } catch (err) {
+    yield put({ type: types.DEACTIVATE_CHARM_FAILURE, payload: err });
+    return;
+  }
+  yield put({ type: types.DEACTIVATE_CHARM_SUCCESS, payload });
+}
+
 export function* handleGetLoopTerms(
   action: ReturnType<typeof actions.getLoopOutQuote | typeof actions.getLoopInQuote>,
 ): SagaIterator {
@@ -127,4 +159,6 @@ export default function* loopSagas(): SagaIterator {
   yield takeLatest(types.LOOP_OUT, handleLoop);
   yield takeLatest(types.LOOP_IN, handleLoop);
   yield takeLatest(types.LIST_SWAPS, handleSwaps);
+  yield takeLatest(types.ACTIVATE_CHARM, handleActivateCharm);
+  yield takeLatest(types.DEACTIVATE_CHARM, handleDeactivateCharm);
 }

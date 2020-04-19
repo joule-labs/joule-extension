@@ -10,20 +10,46 @@ import Copy from 'components/Copy';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
+import {
+  getLoopInTerms,
+  getLoopOutTerms,
+  loopIn,
+  loopOut,
+  deactivateCharm,
+  activateCharm,
+} from 'modules/loop/actions';
 import { closeChannel } from 'modules/channels/actions';
-import { ChannelWithNode } from 'modules/channels/types';
+import { ChannelWithNode, OpenChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
 import { ellipsisSandwich, enumToClassName, makeTxUrl } from 'utils/formatters';
 import './index.less';
 
 interface StateProps {
   account: AppState['account']['account'];
+  channels: AppState['channels']['channels'];
   node: AppState['node']['nodeInfo'];
+  charm: AppState['loop']['charm'];
+  in: AppState['loop']['in'];
+  out: AppState['loop']['out'];
 }
+
+interface State {
+  isCharmActive: boolean;
+}
+
+const INITIAL_STATE = {
+  isCharmActive: false,
+};
 
 interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
   closeChannel: typeof closeChannel;
+  getLoopInTerms: typeof getLoopInTerms;
+  getLoopOutTerms: typeof getLoopOutTerms;
+  loopIn: typeof loopIn;
+  loopOut: typeof loopOut;
+  activateCharm: typeof activateCharm;
+  deactivateCharm: typeof deactivateCharm;
 }
 
 interface OwnProps {
@@ -34,10 +60,15 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps;
 
 class ChannelInfo extends React.Component<Props> {
+  state: State = { ...INITIAL_STATE };
+
   componentDidMount() {
     if (!this.props.account) {
       this.props.getAccountInfo();
     }
+    this.props.getLoopInTerms();
+    this.props.getLoopOutTerms();
+    // run the CHARM eligibility check and process automation
   }
 
   render() {
@@ -125,6 +156,14 @@ class ChannelInfo extends React.Component<Props> {
         value: channelStatusText[channel.status],
       },
       {
+        label: 'CHARM',
+        value: (
+          <Button ghost type="primary" onClick={this.toggleCharm}>
+            {!this.state.isCharmActive ? 'disabled' : 'enabled'}
+          </Button>
+        ),
+      },
+      {
         label: 'Capacity',
         value: <Unit value={channel.capacity} showFiat />,
       },
@@ -198,15 +237,72 @@ class ChannelInfo extends React.Component<Props> {
       },
     });
   };
+
+  /**
+   * toggle CHARM activation for a particular channel
+   */
+  private toggleCharm = () => {
+    const isCharmActivated = this.state.isCharmActive;
+    this.setState({ isCharmActive: isCharmActivated === false ? true : false });
+    this.charmControl();
+  };
+
+  /**
+   * Method to activate/inactivate CHARM
+   */
+  private charmControl = () => {
+    /* CHARM: if the on-chain wallet is less than 50% of channel capacity, hide it
+        currently only one channel can be CHARM enabled at a time
+        display for CHARM eligibility requirements will show if ineligible
+    */
+    const { account, charm, channels, channel } = this.props;
+    // intial CHARM eligibility check
+    const capacityCheck = parseInt(channel.capacity, 10) * 0.5;
+    const onChainFunds = account != null ? parseInt(account.blockchainBalance, 10) : 0;
+    const isCharmEligible = onChainFunds >= capacityCheck ? true : false;
+    const isCharmEnabled = charm != null ? charm.isCharmEnabled : false;
+    // do the thing to get the channel id
+    let openChannels;
+    let channelId;
+    if (channels != null) {
+      openChannels = channels as OpenChannelWithNode[];
+      openChannels.forEach(c => {
+        if (channel.channel_point === c.channel_point) {
+          channelId = c.chan_id;
+          const activatePayload = {
+            id: channelId,
+            isCharmEligible,
+            isCharmEnabled: true,
+          };
+          if (isCharmEligible && !isCharmEnabled) {
+            this.props.activateCharm(activatePayload);
+          }
+          if (isCharmEligible && isCharmEnabled) {
+            this.props.deactivateCharm();
+          }
+        }
+      });
+    }
+  };
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   state => ({
     account: state.account.account,
+    channels: state.channels.channels,
     node: state.node.nodeInfo,
+    charm: state.loop.charm,
+    in: state.loop.in,
+    out: state.loop.out,
   }),
   {
     getAccountInfo,
     closeChannel,
+    getLoopInTerms,
+    getLoopOutTerms,
+    loopIn,
+    loopOut,
+    activateCharm,
+    deactivateCharm,
   },
 )(ChannelInfo);

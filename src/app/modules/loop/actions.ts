@@ -1,4 +1,4 @@
-import types from './types';
+import types, { CharmPayload } from './types';
 import { LoopOutArguments, LoopInArguments } from 'lib/loop-http/types';
 import { selectSyncedLoopState } from './selectors';
 import LoopHttpClient from 'lib/loop-http';
@@ -37,6 +37,15 @@ export function listSwaps() {
 
 export function resetLoop() {
   return { type: types.RESET_LOOP };
+}
+
+// CHARM actions
+export function activateCharm(charm: CharmPayload) {
+  return { type: types.ACTIVATE_CHARM, payload: charm };
+}
+
+export function deactivateCharm() {
+  return { type: types.DEACTIVATE_CHARM };
 }
 
 export function setSyncedLoopState(payload: ReturnType<typeof selectSyncedLoopState>) {

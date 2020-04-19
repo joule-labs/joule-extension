@@ -1,4 +1,4 @@
-import types from './types';
+import types, { CharmPayload } from './types';
 import LoopHttpClient, {
   LoopResponse,
   GetLoopQuoteResponse,
@@ -31,6 +31,8 @@ export interface LoopState {
   isFetchingSwaps: boolean;
   fetchingSwapsError: null | Error;
 
+  charm: null | CharmPayload;
+
   out: LoopTypeState;
   in: LoopTypeState;
 }
@@ -61,6 +63,8 @@ export const INITIAL_STATE: LoopState = {
 
   out: { ...INITIAL_LOOP_TYPE_STATE },
   in: { ...INITIAL_LOOP_TYPE_STATE },
+
+  charm: null,
 };
 
 // Handy helper function to point to which state key we should target. Relies
@@ -227,6 +231,17 @@ export default function loopReducers(
       return {
         ...state,
         ...action.payload,
+      };
+
+    case types.ACTIVATE_CHARM:
+      return {
+        ...state,
+        charm: action.payload,
+      };
+    case types.DEACTIVATE_CHARM:
+      return {
+        ...state,
+        charm: null,
       };
   }
   return state;
