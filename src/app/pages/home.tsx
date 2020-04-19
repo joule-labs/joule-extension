@@ -207,7 +207,7 @@ class HomePage extends React.Component<Props, State> {
         this.charmProcessor(preprocess);
       }
       if (!isEligible) {
-        message.warn(`CHARM is disabled due to lack of on-chain funds`);
+        message.warn(`CHARM is disabled due failed eligibility check`);
         this.props.deactivateCharm();
       }
     }, 5000);

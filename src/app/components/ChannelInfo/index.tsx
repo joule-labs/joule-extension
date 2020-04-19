@@ -184,7 +184,7 @@ class ChannelInfo extends React.Component<Props> {
               <></>
             )}{' '}
             <Help>
-              Joule's Channel Automated Rebalancing and Channel Management - CHARM -
+              Joule's Channel Automated Rebalancing and Liquidity Management - CHARM -
               checks your on-chain funds for at least 50% of the channel capacity for
               eligibility. Only one channel can have CHARM activated and can be identified
               by the purple progress bar.
