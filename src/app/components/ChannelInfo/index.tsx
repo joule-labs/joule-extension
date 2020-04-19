@@ -127,6 +127,11 @@ class ChannelInfo extends React.Component<Props> {
     const isChannelCharmEligible =
       account != null &&
       parseInt(account.blockchainBalance, 10) >= parseInt(channel.capacity, 10) * 0.5;
+    const isCharmAlreadyActive =
+      charm !== null &&
+      channel.channel_point === charm.point &&
+      charm !== null &&
+      charm.isCharmEnabled;
     const txLink = (txid: string) => (
       <a
         href={node ? makeTxUrl(txid, node.chains[0], node.testnet) : ''}
@@ -148,16 +153,33 @@ class ChannelInfo extends React.Component<Props> {
         label: 'CHARM',
         value: (
           <>
-            {isChannelCharmEligible ? (
-              <Button ghost type="primary" onClick={this.toggleCharm}>
-                {charm != null &&
-                channel.channel_point === charm.point &&
-                charm.isCharmEnabled
-                  ? 'enabled'
-                  : !this.state.isCharmActive
-                  ? 'disabled'
-                  : 'enabled'}
-              </Button>
+            {isChannelCharmEligible && !isCharmAlreadyActive ? (
+              <>
+                <Button ghost type="primary" onClick={this.toggleCharm}>
+                  {charm != null &&
+                  channel.channel_point === charm.point &&
+                  charm.isCharmEnabled
+                    ? 'enabled'
+                    : !this.state.isCharmActive
+                    ? 'disabled'
+                    : 'enabled'}
+                </Button>
+              </>
+            ) : isChannelCharmEligible && isCharmAlreadyActive ? (
+              <>
+                <Button type="primary" onClick={this.forceDeactivateCHARM}>
+                  deactivate
+                </Button>{' '}
+                <Button disabled type="primary" onClick={this.toggleCharm}>
+                  {charm != null &&
+                  channel.channel_point === charm.point &&
+                  charm.isCharmEnabled
+                    ? 'enabled'
+                    : !this.state.isCharmActive
+                    ? 'disabled'
+                    : 'enabled'}
+                </Button>
+              </>
             ) : (
               <></>
             )}{' '}
@@ -256,6 +278,14 @@ class ChannelInfo extends React.Component<Props> {
   };
 
   /**
+   * force deactivate CHARM
+   */
+  private forceDeactivateCHARM = () => {
+    this.setState({ isCharmActive: false });
+    deactivateCharm();
+  };
+
+  /**
    * Method to activate/inactivate CHARM
    */
   private callCharmControl = () => {
@@ -264,7 +294,7 @@ class ChannelInfo extends React.Component<Props> {
         display for CHARM eligibility requirements will show if ineligible
     */
     const { account, charm, channels, channel } = this.props;
-    // intial CHARM eligibility check
+    // initial CHARM eligibility check
     const capacityCheck = parseInt(channel.capacity, 10) * 0.5;
     const onChainFunds = account != null ? parseInt(account.blockchainBalance, 10) : 0;
     const isCharmEligible = onChainFunds >= capacityCheck ? true : false;
