@@ -145,7 +145,7 @@ export function* handleLoop(
     type = isOut ? types.LOOP_OUT_SUCCESS : types.LOOP_IN_SUCCESS;
   } catch (err) {
     type = isOut ? types.LOOP_OUT_FAILURE : types.LOOP_IN_FAILURE;
-    yield put({ type: types.LOOP_OUT_FAILURE, payload: err });
+    yield put({ type, payload: err });
     return;
   }
 

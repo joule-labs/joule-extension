@@ -25,6 +25,15 @@ export enum SWAP_STATUS {
   HTLC_PUBLISHED = 'HTLC_PUBLISHED',
 }
 
+export enum CHARM_VALUES {
+  // loop out threshold
+  LOT = 0.8,
+  // loop in threshold
+  LIT = 0.2,
+  // mean (>_<)
+  U = 0.5,
+  NO_THRESHOLD = 0,
+}
 export const DEFAULT_NODE_URLS = {
   [NODE_TYPE.LOCAL]: 'https://localhost:8080',
   [NODE_TYPE.LIGHTNING_APP]: 'https://localhost:8086',

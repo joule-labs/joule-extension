@@ -19,18 +19,19 @@ import { getChannels } from 'modules/channels/actions';
 import './home.less';
 import { SwapResponse } from 'lib/loop-http';
 import {
-  getLoopOutTerms,
-  getLoopInTerms,
   loopIn,
   loopOut,
   activateCharm,
   deactivateCharm,
+  getLoopOutQuote,
+  getLoopInQuote,
 } from 'modules/loop/actions';
 import {
   processCharm,
   preprocessCharmEligibility,
   EligibilityPreProcessor,
 } from 'utils/charm';
+import { LOOP_TYPE } from 'utils/constants';
 
 interface StateProps {
   nodeUrl: AppState['node']['url'];
@@ -45,8 +46,8 @@ interface StateProps {
 interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
   getChannels: typeof getChannels;
-  getLoopOutTerms: typeof getLoopOutTerms;
-  getLoopInTerms: typeof getLoopInTerms;
+  getLoopOutQuote: typeof getLoopOutQuote;
+  getLoopInQuote: typeof getLoopInQuote;
   loopIn: typeof loopIn;
   loopOut: typeof loopOut;
   activateCharm: typeof activateCharm;
@@ -70,11 +71,6 @@ class HomePage extends React.Component<Props, State> {
   drawerTimeout: any = null;
 
   componentDidMount() {
-    // refresh the looping terms
-    // tslint:disable-next-line: no-shadowed-variable
-    const { getLoopInTerms, getLoopOutTerms } = this.props;
-    getLoopOutTerms();
-    getLoopInTerms();
     // initialize CHARM
     this.initializeCharm();
   }
@@ -223,15 +219,66 @@ class HomePage extends React.Component<Props, State> {
   private charmProcessor = (preprocess: EligibilityPreProcessor) => {
     const { charm } = this.props;
     // run  the CHARM algorithm
-    const charmData = processCharm(preprocess.capacity, preprocess.balance);
+    const charmData = processCharm(
+      preprocess.capacity,
+      preprocess.balance,
+      preprocess.localBalance,
+    );
     if (charmData.amt > 0 && charm !== null) {
+      // generate a quote first
+      if (charmData.type === LOOP_TYPE.LOOP_IN) {
+        this.props.getLoopInQuote(charmData.amt);
+      }
+      if (charmData.type === LOOP_TYPE.LOOP_OUT) {
+        this.props.getLoopOutQuote(charmData.amt);
+      }
       this.charmLoop(charmData.amt.toString(), charm.id, charmData.type);
     }
   };
 
   private charmLoop = (amount: string, channelId: string, type: string) => {
-    console.log(`debug amt: ${amount} channelId: ${channelId}`);
-    message.info(`CHARM is attempting ${type} to re-balance`);
+    // ready, set, automated looping
+
+    // temporary delay while generating quotes
+    setTimeout(() => {
+      /*TODO: is this a good default for sweep target?
+        will add advance CHARM setup to handle value tweaking
+        next time.
+      */
+      const SWEEP_CONF_TARGET = '6';
+      // ready, set, automated looping
+      if (type === LOOP_TYPE.LOOP_IN) {
+        const { quote } = this.props.in;
+        if (!quote) {
+          message.warn(`CHARM failed ${type} quote generation`);
+        } else {
+          this.props.loopIn({
+            amt: amount,
+            loop_in_channel: channelId,
+            max_miner_fee: quote.miner_fee,
+            max_swap_fee: quote.prepay_amt,
+            external_htlc: false,
+          });
+        }
+      }
+      if (type === LOOP_TYPE.LOOP_OUT) {
+        const { quote } = this.props.out;
+        if (!quote) {
+          message.warn(`CHARM failed ${type} quote generation`);
+        } else {
+          this.props.loopOut({
+            amt: amount,
+            loop_out_channel: channelId,
+            max_miner_fee: quote.miner_fee,
+            max_swap_fee: quote.prepay_amt,
+            max_prepay_amt: quote.prepay_amt,
+            max_swap_routing_fee: quote.swap_fee,
+            sweep_conf_target: SWEEP_CONF_TARGET,
+          });
+        }
+      }
+      message.info(`CHARM is attempting ${type} to re-balance`);
+    }, 3141);
   };
 
   /** End CHARM Logic */
@@ -250,8 +297,8 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
   {
     getAccountInfo,
     getChannels,
-    getLoopOutTerms,
-    getLoopInTerms,
+    getLoopOutQuote,
+    getLoopInQuote,
     loopOut,
     loopIn,
     activateCharm,
