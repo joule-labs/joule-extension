@@ -50,6 +50,7 @@ export function* handleSwaps(): SagaIterator {
 export function* handleActivateCharm(): SagaIterator {
   let payload;
   try {
+    yield call(requirePassword);
     const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
       selectLoopLibOrThrow,
     );
@@ -66,6 +67,7 @@ export function* handleActivateCharm(): SagaIterator {
 export function* handleDeactivateCharm(): SagaIterator {
   let payload;
   try {
+    yield call(requirePassword);
     const loopLib: Yielded<typeof selectLoopLibOrThrow> = yield select(
       selectLoopLibOrThrow,
     );

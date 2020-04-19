@@ -1,4 +1,36 @@
 import { LOOP_TYPE } from './constants';
+import { CharmPayload } from 'modules/loop/types';
+import { ChannelWithNode, OpenChannelWithNode } from 'modules/channels/types';
+
+/**
+ * Method to activate/inactivate CHARM
+ * @param channels
+ * @param channel
+ * @param isCharmEligible
+ */
+export function charmControl(
+  channels: ChannelWithNode[] | null,
+  channel: ChannelWithNode,
+  isCharmEligible: boolean,
+): CharmPayload {
+  // do the thing to get the channel id
+  let openChannels;
+  const result = {
+    id: '',
+    point: channel.channel_point,
+    isCharmEligible,
+    isCharmEnabled: true,
+  };
+  if (channels != null) {
+    openChannels = channels as OpenChannelWithNode[];
+    openChannels.forEach(c => {
+      if (channel.channel_point === c.channel_point) {
+        result.id = c.chan_id;
+      }
+    });
+  }
+  return result;
+}
 
 /**
  * Runs the logic for the CHARM algo
@@ -6,7 +38,7 @@ import { LOOP_TYPE } from './constants';
  * @param {string} balance
  * @returns {object} loopAmount/type
  */
-export function processCharm(capacity: string, balance: string): object {
+export function processCharm(capacity: string, balance: string): CharmAmt {
   const LOT = 0.8;
   const LIT = 0.2;
   const NO_THRESHOLD = 0;
@@ -21,4 +53,9 @@ export function processCharm(capacity: string, balance: string): object {
     type: TYPE,
     amt: AMOUNT > 0 ? AMOUNT : AMOUNT * -1,
   };
+}
+
+export interface CharmAmt {
+  type: LOOP_TYPE;
+  amt: number;
 }

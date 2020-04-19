@@ -232,6 +232,11 @@ export default function loopReducers(
         ...state,
         ...action.payload,
       };
+    case types.SYNC_CHARM_STATE:
+      return {
+        ...state,
+        ...action.payload,
+      };
 
     case types.ACTIVATE_CHARM:
       return {

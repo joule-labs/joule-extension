@@ -1,6 +1,6 @@
 import types, { CharmPayload } from './types';
 import { LoopOutArguments, LoopInArguments } from 'lib/loop-http/types';
-import { selectSyncedLoopState } from './selectors';
+import { selectSyncedLoopState, selectSyncedCharmState } from './selectors';
 import LoopHttpClient from 'lib/loop-http';
 
 export function setLoop(url: string) {
@@ -56,5 +56,12 @@ export function setSyncedLoopState(payload: ReturnType<typeof selectSyncedLoopSt
       url,
       lib: url ? new LoopHttpClient(url as string) : null,
     },
+  };
+}
+
+export function setSyncedCharmState(payload: ReturnType<typeof selectSyncedCharmState>) {
+  return {
+    type: types.SYNC_CHARM_STATE,
+    payload,
   };
 }

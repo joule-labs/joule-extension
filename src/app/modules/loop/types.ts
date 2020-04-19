@@ -34,6 +34,7 @@ enum LoopTypes {
   RESET_LOOP = 'RESET_LOOP',
 
   SYNC_LOOP_STATE = 'SYNC_LOOP_STATE',
+  SYNC_CHARM_STATE = 'SYNC_CHARM_STATE',
 
   // CHARM types
   ACTIVATE_CHARM = 'ACTIVATE_CHARM',
@@ -47,6 +48,7 @@ enum LoopTypes {
 
 export interface CharmPayload {
   id: string;
+  point: string;
   isCharmEligible: boolean;
   isCharmEnabled: boolean;
 }

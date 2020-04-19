@@ -20,8 +20,8 @@ import { selectSettings } from 'modules/settings/selectors';
 import { changeSettings } from 'modules/settings/actions';
 import settingsTypes from 'modules/settings/types';
 import { AppState } from 'store/reducers';
-import { selectSyncedLoopState } from 'modules/loop/selectors';
-import { setSyncedLoopState } from 'modules/loop/actions';
+import { selectSyncedLoopState, selectSyncedCharmState } from 'modules/loop/selectors';
+import { setSyncedLoopState, setSyncedCharmState } from 'modules/loop/actions';
 import { loopTypes } from 'modules/loop';
 
 export interface SyncConfig<T> {
@@ -60,6 +60,14 @@ export const syncConfigs: Array<SyncConfig<any>> = [
     selector: selectSyncedLoopState,
     action: setSyncedLoopState,
     triggerActions: [loopTypes.SET_LOOP_URL_SUCCESS],
+  },
+  {
+    key: 'charm',
+    version: 1,
+    encrypted: false,
+    selector: selectSyncedCharmState,
+    action: setSyncedCharmState,
+    triggerActions: [loopTypes.ACTIVATE_CHARM_SUCCESS],
   },
   {
     key: 'node-unencrypted',
