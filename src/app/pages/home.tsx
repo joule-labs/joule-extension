@@ -76,17 +76,18 @@ class HomePage extends React.Component<Props, State> {
     const { getLoopInTerms, getLoopOutTerms } = this.props;
     getLoopOutTerms();
     getLoopInTerms();
-  }
 
-  componentDidUpdate() {
-    const { account, channels, charm } = this.props;
-    // run the eligibility check
-    const preprocess = preprocessCharmEligibility(account, channels, charm);
-    const isEligible =
-      parseInt(preprocess.balance, 10) >= parseInt(preprocess.capacity, 10) * 0.5;
-    if (isEligible) {
-      this.charmProcessor(preprocess);
-    }
+    setTimeout(() => {
+      // temporary handling for waiting for account info to load
+      const { account, channels, charm } = this.props;
+      // run the eligibility check
+      const preprocess = preprocessCharmEligibility(account, channels, charm);
+      const isEligible =
+        parseInt(preprocess.balance, 10) >= parseInt(preprocess.capacity, 10) * 0.5;
+      if (isEligible) {
+        this.charmProcessor(preprocess);
+      }
+    }, 1000);
   }
 
   render() {
