@@ -10,14 +10,7 @@ import Copy from 'components/Copy';
 import { CHANNEL_STATUS } from 'lib/lnd-http';
 import { AppState } from 'store/reducers';
 import { getAccountInfo } from 'modules/account/actions';
-import {
-  getLoopInTerms,
-  getLoopOutTerms,
-  loopIn,
-  loopOut,
-  deactivateCharm,
-  activateCharm,
-} from 'modules/loop/actions';
+import { deactivateCharm, activateCharm } from 'modules/loop/actions';
 import { closeChannel } from 'modules/channels/actions';
 import { ChannelWithNode } from 'modules/channels/types';
 import { channelStatusText } from 'utils/constants';
@@ -31,8 +24,6 @@ interface StateProps {
   channels: AppState['channels']['channels'];
   node: AppState['node']['nodeInfo'];
   charm: AppState['loop']['charm'];
-  in: AppState['loop']['in'];
-  out: AppState['loop']['out'];
 }
 
 interface State {
@@ -46,10 +37,6 @@ const INITIAL_STATE = {
 interface DispatchProps {
   getAccountInfo: typeof getAccountInfo;
   closeChannel: typeof closeChannel;
-  getLoopInTerms: typeof getLoopInTerms;
-  getLoopOutTerms: typeof getLoopOutTerms;
-  loopIn: typeof loopIn;
-  loopOut: typeof loopOut;
   activateCharm: typeof activateCharm;
   deactivateCharm: typeof deactivateCharm;
 }
@@ -68,9 +55,6 @@ class ChannelInfo extends React.Component<Props> {
     if (!this.props.account) {
       this.props.getAccountInfo();
     }
-    this.props.getLoopInTerms();
-    this.props.getLoopOutTerms();
-    // run the CHARM eligibility check and process automation
   }
 
   render() {
@@ -310,10 +294,6 @@ export default connect<StateProps, DispatchProps, OwnProps, AppState>(
   {
     getAccountInfo,
     closeChannel,
-    getLoopInTerms,
-    getLoopOutTerms,
-    loopIn,
-    loopOut,
     activateCharm,
     deactivateCharm,
   },

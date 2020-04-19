@@ -1,6 +1,7 @@
 import { LOOP_TYPE } from './constants';
 import { CharmPayload } from 'modules/loop/types';
 import { ChannelWithNode, OpenChannelWithNode } from 'modules/channels/types';
+import { Account } from 'modules/account/types';
 
 /**
  * Method to activate/inactivate CHARM
@@ -26,6 +27,25 @@ export function charmControl(
     openChannels.forEach(c => {
       if (channel.channel_point === c.channel_point) {
         result.id = c.chan_id;
+      }
+    });
+  }
+  return result;
+}
+
+export function preprocessCharmEligibility(
+  account: Account | null,
+  channels: ChannelWithNode[] | null,
+  charm: CharmPayload | null,
+): EligibilityPreProcessor {
+  const balance = account != null ? account.blockchainBalance : '';
+  const result = { balance, capacity: '' };
+  if (channels != null) {
+    channels.forEach(c => {
+      if (charm != null) {
+        charm.point === c.channel_point
+          ? (result.capacity = c.capacity)
+          : (result.capacity = '');
       }
     });
   }
@@ -58,4 +78,9 @@ export function processCharm(capacity: string, balance: string): CharmAmt {
 export interface CharmAmt {
   type: LOOP_TYPE;
   amt: number;
+}
+
+export interface EligibilityPreProcessor {
+  balance: string;
+  capacity: string;
 }
