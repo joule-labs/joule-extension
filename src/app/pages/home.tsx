@@ -31,7 +31,6 @@ import {
   preprocessCharmEligibility,
   EligibilityPreProcessor,
 } from 'utils/charm';
-import { LOOP_TYPE } from 'utils/constants';
 
 interface StateProps {
   nodeUrl: AppState['node']['url'];
@@ -76,18 +75,8 @@ class HomePage extends React.Component<Props, State> {
     const { getLoopInTerms, getLoopOutTerms } = this.props;
     getLoopOutTerms();
     getLoopInTerms();
-
-    setTimeout(() => {
-      // temporary handling for waiting for account info to load
-      const { account, channels, charm } = this.props;
-      // run the eligibility check
-      const preprocess = preprocessCharmEligibility(account, channels, charm);
-      const isEligible =
-        parseInt(preprocess.balance, 10) >= parseInt(preprocess.capacity, 10) * 0.5;
-      if (isEligible) {
-        this.charmProcessor(preprocess);
-      }
-    }, 1000);
+    // initialize CHARM
+    this.initializeCharm();
   }
 
   render() {
@@ -205,27 +194,47 @@ class HomePage extends React.Component<Props, State> {
     this.props.getChannels();
   };
 
+  /** Start CHARM Logic */
+
+  /**
+   * Run the processor for CHARM
+   */
+  private initializeCharm = () => {
+    setTimeout(() => {
+      // temporary handling for waiting for account info to load
+      const { account, channels, charm } = this.props;
+      // run the eligibility check
+      const preprocess = preprocessCharmEligibility(account, channels, charm);
+      const isEligible =
+        parseInt(preprocess.balance, 10) >= parseInt(preprocess.capacity, 10) * 0.5;
+      if (isEligible) {
+        this.charmProcessor(preprocess);
+      }
+      if (!isEligible) {
+        message.warn(`CHARM is disabled due to lack of on-chain funds`);
+        this.props.deactivateCharm();
+      }
+    }, 5000);
+  };
+
   /**
    * Process eligibility for automated looping
    */
   private charmProcessor = (preprocess: EligibilityPreProcessor) => {
-    // run  the CHARM algo
+    const { charm } = this.props;
+    // run  the CHARM algorithm
     const charmData = processCharm(preprocess.capacity, preprocess.balance);
-    if (charmData.amt > 0 && charmData.type === LOOP_TYPE.LOOP_OUT) {
-      this.charmLoopOut();
-    }
-    if (charmData.amt > 0 && charmData.type === LOOP_TYPE.LOOP_IN) {
-      this.charmLoopIn();
+    if (charmData.amt > 0 && charm !== null) {
+      this.charmLoop(charmData.amt.toString(), charm.id, charmData.type);
     }
   };
 
-  private charmLoopOut = () => {
-    message.info(`CHARM is attempting ${LOOP_TYPE.LOOP_OUT} to re-balance`);
+  private charmLoop = (amount: string, channelId: string, type: string) => {
+    console.log(`debug amt: ${amount} channelId: ${channelId}`);
+    message.info(`CHARM is attempting ${type} to re-balance`);
   };
 
-  private charmLoopIn = () => {
-    message.info(`CHARM is attempting ${LOOP_TYPE.LOOP_IN} to re-balance`);
-  };
+  /** End CHARM Logic */
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(

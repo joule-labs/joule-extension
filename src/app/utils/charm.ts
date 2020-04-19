@@ -53,7 +53,7 @@ export function preprocessCharmEligibility(
 }
 
 /**
- * Runs the logic for the CHARM algo
+ * Runs the logic for the CHARM algorithm
  * @param {string} capacity
  * @param {string} balance
  * @returns {object} loopAmount/type
