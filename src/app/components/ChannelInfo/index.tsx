@@ -24,6 +24,7 @@ import { channelStatusText } from 'utils/constants';
 import { ellipsisSandwich, enumToClassName, makeTxUrl } from 'utils/formatters';
 import './index.less';
 import { charmControl } from 'utils/charm';
+import Help from 'components/Help';
 
 interface StateProps {
   account: AppState['account']['account'];
@@ -137,8 +138,11 @@ class ChannelInfo extends React.Component<Props> {
   }
 
   private getChannelDetails = (): DetailsRow[] => {
-    const { channel, node, charm } = this.props;
+    const { channel, node, charm, account } = this.props;
 
+    const isChannelCharmEligible =
+      account != null &&
+      parseInt(account.blockchainBalance, 10) >= parseInt(channel.capacity, 10) * 0.5;
     const txLink = (txid: string) => (
       <a
         href={node ? makeTxUrl(txid, node.chains[0], node.testnet) : ''}
@@ -159,15 +163,27 @@ class ChannelInfo extends React.Component<Props> {
       {
         label: 'CHARM',
         value: (
-          <Button ghost type="primary" onClick={this.toggleCharm}>
-            {charm != null &&
-            channel.channel_point === charm.point &&
-            charm.isCharmEnabled
-              ? 'enabled'
-              : !this.state.isCharmActive
-              ? 'disabled'
-              : 'enabled'}
-          </Button>
+          <>
+            {isChannelCharmEligible ? (
+              <Button ghost type="primary" onClick={this.toggleCharm}>
+                {charm != null &&
+                channel.channel_point === charm.point &&
+                charm.isCharmEnabled
+                  ? 'enabled'
+                  : !this.state.isCharmActive
+                  ? 'disabled'
+                  : 'enabled'}
+              </Button>
+            ) : (
+              <></>
+            )}{' '}
+            <Help>
+              Joule's Channel Automated Rebalancing and Channel Management - CHARM -
+              checks your on-chain funds for at least 50% of the channel capacity for
+              eligibility. Only one channel can have CHARM activated and can be identified
+              by the purple progress bar.
+            </Help>
+          </>
         ),
       },
       {
