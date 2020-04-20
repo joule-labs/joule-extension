@@ -32,6 +32,7 @@ export interface LoopOutArguments {
   max_miner_fee?: string;
   loop_out_channel?: string;
   sweep_conf_target?: string;
+  swap_publication_deadline?: string;
 }
 
 export interface LoopInArguments {
