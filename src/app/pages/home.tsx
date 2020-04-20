@@ -228,7 +228,7 @@ class HomePage extends React.Component<Props, State> {
         message.warn(`CHARM is disabled due to failed eligibility check`);
         this.props.deactivateCharm();
       }
-    }, 5000);
+    }, 3141);
   };
 
   /**
@@ -285,7 +285,7 @@ class HomePage extends React.Component<Props, State> {
           this.props.loopIn({
             amt: amount,
             loop_in_channel: channelId,
-            max_miner_fee: quote.prepay_amt,
+            max_miner_fee: quote.miner_fee,
             max_swap_fee: quote.prepay_amt,
             external_htlc: false,
           });
@@ -319,7 +319,7 @@ class HomePage extends React.Component<Props, State> {
     if (charmData.amt >= minSwapAmt && charmData.amt <= maxSwapAmt) {
       this.props.getLoopInQuote(charmData.amt);
     } else {
-      message.warn(`CHARM is amount does not meet requirements`);
+      message.warn(`CHARM amount does not meet requirements`);
     }
   }
   /** End CHARM Logic */
