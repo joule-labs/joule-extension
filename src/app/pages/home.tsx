@@ -263,7 +263,7 @@ class HomePage extends React.Component<Props, State> {
             amt: amount,
             loop_in_channel: channelId,
             max_miner_fee: quote.miner_fee,
-            max_swap_fee: quote.swap_fee,
+            max_swap_fee: quote.prepay_amt,
             external_htlc: false,
           });
         }
@@ -277,8 +277,9 @@ class HomePage extends React.Component<Props, State> {
             amt: amount,
             loop_out_channel: channelId,
             max_miner_fee: quote.miner_fee,
-            max_swap_fee: quote.swap_fee,
             max_prepay_amt: quote.prepay_amt,
+            max_prepay_routing_fee: quote.prepay_amt,
+            max_swap_fee: quote.swap_fee,
             max_swap_routing_fee: quote.swap_fee,
             sweep_conf_target: SWEEP_CONF_TARGET,
           });
