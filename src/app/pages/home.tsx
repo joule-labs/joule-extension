@@ -25,11 +25,13 @@ import {
   deactivateCharm,
   getLoopOutQuote,
   getLoopInQuote,
+  listSwaps,
 } from 'modules/loop/actions';
 import {
   processCharm,
   preprocessCharmEligibility,
   EligibilityPreProcessor,
+  isSwapInitiated,
 } from 'utils/charm';
 import { LOOP_TYPE } from 'utils/constants';
 
@@ -39,6 +41,7 @@ interface StateProps {
   channels: AppState['channels']['channels'];
   out: AppState['loop']['out'];
   in: AppState['loop']['in'];
+  swapInfo: AppState['loop']['swapInfo'];
   charm: AppState['loop']['charm'];
   fetchAccountInfoError: AppState['account']['fetchAccountInfoError'];
 }
@@ -50,6 +53,7 @@ interface DispatchProps {
   getLoopInQuote: typeof getLoopInQuote;
   loopIn: typeof loopIn;
   loopOut: typeof loopOut;
+  listSwaps: typeof listSwaps;
   activateCharm: typeof activateCharm;
   deactivateCharm: typeof deactivateCharm;
 }
@@ -71,6 +75,8 @@ class HomePage extends React.Component<Props, State> {
   drawerTimeout: any = null;
 
   componentDidMount() {
+    // list the swaps so we check if any are in progress
+    this.props.listSwaps();
     // initialize CHARM
     this.initializeCharm();
   }
@@ -197,13 +203,14 @@ class HomePage extends React.Component<Props, State> {
    */
   private initializeCharm = () => {
     setTimeout(() => {
+      const swapCheck = isSwapInitiated(this.props.swapInfo);
       // temporary handling for waiting for account info to load
       const { account, channels, charm } = this.props;
       // run the eligibility check
       const preprocess = preprocessCharmEligibility(account, channels, charm);
       const isEligible =
         parseInt(preprocess.balance, 10) >= parseInt(preprocess.capacity, 10) * 0.5;
-      if (isEligible) {
+      if (isEligible && !swapCheck.isInitiated) {
         this.charmProcessor(preprocess);
       }
       if (!isEligible) {
@@ -256,7 +263,7 @@ class HomePage extends React.Component<Props, State> {
             amt: amount,
             loop_in_channel: channelId,
             max_miner_fee: quote.miner_fee,
-            max_swap_fee: quote.prepay_amt,
+            max_swap_fee: quote.swap_fee,
             external_htlc: false,
           });
         }
@@ -270,7 +277,7 @@ class HomePage extends React.Component<Props, State> {
             amt: amount,
             loop_out_channel: channelId,
             max_miner_fee: quote.miner_fee,
-            max_swap_fee: quote.prepay_amt,
+            max_swap_fee: quote.swap_fee,
             max_prepay_amt: quote.prepay_amt,
             max_swap_routing_fee: quote.swap_fee,
             sweep_conf_target: SWEEP_CONF_TARGET,
@@ -290,6 +297,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     account: state.account.account,
     channels: state.channels.channels,
     charm: state.loop.charm,
+    swapInfo: state.loop.swapInfo,
     out: state.loop.out,
     in: state.loop.in,
     fetchAccountInfoError: state.account.fetchAccountInfoError,
@@ -301,6 +309,7 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     getLoopInQuote,
     loopOut,
     loopIn,
+    listSwaps,
     activateCharm,
     deactivateCharm,
   },

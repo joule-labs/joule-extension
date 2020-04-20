@@ -1,7 +1,8 @@
-import { LOOP_TYPE, CHARM_VALUES } from './constants';
+import { LOOP_TYPE, CHARM_VALUES, SWAP_STATUS } from './constants';
 import { CharmPayload } from 'modules/loop/types';
 import { ChannelWithNode, OpenChannelWithNode } from 'modules/channels/types';
 import { Account } from 'modules/account/types';
+import { GetSwapsResponse } from 'lib/loop-http';
 
 /**
  * Method to activate/inactivate CHARM
@@ -42,14 +43,14 @@ export function preprocessCharmEligibility(
   const result = { balance, capacity: '', localBalance: '' };
   if (channels != null) {
     // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < channels.length; i++) {
+    channels.forEach(c => {
       if (charm != null) {
-        if (charm.point === channels[i].channel_point) {
-          result.capacity = channels[i].capacity;
-          result.localBalance = channels[i].local_balance;
+        if (charm.point === c.channel_point) {
+          result.capacity = c.capacity;
+          result.localBalance = c.local_balance;
         }
       }
-    }
+    });
   }
   return result;
 }
@@ -81,6 +82,22 @@ export function processCharm(
   };
 }
 
+/**
+ * Helper method for seeing if swaps are already in progress
+ * @param swapInfo
+ */
+export function isSwapInitiated(swapInfo: GetSwapsResponse | null): SwapCheck {
+  const result = { isInitiated: false };
+  if (swapInfo != null) {
+    swapInfo.swaps.forEach(s => {
+      if (s.state === SWAP_STATUS.INITIATED) {
+        result.isInitiated = true;
+      }
+    });
+  }
+  return result;
+}
+
 export interface CharmAmt {
   type: LOOP_TYPE;
   amt: number;
@@ -90,4 +107,8 @@ export interface EligibilityPreProcessor {
   balance: string;
   capacity: string;
   localBalance: string;
+}
+
+export interface SwapCheck {
+  isInitiated: boolean;
 }
