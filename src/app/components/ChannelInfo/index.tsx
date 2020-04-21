@@ -132,6 +132,9 @@ class ChannelInfo extends React.Component<Props> {
       channel.channel_point === charm.point &&
       charm !== null &&
       charm.isCharmEnabled;
+    const ACTIVATED = 'activated';
+    const DEACTIVATE = 'deactivate';
+    const ACTIVATE = 'activate';
     const txLink = (txid: string) => (
       <a
         href={node ? makeTxUrl(txid, node.chains[0], node.testnet) : ''}
@@ -159,10 +162,10 @@ class ChannelInfo extends React.Component<Props> {
                   {charm != null &&
                   channel.channel_point === charm.point &&
                   charm.isCharmEnabled
-                    ? 'enabled'
+                    ? ACTIVATED
                     : !this.state.isCharmActive
-                    ? 'disabled'
-                    : 'enabled'}
+                    ? ACTIVATE
+                    : DEACTIVATE}
                 </Button>
               </>
             ) : isChannelCharmEligible && isCharmAlreadyActive ? (
@@ -174,10 +177,10 @@ class ChannelInfo extends React.Component<Props> {
                   {charm != null &&
                   channel.channel_point === charm.point &&
                   charm.isCharmEnabled
-                    ? 'enabled'
+                    ? ACTIVATED
                     : !this.state.isCharmActive
-                    ? 'disabled'
-                    : 'enabled'}
+                    ? ACTIVATE
+                    : DEACTIVATE}
                 </Button>
               </>
             ) : (

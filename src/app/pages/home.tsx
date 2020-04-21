@@ -246,14 +246,28 @@ class HomePage extends React.Component<Props, State> {
       // generate a quote first
       if (charmData.type === LOOP_TYPE.LOOP_IN) {
         const { terms } = this.props.loop.in;
-        this.isCharmAmtValid(terms, charmData);
+        const isCharmInThreshold = this.isCharmAmtValid(terms, charmData);
+        if (isCharmInThreshold) {
+          this.props.getLoopInQuote(charmData.amt);
+          this.charmLoop(charmData.amt.toString(), loop.charm.id, charmData.type);
+        }
+        if (!isCharmInThreshold) {
+          message.warn(`CHARM is above 20% threshold`);
+          this.props.deactivateCharm();
+        }
       }
       if (charmData.type === LOOP_TYPE.LOOP_OUT) {
         const { terms } = this.props.loop.in;
-        this.isCharmAmtValid(terms, charmData);
-        this.props.getLoopOutQuote(charmData.amt);
+        const isCharmInThreshold = this.isCharmAmtValid(terms, charmData);
+        if (isCharmInThreshold) {
+          this.props.getLoopOutQuote(charmData.amt);
+          this.charmLoop(charmData.amt.toString(), loop.charm.id, charmData.type);
+        }
+        if (!isCharmInThreshold) {
+          message.warn(`CHARM is below 80% threshold`);
+          this.props.deactivateCharm();
+        }
       }
-      this.charmLoop(charmData.amt.toString(), loop.charm.id, charmData.type);
     }
   };
 
@@ -278,17 +292,24 @@ class HomePage extends React.Component<Props, State> {
       // ready, set, automated looping
       if (type === LOOP_TYPE.LOOP_IN) {
         const { quote } = this.props.loop.in;
-        if (!quote && amount) {
+        if (!quote) {
           message.warn(`CHARM failed ${type} quote generation`);
-        }
-        if (quote != null) {
+        } else {
+          /**
+           * TODO: Calculate optimal max swap fee
+           * for max swap fee to high error
+           */
+          const maxSwap = (
+            parseInt(quote.prepay_amt, 10) + parseInt(quote.swap_fee, 10)
+          ).toString();
           this.props.loopIn({
             amt: amount,
             loop_in_channel: channelId,
             max_miner_fee: quote.miner_fee,
-            max_swap_fee: quote.prepay_amt,
+            max_swap_fee: maxSwap,
             external_htlc: false,
           });
+          message.info(`CHARM is attempting ${type} to re-balance`);
         }
       }
       if (type === LOOP_TYPE.LOOP_OUT) {
@@ -307,22 +328,24 @@ class HomePage extends React.Component<Props, State> {
             sweep_conf_target: SWEEP_CONF_TARGET,
             swap_publication_deadline: DEADLINE,
           });
+          message.info(`CHARM is attempting ${type} to re-balance`);
         }
       }
-      message.info(`CHARM is attempting ${type} to re-balance`);
     }, 1618);
   };
 
-  private isCharmAmtValid(terms: GetLoopTermsResponse | null, charmData: CharmAmt) {
+  private isCharmAmtValid(
+    terms: GetLoopTermsResponse | null,
+    charmData: CharmAmt,
+  ): boolean {
     const minSwapAmt = terms != null ? parseInt(terms.min_swap_amount, 10) : 0;
     const maxSwapAmt = terms != null ? parseInt(terms.max_swap_amount, 10) : 0;
     if (charmData.amt >= minSwapAmt && charmData.amt <= maxSwapAmt) {
-      this.props.getLoopInQuote(charmData.amt);
-    } else {
-      message.warn(`CHARM amount does not meet requirements`);
+      return true;
     }
+    return false;
+    /** End CHARM Logic */
   }
-  /** End CHARM Logic */
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
