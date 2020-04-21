@@ -156,6 +156,7 @@ class ChannelInfo extends React.Component<Props> {
         label: 'CHARM',
         value: (
           <>
+            {/* these buttons are stupid messy, TODO: fix  */}
             {isChannelCharmEligible && !isCharmAlreadyActive ? (
               <>
                 <Button ghost type="primary" onClick={this.toggleCharm}>
@@ -163,24 +164,13 @@ class ChannelInfo extends React.Component<Props> {
                   channel.channel_point === charm.point &&
                   charm.isCharmEnabled
                     ? ACTIVATED
-                    : !this.state.isCharmActive
-                    ? ACTIVATE
-                    : DEACTIVATE}
+                    : ACTIVATE}
                 </Button>
               </>
             ) : isChannelCharmEligible && isCharmAlreadyActive ? (
               <>
                 <Button type="primary" onClick={this.forceDeactivateCHARM}>
-                  deactivate
-                </Button>{' '}
-                <Button disabled type="primary" onClick={this.toggleCharm}>
-                  {charm != null &&
-                  channel.channel_point === charm.point &&
-                  charm.isCharmEnabled
-                    ? ACTIVATED
-                    : !this.state.isCharmActive
-                    ? ACTIVATE
-                    : DEACTIVATE}
+                  {DEACTIVATE}
                 </Button>
               </>
             ) : (
