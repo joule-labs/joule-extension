@@ -78,17 +78,17 @@ class HomePage extends React.Component<Props, State> {
 
   componentDidMount() {
     // if loop url is setup, do it
-    const { swapInfo } = this.props.loop;
+
     if (this.props.loop.url !== null) {
       // tslint:disable-next-line: no-unused-expression
-      // initialize CHARM
-      this.initializeCharm();
       // get fresh swaps and terms
-      getLoopInTerms();
-      getLoopOutTerms();
-      if (!swapInfo) {
-        listSwaps();
-      }
+      this.props.getLoopInTerms();
+      this.props.getLoopOutTerms();
+      this.props.listSwaps();
+      // initialize CHARM
+      setTimeout(() => {
+        this.initializeCharm();
+      }, 1618);
     }
   }
 
