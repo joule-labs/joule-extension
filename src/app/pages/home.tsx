@@ -228,7 +228,7 @@ class HomePage extends React.Component<Props, State> {
         message.warn(`CHARM is disabled due to failed eligibility check`);
         this.props.deactivateCharm();
       }
-    }, 3141);
+    }, 1618);
   };
 
   /**
@@ -237,11 +237,8 @@ class HomePage extends React.Component<Props, State> {
   private charmProcessor = (preprocess: EligibilityPreProcessor) => {
     const { loop } = this.props;
     // run  the CHARM algorithm
-    const charmData = processCharm(
-      preprocess.capacity,
-      preprocess.balance,
-      preprocess.localBalance,
-    );
+    const charmData = processCharm(preprocess.capacity, preprocess.localBalance);
+    console.log(`debug charm amt: ${charmData.amt}`);
     if (charmData.amt > 0 && loop.charm !== null) {
       // generate a quote first
       if (charmData.type === LOOP_TYPE.LOOP_IN) {

@@ -58,22 +58,17 @@ export function preprocessCharmEligibility(
 /**
  * Runs the logic for the CHARM algorithm
  * @param {string} capacity
- * @param {string} balance
+ * @param {string} localBalance
  * @returns {object} loopAmount/type
  */
-export function processCharm(
-  capacity: string,
-  balance: string,
-  localBalance: string,
-): CharmAmt {
+export function processCharm(capacity: string, localBalance: string): CharmAmt {
   const LOT = CHARM_VALUES.LOT;
   const LIT = CHARM_VALUES.LIT;
   const NO_THRESHOLD = CHARM_VALUES.NO_THRESHOLD;
   const U = CHARM_VALUES.U;
-  const B = parseInt(balance, 10);
   const CC = parseInt(capacity, 10);
   const CV = parseInt(localBalance, 10);
-  const THRESHOLD = B <= CC * LIT || B >= CC * LOT;
+  const THRESHOLD = CV <= CC * LIT || CV >= CC * LOT;
   const AMOUNT = THRESHOLD ? CC * U - CV : NO_THRESHOLD;
   const TYPE = AMOUNT > 0 ? LOOP_TYPE.LOOP_IN : LOOP_TYPE.LOOP_OUT;
   return {
@@ -91,8 +86,8 @@ export function isSwapInitiated(swapInfo: GetSwapsResponse | null): SwapCheck {
   if (swapInfo != null) {
     swapInfo.swaps.forEach(s => {
       // loop out is intiated when in progress, loop in is htlc_published
-      // when need to stop multiple loop request at the same time
-      if (s.state === SWAP_STATUS.INITIATED || s.state === SWAP_STATUS.HTLC_PUBLISHED) {
+      // TODO: need to stop multiple loop in requests at the same time
+      if (s.state === SWAP_STATUS.INITIATED) {
         result.isInitiated = true;
       }
     });
