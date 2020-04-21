@@ -90,7 +90,9 @@ export function isSwapInitiated(swapInfo: GetSwapsResponse | null): SwapCheck {
   const result = { isInitiated: false };
   if (swapInfo != null) {
     swapInfo.swaps.forEach(s => {
-      if (s.state === SWAP_STATUS.INITIATED) {
+      // loop out is intiated when in progress, loop in is htlc_published
+      // when need to stop multiple loop request at the same time
+      if (s.state === SWAP_STATUS.INITIATED || s.state === SWAP_STATUS.HTLC_PUBLISHED) {
         result.isInitiated = true;
       }
     });
