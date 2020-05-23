@@ -63,7 +63,7 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
   }
 
   // Don't allow payments to happen too fast
-  const last = lastPaymentAttempt;
+  const last = allowance.lastPaymentAttempt || lastPaymentAttempt;
   const now = Date.now();
   lastPaymentAttempt = now;
   if (last + allowance.minIntervalPerPayment * 1000 > now) {
@@ -127,6 +127,7 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
       allowance: {
         ...allowance,
         balance,
+        lastPaymentAttempt,
       },
     }),
   );
