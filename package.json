@@ -72,7 +72,7 @@
     "node-sass": "^4.14.1",
     "prettier": "1.17.0",
     "qrcode.react": "0.8.0",
-    "query-string": "6.2.0",
+    "query-string": "6.12.1",
     "react": "^16.4.0",
     "react-copy-to-clipboard": "5.0.1",
     "react-dom": "^16.4.0",
