@@ -91,7 +91,7 @@
     "tslint": "^6.1.2",
     "tslint-config-prettier": "^1.13.0",
     "tslint-eslint-rules": "^5.3.1",
-    "tslint-react": "^3.6.0",
+    "tslint-react": "^5.0.0",
     "typescript": "^3.9.3",
     "url-loader": "^1.1.1",
     "webln": "0.2.2",
