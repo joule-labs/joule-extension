@@ -34,7 +34,7 @@ export function* handleGetChannels() {
       },
       {} as { [pubkey: string]: boolean },
     );
-    const nodeInfoResponses: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
+    const nodeInfoResponses: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
       Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk)),
     );
     const nodeInfoMap = nodeInfoResponses.reduce(

@@ -75,7 +75,7 @@ export function* handleGetTransactions() {
       .map(payment => (payment.path.length ? payment.path[payment.path.length - 1] : ''))
       .filter(id => !!id)
       .filter((id, idx, ids) => ids.indexOf(id) === idx);
-    const paymentNodes: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
+    const paymentNodes: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
       paymentNodeIds.map(id => call(safeGetNodeInfo, nodeLib, id)),
     );
     const payments = paymentsRes.payments

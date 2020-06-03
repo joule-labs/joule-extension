@@ -280,18 +280,18 @@ class PaymentPrompt extends React.Component<Props, State> {
 }
 
 interface DetailsTableProps {
-  rows: Array<{
+  rows: {
     label: React.ReactNode;
     value: React.ReactNode;
     isLarge?: boolean;
-  }>;
+  }[];
 }
 
 const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
   <table className="DetailsTable">
     <tbody>
       {rows.map(r => (
-        <tr className={`DetailsTable-row ${r.isLarge ? 'is-large' : ''}`}>
+        <tr key={r.label} className={`DetailsTable-row ${r.isLarge ? 'is-large' : ''}`}>
           <td className="DetailsTable-row-label">{r.label}</td>
           <td className="DetailsTable-row-value">{r.value}</td>
         </tr>

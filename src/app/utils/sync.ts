@@ -41,7 +41,7 @@ export interface SyncData<T> {
   data: T;
 }
 
-export const syncConfigs: Array<SyncConfig<any>> = [
+export const syncConfigs: SyncConfig<any>[] = [
   {
     key: 'crypto',
     version: 1,
