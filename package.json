@@ -103,7 +103,7 @@
   "devDependencies": {
     "@types/bn.js": "4.11.6",
     "@types/classnames": "^2.2.10",
-    "@types/crypto-js": "3.1.43",
+    "@types/crypto-js": "3.1.47",
     "@types/node": "^10.11.4",
     "@types/qrcode.react": "0.8.1",
     "@types/query-string": "6.3.0",
