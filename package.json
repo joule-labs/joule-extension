@@ -71,7 +71,7 @@
     "moment": "^2.26.0",
     "node-sass": "^4.14.1",
     "prettier": "1.17.0",
-    "qrcode.react": "0.8.0",
+    "qrcode.react": "1.0.0",
     "query-string": "6.12.1",
     "react": "^16.4.0",
     "react-copy-to-clipboard": "5.0.1",
