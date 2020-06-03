@@ -1941,10 +1941,10 @@ caniuse-lite@^1.0.30000989:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
   integrity sha512-vrMcvSuMz16YY6GSVZ0dWDTJP8jqk3iFQ/Aq5iqblPwxSVVZI+zxDyTX0VPqtQsDnfdrBDcsmhgTEOh5R8Lbpw==
 
-canvas-renderer@~2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/canvas-renderer/-/canvas-renderer-2.0.1.tgz#0124a39b2022010d3a3533225da5f4a0aa08263d"
-  integrity sha512-K2mOGkMN9je/GCm9JSg7llrlLr9hMHTnWsO5xQEZ5sRz+HjfQ92u8jnKIQZj1GXfJBJKAotPISyNls6IFvfWpg==
+canvas-renderer@~2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/canvas-renderer/-/canvas-renderer-2.1.1.tgz#d91fe9511ab48056ff9fa8a04514bede76535f55"
+  integrity sha512-/V0XetN7s1Mk3NO7x2wxPZYv0pLMQtGAhecuOuKR88beiYCUle1AbCcFZNLu+4NVzi9RVHS0rXtIgzPEaKidLw==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -4469,12 +4469,13 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
-jdenticon@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/jdenticon/-/jdenticon-2.1.0.tgz#a94f0434d3537d66a831502a6e6e593b186515fb"
-  integrity sha512-EL3MgPHRg1/agDNuht5yYzjiY/F2VEoQrnMazTBRJiykZdRGbAiGDi8dXZw0cFYPn1xAGurGojUnR+HfJg1Ziw==
+jdenticon@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/jdenticon/-/jdenticon-2.2.0.tgz#6a9d9cb2134a7848ff21d59b3871148cbc6af87f"
+  integrity sha512-WGqwpjN9pab/Sah9pGnFH5tQc3HF3WbLV/tPVbykvk5nuAkxG/zhzQYWC2owvpnS+/A0HmlSx35rtY8kyN+x7Q==
   dependencies:
-    canvas-renderer "~2.0.1"
+    "@types/node" "*"
+    canvas-renderer "~2.1.1"
 
 js-base64@^2.1.8:
   version "2.5.1"
