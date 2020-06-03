@@ -64,7 +64,7 @@
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "3.2.0",
     "husky": "2.1.0",
-    "jdenticon": "2.1.0",
+    "jdenticon": "2.2.0",
     "less": "^3.11.1",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.2",
