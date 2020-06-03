@@ -47,7 +47,7 @@ export default class BTCPayServer extends React.Component<Props, State> {
         </p>
         <ol className="BTCPayServer-steps">
           <li>Navigate to your BTCPayServer and log in as an admin</li>
-          <li>Go to Server Settings > Services > LND Rest - See information</li>
+          <li>Go to Server Settings &gt; Services &gt; LND Rest - See information</li>
           <li>Click "See QR Code information" and copy the QR Code data</li>
           <li>Paste the data below:</li>
         </ol>
