@@ -979,10 +979,10 @@
   dependencies:
     redux "^3.6.0"
 
-"@types/remote-redux-devtools@0.5.3":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@types/remote-redux-devtools/-/remote-redux-devtools-0.5.3.tgz#04a1ed04566bfd0115be14dc933d5c47a6e59676"
-  integrity sha512-BiYLbXBzN4HA/pSgwlebtAwd35L+PD4lkUPPxzHqFQCZDP5bHTuRp8xCUQDKiU2iRWBgtI9cZRgQQR0Pv1LF3w==
+"@types/remote-redux-devtools@0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@types/remote-redux-devtools/-/remote-redux-devtools-0.5.4.tgz#509d30d61ae60d2fc99bc10da832dbda7115cb0a"
+  integrity sha512-OFbLVB30yemU46Qbx/s3qqSG2nkuSBQlOqf88y1U+hGiO2koz2pRYzZkB9hayTootHJWVdG4NGizlooQg7xFyA==
   dependencies:
     redux "^4.0.0"
 
