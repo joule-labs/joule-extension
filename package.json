@@ -57,7 +57,7 @@
     "bn.js": "5.1.2",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^5.1.1",
+    "copy-webpack-plugin": "^6.0.1",
     "core-js": "3.6.5",
     "crypto-js": "4.0.0",
     "css-loader": "^1.0.0",
