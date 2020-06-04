@@ -989,12 +989,12 @@
   resolved "https://registry.yarnpkg.com/@types/redux-actions/-/redux-actions-2.6.1.tgz#0940e97fa35ad3004316bddb391d8e01d2efa605"
   integrity sha512-zKgK+ATp3sswXs6sOYo1tk8xdXTy4CTaeeYrVQlClCjeOpag5vzPo0ASWiiBJ7vsiQRAdb3VkuFLnDoBimF67g==
 
-"@types/redux-logger@^3.0.6":
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/@types/redux-logger/-/redux-logger-3.0.7.tgz#163f6f6865c69c21d56f9356dc8d741718ec0db0"
-  integrity sha512-oV9qiCuowhVR/ehqUobWWkXJjohontbDGLV88Be/7T4bqMQ3kjXwkFNL7doIIqlbg3X2PC5WPziZ8/j/QHNQ4A==
+"@types/redux-logger@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@types/redux-logger/-/redux-logger-3.0.8.tgz#1fb6d26917bb198792bb1cf57feb31cae1532c5d"
+  integrity sha512-zM+cxiSw6nZtRbxpVp9SE3x/X77Z7e7YAfHD1NkxJyJbAGSXJGF0E9aqajZfPOa/sTYnuwutmlCldveExuCeLw==
   dependencies:
-    redux "^3.6.0"
+    redux "^4.0.0"
 
 "@types/remote-redux-devtools@0.5.4":
   version "0.5.4"
@@ -4877,11 +4877,6 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
-lodash-es@^4.2.1:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
-  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
-
 lodash._getnative@^3.0.0:
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/lodash._getnative/-/lodash._getnative-3.9.1.tgz#570bc7dede46d61cdcde687d65d3eecbaa3aaff5"
@@ -4921,7 +4916,7 @@ lodash.throttle@^4.0.0:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
   integrity sha1-wj6RtxAkKscMN/HhzaknTMOb8vQ=
 
-lodash@^4.0.0, lodash@^4.16.5, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@~4.17.10:
+lodash@^4.0.0, lodash@^4.16.5, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@~4.17.10:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -7083,16 +7078,6 @@ redux-saga@1.1.3:
   dependencies:
     "@redux-saga/core" "^1.1.3"
 
-redux@^3.6.0:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
-  integrity sha512-pNqnf9q1hI5HHZRBkj3bAngGZW/JMCmexDlOxw4XagXY2o1327nHH54LoTjiPJ0gizoqPDRqWyX/00g0hD6w+A==
-  dependencies:
-    lodash "^4.2.1"
-    lodash-es "^4.2.1"
-    loose-envify "^1.1.0"
-    symbol-observable "^1.0.3"
-
 redux@^4.0.0:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.4.tgz#4ee1aeb164b63d6a1bcc57ae4aa0b6e6fa7a3796"
@@ -8154,7 +8139,7 @@ svgo@^1.1.1:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-symbol-observable@^1.0.2, symbol-observable@^1.0.3, symbol-observable@^1.2.0:
+symbol-observable@^1.0.2, symbol-observable@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
   integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
