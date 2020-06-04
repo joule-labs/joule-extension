@@ -77,7 +77,7 @@
     "react-copy-to-clipboard": "5.0.1",
     "react-dom": "^16.4.0",
     "react-redux": "^7.2.0",
-    "react-router": "^4.3.1",
+    "react-router": "^5.2.0",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.2",
