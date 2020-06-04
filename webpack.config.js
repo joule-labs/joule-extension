@@ -32,7 +32,7 @@ const cssLoaderClient = {
 };
 const lessLoader = {
   loader: 'less-loader',
-  options: { javascriptEnabled: true },
+  options: { lessOptions: { javascriptEnabled: true } }, // TODO: javascriptEnabled is deprecated
 };
 const lessLoaderClient = {
   test: /\.less$/,
