@@ -93,7 +93,7 @@
     "tslint-eslint-rules": "^5.3.1",
     "tslint-react": "^5.0.0",
     "typescript": "^3.9.3",
-    "url-loader": "^1.1.1",
+    "url-loader": "^4.1.0",
     "webln": "0.2.2",
     "webpack": "4.39.3",
     "webpack-cli": "^3.1.0",
