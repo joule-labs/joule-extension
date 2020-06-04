@@ -22,7 +22,7 @@ export function* handleGetAccountInfo() {
     const [nodeInfo, chainBalances, channelsBalances]: [
       Yielded<typeof nodeLib.getNodeInfo>,
       Yielded<typeof nodeLib.getBlockchainBalance>,
-      Yielded<typeof nodeLib.getChannelsBalance>
+      Yielded<typeof nodeLib.getChannelsBalance>,
     ] = yield all(calls);
     const payload: Account = {
       pubKey: myPubKey,
@@ -63,7 +63,7 @@ export function* handleGetTransactions() {
     const [paymentsRes, invoicesRes, transactionsRes]: [
       Yielded<typeof nodeLib.getPayments>,
       Yielded<typeof nodeLib.getInvoices>,
-      Yielded<typeof nodeLib.getTransactions>
+      Yielded<typeof nodeLib.getTransactions>,
     ] = yield all([
       call(nodeLib.getPayments),
       call(nodeLib.getInvoices, { num_max_invoices: 30, reversed: true }),
@@ -72,14 +72,16 @@ export function* handleGetTransactions() {
 
     // Get node information from payments
     const paymentNodeIds: string[] = paymentsRes.payments
-      .map(payment => (payment.path.length ? payment.path[payment.path.length - 1] : ''))
-      .filter(id => !!id)
+      .map((payment) =>
+        payment.path.length ? payment.path[payment.path.length - 1] : '',
+      )
+      .filter((id) => !!id)
       .filter((id, idx, ids) => ids.indexOf(id) === idx);
     const paymentNodes: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
-      paymentNodeIds.map(id => call(safeGetNodeInfo, nodeLib, id)),
+      paymentNodeIds.map((id) => call(safeGetNodeInfo, nodeLib, id)),
     );
     const payments = paymentsRes.payments
-      .map(p => {
+      .map((p) => {
         // Handle payments that may be missing a path
         if (!p.path.length) {
           return {
@@ -88,14 +90,14 @@ export function* handleGetTransactions() {
           };
         }
         const nodeResponse = paymentNodes.find(
-          n => p.path[p.path.length - 1] === n.node.pub_key,
+          (n) => p.path[p.path.length - 1] === n.node.pub_key,
         );
         return {
           ...p,
           to: (nodeResponse as any).node,
         };
       })
-      .map(p => {
+      .map((p) => {
         // Fix old style payments that only had `value`
         if (!p.value_sat && !p.value_msat) {
           return {

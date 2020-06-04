@@ -102,7 +102,7 @@ class DepositModal extends React.Component<Props> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  state => ({
+  (state) => ({
     depositAddress: state.account.depositAddress,
     isFetchingDepositAddress: state.account.isFetchingDepositAddress,
     fetchDepositAddressError: state.account.fetchDepositAddressError,

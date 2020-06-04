@@ -201,7 +201,7 @@ class LightningSend extends React.Component<Props, State> {
                     value={denomination}
                     dropdownMatchSelectWidth={false}
                   >
-                    {typedKeys(Denomination).map(d => (
+                    {typedKeys(Denomination).map((d) => (
                       <Select.Option key={d} value={d}>
                         {denominationSymbols[chain][d]}
                       </Select.Option>
@@ -357,7 +357,7 @@ class LightningSend extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  state => ({
+  (state) => ({
     paymentRequests: state.payment.paymentRequests,
     sendLightningReceipt: state.payment.sendLightningReceipt,
     isSending: state.payment.isSending,

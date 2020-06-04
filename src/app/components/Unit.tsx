@@ -81,7 +81,7 @@ class Unit extends React.Component<Props> {
   }
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+export default connect<StateProps, {}, OwnProps, AppState>((state) => ({
   fiat: state.settings.fiat,
   denomination: state.settings.denomination,
   isFiatPrimary: state.settings.isFiatPrimary,

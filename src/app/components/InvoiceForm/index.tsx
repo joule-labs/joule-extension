@@ -236,7 +236,7 @@ class InvoiceForm extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  state => ({
+  (state) => ({
     invoice: state.payment.invoice,
     isCreatingInvoice: state.payment.isCreatingInvoice,
     invoiceError: state.payment.invoiceError,

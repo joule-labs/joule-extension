@@ -89,7 +89,7 @@ class Balances extends React.Component<Props, State> {
               dropdownMatchSelectWidth={false}
               onChange={this.handleChangeDenomination}
             >
-              {typedKeys(Denomination).map(d => (
+              {typedKeys(Denomination).map((d) => (
                 <Select.Option key={d} value={d}>
                   {denominationSymbols[chain][d]}
                 </Select.Option>
@@ -242,7 +242,7 @@ class Balances extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, ActionProps, {}, AppState>(
-  state => ({
+  (state) => ({
     denomination: state.settings.denomination,
     channels: state.channels.channels,
     isFetchingChannels: state.channels.isFetchingChannels,

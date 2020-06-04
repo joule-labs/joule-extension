@@ -84,10 +84,7 @@ class AuthorizePrompt extends React.Component<Props, State> {
   };
 }
 
-export default connect<{}, DispatchProps, {}, {}>(
-  undefined,
-  {
-    addEnabledDomain,
-    addRejectedDomain,
-  },
-)(AuthorizePrompt);
+export default connect<{}, DispatchProps, {}, {}>(undefined, {
+  addEnabledDomain,
+  addRejectedDomain,
+})(AuthorizePrompt);

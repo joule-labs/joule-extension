@@ -89,7 +89,7 @@ class ChannelList extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  state => ({
+  (state) => ({
     channels: state.channels.channels,
     isFetchingChannels: state.channels.isFetchingChannels,
     fetchChannelsError: state.channels.fetchChannelsError,

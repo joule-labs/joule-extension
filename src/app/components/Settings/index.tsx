@@ -60,7 +60,7 @@ class Settings extends React.Component<Props> {
               disabled={settings.isNoFiat && settings.isFiatPrimary}
               onChange={(v: Denomination) => this.handleChangeSelect('denomination', v)}
             >
-              {typedKeys(Denomination).map(d => (
+              {typedKeys(Denomination).map((d) => (
                 <Select.Option key={d} value={d}>
                   {denominationNames[chain][d]} ({denominationSymbols[chain][d]})
                 </Select.Option>
@@ -74,7 +74,7 @@ class Settings extends React.Component<Props> {
               value={settings.fiat}
               onChange={(v: Fiat) => this.handleChangeSelect('fiat', v)}
             >
-              {typedKeys(Fiat).map(f => (
+              {typedKeys(Fiat).map((f) => (
                 <Select.Option key={f} value={f}>
                   {f} ({fiatSymbols[f]})
                 </Select.Option>
@@ -156,7 +156,7 @@ class Settings extends React.Component<Props> {
 }
 
 const ConnectedSettings = connect<StateProps, DispatchProps, {}, AppState>(
-  state => ({
+  (state) => ({
     settings: state.settings,
     chain: getNodeChain(state),
   }),

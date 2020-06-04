@@ -61,6 +61,6 @@ class SendForm extends React.Component<Props, State> {
   };
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+export default connect<StateProps, {}, OwnProps, AppState>((state) => ({
   chain: getNodeChain(state),
 }))(SendForm);

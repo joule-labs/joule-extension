@@ -106,7 +106,7 @@ function getDocumentIcon() {
   // Search for largest icon first
   const allIcons = Array.from<HTMLLinkElement>(
     document.querySelectorAll('head > link[rel="icon"]'),
-  ).filter(icon => !!icon.href);
+  ).filter((icon) => !!icon.href);
 
   if (allIcons.length) {
     const href = allIcons.sort((a, b) => {

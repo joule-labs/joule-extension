@@ -41,7 +41,7 @@ export default class ConfirmNode extends React.Component<Props> {
       <div className="ConfirmNode">
         <table className="ConfirmNode-info">
           <tbody>
-            {rows.map(r => (
+            {rows.map((r) => (
               <tr className="ConfirmNode-info-row" key={r.label}>
                 <td className="ConfirmNode-info-row-label">{r.label}</td>
                 <td className="ConfirmNode-info-row-value">{r.value}</td>

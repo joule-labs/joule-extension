@@ -59,6 +59,6 @@ class NodeUriModal extends React.Component<Props> {
   }
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+export default connect<StateProps, {}, OwnProps, AppState>((state) => ({
   node: state.node.nodeInfo,
 }))(NodeUriModal);

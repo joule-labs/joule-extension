@@ -104,7 +104,7 @@ class PasswordPrompt extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  state => ({
+  (state) => ({
     testCipher: state.crypto.testCipher,
     salt: state.crypto.salt,
     password: state.crypto.password,

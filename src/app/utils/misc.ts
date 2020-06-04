@@ -6,7 +6,7 @@ import {
 } from 'lnd/message';
 
 export function sleep(time: number) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }

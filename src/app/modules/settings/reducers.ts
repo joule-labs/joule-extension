@@ -42,7 +42,7 @@ export default function settingsReducer(
     case types.REMOVE_ENABLED_DOMAIN:
       return {
         ...state,
-        enabledDomains: state.enabledDomains.filter(d => d !== action.payload),
+        enabledDomains: state.enabledDomains.filter((d) => d !== action.payload),
       };
 
     case types.ADD_REJECTED_DOMAIN:
@@ -56,7 +56,7 @@ export default function settingsReducer(
     case types.REMOVE_REJECTED_DOMAIN:
       return {
         ...state,
-        rejectedDomains: state.rejectedDomains.filter(d => d !== action.payload),
+        rejectedDomains: state.rejectedDomains.filter((d) => d !== action.payload),
       };
   }
 

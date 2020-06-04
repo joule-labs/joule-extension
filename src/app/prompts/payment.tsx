@@ -127,7 +127,7 @@ class PaymentPrompt extends React.Component<Props, State> {
                   value={denomination}
                   dropdownMatchSelectWidth={false}
                 >
-                  {typedKeys(Denomination).map(d => (
+                  {typedKeys(Denomination).map((d) => (
                     <Select.Option key={d} value={d}>
                       {denominationSymbols[chain][d]}
                     </Select.Option>
@@ -182,9 +182,7 @@ class PaymentPrompt extends React.Component<Props, State> {
                     },
                     {
                       label: 'Time lock',
-                      value: moment()
-                        .add(route.total_time_lock, 'seconds')
-                        .fromNow(true),
+                      value: moment().add(route.total_time_lock, 'seconds').fromNow(true),
                     },
                     {
                       label: 'Expires',
@@ -290,7 +288,7 @@ interface DetailsTableProps {
 const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
   <table className="DetailsTable">
     <tbody>
-      {rows.map(r => (
+      {rows.map((r) => (
         <tr key={r.label} className={`DetailsTable-row ${r.isLarge ? 'is-large' : ''}`}>
           <td className="DetailsTable-row-label">{r.label}</td>
           <td className="DetailsTable-row-value">{r.value}</td>
@@ -301,7 +299,7 @@ const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
 );
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  state => ({
+  (state) => ({
     paymentRequests: state.payment.paymentRequests,
     sendLightningReceipt: state.payment.sendLightningReceipt,
     isSending: state.payment.isSending,

@@ -13,7 +13,7 @@ export function* handleGetPeers() {
     );
     const { peers }: Yielded<typeof nodeLib.getPeers> = yield call(nodeLib.getPeers);
     const nodes: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
-      peers.map(p => call(safeGetNodeInfo, nodeLib, p.pub_key)),
+      peers.map((p) => call(safeGetNodeInfo, nodeLib, p.pub_key)),
     );
     const payload = peers.map((peer, i) => ({
       ...peer,

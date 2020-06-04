@@ -8,6 +8,6 @@ import './index.less';
 process.env.APP_CONTAINER = 'page';
 
 ReactDOM.render(
-  <App routes={<Routes />} /> as any,
+  (<App routes={<Routes />} />) as any,
   document.getElementById('root') as HTMLElement,
 );

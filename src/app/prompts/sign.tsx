@@ -76,7 +76,7 @@ class SignPrompt extends React.Component<Props> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  state => ({
+  (state) => ({
     signReceipt: state.sign.signReceipt,
     signError: state.sign.signError,
   }),

@@ -133,7 +133,7 @@ class InvoicePrompt extends React.Component<Props, State> {
                   value={denomination}
                   dropdownMatchSelectWidth={false}
                 >
-                  {typedKeys(Denomination).map(d => (
+                  {typedKeys(Denomination).map((d) => (
                     <Select.Option key={d} value={d}>
                       {denominationSymbols[chain][d]}
                     </Select.Option>
@@ -349,7 +349,7 @@ class InvoicePrompt extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  state => ({
+  (state) => ({
     invoice: state.payment.invoice,
     isCreatingInvoice: state.payment.isCreatingInvoice,
     invoiceError: state.payment.invoiceError,

@@ -9,7 +9,7 @@ export function setPasswordCache(password: string) {
 }
 
 export function getPasswordCache() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const onMessage = (request: any) => {
       if (request && request.application === 'Joule' && request.cachedPassword) {
         resolve(request.data);

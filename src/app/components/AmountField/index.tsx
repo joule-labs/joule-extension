@@ -136,7 +136,7 @@ class AmountField extends React.Component<Props, State> {
               value={denomination}
               dropdownMatchSelectWidth={false}
             >
-              {typedKeys(Denomination).map(d => (
+              {typedKeys(Denomination).map((d) => (
                 <Select.Option key={d} value={d}>
                   {denominationSymbols[chain][d]}
                 </Select.Option>
@@ -247,7 +247,7 @@ class AmountField extends React.Component<Props, State> {
   };
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>(state => ({
+export default connect<StateProps, {}, OwnProps, AppState>((state) => ({
   denomination: state.settings.denomination,
   fiat: state.settings.fiat,
   isNoFiat: state.settings.isNoFiat,

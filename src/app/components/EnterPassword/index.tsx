@@ -56,7 +56,7 @@ class PasswordPage extends React.Component<Props, State> {
               value={password}
               onChange={this.handleChange}
               enterButton={<Icon type="unlock" />}
-              ref={el => (this.input = el)}
+              ref={(el) => (this.input = el)}
             />
           </Form.Item>
 
@@ -115,7 +115,7 @@ class PasswordPage extends React.Component<Props, State> {
 }
 
 const ConnectedPasswordPage = connect<StateProps, DispatchProps, {}, AppState>(
-  state => ({
+  (state) => ({
     testCipher: state.crypto.testCipher,
     salt: state.crypto.salt,
     password: state.crypto.password,

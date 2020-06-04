@@ -93,7 +93,7 @@ export const syncConfigs: SyncConfig<any>[] = [
 ];
 
 function getConfigByKey(key: string) {
-  const config = syncConfigs.find(c => c.key === key);
+  const config = syncConfigs.find((c) => c.key === key);
   if (!config) {
     throw new Error(`Attempted to get unknown sync config '${key}'`);
   }
@@ -118,21 +118,18 @@ export async function storageSyncGet(keys: string[]) {
   try {
     // Format and migrate responses
     const allResponses = await browser.storage.sync.get(keys);
-    return keys.reduce(
-      (prev, key) => {
-        const res = allResponses[key];
-        // No data synced yet
-        if (!res) {
-          prev[key] = undefined;
-          return prev;
-        }
-        // Run migrations on unencrypted data
-        const config = getConfigByKey(key);
-        prev[key] = migrateSyncedData(config, res);
+    return keys.reduce((prev, key) => {
+      const res = allResponses[key];
+      // No data synced yet
+      if (!res) {
+        prev[key] = undefined;
         return prev;
-      },
-      {} as { [key: string]: any },
-    );
+      }
+      // Run migrations on unencrypted data
+      const config = getConfigByKey(key);
+      prev[key] = migrateSyncedData(config, res);
+      return prev;
+    }, {} as { [key: string]: any });
   } catch (err) {
     Promise.reject(err);
   }

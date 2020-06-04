@@ -33,8 +33,8 @@ export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>)
   try {
     // Use Promise.all with custom catch here, because we expect some
     // of the requests to fail, we only need one succeed
-    const requests = urls.map(url => {
-      return new Promise<string | null>(async resolve => {
+    const requests = urls.map((url) => {
+      return new Promise<string | null>(async (resolve) => {
         try {
           const client = new LndMessageClient(url);
           await client.getInfo();
@@ -48,7 +48,7 @@ export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>)
       });
     });
     const validUrls: (string | null)[] = yield call(Promise.all.bind(Promise), requests);
-    const validUrl = validUrls.find(url => !!url);
+    const validUrl = validUrls.find((url) => !!url);
     if (!validUrl) {
       throw new Error('None of the checked nodes were available');
     }
@@ -188,7 +188,7 @@ export function* handleUpdateMacaroons(
       // fetch updated transactions
       accountTypes.GET_TRANSACTIONS,
     ];
-    yield all(updateActionsTypes.map(type => put({ type })));
+    yield all(updateActionsTypes.map((type) => put({ type })));
 
     yield put({ type: types.UPDATE_MACAROONS_SUCCESS });
   } catch (err) {

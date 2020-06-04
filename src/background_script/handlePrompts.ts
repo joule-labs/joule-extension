@@ -25,7 +25,7 @@ export function openPrompt(request: PromptRequest): Promise<any> {
         width: 400,
         height: 580,
       })
-      .then(window => {
+      .then((window) => {
         const tabId = window.tabs![0].id;
 
         const onMessageListener = (message: any, sender: Runtime.MessageSender) => {
@@ -62,15 +62,15 @@ export default function handlePrompts() {
 
     // Special case -- get info requires no prompt, just respond
     if (request.type === PROMPT_TYPE.INFO) {
-      return getNodeInfo().then(data => ({ data }));
+      return getNodeInfo().then((data) => ({ data }));
     }
 
     // WebLNProvider request, will require window open
     return openPrompt(request)
-      .then(data => {
+      .then((data) => {
         return { data };
       })
-      .catch(err => {
+      .catch((err) => {
         return { error: err.message };
       });
   });

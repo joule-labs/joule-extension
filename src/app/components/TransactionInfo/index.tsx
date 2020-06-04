@@ -88,7 +88,7 @@ class TransactionInfo extends React.Component<Props> {
           <div className="TxInfo-route-routes">
             {tx.path.length ? (
               <Timeline>
-                {tx.path.map(id => (
+                {tx.path.map((id) => (
                   <Timeline.Item key={id}>
                     <code>{id}</code>
                   </Timeline.Item>
@@ -204,7 +204,7 @@ class TransactionInfo extends React.Component<Props> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  state => ({
+  (state) => ({
     account: state.account.account,
     node: state.node.nodeInfo,
   }),

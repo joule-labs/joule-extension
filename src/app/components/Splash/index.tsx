@@ -10,7 +10,7 @@ interface Props {
 export default class Splash extends React.Component<Props> {
   componentDidMount() {
     if (process.env.APP_CONTAINER === 'page') {
-      browser.storage.local.get('skipSplash').then(value => {
+      browser.storage.local.get('skipSplash').then((value) => {
         if (value && value.skipSplash) {
           browser.storage.local.remove('skipSplash').then(() => {
             this.handleContinue();

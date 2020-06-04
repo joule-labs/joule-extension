@@ -84,7 +84,7 @@ class FeeSelectField extends Component<Props> {
               [onChainFees.halfHourFee]: '',
               [onChainFees.fastestFee]: 'fastest',
             }}
-            tipFormatter={v => {
+            tipFormatter={(v) => {
               switch (v) {
                 case onChainFees.fastestFee:
                   return `${v} (fastest)`;
@@ -112,7 +112,7 @@ class FeeSelectField extends Component<Props> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  state => ({
+  (state) => ({
     onChainFees: state.payment.onChainFees,
     feesError: state.payment.feesError,
     isFetchingFees: state.payment.isFetchingFees,
