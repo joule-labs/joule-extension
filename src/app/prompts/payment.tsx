@@ -288,8 +288,8 @@ interface DetailsTableProps {
 const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
   <table className="DetailsTable">
     <tbody>
-      {rows.map((r) => (
-        <tr key={r.label} className={`DetailsTable-row ${r.isLarge ? 'is-large' : ''}`}>
+      {rows.map((r, idx) => (
+        <tr key={idx} className={`DetailsTable-row ${r.isLarge ? 'is-large' : ''}`}>
           <td className="DetailsTable-row-label">{r.label}</td>
           <td className="DetailsTable-row-value">{r.value}</td>
         </tr>
