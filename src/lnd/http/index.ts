@@ -45,25 +45,29 @@ export class LndHttpClient implements T.LndAPI {
       channels: [],
     }).then((res) => {
       // Default attributes for channels
-      res.channels = res.channels.map((channel) => ({
-        status: T.CHANNEL_STATUS.OPEN,
-        csv_delay: 0,
-        num_updates: 0,
-        private: false,
-        pending_htlcs: [],
-        remote_balance: '0',
-        commit_weight: '0',
-        capacity: '0',
-        local_balance: '0',
-        total_satoshis_received: '0',
-        active: false,
-        commit_fee: '0',
-        fee_per_kw: '0',
-        unsettled_balance: '0',
-        total_satoshis_sent: '0',
-        remote_node_pub: (channel as any).remote_pubkey,
-        ...channel,
-      }));
+      res.channels = res.channels.map((channel) => {
+        return Object.assign(
+          {
+            status: T.CHANNEL_STATUS.OPEN,
+            csv_delay: 0,
+            num_updates: 0,
+            private: false,
+            pending_htlcs: [],
+            remote_balance: '0',
+            commit_weight: '0',
+            capacity: '0',
+            local_balance: '0',
+            total_satoshis_received: '0',
+            active: false,
+            commit_fee: '0',
+            fee_per_kw: '0',
+            unsettled_balance: '0',
+            total_satoshis_sent: '0',
+            remote_node_pub: (channel as any).remote_pubkey,
+          },
+          channel,
+        );
+      });
       return res;
     });
   };
@@ -160,12 +164,16 @@ export class LndHttpClient implements T.LndAPI {
     return this.request<T.GetTransactionsResponse>('GET', '/v1/transactions', undefined, {
       transactions: [],
     }).then((res) => {
-      res.transactions = res.transactions.map((tx) => ({
-        total_fees: '0',
-        amount: '0',
-        num_confirmations: 0,
-        ...tx,
-      }));
+      res.transactions = res.transactions.map((tx) => {
+        return Object.assign(
+          {
+            total_fees: '0',
+            amount: '0',
+            num_confirmations: 0,
+          },
+          tx,
+        );
+      });
       return res;
     });
   };
@@ -174,11 +182,15 @@ export class LndHttpClient implements T.LndAPI {
     return this.request<T.GetPaymentsResponse>('GET', '/v1/payments', undefined, {
       payments: [],
     }).then((res) => {
-      res.payments = res.payments.map((t) => ({
-        fee: '0',
-        path: [],
-        ...t,
-      }));
+      res.payments = res.payments.map((t) => {
+        return Object.assign(
+          {
+            fee: '0',
+            path: [],
+          },
+          t,
+        );
+      });
       return res;
     });
   };
@@ -195,11 +207,15 @@ export class LndHttpClient implements T.LndAPI {
       },
     ).then((res) => {
       // Default attributes for channels
-      res.invoices = res.invoices.map((invoice) => ({
-        route_hints: [],
-        settled: false,
-        ...invoice,
-      }));
+      res.invoices = res.invoices.map((invoice) => {
+        return Object.assign(
+          {
+            route_hints: [],
+            settled: false,
+          },
+          invoice,
+        );
+      });
       return res;
     });
   };
@@ -243,11 +259,15 @@ export class LndHttpClient implements T.LndAPI {
       { routes: [] },
     ).then((res) => {
       // Default attributes for channels
-      res.routes = res.routes.map((route) => ({
-        total_fees: '0',
-        total_fees_msat: '0',
-        ...route,
-      }));
+      res.routes = res.routes.map((route) => {
+        return Object.assign(
+          {
+            total_fees: '0',
+            total_fees_msat: '0',
+          },
+          route,
+        );
+      });
       return res;
     });
   };
@@ -290,14 +310,18 @@ export class LndHttpClient implements T.LndAPI {
       peers: [],
     }).then((res) => {
       // Default attributes for peers
-      res.peers = res.peers.map((peer) => ({
-        ping_time: '0',
-        sat_sent: '0',
-        sat_recv: '0',
-        bytes_sent: '0',
-        bytes_recv: '0',
-        ...peer,
-      }));
+      res.peers = res.peers.map((peer) => {
+        return Object.assign(
+          {
+            ping_time: '0',
+            sat_sent: '0',
+            sat_recv: '0',
+            bytes_sent: '0',
+            bytes_recv: '0',
+          },
+          peer,
+        );
+      });
       return res;
     });
   };
@@ -314,11 +338,13 @@ export class LndHttpClient implements T.LndAPI {
       '/v1/channels',
       params,
     ).then((res) => {
-      return {
-        output_index: '0',
-        funding_txid_str: txIdBytesToHex(res.funding_txid_bytes),
-        ...res,
-      };
+      return Object.assign(
+        {
+          output_index: '0',
+          funding_txid_str: txIdBytesToHex(res.funding_txid_bytes),
+        },
+        res,
+      );
     });
   };
 
