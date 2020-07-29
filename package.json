@@ -45,7 +45,7 @@
     }
   ],
   "dependencies": {
-    "@babel/core": "^7.10.2",
+    "@babel/core": "^7.10.5",
     "@babel/plugin-transform-react-constant-elements": "^7.10.1",
     "@babel/preset-env": "7.10.2",
     "@babel/preset-react": "7.10.1",
