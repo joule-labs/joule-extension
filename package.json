@@ -55,6 +55,7 @@
     "babel-plugin-import": "^1.8.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "bn.js": "4.11.8",
+    "bolt11": "1.2.5",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^5.1.1",

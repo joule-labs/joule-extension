@@ -1,0 +1,75 @@
+.AllowanceForm {
+  &-header {
+    display: flex;
+    padding: 1rem 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(#000, 0.15);
+
+    &-domain {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    &-toggle {
+      display: flex;
+      align-items: center;
+
+      &-label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        margin-right: 0.4rem;
+        font-weight: bold;
+        opacity: 0.7;
+      }
+    }
+  }
+
+  &-fields {
+    padding: 1rem;
+    transition: opacity 200ms ease, filter 200ms ease;
+
+    &.is-inactive {
+      opacity: 0.4;
+      filter: grayscale(1);
+      pointer-events: none;
+    }
+
+    &-balance {
+      &.ant-form-item {
+        padding-bottom: 0;
+      }
+
+      .ant-form-item-children {
+        display: flex;
+      }
+
+      &-total {
+        margin-bottom: 0.5rem;
+      }
+
+      &-bar {
+        margin-top: -1rem;
+        margin-left: 1.5rem;
+
+        .ant-progress-text small {
+          font-size: 0.65rem;
+          opacity: 0.6;
+        }
+      }
+    }
+
+    // Ant overrides
+    .ant-form-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .ant-form-item-label label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 0.04rem;
+      opacity: 0.7;
+    }
+  }
+}

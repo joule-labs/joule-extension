@@ -4,6 +4,7 @@ import injectScript from './injectScript';
 import respondWithoutPrompt from './respondWithoutPrompt';
 import { PROMPT_TYPE } from '../webln/types';
 import { getOriginData } from 'utils/prompt';
+import { isPromptMessage } from '../util/messages';
 
 if (shouldInject()) {
   injectScript();
@@ -14,9 +15,10 @@ if (shouldInject()) {
       return;
     }
 
-    if (ev.data && ev.data.application === 'Joule' && !ev.data.response) {
+    const msg = ev.data;
+    if (isPromptMessage(msg)) {
       const messageWithOrigin = {
-        ...ev.data,
+        ...msg,
         origin: getOriginData(),
       };
 
@@ -53,6 +55,7 @@ if (document) {
 
       const lightningLink = target.closest('[href^="lightning:"]');
       if (lightningLink) {
+        ev.preventDefault();
         const href = lightningLink.getAttribute('href') as string;
         const paymentRequest = href.replace('lightning:', '');
         browser.runtime.sendMessage({
@@ -62,7 +65,6 @@ if (document) {
           origin: getOriginData(),
           args: { paymentRequest },
         });
-        ev.preventDefault();
       }
     });
   });
@@ -74,7 +76,9 @@ if (document) {
     event => {
       // 2 = right mouse button. may be better to store in a constant
       if (event.button === 2) {
-        let paymentRequest = (window.getSelection() || '').toString();
+        const selection = window.getSelection();
+        if (!selection) return;
+        let paymentRequest = selection.toString();
         // if nothing selected, try to get the text of the right-clicked element.
         if (!paymentRequest && event.target) {
           // Cast as HTMLInputElement to get the value if a form element is used

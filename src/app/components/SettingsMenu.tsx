@@ -6,6 +6,7 @@ import PeersModal from 'components/PeersModal';
 import OpenChannelModal from 'components/OpenChannelModal';
 import { clearPasswordCache } from 'utils/background';
 import MenuIcon from 'static/images/menu.svg';
+import AllowanceIcon from 'static/images/piggy-bank.svg';
 import './SettingsMenu.less';
 
 interface State {
@@ -38,7 +39,14 @@ export default class SettingsMenu extends React.Component<{}, State> {
             <Icon type="pie-chart" /> Balances
           </Link>
         </Menu.Item>
+        <Menu.Item key="allowances">
+          <Link to="/allowances">
+            <Icon component={AllowanceIcon} /> Allowances
+          </Link>
+        </Menu.Item>
+
         <Menu.Divider />
+
         <Menu.Item key="settings">
           <Link to="/settings">
             <Icon type="setting" /> Settings

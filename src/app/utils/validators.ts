@@ -62,3 +62,12 @@ export function isSegwitAddress(address: string): boolean {
   // check if the address starts with one of the prefixes
   return CHAIN_PREFIXES.some(p => addrPrefix.substring(0, p.length) === p);
 }
+
+export function isValidDomain(domain: string): boolean {
+  try {
+    new URL(domain); // tslint:disable-line
+    return true;
+  } catch (err) {
+    return false;
+  }
+}

@@ -44,7 +44,6 @@ export function getPromptOrigin(): OriginData {
     throw new Error('Missing prompt arguments');
   }
   const { origin } = qs.parse(window.location.search);
-  console.log(origin);
   return JSON.parse(origin as string) as OriginData;
 }
 

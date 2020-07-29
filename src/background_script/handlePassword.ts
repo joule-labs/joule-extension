@@ -3,7 +3,7 @@ import { browser } from 'webextension-polyfill-ts';
 let cachedPassword: string | undefined;
 
 export default function handlePassword() {
-  browser.runtime.onMessage.addListener((request: any) => {
+  browser.runtime.onMessage.addListener((request, sender) => {
     if (!request || request.application !== 'Joule') {
       return;
     }
@@ -20,11 +20,16 @@ export default function handlePassword() {
 
     // Send the password cache back to the app
     if (request.getPassword) {
-      browser.runtime.sendMessage({
+      const msg = {
         application: 'Joule',
         cachedPassword: true,
         data: cachedPassword,
-      });
+      };
+      if (sender.tab && sender.tab.id) {
+        browser.tabs.sendMessage(sender.tab.id, msg);
+      } else {
+        browser.runtime.sendMessage(msg);
+      }
     }
   });
 }

@@ -84,6 +84,16 @@ export function removeDomainPrefix(domain: string) {
   return domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
 }
 
+// Domain without trailing slash and lowercase'd, for use as a key
+export function normalizeDomain(domain: string) {
+  return domain.toLowerCase().replace(/\/$/, '');
+}
+
+// Domain sans prefix, lowercase'd
+export function shortDomain(domain: string) {
+  return removeDomainPrefix(domain).toLowerCase();
+}
+
 export function enumToClassName(key: string) {
   return key.toLowerCase().replace('_', '-');
 }

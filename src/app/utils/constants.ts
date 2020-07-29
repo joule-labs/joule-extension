@@ -4,6 +4,7 @@ import DecredLogo from 'static/images/decred.svg';
 import GroestlcoinLogo from 'static/images/groestlcoin.svg';
 import * as React from 'react';
 import { CustomIconComponentProps } from 'antd/lib/icon';
+import { Allowance } from 'modules/appconf/types';
 import { CHANNEL_STATUS } from 'lnd/message';
 import { AddressType } from 'lnd/types';
 
@@ -247,3 +248,19 @@ export const CHAIN_PREFIXES = [
   'tltc', // Litecoin Testnet
   'rltc', // Litecoin Regtest
 ];
+
+export const DEFAULT_ALLOWANCE: Allowance = {
+  active: true,
+  notifications: true,
+  total: 10000,
+  balance: 10000,
+  maxPerPayment: 100,
+  minIntervalPerPayment: 1,
+  lastPaymentAttempt: 0,
+};
+
+export const COLORS = {
+  PRIMARY: '#7642ff',
+  BITCOIN: '#ff9500',
+  NEUTRAL: '#858585',
+};
