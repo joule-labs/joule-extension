@@ -12,8 +12,6 @@ import {
 } from '../util/messages';
 import { createNotification, updateNotification } from './notifications';
 
-let lastPaymentAttempt = 0;
-
 export default async function respondWithoutPrompt(
   msg: AnyPromptMessage,
 ): Promise<boolean> {
@@ -63,10 +61,8 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
   }
 
   // Don't allow payments to happen too fast
-  const last = lastPaymentAttempt;
   const now = Date.now();
-  lastPaymentAttempt = now;
-  if (last + allowance.minIntervalPerPayment * 1000 > now) {
+  if (allowance.lastPaymentAttempt + allowance.minIntervalPerPayment * 1000 > now) {
     console.warn('Site attempted to make payments too fast for allowance payment');
     return false;
   }
@@ -127,6 +123,7 @@ async function handleAutoPayment(msg: PaymentPromptMessage) {
       allowance: {
         ...allowance,
         balance,
+        lastPaymentAttempt: now,
       },
     }),
   );

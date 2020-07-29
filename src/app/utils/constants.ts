@@ -256,6 +256,7 @@ export const DEFAULT_ALLOWANCE: Allowance = {
   balance: 10000,
   maxPerPayment: 100,
   minIntervalPerPayment: 1,
+  lastPaymentAttempt: 0,
 };
 
 export const COLORS = {

@@ -12,6 +12,7 @@ export interface Allowance {
   balance: number;
   maxPerPayment: number;
   minIntervalPerPayment: number;
+  lastPaymentAttempt: number;
 }
 
 export interface AppConfig {
