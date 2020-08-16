@@ -54,13 +54,22 @@ if (document) {
       const lightningLink = target.closest('[href^="lightning:"]');
       if (lightningLink) {
         const href = lightningLink.getAttribute('href') as string;
-        const paymentRequest = href.replace('lightning:', '');
+        const request = href.replace('lightning:', '');
+        let promptType = null;
+        let args = null;
+        if (request.toLowerCase().startsWith('lnurl')) {
+          promptType = PROMPT_TYPE.LNURL;
+          args = { lnurl: request };
+        } else {
+          promptType = PROMPT_TYPE.PAYMENT;
+          args = { paymentRequest: request };
+        }
         browser.runtime.sendMessage({
           application: 'Joule',
           prompt: true,
-          type: PROMPT_TYPE.PAYMENT,
+          type: promptType,
           origin: getOriginData(),
-          args: { paymentRequest },
+          args,
         });
         ev.preventDefault();
       }

@@ -1,0 +1,125 @@
+@import '~style/variables.less';
+
+.LnurlPayPrompt {
+  // Default ant overrides, overridden below
+  .ant-form-item-label label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    color: @text-color-secondary;
+  }
+
+  &-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+
+    &-icon {
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    &-title {
+      font-size: 1.15rem;
+      margin: 0 0 0 1rem;
+    }
+  }
+
+  &-form {
+    padding: 1rem;
+
+    &-value {
+      // Ant overrides
+      .ant-input-group.ant-input-group-compact {
+        display: flex;
+      }
+
+      .ant-select-selection-selected-value {
+        font-size: 0.85rem;
+      }
+
+      .ant-form-explain {
+        display: flex;
+        font-size: 0.75rem;
+        margin: 0.2rem 0 1rem;
+
+        > span {
+          margin-right: 0.5rem;
+        }
+
+        > .is-fiat {
+          flex: 1;
+          text-align: right;
+          font-size: 0.85rem;
+        }
+      }
+    }
+
+    &-memo {
+      &-text {
+        font-size: 1rem;
+        color: rgba(#000, 0.5);
+
+        a {
+          margin-left: 0.5rem;
+        }
+      }
+    }
+
+    &-advanced {
+      &-private {
+        display: flex;
+        align-items: center;
+        transform: translateY(-1rem);
+      }
+
+      .ant-form-item {
+        flex: 1;
+        margin-right: 1rem;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+
+      .ant-form-item-label {
+        padding-bottom: 0;
+
+        label {
+          display: flex;
+          align-items: center;
+          font-size: 0.7rem;
+          letter-spacing: 0.08rem;
+
+          .Help {
+            margin-left: 0.25rem;
+          }
+        }
+      }
+
+      .ant-form-explain {
+        font-size: 0.7rem;
+      }
+    }
+
+    &-advancedToggle {
+      display: block;
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin: 0 auto;
+
+      &:hover,
+      &:focus,
+      &:active {
+        opacity: 1;
+      }
+    }
+  }
+}
