@@ -11,16 +11,21 @@ import { removeDomainPrefix } from 'utils/formatters';
 import { AppState } from 'store/reducers';
 import { getNodeChain } from 'modules/node/selectors';
 import { getChainRates } from 'modules/rates/selectors';
-import { SendPaymentResponse } from 'webln';
 import { PaymentRequestData } from 'modules/payment/types';
-import { sendPayment } from 'modules/payment/actions';
+import {
+  sendPayment,
+  resetSendPayment,
+  checkPaymentRequest,
+} from 'modules/payment/actions';
 import AmountField from 'components/AmountField';
+import PaymentRequest from 'components/PaymentRequest';
 import { Denomination } from 'utils/constants';
 import { fromBaseToUnit, fromUnitToBase } from 'utils/units';
-import { Form } from 'antd';
+import { Form, Button, Result } from 'antd';
 import Loader from 'components/Loader';
 import './lnurl.less';
 import { getParams as getlnurlParams, LNURLPayParams } from 'js-lnurl';
+import { rejectPrompt, confirmPrompt } from 'utils/prompt';
 
 interface StateProps {
   paymentRequests: AppState['payment']['paymentRequests'];
@@ -36,6 +41,8 @@ interface StateProps {
 
 interface DispatchProps {
   sendPayment: typeof sendPayment;
+  resetSendPayment: typeof resetSendPayment;
+  checkPaymentRequest: typeof checkPaymentRequest;
 }
 
 type Props = StateProps & DispatchProps;
@@ -47,6 +54,7 @@ interface State {
   denomination: Denomination;
   routedRequest: PaymentRequestData | null;
   paymentRequestValue: string;
+  showMoreInfo: boolean;
 }
 
 const INITIAL_STATE = {
@@ -56,6 +64,7 @@ const INITIAL_STATE = {
   denomination: Denomination.SATOSHIS,
   paymentRequestValue: '',
   routedRequest: null,
+  showMoreInfo: false,
 };
 
 interface LnurlArgs {
@@ -94,26 +103,76 @@ class LnurlPayPrompt extends React.Component<Props, State> {
     });
   }
 
+  componentWillUnmount() {
+    this.props.resetSendPayment();
+  }
+
+  componentWillUpdate(nextProps: Props) {
+    const { paymentRequestValue } = this.state;
+    const oldPr = this.props.paymentRequests[paymentRequestValue];
+    const newPr = nextProps.paymentRequests[paymentRequestValue];
+
+    if (newPr && newPr.data && newPr !== oldPr) {
+      this.setState({ routedRequest: newPr.data });
+    }
+  }
+
   render() {
-    const isConfirmDisabled = this.state.isLoading;
+    // Early exit for send state
+    const { sendLightningReceipt, isSending, sendError } = this.props;
+    if (isSending) {
+      return <Loader />;
+    } else if (sendLightningReceipt || sendError) {
+      const type = sendError ? 'error' : 'success';
+      const closeButton = (
+        <Button key="close" size="large" onClick={this.handleClose}>
+          Close
+        </Button>
+      );
+      return (
+        <div className="SendState">
+          <Result
+            status={type}
+            title={type === 'success' ? 'Succesfully sent!' : 'Failed to send'}
+            subTitle={
+              type === 'success'
+                ? 'See below for more about your transaction'
+                : 'See below for the full error'
+            }
+            extra={[closeButton]}
+          >
+            {sendError ||
+              (sendLightningReceipt && (
+                <>
+                  <h3>Pre-image</h3>
+                  <code>{sendLightningReceipt.payment_preimage}</code>
+                </>
+              ))}
+          </Result>
+        </div>
+      );
+    }
+
+    // not in sending state
+
+    const { value, routedRequest, lnurlParams, paymentRequestValue } = this.state;
+    const requestData = this.props.paymentRequests[paymentRequestValue] || {};
+    const isSubmitDisabled =
+      this.state.isLoading ||
+      !notNilNum(this.state.value) ||
+      (routedRequest !== null && routedRequest.route === null);
     const isValueDisabled =
-      this.state.lnurlParams &&
-      this.state.lnurlParams.maxSendable === this.state.lnurlParams.minSendable;
+      lnurlParams && lnurlParams.maxSendable === lnurlParams.minSendable;
 
     return (
-      <PromptTemplate
-        isConfirmDisabled={isConfirmDisabled}
-        getConfirmData={this.handleConfirm}
-      >
+      <PromptTemplate hasNoButtons={true}>
         <div className="LnurlPayPrompt">
           <div className="LnurlPayPrompt-header">
             <div className="LnurlPayPrompt-header-icon">
               <img src={this.origin.icon} />
             </div>
             <h1 className="LnurlPayPrompt-header-title">
-              <strong>
-                Payment request from {removeDomainPrefix(this.origin.domain)}
-              </strong>
+              <strong>Pay request from {removeDomainPrefix(this.origin.domain)}</strong>
             </h1>
           </div>
           <Form className="LnurlPayPrompt-form">
@@ -121,21 +180,40 @@ class LnurlPayPrompt extends React.Component<Props, State> {
               <Loader size="5rem" />
             ) : (
               <div>
-                <AmountField
-                  label="Amount"
-                  amount={this.state.value}
-                  onChangeAmount={this.handleChangeValue}
-                  maximumSats={this.state.lnurlParams.maxSendable.toString()}
-                  minimumSats={this.state.lnurlParams.minSendable.toString()}
-                  disabled={isValueDisabled}
-                  required
-                  autoFocus
-                  showFiat
-                />
-                <div>
-                  <Form.Item className="LnurlPayPrompt-metadata" label="Details">
-                    {this.renderMetadata()}
-                  </Form.Item>
+                <Form.Item className="LnurlPayPrompt-metadata" label="Details">
+                  {this.renderMetadata()}
+                </Form.Item>
+                {routedRequest ? (
+                  <PaymentRequest
+                    routedRequest={routedRequest}
+                    requestData={requestData}
+                  />
+                ) : (
+                  <AmountField
+                    label="Amount"
+                    amount={value}
+                    onChangeAmount={this.handleChangeValue}
+                    maximumSats={lnurlParams.maxSendable.toString()}
+                    minimumSats={lnurlParams.minSendable.toString()}
+                    disabled={isValueDisabled}
+                    required
+                    autoFocus
+                    showFiat
+                  />
+                )}
+
+                <div className="LnurlPayPrompt-buttons">
+                  <Button size="large" type="ghost" onClick={this.handleReject}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={this.handleSubmit}
+                    type="primary"
+                    size="large"
+                    disabled={isSubmitDisabled}
+                  >
+                    {this.state.routedRequest ? 'Send' : 'Next'}
+                  </Button>
                 </div>
               </div>
             )}
@@ -144,6 +222,14 @@ class LnurlPayPrompt extends React.Component<Props, State> {
       </PromptTemplate>
     );
   }
+
+  private handleClose = () => {
+    return confirmPrompt();
+  };
+
+  private handleReject = () => {
+    return rejectPrompt();
+  };
 
   private renderMetadata = () => {
     const text: string = this.state.lnurlParams.decodedMetadata
@@ -155,7 +241,7 @@ class LnurlPayPrompt extends React.Component<Props, State> {
       .map(([typ, content]: any) => `data:${typ},${content}`)[0];
 
     return (
-      <div className="LnurlPayPrompt-metadata">
+      <div className="LnurlPayPrompt-metadata-item">
         {image ? <img src={image} /> : null}
         <p>{text}</p>
       </div>
@@ -166,7 +252,33 @@ class LnurlPayPrompt extends React.Component<Props, State> {
     this.setState({ value });
   };
 
-  private handleConfirm = async (): Promise<SendPaymentResponse> => {
+  private handleSubmit = async () => {
+    if (this.state.paymentRequestValue !== '') {
+      return this.handleSend();
+    } else {
+      return this.getPaymentRequest();
+    }
+  };
+
+  private handleSend = async () => {
+    const value = fromUnitToBase(this.state.value, this.state.denomination);
+    this.props.sendPayment({
+      payment_request: this.state.paymentRequestValue,
+      amt: value,
+    });
+
+    const receipt = await watchUntilPropChange(
+      () => this.props.sendLightningReceipt,
+      () => this.props.sendError,
+    );
+
+    if (!receipt) {
+      throw new Error('Payment failed to send');
+    }
+    return { preimage: receipt.payment_preimage };
+  };
+
+  private getPaymentRequest = async () => {
     const { lnurlParams } = this.state;
     const value = fromUnitToBase(this.state.value, this.state.denomination);
 
@@ -184,21 +296,18 @@ class LnurlPayPrompt extends React.Component<Props, State> {
     if (res.status === 'ERROR') {
       throw new Error(res.reason);
     }
-
-    this.props.sendPayment({
-      payment_request: res.pr,
-      amt: value,
-    });
-
-    const receipt = await watchUntilPropChange(
-      () => this.props.sendLightningReceipt,
-      () => this.props.sendError,
+    const paymentRequestValue = res.pr;
+    this.setState(
+      {
+        paymentRequestValue,
+        showMoreInfo: false,
+      },
+      () => {
+        if (paymentRequestValue) {
+          this.props.checkPaymentRequest(paymentRequestValue);
+        }
+      },
     );
-
-    if (!receipt) {
-      throw new Error('Payment failed to send');
-    }
-    return { preimage: receipt.payment_preimage };
   };
 }
 
@@ -214,5 +323,5 @@ export default connect<StateProps, DispatchProps, {}, AppState>(
     rates: getChainRates(state),
     chain: getNodeChain(state),
   }),
-  { sendPayment },
+  { sendPayment, resetSendPayment, checkPaymentRequest },
 )(LnurlPayPrompt);
