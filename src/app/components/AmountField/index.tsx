@@ -186,7 +186,7 @@ class AmountField extends React.Component<Props, State> {
     }
     if (minimumSats) {
       const min = new BN(minimumSats);
-      if (min.gte(valueBN)) {
+      if (min.gt(valueBN)) {
         const minAmount = `${fromBaseToUnit(min.toString(), denomination)} ${
           denominationSymbols[chain][denomination]
         }`;

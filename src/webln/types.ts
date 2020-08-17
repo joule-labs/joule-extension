@@ -2,6 +2,7 @@ export enum PROMPT_TYPE {
   AUTHORIZE = 'AUTHORIZE',
   INFO = 'INFO',
   PAYMENT = 'PAYMENT',
+  LNURL = 'LNURL',
   INVOICE = 'INVOICE',
   SIGN = 'SIGN',
   VERIFY = 'VERIFY',

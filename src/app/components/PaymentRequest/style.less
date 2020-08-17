@@ -1,0 +1,133 @@
+@import '~style/variables.less';
+
+.PaymentRequest {
+  &-pr {
+    margin-bottom: 1rem;
+
+    &-input {
+      font-family: @code-family;
+      font-size: 0.65rem;
+      resize: none;
+    }
+
+    &-qr {
+      position: absolute;
+      bottom: 0;
+      right: 10px;
+    }
+  }
+
+  &-payment {
+    margin-bottom: 0.5rem;
+
+    &-node {
+      display: flex;
+      padding: 0.6rem;
+      margin-bottom: 0.5rem;
+
+      &-avatar {
+        flex-shrink: 0;
+        width: 2.8rem;
+        height: 2.8rem;
+        margin-right: 0.75rem;
+      }
+
+      &-info {
+        flex: 1;
+        min-width: 0;
+
+        &-alias {
+          font-size: 1.1rem;
+          font-weight: 500;
+          margin-bottom: 0.1rem;
+        }
+
+        &-pubkey {
+          display: block;
+          font-size: 0.8rem;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+    }
+
+    &-value {
+      padding: 0 1rem;
+      margin-bottom: 0.5rem;
+
+      // Ant overrides
+      .ant-input-group.ant-input-group-compact {
+        display: flex;
+      }
+
+      .ant-select-selection-selected-value {
+        font-size: 0.85rem;
+      }
+    }
+
+    &-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      table {
+        max-width: 280px;
+        width: 100%;
+        margin-bottom: 0.5rem;
+
+        tr {
+          border-bottom: 1px solid rgba(#000, 0.05);
+
+          &:last-child {
+            border: none;
+          }
+
+          td {
+            padding: 0.2rem;
+
+            &:first-child {
+              text-align: left;
+              min-width: 80px;
+              padding-right: 0.5rem;
+            }
+
+            &:last-child {
+              text-align: right;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+
+      &-more {
+        padding: 0.5rem 0;
+      }
+    }
+  }
+
+  &-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 8rem;
+    margin-bottom: 1rem;
+    color: rgba(#000, 0.2);
+    border: 2px dashed rgba(#000, 0.08);
+    border-radius: 4px;
+  }
+
+  &-buttons {
+    display: flex;
+
+    .ant-btn {
+      &:first-child {
+        margin-right: 0.5rem;
+      }
+      &:last-child {
+        flex: 1;
+      }
+    }
+  }
+}

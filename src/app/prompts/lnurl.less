@@ -1,0 +1,87 @@
+@import '~style/variables.less';
+
+.LnurlPayPrompt {
+  // Default ant overrides, overridden below
+  .ant-form-item-label label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    color: @text-color-secondary;
+  }
+
+  &-metadata {
+    margin: 0;
+    padding: 0;
+
+    &-item {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  &-buttons {
+    display: flex;
+
+    .ant-btn {
+      &:first-child {
+        margin-right: 0.5rem;
+      }
+      &:last-child {
+        flex: 1;
+      }
+    }
+  }
+
+  &-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+
+    &-icon {
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    &-title {
+      font-size: 1.15rem;
+      margin: 0 0 0 1rem;
+    }
+  }
+
+  &-form {
+    padding: 1rem;
+
+    &-value {
+      // Ant overrides
+      .ant-input-group.ant-input-group-compact {
+        display: flex;
+      }
+
+      .ant-select-selection-selected-value {
+        font-size: 0.85rem;
+      }
+
+      .ant-form-explain {
+        display: flex;
+        font-size: 0.75rem;
+        margin: 0.2rem 0 1rem;
+
+        > span {
+          margin-right: 0.5rem;
+        }
+
+        > .is-fiat {
+          flex: 1;
+          text-align: right;
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+}

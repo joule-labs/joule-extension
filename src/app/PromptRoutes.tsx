@@ -6,6 +6,7 @@ import Loader from 'components/Loader';
 import OnboardingPrompt from 'prompts/onboarding';
 import AuthorizePrompt from 'prompts/authorize';
 import PaymentPrompt from 'prompts/payment';
+import LnurlPayPrompt from 'prompts/lnurl';
 import InvoicePrompt from 'prompts/invoice';
 import SignPrompt from 'prompts/sign';
 import VerifyPrompt from 'prompts/verify';
@@ -39,6 +40,7 @@ class Routes extends React.Component<Props> {
         <Route path="/onboarding" exact component={OnboardingPrompt} />
         <Route path="/authorize" exact component={AuthorizePrompt} />
         <Route path="/payment" exact component={PaymentPrompt} />
+        <Route path="/lnurl" exact component={LnurlPayPrompt} />
         <Route path="/invoice" exact component={InvoicePrompt} />
         <Route path="/sign" exact component={SignPrompt} />
         <Route path="/verify" exact component={VerifyPrompt} />
