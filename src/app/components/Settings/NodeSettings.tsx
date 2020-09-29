@@ -185,7 +185,7 @@ class NodeSettings extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  (state) => ({
+  state => ({
     url: state.node.url,
     readonlyMacaroon: state.node.readonlyMacaroon,
     adminMacaroon: state.node.adminMacaroon,

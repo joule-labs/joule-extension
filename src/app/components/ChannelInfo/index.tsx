@@ -201,7 +201,7 @@ class ChannelInfo extends React.Component<Props> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  (state) => ({
+  state => ({
     account: state.account.account,
     node: state.node.nodeInfo,
   }),

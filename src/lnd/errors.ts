@@ -40,7 +40,7 @@ function fixStack(stack: string, functionName: string) {
   const exclusion: RegExp = new RegExp(`\\s+at\\s${functionName}\\s`);
 
   const lines = stack.split('\n');
-  const resultLines = lines.filter((line) => !line.match(exclusion));
+  const resultLines = lines.filter(line => !line.match(exclusion));
   return resultLines.join('\n');
 }
 

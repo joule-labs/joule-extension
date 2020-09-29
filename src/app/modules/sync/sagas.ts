@@ -57,7 +57,7 @@ export function* watchForSync(syncConfig: SyncConfig<any>) {
 export function* sync() {
   yield put(startSync());
 
-  const keys = syncConfigs.map((c) => c.key);
+  const keys = syncConfigs.map(c => c.key);
   const items = yield call(storageSyncGet, keys);
 
   for (const config of syncConfigs) {

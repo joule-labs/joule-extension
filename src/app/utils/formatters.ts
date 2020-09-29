@@ -17,7 +17,7 @@ const toFixed = (num: string, digits: number = 3) => {
 
   const formattedFraction = fractionPart.slice(0, digits);
 
-  const integerArr = `${integerPart}${formattedFraction}`.split('').map((str) => +str);
+  const integerArr = `${integerPart}${formattedFraction}`.split('').map(str => +str);
 
   let carryOver = Math.floor((+fractionPart[digits] + 5) / 10);
 
@@ -34,7 +34,7 @@ const toFixed = (num: string, digits: number = 3) => {
     }
   }
 
-  const strArr = integerArr.map((n) => n.toString());
+  const strArr = integerArr.map(n => n.toString());
 
   strArr.splice(decimalPoint, 0, '.');
 

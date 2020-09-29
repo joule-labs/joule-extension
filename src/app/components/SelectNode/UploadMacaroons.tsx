@@ -71,7 +71,7 @@ export default class UploadMacaroon extends React.Component<Props, State> {
             <Upload.Dragger
               accept=".macaroon"
               showUploadList={false}
-              beforeUpload={(file) => this.handleMacaroonUpload('admin', file)}
+              beforeUpload={file => this.handleMacaroonUpload('admin', file)}
             >
               <p className="ant-upload-drag-icon">
                 <Icon type={admin ? 'check-circle' : 'inbox'} />
@@ -85,7 +85,7 @@ export default class UploadMacaroon extends React.Component<Props, State> {
             <Upload.Dragger
               accept=".macaroon"
               showUploadList={false}
-              beforeUpload={(file) => this.handleMacaroonUpload('readonly', file)}
+              beforeUpload={file => this.handleMacaroonUpload('readonly', file)}
             >
               <p className="ant-upload-drag-icon">
                 <Icon type={readonly ? 'check-circle' : 'inbox'} />
@@ -146,8 +146,8 @@ export default class UploadMacaroon extends React.Component<Props, State> {
     this.setState({ error: null });
     if (file) {
       blobToHex(file)
-        .then((hex) => this.setState({ [key]: hex } as any))
-        .catch((error) => this.setState({ error }));
+        .then(hex => this.setState({ [key]: hex } as any))
+        .catch(error => this.setState({ error }));
     }
     return false;
   };

@@ -70,7 +70,7 @@ class PeersModal extends React.Component<Props, State> {
       content = (
         <>
           <div className="PeersModal-peers">
-            {peers.map((p) => (
+            {peers.map(p => (
               <PeerRow key={p.pub_key} {...p} />
             ))}
           </div>
@@ -141,7 +141,7 @@ class PeersModal extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, ActionProps, OwnProps, AppState>(
-  (state) => ({
+  state => ({
     peers: state.peers.peers,
     fetchPeersError: state.peers.fetchPeersError,
     addPeerError: state.peers.addPeerError,
@@ -152,7 +152,7 @@ export default connect<StateProps, ActionProps, OwnProps, AppState>(
   },
 )(PeersModal);
 
-const PeerRow: React.SFC<PeerWithNode> = (p) => (
+const PeerRow: React.SFC<PeerWithNode> = p => (
   <div key={p.pub_key} className="PeerRow">
     <Identicon className="PeerRow-avatar" pubkey={p.pub_key} />
     <div className="PeerRow-info">

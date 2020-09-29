@@ -9,7 +9,7 @@ export function isValidPaymentReq(paymentReq: string) {
   const chain = paymentReq.substring(2, 6);
 
   // check if the invoice starts with one of the prefixes
-  return CHAIN_PREFIXES.some((p) => chain.substring(0, p.length) === p);
+  return CHAIN_PREFIXES.some(p => chain.substring(0, p.length) === p);
 }
 
 export function isValidConnectAddress(address: string) {
@@ -60,5 +60,5 @@ export function isSegwitAddress(address: string): boolean {
   const addrPrefix = address.split('1')[0] || '';
 
   // check if the address starts with one of the prefixes
-  return CHAIN_PREFIXES.some((p) => addrPrefix.substring(0, p.length) === p);
+  return CHAIN_PREFIXES.some(p => addrPrefix.substring(0, p.length) === p);
 }

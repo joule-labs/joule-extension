@@ -84,7 +84,7 @@ class TransactionList extends React.Component<Props> {
 
     let rows: TxRowData[] = [];
     rows = rows.concat(
-      payments.map((payment) => ({
+      payments.map(payment => ({
         timestamp: parseInt(payment.creation_date, 10),
         component: (
           <TransactionRow
@@ -102,7 +102,7 @@ class TransactionList extends React.Component<Props> {
       })),
     );
     rows = rows.concat(
-      invoices.map((invoice) => {
+      invoices.map(invoice => {
         const timestamp = parseInt(invoice.creation_date, 10);
         const expiry = timestamp + parseInt(invoice.expiry, 10);
         const status = invoice.settled
@@ -133,7 +133,7 @@ class TransactionList extends React.Component<Props> {
       }),
     );
     rows = rows.concat(
-      transactions.map((tx) => ({
+      transactions.map(tx => ({
         timestamp: parseInt(tx.time_stamp, 10),
         component: (
           <TransactionRow
@@ -150,12 +150,12 @@ class TransactionList extends React.Component<Props> {
       })),
     );
 
-    return rows.sort((r1, r2) => r2.timestamp - r1.timestamp).map((r) => r.component);
+    return rows.sort((r1, r2) => r2.timestamp - r1.timestamp).map(r => r.component);
   };
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  (state) => ({
+  state => ({
     payments: state.account.payments,
     invoices: state.account.invoices,
     transactions: state.account.transactions,

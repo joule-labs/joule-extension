@@ -93,7 +93,7 @@ export const syncConfigs: SyncConfig<any>[] = [
 ];
 
 function getConfigByKey(key: string) {
-  const config = syncConfigs.find((c) => c.key === key);
+  const config = syncConfigs.find(c => c.key === key);
   if (!config) {
     throw new Error(`Attempted to get unknown sync config '${key}'`);
   }

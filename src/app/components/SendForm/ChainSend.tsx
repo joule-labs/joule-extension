@@ -202,7 +202,7 @@ class ChainSend extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  (state) => ({
+  state => ({
     account: state.account.account,
     sendOnChainReceipt: state.payment.sendOnChainReceipt,
     isSending: state.payment.isSending,

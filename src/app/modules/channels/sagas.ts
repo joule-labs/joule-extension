@@ -32,7 +32,7 @@ export function* handleGetChannels() {
       return prev;
     }, {} as { [pubkey: string]: boolean });
     const nodeInfoResponses: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
-      Object.keys(nodePubKeys).map((pk) => call(safeGetNodeInfo, nodeLib, pk)),
+      Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk)),
     );
     const nodeInfoMap = nodeInfoResponses.reduce((prev, node) => {
       prev[node.node.pub_key] = node;
@@ -40,7 +40,7 @@ export function* handleGetChannels() {
     }, {} as { [pubkey: string]: Yielded<typeof nodeLib.getNodeInfo> });
 
     // Map all channels together with node info
-    const payload = allChannels.map((channel) => ({
+    const payload = allChannels.map(channel => ({
       ...channel,
       node: nodeInfoMap[channel.remote_node_pub].node,
     }));

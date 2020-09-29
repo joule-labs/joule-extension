@@ -157,7 +157,7 @@ class SelectNode extends React.Component<Props, State> {
         .request({
           origins: [urlWithoutPort(defaultUrl)],
         })
-        .then((accepted) => {
+        .then(accepted => {
           if (!accepted) {
             message.warn('Permission denied, connection may fail', 2);
           }
@@ -210,7 +210,7 @@ class SelectNode extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(
-  (state) => ({
+  state => ({
     url: state.node.url,
     isNodeChecked: state.node.isNodeChecked,
     nodeInfo: state.node.nodeInfo,

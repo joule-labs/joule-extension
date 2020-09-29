@@ -12,7 +12,7 @@ interface Props {
   close?(): void;
 }
 
-const SendState: React.SFC<Props> = (props) => {
+const SendState: React.SFC<Props> = props => {
   if (props.isLoading) {
     return <Loader />;
   }
@@ -34,7 +34,7 @@ const SendState: React.SFC<Props> = (props) => {
         Send another
       </Button>
     ),
-  ].filter((b) => !!b);
+  ].filter(b => !!b);
   const errorMessage = props.error && <code>{props.error.message}</code>;
 
   return (

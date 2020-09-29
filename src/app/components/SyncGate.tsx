@@ -27,7 +27,7 @@ class SyncGate extends React.Component<Props> {
   }
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>((state) => ({
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
   isSyncing: state.sync.isSyncing,
   hasSynced: state.sync.hasSynced,
 }))(SyncGate);

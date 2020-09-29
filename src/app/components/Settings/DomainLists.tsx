@@ -20,7 +20,7 @@ const REJECTED = 'Rejected';
 export default class DomainLists extends React.Component<Props> {
   render() {
     const { enabled, rejected } = this.props;
-    const data = enabled.concat(rejected).map((domain) => ({
+    const data = enabled.concat(rejected).map(domain => ({
       key: domain,
       title: domain,
     }));
@@ -32,7 +32,7 @@ export default class DomainLists extends React.Component<Props> {
         titles={[APPROVED, REJECTED]}
         dataSource={data}
         targetKeys={rejected}
-        render={(item) => removeDomainPrefix(item.title as string)}
+        render={item => removeDomainPrefix(item.title as string)}
         footer={this.renderFooter}
         locale={{
           itemUnit: 'site',
@@ -77,24 +77,24 @@ export default class DomainLists extends React.Component<Props> {
   };
 
   private moveDomainsToRejected = (domains: string[]) => {
-    domains.forEach((domain) => {
+    domains.forEach(domain => {
       this.props.removeEnabledDomain(domain);
       this.props.addRejectedDomain(domain);
     });
   };
 
   private moveDomainsToEnabled = (domains: string[]) => {
-    domains.forEach((domain) => {
+    domains.forEach(domain => {
       this.props.removeRejectedDomain(domain);
       this.props.addEnabledDomain(domain);
     });
   };
 
   private removeDomainsFromEnabled = (domains: string[]) => {
-    domains.forEach((domain) => this.props.removeEnabledDomain(domain));
+    domains.forEach(domain => this.props.removeEnabledDomain(domain));
   };
 
   private removeDomainsFromRejected = (domains: string[]) => {
-    domains.forEach((domain) => this.props.removeRejectedDomain(domain));
+    domains.forEach(domain => this.props.removeRejectedDomain(domain));
   };
 }

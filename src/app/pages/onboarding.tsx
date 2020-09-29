@@ -61,7 +61,7 @@ class OnboardingPage extends React.Component<Props, State> {
 }
 
 const ConnectedOnboardingPage = connect<StateProps, DispatchProps, {}, AppState>(
-  (state) => ({
+  state => ({
     password: state.crypto.password,
   }),
   {

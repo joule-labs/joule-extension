@@ -103,9 +103,9 @@ class Routes extends React.Component<Props> {
   render() {
     const { pathname } = this.props.location;
     const currentRoute =
-      routeConfigs.find((config) => !!matchPath(pathname, config.route)) ||
+      routeConfigs.find(config => !!matchPath(pathname, config.route)) ||
       routeConfigs[routeConfigs.length - 1];
-    const routeComponents = routeConfigs.map((config) => (
+    const routeComponents = routeConfigs.map(config => (
       <Route key={config.route.path as string} {...config.route} />
     ));
 
@@ -128,7 +128,7 @@ class Routes extends React.Component<Props> {
   }
 }
 
-const ConnectedRoutes = connect<StateProps, {}, {}, AppState>((state) => ({
+const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(state => ({
   hasSetPassword: state.crypto.hasSetPassword,
   password: state.crypto.password,
 }))(Routes);

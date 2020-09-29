@@ -10,7 +10,7 @@ const DetailsTable: React.SFC<{ details: DetailsRow[] }> = ({ details }) => {
   return (
     <table className="DetailsTable">
       <tbody>
-        {details.map((d) => (
+        {details.map(d => (
           <tr className="DetailsTable-row" key={d.label}>
             <td className="DetailsTable-row-label">{d.label}</td>
             <td className="DetailsTable-row-value">{d.value}</td>

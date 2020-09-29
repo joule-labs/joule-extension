@@ -8,7 +8,7 @@ import { getOriginData } from 'utils/prompt';
 if (shouldInject()) {
   injectScript();
 
-  window.addEventListener('message', async (ev) => {
+  window.addEventListener('message', async ev => {
     // Only accept messages from the current window
     if (ev.source !== window) {
       return;
@@ -26,7 +26,7 @@ if (shouldInject()) {
         return;
       }
 
-      browser.runtime.sendMessage(messageWithOrigin).then((response) => {
+      browser.runtime.sendMessage(messageWithOrigin).then(response => {
         window.postMessage(
           {
             application: 'Joule',
@@ -45,7 +45,7 @@ if (shouldInject()) {
 // TODO: Get ts to type this function
 if (document) {
   document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', (ev) => {
+    document.body.addEventListener('click', ev => {
       const target = ev.target as HTMLElement;
       if (!target || !target.closest) {
         return;
@@ -71,7 +71,7 @@ if (document) {
   // when a potential lightning invoice is selected
   document.addEventListener(
     'mousedown',
-    (event) => {
+    event => {
       // 2 = right mouse button. may be better to store in a constant
       if (event.button === 2) {
         let paymentRequest = (window.getSelection() || '').toString();

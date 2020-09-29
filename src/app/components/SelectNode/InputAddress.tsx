@@ -102,7 +102,7 @@ export default class InputAddress extends React.Component<Props, State> {
       .request({
         origins: [urlWithoutPort(url)],
       })
-      .then((accepted) => {
+      .then(accepted => {
         if (!accepted) {
           message.warn('Permission denied, connection may fail');
         }

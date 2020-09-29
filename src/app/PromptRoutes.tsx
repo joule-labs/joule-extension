@@ -48,7 +48,7 @@ class Routes extends React.Component<Props> {
   }
 }
 
-const ConnectedRoutes = connect<StateProps, {}, {}, AppState>((state) => ({
+const ConnectedRoutes = connect<StateProps, {}, {}, AppState>(state => ({
   hasSetPassword: state.crypto.hasSetPassword,
 }))(Routes);
 

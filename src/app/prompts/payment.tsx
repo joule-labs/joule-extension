@@ -127,7 +127,7 @@ class PaymentPrompt extends React.Component<Props, State> {
                   value={denomination}
                   dropdownMatchSelectWidth={false}
                 >
-                  {typedKeys(Denomination).map((d) => (
+                  {typedKeys(Denomination).map(d => (
                     <Select.Option key={d} value={d}>
                       {denominationSymbols[chain][d]}
                     </Select.Option>
@@ -299,7 +299,7 @@ const DetailsTable: React.SFC<DetailsTableProps> = ({ rows }) => (
 );
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  (state) => ({
+  state => ({
     paymentRequests: state.payment.paymentRequests,
     sendLightningReceipt: state.payment.sendLightningReceipt,
     isSending: state.payment.isSending,

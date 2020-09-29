@@ -97,6 +97,6 @@ class TransactionRow extends React.Component<Props> {
   };
 }
 
-export default connect<StateProps, {}, OwnProps, AppState>((state) => ({
+export default connect<StateProps, {}, OwnProps, AppState>(state => ({
   chain: getNodeChain(state),
 }))(TransactionRow);

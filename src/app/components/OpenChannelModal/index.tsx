@@ -289,7 +289,7 @@ class OpenChannelModal extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, ActionProps, OwnProps, AppState>(
-  (state) => ({
+  state => ({
     channels: state.channels.channels,
     newChannelTxIds: state.channels.newChannelTxIds,
     openChannelError: state.channels.openChannelError,

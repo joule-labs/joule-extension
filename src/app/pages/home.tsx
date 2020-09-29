@@ -145,7 +145,7 @@ class HomePage extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  (state) => ({
+  state => ({
     nodeUrl: state.node.url,
     fetchAccountInfoError: state.account.fetchAccountInfoError,
   }),

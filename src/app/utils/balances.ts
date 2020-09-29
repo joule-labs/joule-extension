@@ -83,31 +83,31 @@ function updateFromChannels(stats: BalanceStats, channels: ChannelWithNode[]) {
     } as BalanceDetail);
 
   const localChannels = channels.filter(
-    (chan) => chan.local_balance && chan.local_balance !== '0',
+    chan => chan.local_balance && chan.local_balance !== '0',
   );
 
   // add inactive channels
   const inactive = localChannels
-    .filter((chan) => chan.status === CHANNEL_STATUS.OPEN && !chan.active)
+    .filter(chan => chan.status === CHANNEL_STATUS.OPEN && !chan.active)
     .map(channelToDetail());
   addDetailsToGroup(stats.channelDetails, 'Inactive Channel', inactive);
 
   // add active channels
   const active = localChannels
-    .filter((chan) => chan.status === CHANNEL_STATUS.OPEN && chan.active)
+    .filter(chan => chan.status === CHANNEL_STATUS.OPEN && chan.active)
     .map(channelToDetail());
   addDetailsToGroup(stats.channelDetails, 'Active Channel', active);
 
   // add opening channels to pending stats
   const opening = localChannels
-    .filter((chan) => chan.status === CHANNEL_STATUS.OPENING)
+    .filter(chan => chan.status === CHANNEL_STATUS.OPENING)
     .map(channelToDetail(true));
   addDetailsToGroup(stats.pendingDetails, 'Opening Channel', opening);
 
   // add closing channels to pending stats
   const closing = localChannels
     .filter(
-      (chan) =>
+      chan =>
         chan.status === CHANNEL_STATUS.CLOSING ||
         chan.status === CHANNEL_STATUS.FORCE_CLOSING ||
         chan.status === CHANNEL_STATUS.WAITING,
@@ -131,19 +131,19 @@ function updateFromChain(stats: BalanceStats, utxos: Utxo[]) {
   // add confirmed utxos to the stats
   const confirmed = utxos
     .sort((a, b) => parseInt(a.confirmations, 10) - parseInt(b.confirmations, 10))
-    .filter((u) => u.confirmations && u.confirmations !== '0')
+    .filter(u => u.confirmations && u.confirmations !== '0')
     .map(utxoToDetail());
   addDetailsToGroup(stats.onchainDetails, 'Confirmed UTXO', confirmed);
 
   // add unconfirmed utxos to the stats
-  const unconfirmed = utxos.filter((u) => !u.confirmations).map(utxoToDetail(true));
+  const unconfirmed = utxos.filter(u => !u.confirmations).map(utxoToDetail(true));
   addDetailsToGroup(stats.pendingDetails, 'Unconfirmed UTXO', unconfirmed);
 }
 
 function updateTotals(stats: BalanceStats) {
-  stats.onchainTotal = sum(stats.onchainDetails, (d) => d.balance);
-  stats.channelTotal = sum(stats.channelDetails, (d) => d.balance);
-  stats.pendingTotal = sum(stats.pendingDetails, (d) => d.balance);
+  stats.onchainTotal = sum(stats.onchainDetails, d => d.balance);
+  stats.channelTotal = sum(stats.channelDetails, d => d.balance);
+  stats.pendingTotal = sum(stats.pendingDetails, d => d.balance);
 
   stats.spendable = new BN(stats.onchainTotal).add(new BN(stats.channelTotal)).toString();
   stats.total = new BN(stats.spendable).add(new BN(stats.pendingTotal)).toString();
@@ -176,7 +176,7 @@ function addDetailsToGroup(
   if (details.length) {
     group.push({
       title: `${details.length} ${title}` + (details.length === 1 ? '' : 's'),
-      balance: sum(details, (c) => c.amount),
+      balance: sum(details, c => c.amount),
       details,
     });
   }

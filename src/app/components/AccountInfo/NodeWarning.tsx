@@ -137,7 +137,7 @@ class NodeWarning extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  (state) => ({
+  state => ({
     nodeInfo: selectNodeInfo(state),
   }),
   { getNodeInfo },

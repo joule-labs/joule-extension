@@ -27,7 +27,7 @@ export class LndHttpClient implements T.LndAPI {
       num_pending_channels: 0,
       testnet: false,
       chains: [],
-    }).then((res) => {
+    }).then(res => {
       // API can return chain as { chain: 'bitcoin', network: 'testnet' }
       res.chains = res.chains.map((chain: any) => {
         return chain.chain || chain;
@@ -43,9 +43,9 @@ export class LndHttpClient implements T.LndAPI {
   getChannels = () => {
     return this.request<T.GetChannelsResponse>('GET', '/v1/channels', undefined, {
       channels: [],
-    }).then((res) => {
+    }).then(res => {
       // Default attributes for channels
-      res.channels = res.channels.map((channel) => {
+      res.channels = res.channels.map(channel => {
         return Object.assign(
           {
             status: T.CHANNEL_STATUS.OPEN,
@@ -83,14 +83,14 @@ export class LndHttpClient implements T.LndAPI {
         waiting_close_channels: [],
         pending_open_channels: [],
       },
-    ).then((res) => {
+    ).then(res => {
       const collapse = (chan: any) => ({
         ...chan,
         ...chan.channel,
         // remove nested 'channel' key from the chan spread
         ...{ channel: undefined },
       });
-      res.pending_open_channels = res.pending_open_channels.map((channel) => ({
+      res.pending_open_channels = res.pending_open_channels.map(channel => ({
         status: T.CHANNEL_STATUS.OPENING,
         commit_weight: '0',
         confirmation_height: 0,
@@ -101,7 +101,7 @@ export class LndHttpClient implements T.LndAPI {
         capacity: '0',
         ...collapse(channel),
       }));
-      res.pending_closing_channels = res.pending_closing_channels.map((channel) => ({
+      res.pending_closing_channels = res.pending_closing_channels.map(channel => ({
         status: T.CHANNEL_STATUS.CLOSING,
         closing_txid: '',
         remote_balance: '0',
@@ -109,7 +109,7 @@ export class LndHttpClient implements T.LndAPI {
         capacity: '0',
         ...collapse(channel),
       }));
-      res.waiting_close_channels = res.waiting_close_channels.map((channel) => ({
+      res.waiting_close_channels = res.waiting_close_channels.map(channel => ({
         status: T.CHANNEL_STATUS.WAITING,
         limbo_balance: '0',
         remote_balance: '0',
@@ -118,7 +118,7 @@ export class LndHttpClient implements T.LndAPI {
         ...collapse(channel),
       }));
       res.pending_force_closing_channels = res.pending_force_closing_channels.map(
-        (channel) => ({
+        channel => ({
           status: T.CHANNEL_STATUS.FORCE_CLOSING,
           maturity_height: '0',
           pending_htlcs: [],
@@ -163,8 +163,8 @@ export class LndHttpClient implements T.LndAPI {
   getTransactions = () => {
     return this.request<T.GetTransactionsResponse>('GET', '/v1/transactions', undefined, {
       transactions: [],
-    }).then((res) => {
-      res.transactions = res.transactions.map((tx) => {
+    }).then(res => {
+      res.transactions = res.transactions.map(tx => {
         return Object.assign(
           {
             total_fees: '0',
@@ -181,8 +181,8 @@ export class LndHttpClient implements T.LndAPI {
   getPayments = () => {
     return this.request<T.GetPaymentsResponse>('GET', '/v1/payments', undefined, {
       payments: [],
-    }).then((res) => {
-      res.payments = res.payments.map((t) => {
+    }).then(res => {
+      res.payments = res.payments.map(t => {
         return Object.assign(
           {
             fee: '0',
@@ -205,9 +205,9 @@ export class LndHttpClient implements T.LndAPI {
         first_index_offset: 0,
         last_index_offset: 0,
       },
-    ).then((res) => {
+    ).then(res => {
       // Default attributes for channels
-      res.invoices = res.invoices.map((invoice) => {
+      res.invoices = res.invoices.map(invoice => {
         return Object.assign(
           {
             route_hints: [],
@@ -257,9 +257,9 @@ export class LndHttpClient implements T.LndAPI {
       `/v1/graph/routes/${pubKey}/${amount}`,
       args,
       { routes: [] },
-    ).then((res) => {
+    ).then(res => {
       // Default attributes for channels
-      res.routes = res.routes.map((route) => {
+      res.routes = res.routes.map(route => {
         return Object.assign(
           {
             total_fees: '0',
@@ -277,7 +277,7 @@ export class LndHttpClient implements T.LndAPI {
       'POST',
       '/v1/channels/transactions',
       args,
-    ).then((res) => {
+    ).then(res => {
       if (res.payment_error) {
         // Make it easy to convert on the other side
         throw new Error(`SendTransactionError: ${res.payment_error}`);
@@ -308,9 +308,9 @@ export class LndHttpClient implements T.LndAPI {
   getPeers = () => {
     return this.request<T.GetPeersResponse>('GET', '/v1/peers', undefined, {
       peers: [],
-    }).then((res) => {
+    }).then(res => {
       // Default attributes for peers
-      res.peers = res.peers.map((peer) => {
+      res.peers = res.peers.map(peer => {
         return Object.assign(
           {
             ping_time: '0',
@@ -337,7 +337,7 @@ export class LndHttpClient implements T.LndAPI {
       'POST',
       '/v1/channels',
       params,
-    ).then((res) => {
+    ).then(res => {
       return Object.assign(
         {
           output_index: '0',

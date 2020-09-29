@@ -121,7 +121,7 @@ class VerifyPrompt extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, {}, AppState>(
-  (state) => ({
+  state => ({
     pubkey: state.sign.verifyPubkey,
     alias: state.sign.verifyAlias,
     error: state.sign.verifyError,
