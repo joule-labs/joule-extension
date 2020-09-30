@@ -95,7 +95,7 @@
     "typescript": "^3.9.7",
     "url-loader": "^4.1.0",
     "webln": "0.2.2",
-    "webpack": "4.44.0",
+    "webpack": "4.44.2",
     "webpack-cli": "^3.3.12",
     "zip-webpack-plugin": "3.0.0",
     "zxcvbn": "4.4.2"
