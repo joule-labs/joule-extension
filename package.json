@@ -62,7 +62,7 @@
     "crypto-js": "4.0.0",
     "css-loader": "^1.0.0",
     "file-loader": "^6.1.0",
-    "html-webpack-plugin": "4.3.0",
+    "html-webpack-plugin": "4.5.0",
     "husky": "4.2.5",
     "jdenticon": "3.0.1",
     "less": "^3.12.2",
