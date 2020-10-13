@@ -32,7 +32,7 @@ const cssLoaderClient = {
 };
 const lessLoader = {
   loader: 'less-loader',
-  options: { javascriptEnabled: true },
+  options: { lessOptions: { javascriptEnabled: true } }, // TODO: javascriptEnabled is deprecated
 };
 const lessLoaderClient = {
   test: /\.less$/,
@@ -189,24 +189,26 @@ module.exports = {
       reactDevToolsUrl,
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new CopyWebpackPlugin([{ from: 'static/*', flatten: true }]),
+    new CopyWebpackPlugin({ patterns: [{ from: 'static/*', flatten: true }] }),
     isDev &&
-      new CopyWebpackPlugin([
-        {
-          from: 'static/manifest.json',
-          force: true,
-          transform: content => {
-            return JSON.stringify(
-              {
-                ...JSON.parse(content),
-                content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`,
-              },
-              null,
-              2,
-            );
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: 'static/manifest.json',
+            force: true,
+            transform: content => {
+              return JSON.stringify(
+                {
+                  ...JSON.parse(content),
+                  content_security_policy: `script-src 'self' 'unsafe-eval' ${reactDevToolsUrl}; object-src 'self'`,
+                },
+                null,
+                2,
+              );
+            },
           },
-        },
-      ]),
+        ],
+      }),
     isDev && new WriteFilePlugin(),
     !isDev &&
       new ZipPlugin({

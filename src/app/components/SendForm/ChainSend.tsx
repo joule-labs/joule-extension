@@ -94,9 +94,7 @@ class ChainSend extends React.Component<Props, State> {
       <>
         <Icon type="exclamation-circle" /> Dust warning: This amount may not be spendable
       </>
-    ) : (
-      undefined
-    );
+    ) : undefined;
 
     return (
       <Form className="ChainSend" layout="vertical" onSubmit={this.handleSubmit}>

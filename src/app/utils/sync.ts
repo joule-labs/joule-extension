@@ -41,7 +41,7 @@ export interface SyncData<T> {
   data: T;
 }
 
-export const syncConfigs: Array<SyncConfig<any>> = [
+export const syncConfigs: SyncConfig<any>[] = [
   {
     key: 'crypto',
     version: 1,
@@ -118,21 +118,18 @@ export async function storageSyncGet(keys: string[]) {
   try {
     // Format and migrate responses
     const allResponses = await browser.storage.sync.get(keys);
-    return keys.reduce(
-      (prev, key) => {
-        const res = allResponses[key];
-        // No data synced yet
-        if (!res) {
-          prev[key] = undefined;
-          return prev;
-        }
-        // Run migrations on unencrypted data
-        const config = getConfigByKey(key);
-        prev[key] = migrateSyncedData(config, res);
+    return keys.reduce((prev, key) => {
+      const res = allResponses[key];
+      // No data synced yet
+      if (!res) {
+        prev[key] = undefined;
         return prev;
-      },
-      {} as { [key: string]: any },
-    );
+      }
+      // Run migrations on unencrypted data
+      const config = getConfigByKey(key);
+      prev[key] = migrateSyncedData(config, res);
+      return prev;
+    }, {} as { [key: string]: any });
   } catch (err) {
     Promise.reject(err);
   }

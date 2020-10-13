@@ -4,6 +4,6 @@ import App from '../app/index';
 import Routes from '../app/PromptRoutes';
 
 ReactDOM.render(
-  <App routes={<Routes />} /> as any,
+  (<App routes={<Routes />} />) as any,
   document.getElementById('root') as HTMLElement,
 );

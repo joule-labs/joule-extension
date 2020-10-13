@@ -47,10 +47,7 @@ export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>)
         }
       });
     });
-    const validUrls: Array<string | null> = yield call(
-      Promise.all.bind(Promise),
-      requests,
-    );
+    const validUrls: (string | null)[] = yield call(Promise.all.bind(Promise), requests);
     const validUrl = validUrls.find(url => !!url);
     if (!validUrl) {
       throw new Error('None of the checked nodes were available');

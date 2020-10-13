@@ -19,10 +19,7 @@ export default class ChannelRow extends React.Component<Props> {
   render() {
     const { channel, onClick } = this.props;
     const { local_balance, capacity, node } = channel;
-    const capacityPct = new BN(local_balance)
-      .muln(100)
-      .div(new BN(capacity))
-      .toString();
+    const capacityPct = new BN(local_balance).muln(100).div(new BN(capacity)).toString();
 
     let tooltipText = channelStatusText[channel.status];
     if (channel.status === CHANNEL_STATUS.FORCE_CLOSING) {

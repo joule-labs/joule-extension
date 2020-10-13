@@ -17,7 +17,7 @@ export function* handleGetChannels() {
       { pending_force_closing_channels, pending_open_channels, waiting_close_channels },
     ]: [
       Yielded<typeof nodeLib.getChannels>,
-      Yielded<typeof nodeLib.getPendingChannels>
+      Yielded<typeof nodeLib.getPendingChannels>,
     ] = yield all([call(nodeLib.getChannels), call(nodeLib.getPendingChannels)]);
 
     // Map all channels' node info together
@@ -27,23 +27,17 @@ export function* handleGetChannels() {
       ...pending_open_channels,
       ...waiting_close_channels,
     ];
-    const nodePubKeys = allChannels.reduce(
-      (prev, c) => {
-        prev[c.remote_node_pub] = true;
-        return prev;
-      },
-      {} as { [pubkey: string]: boolean },
-    );
-    const nodeInfoResponses: Array<Yielded<typeof nodeLib.getNodeInfo>> = yield all(
+    const nodePubKeys = allChannels.reduce((prev, c) => {
+      prev[c.remote_node_pub] = true;
+      return prev;
+    }, {} as { [pubkey: string]: boolean });
+    const nodeInfoResponses: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
       Object.keys(nodePubKeys).map(pk => call(safeGetNodeInfo, nodeLib, pk)),
     );
-    const nodeInfoMap = nodeInfoResponses.reduce(
-      (prev, node) => {
-        prev[node.node.pub_key] = node;
-        return prev;
-      },
-      {} as { [pubkey: string]: Yielded<typeof nodeLib.getNodeInfo> },
-    );
+    const nodeInfoMap = nodeInfoResponses.reduce((prev, node) => {
+      prev[node.node.pub_key] = node;
+      return prev;
+    }, {} as { [pubkey: string]: Yielded<typeof nodeLib.getNodeInfo> });
 
     // Map all channels together with node info
     const payload = allChannels.map(channel => ({

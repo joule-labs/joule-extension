@@ -62,7 +62,7 @@ export const coinSymbols: { [key in CHAIN_TYPE]: string } = {
 export const blockchainLogos: {
   [key in CHAIN_TYPE]: React.ComponentType<
     CustomIconComponentProps | React.SVGProps<SVGSVGElement>
-  >
+  >;
 } = {
   bitcoin: BitcoinLogo,
   decred: DecredLogo,
