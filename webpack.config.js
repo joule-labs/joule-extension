@@ -9,7 +9,6 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
-const ZipPlugin = require('zip-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -210,9 +209,5 @@ module.exports = {
         ],
       }),
     isDev && new WriteFilePlugin(),
-    !isDev &&
-      new ZipPlugin({
-        filename: `joule-v${packageJson.version}.zip`,
-      }),
   ].filter(p => !!p),
 };

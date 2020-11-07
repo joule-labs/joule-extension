@@ -26,6 +26,7 @@
     "build": "npm run build:prod",
     "build:dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack",
     "build:prod": "rimraf dist-prod && cross-env NODE_ENV=production webpack",
+    "package:prod": "./create-package.sh",
     "clean": "rimraf ./dist-dev && rimraf ./dist-prod",
     "lint": "tslint -p tsconfig.json",
     "tsc": "tsc --noEmit",
@@ -97,7 +98,6 @@
     "webln": "0.2.2",
     "webpack": "4.44.2",
     "webpack-cli": "^3.3.12",
-    "zip-webpack-plugin": "3.0.0",
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
