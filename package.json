@@ -96,7 +96,7 @@
     "url-loader": "^4.1.1",
     "webln": "0.2.2",
     "webpack": "4.44.2",
-    "webpack-cli": "^3.3.12",
+    "webpack-cli": "^4.2.0",
     "zip-webpack-plugin": "3.0.0",
     "zxcvbn": "4.4.2"
   },
