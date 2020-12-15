@@ -68,7 +68,7 @@
     "less": "^3.12.2",
     "less-loader": "^7.0.2",
     "mini-css-extract-plugin": "^0.12.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.1",
     "node-sass": "^4.14.1",
     "prettier": "2.1.2",
     "qrcode.react": "1.0.0",
