@@ -1,0 +1,49 @@
+name: Build Production
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    name: build-prod
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '14.x'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - run: yarn install
+      - run: yarn lint
+      - name: Build production
+        run: yarn build:prod
+
+      - name: Archive production zip file
+        uses: actions/upload-artifact@v2
+        with:
+          name: joule.zip
+          path: dist-prod/joule-*.zip
+
+      - name: Archive production files
+        uses: actions/upload-artifact@v2
+        with:
+          name: joule
+          path: dist-prod/
