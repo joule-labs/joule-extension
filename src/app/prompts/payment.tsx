@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Tabs, Input, Select } from 'antd';
+import { Tabs, Input, Select, Alert } from 'antd';
 import { SendPaymentResponse } from 'webln';
 import PromptTemplate from 'components/PromptTemplate';
 import NodeInfo from 'components/PromptTemplate/NodeInfo';
@@ -98,12 +98,27 @@ class PaymentPrompt extends React.Component<Props, State> {
     if (routedRequest) {
       const { node, request, route } = routedRequest;
       const { value, denomination, isLatestRoute } = this.state;
-      if (value || request.num_satoshis) {
+      const expiry = unixMoment(request.timestamp).add(request.expiry, 'seconds');
+      const hasExpired = expiry.isBefore(moment.now());
+
+      if ((value || request.num_satoshis) && !hasExpired) {
         isConfirmDisabled = false;
       }
 
       content = (
         <div className="PaymentPrompt">
+          {!hasExpired || (
+            <Alert
+              style={{ marginBottom: '1rem' }}
+              type="warning"
+              message="This invoice has expired"
+              description={`
+                This invoice expired ${expiry.format(SHORT_FORMAT)}.
+                You'll need to have a new one generated.
+              `}
+              showIcon
+            />
+          )}
           <NodeInfo pubkey={node.pub_key} alias={node.alias} />
           <div className="PaymentPrompt-amount">
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
