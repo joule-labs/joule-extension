@@ -21,7 +21,7 @@ jobs:
         run: docker build -t joule-build .
 
       - name: Copy extension zip file
-        run: docker run --rm -v "$(pwd)/dist-docker:/out" joule-build sh -c "cp /app/dist-prod/joule*.zip /out && cp /app/sha256.txt /out"
+        run: docker run --rm -v "$(pwd):/out" joule-build sh -c "cp /app/dist-prod/joule*.zip /out && cp /app/sha256.txt /out"
 
       - name: Archive zip file
         uses: actions/upload-artifact@v2

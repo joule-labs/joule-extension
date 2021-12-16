@@ -7,10 +7,11 @@ RUN apt-get update
 RUN apt-get install strip-nondeterminism --yes
 
 WORKDIR /app
-COPY package.json ./app
-COPY yarn.lock ./app
+COPY package.json ./
+COPY yarn.lock ./
+RUN ls -la
 RUN yarn
-COPY . /app
+COPY . ./
 RUN yarn build
 RUN strip-nondeterminism dist-prod/joule-*.zip
 RUN sha256sum -b dist-prod/joule-*.zip | cut -d " " -f 1 > sha256.txt
