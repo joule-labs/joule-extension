@@ -9,7 +9,7 @@ export function setPasswordCache(password: string) {
 }
 
 export function getPasswordCache() {
-  return new Promise(resolve => {
+  return new Promise<string | null>(resolve => {
     const onMessage = (request: any) => {
       if (request && request.application === 'Joule' && request.cachedPassword) {
         resolve(request.data);
@@ -20,7 +20,7 @@ export function getPasswordCache() {
     browser.runtime.onMessage.addListener(onMessage);
     setTimeout(() => {
       browser.runtime.onMessage.removeListener(onMessage);
-      resolve(undefined);
+      resolve(null);
     }, 100);
 
     // Trigger the message

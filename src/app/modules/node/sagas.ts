@@ -1,5 +1,4 @@
-import { SagaIterator } from 'redux-saga';
-import { take, takeLatest, call, put, select, all } from 'redux-saga/effects';
+import { take, takeLatest, call, put, select, all } from 'typed-redux-saga/macro';
 import * as actions from './actions';
 import {
   selectNodeLibOrThrow,
@@ -47,7 +46,7 @@ export function* handleCheckNodes(action: ReturnType<typeof actions.checkNodes>)
         }
       });
     });
-    const validUrls: (string | null)[] = yield call(Promise.all.bind(Promise), requests);
+    const validUrls = yield* call(Promise.all.bind(Promise), requests);
     const validUrl = validUrls.find(url => !!url);
     if (!validUrl) {
       throw new Error('None of the checked nodes were available');
@@ -65,7 +64,7 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>) {
   let client = new LndHttpClient(url, readonly);
   let nodeInfo;
   try {
-    nodeInfo = yield call(client.getInfo);
+    nodeInfo = yield* call(client.getInfo);
   } catch (err) {
     console.error('Read only macaroon failed:', err);
     yield put({
@@ -84,8 +83,8 @@ export function* handleCheckAuth(action: ReturnType<typeof actions.checkAuth>) {
   } catch (err) {
     console.log(err);
     if (
-      err.constructor === MacaroonAuthError ||
-      err.constructor === PermissionDeniedError
+      (err as Error)?.constructor === MacaroonAuthError ||
+      (err as Error)?.constructor === PermissionDeniedError
     ) {
       yield put({
         type: types.CHECK_AUTH_FAILURE,
@@ -112,21 +111,12 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
     yield call(requirePassword);
 
     // get current macaroons from state as its needed to store the new url
-    const {
-      url,
-      readonlyMacaroon,
-    }: Yielded<typeof selectSyncedUnencryptedNodeState> = yield select(
-      selectSyncedUnencryptedNodeState,
-    );
-    const {
-      adminMacaroon,
-    }: Yielded<typeof selectSyncedEncryptedNodeState> = yield select(
-      selectSyncedEncryptedNodeState,
-    );
+    const { url, readonlyMacaroon } = yield* select(selectSyncedUnencryptedNodeState);
+    const { adminMacaroon } = yield* select(selectSyncedEncryptedNodeState);
 
     // connect to the url to test if it's working
     yield put(actions.checkNode(newUrl));
-    const checkAction = yield take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
+    const checkAction = yield* take([types.CHECK_NODE_SUCCESS, types.CHECK_NODE_FAILURE]);
 
     // check for an error connecting to the node
     if (checkAction.type === types.CHECK_NODE_FAILURE) {
@@ -138,7 +128,7 @@ export function* handleUpdateNodeUrl(action: ReturnType<typeof actions.updateNod
           readonlyMacaroon as string,
         ),
       );
-      throw checkAction.payload;
+      throw (checkAction as any).payload;
     }
 
     // save the new info in state & storage
@@ -168,11 +158,11 @@ export function* handleUpdateMacaroons(
 
     // connect to the url to test if it's working
     yield put(actions.checkAuth(url, admin, readonly));
-    const checkAction = yield take([types.CHECK_AUTH_SUCCESS, types.CHECK_AUTH_FAILURE]);
+    const checkAction = yield* take([types.CHECK_AUTH_SUCCESS, types.CHECK_AUTH_FAILURE]);
 
     // check for an error connecting to the node
     if (checkAction.type === types.CHECK_AUTH_FAILURE) {
-      throw checkAction.payload;
+      throw (checkAction as any).payload;
     }
 
     // save the new info in state & storage
@@ -201,10 +191,8 @@ export function* handleUpdateMacaroons(
 
 export function* handleGetNodeInfo() {
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const payload: Yielded<typeof nodeLib.getInfo> = yield call(nodeLib.getInfo);
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const payload = yield* call(nodeLib.getInfo);
     yield put({
       type: types.GET_NODE_INFO_SUCCESS,
       payload,
@@ -219,22 +207,20 @@ export function* handleGetNodeInfo() {
 
 // Helper function, gets node pubKey from store or fetches it
 export function* getNodePubKey() {
-  let nodeInfo: Yielded<typeof selectNodeInfo> = yield select(selectNodeInfo);
+  let nodeInfo = yield* select(selectNodeInfo);
   if (!nodeInfo) {
     yield call(handleGetNodeInfo);
-    nodeInfo = yield select(selectNodeInfo);
+    nodeInfo = yield* select(selectNodeInfo);
   }
   if (!nodeInfo) {
     // if the fetch fails (bad cert) then throw the error
-    const nodeError: Yielded<typeof selectNodeInfoError> = yield select(
-      selectNodeInfoError,
-    );
+    const nodeError = yield* select(selectNodeInfoError);
     throw nodeError || new Error();
   }
   return nodeInfo.identity_pubkey;
 }
 
-export default function* nodeSagas(): SagaIterator {
+export default function* nodeSagas() {
   yield takeLatest(types.CHECK_NODE, handleCheckNode);
   yield takeLatest(types.CHECK_NODES, handleCheckNodes);
   yield takeLatest(types.UPDATE_NODE_URL, handleUpdateNodeUrl);

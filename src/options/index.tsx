@@ -2,10 +2,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from '../app/index';
 import Routes from '../app/AppRoutes';
-
+import { setAppContainer } from '../app/utils/globals';
 import './index.less';
 
-process.env.APP_CONTAINER = 'page';
+setAppContainer('page');
 
 ReactDOM.render(
   (<App routes={<Routes />} />) as any,

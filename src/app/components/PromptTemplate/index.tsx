@@ -103,7 +103,7 @@ export default class PromptTemplate extends React.Component<Props, State> {
       } catch (error) {
         this.setState({
           isConfirming: false,
-          error,
+          error: error as Error,
         });
         return;
       }

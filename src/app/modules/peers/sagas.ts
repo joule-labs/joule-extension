@@ -1,5 +1,4 @@
-import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call, all, put } from 'redux-saga/effects';
+import { takeLatest, select, call, all, put } from 'typed-redux-saga/macro';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, safeConnectPeer } from 'utils/misc';
@@ -8,13 +7,9 @@ import types from './types';
 
 export function* handleGetPeers() {
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const { peers }: Yielded<typeof nodeLib.getPeers> = yield call(nodeLib.getPeers);
-    const nodes: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
-      peers.map(p => call(safeGetNodeInfo, nodeLib, p.pub_key)),
-    );
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const { peers } = yield* call(nodeLib.getPeers);
+    const nodes = yield* all(peers.map(p => call(safeGetNodeInfo, nodeLib, p.pub_key)));
     const payload = peers.map((peer, i) => ({
       ...peer,
       node: nodes[i].node,
@@ -34,9 +29,7 @@ export function* handleGetPeers() {
 export function* handleAddPeer(action: ReturnType<typeof addPeer>) {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
+    const nodeLib = yield* select(selectNodeLibOrThrow);
     yield call(safeConnectPeer, nodeLib, action.payload);
     yield call(handleGetPeers);
     yield put({ type: types.ADD_PEER_SUCCESS });
@@ -48,7 +41,7 @@ export function* handleAddPeer(action: ReturnType<typeof addPeer>) {
   }
 }
 
-export default function* channelsSagas(): SagaIterator {
+export default function* channelsSagas() {
   yield takeLatest(types.GET_PEERS, handleGetPeers);
   yield takeLatest(types.ADD_PEER, handleAddPeer);
 }

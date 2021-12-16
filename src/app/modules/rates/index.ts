@@ -1,8 +1,8 @@
-import reducers, { RatesState, INITIAL_STATE } from './reducers';
+import reducers, { INITIAL_STATE } from './reducers';
 import * as ratesActions from './actions';
 import * as ratesTypes from './types';
 import ratesSagas from './sagas';
 
-export { ratesActions, ratesTypes, ratesSagas, RatesState, INITIAL_STATE };
-
+export { ratesActions, ratesTypes, ratesSagas, INITIAL_STATE };
+export type { RatesState } from './reducers';
 export default reducers;

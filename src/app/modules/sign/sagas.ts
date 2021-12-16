@@ -1,26 +1,16 @@
-import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call, put } from 'redux-saga/effects';
+import { takeLatest, select, call, put } from 'typed-redux-saga/macro';
 import { SignMessageResponse as WebLNSignMessageResponse } from 'webln';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { signMessage, verifyMessage } from './actions';
 import types from './types';
-import {
-  SignMessageResponse as LndSignMessageResponse,
-  VerifyMessageResponse as LndVerifyMessageResponse,
-} from 'lib/lnd-http/types';
 import { safeGetNodeInfo } from 'utils/misc';
 
 export function* handleSignMessage(action: ReturnType<typeof signMessage>) {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const res: Yielded<LndSignMessageResponse> = yield call(
-      nodeLib.signMessage,
-      action.payload,
-    );
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const res = yield* call(nodeLib.signMessage, action.payload);
 
     if (!res.signature) {
       throw new Error('Message failed to sign, missing signature');
@@ -46,18 +36,9 @@ export function* handleSignMessage(action: ReturnType<typeof signMessage>) {
 export function* handleVerifyMessage(action: ReturnType<typeof verifyMessage>) {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const verification: Yielded<LndVerifyMessageResponse> = yield call(
-      nodeLib.verifyMessage,
-      action.payload,
-    );
-    const nodeInfo: Yielded<typeof nodeLib.getNodeInfo> = yield call(
-      safeGetNodeInfo,
-      nodeLib,
-      verification.pubkey,
-    );
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const verification = yield* call(nodeLib.verifyMessage, action.payload);
+    const nodeInfo = yield* call(safeGetNodeInfo, nodeLib, verification.pubkey);
     const payload = {
       ...verification,
       alias: nodeInfo.node.alias,
@@ -81,7 +62,7 @@ export function* handleVerifyMessage(action: ReturnType<typeof verifyMessage>) {
   }
 }
 
-export default function* signSagas(): SagaIterator {
+export default function* signSagas() {
   yield takeLatest(types.SIGN_MESSAGE, handleSignMessage);
   yield takeLatest(types.VERIFY_MESSAGE, handleVerifyMessage);
 }

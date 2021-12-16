@@ -1,5 +1,4 @@
-import { SagaIterator } from 'redux-saga';
-import { takeLatest, call, put } from 'redux-saga/effects';
+import { takeLatest, call, put } from 'typed-redux-saga/macro';
 import { CHAIN_TYPE, Fiat } from 'utils/constants';
 import { fetchRates } from './actions';
 import { apiFetchRates } from 'lib/cryptocompare';
@@ -9,14 +8,14 @@ export function* handleFetchRates() {
   try {
     const fiats = Object.keys(Fiat);
     const coins = Object.values(CHAIN_TYPE);
-    const rates = yield call(apiFetchRates, coins, fiats);
+    const rates = yield* call(apiFetchRates, coins, fiats);
     yield put({ type: types.FETCH_RATES_SUCCESS, payload: rates });
   } catch (err) {
     yield put({ type: types.FETCH_RATES_FAILURE, payload: err });
   }
 }
 
-export default function* channelsSagas(): SagaIterator {
+export default function* channelsSagas() {
   yield takeLatest(types.FETCH_RATES, handleFetchRates);
   // Kick one off initially
   yield put(fetchRates());

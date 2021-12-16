@@ -5,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const hash = require('string-hash');
 
 // webpack plugins
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
@@ -52,21 +51,21 @@ const externalLessLoaderClient = {
 
 const svgLoaderClient = {
   test: /\.svg$/,
-  issuer: {
-    test: /\.tsx?$/,
-  },
+  issuer: /\.tsx?$/,
   use: ({ resource }) => ({
     loader: '@svgr/webpack',
     options: {
       svgoConfig: {
         plugins: [
           {
-            inlineStyles: {
+            name: 'inlineStyles',
+            params: {
               onlyMatchedOnce: false,
             },
           },
           {
-            cleanupIDs: {
+            name: 'cleanupIDs',
+            params: {
               prefix: `svg-${hash(resource)}`,
             },
           },
@@ -76,20 +75,16 @@ const svgLoaderClient = {
   }), // svg -> react component
 };
 
-const urlLoaderClient = {
+const assetLoader = {
   test: /\.(png|jpe?g|gif)$/,
-  loader: require.resolve('url-loader'),
-  options: {
-    limit: 2048,
-    name: 'assets/[name].[hash:8].[ext]',
-  },
+  type: 'asset/resource',
 };
 
 module.exports = {
   mode: isDev ? 'development' : 'production',
   name: 'client',
   target: 'web',
-  devtool: 'cheap-module-inline-source-map',
+  devtool: 'inline-cheap-module-source-map',
   entry: {
     background_script: path.join(__dirname, 'src/background_script/index.ts'),
     content_script: path.join(__dirname, 'src/content_script/index.ts'),
@@ -103,6 +98,7 @@ module.exports = {
     filename: '[name].js',
     publicPath: '/',
     chunkFilename: isDev ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js',
+    assetModuleFilename: 'assets/[name].[contenthash:8][ext][query]',
   },
   module: {
     rules: [
@@ -113,6 +109,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env', '@babel/preset-react'],
+              plugins: ['macros'],
               overrides: [
                 {
                   presets: [
@@ -142,7 +139,7 @@ module.exports = {
       externalLessLoaderClient,
       cssLoaderClient,
       svgLoaderClient,
-      urlLoaderClient,
+      assetLoader,
     ],
   },
   resolve: {
@@ -163,8 +160,14 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new MiniCssExtractPlugin({
-      filename: isDev ? '[name].css' : '[name].[hash:8].css',
+      filename: isDev ? '[name].css' : '[name].[contenthash:8].css',
     }),
     new HtmlWebpackPlugin({
       template: `${src}/options/template.html`,
@@ -187,7 +190,10 @@ module.exports = {
       inject: true,
       reactDevToolsUrl,
     }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new CopyWebpackPlugin({ patterns: [{ from: 'static/*', flatten: true }] }),
     isDev &&
       new CopyWebpackPlugin({

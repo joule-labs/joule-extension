@@ -1,5 +1,4 @@
-import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call, all, put } from 'redux-saga/effects';
+import { takeLatest, select, call, all, put } from 'typed-redux-saga/macro';
 import BN from 'bn.js';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { getNodePubKey } from 'modules/node/sagas';
@@ -11,19 +10,13 @@ import { getDepositAddress } from './actions';
 export function* handleGetAccountInfo() {
   try {
     const myPubKey: string = yield call(getNodePubKey);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
+    const nodeLib = yield* select(selectNodeLibOrThrow);
     const calls = [
       call(nodeLib.getNodeInfo, myPubKey),
       call(nodeLib.getBlockchainBalance),
       call(nodeLib.getChannelsBalance),
-    ];
-    const [nodeInfo, chainBalances, channelsBalances]: [
-      Yielded<typeof nodeLib.getNodeInfo>,
-      Yielded<typeof nodeLib.getBlockchainBalance>,
-      Yielded<typeof nodeLib.getChannelsBalance>,
-    ] = yield all(calls);
+    ] as const;
+    const [nodeInfo, chainBalances, channelsBalances] = yield* all(calls);
     const payload: Account = {
       pubKey: myPubKey,
       alias: nodeInfo.node.alias,
@@ -57,25 +50,19 @@ export function* handleGetAccountInfo() {
 export function* handleGetTransactions() {
   try {
     // Get various transactions info
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const [paymentsRes, invoicesRes, transactionsRes]: [
-      Yielded<typeof nodeLib.getPayments>,
-      Yielded<typeof nodeLib.getInvoices>,
-      Yielded<typeof nodeLib.getTransactions>,
-    ] = yield all([
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const [paymentsRes, invoicesRes, transactionsRes] = yield* all([
       call(nodeLib.getPayments),
       call(nodeLib.getInvoices, { num_max_invoices: 30, reversed: true }),
       call(nodeLib.getTransactions),
-    ]);
+    ] as const);
 
     // Get node information from payments
-    const paymentNodeIds: string[] = paymentsRes.payments
+    const paymentNodeIds = paymentsRes.payments
       .map(payment => (payment.path.length ? payment.path[payment.path.length - 1] : ''))
       .filter(id => !!id)
       .filter((id, idx, ids) => ids.indexOf(id) === idx);
-    const paymentNodes: Yielded<typeof nodeLib.getNodeInfo>[] = yield all(
+    const paymentNodes = yield* all(
       paymentNodeIds.map(id => call(safeGetNodeInfo, nodeLib, id)),
     );
     const payments = paymentsRes.payments
@@ -126,13 +113,8 @@ export function* handleGetTransactions() {
 export function* handleGetDepositAddress(action: ReturnType<typeof getDepositAddress>) {
   try {
     yield call(requirePassword);
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const res: Yielded<typeof nodeLib.getAddress> = yield call(
-      nodeLib.getAddress,
-      action.payload,
-    );
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const res = yield* call(nodeLib.getAddress, action.payload);
     yield put({
       type: types.GET_DEPOSIT_ADDRESS_SUCCESS,
       payload: res.address,
@@ -145,7 +127,7 @@ export function* handleGetDepositAddress(action: ReturnType<typeof getDepositAdd
   }
 }
 
-export default function* channelsSagas(): SagaIterator {
+export default function* channelsSagas() {
   yield takeLatest(types.GET_ACCOUNT_INFO, handleGetAccountInfo);
   yield takeLatest(types.GET_TRANSACTIONS, handleGetTransactions);
   yield takeLatest(types.GET_DEPOSIT_ADDRESS, handleGetDepositAddress);

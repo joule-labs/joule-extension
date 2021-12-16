@@ -1,7 +1,7 @@
-import reducers, { SettingsState, INITIAL_STATE } from './reducers';
+import reducers, { INITIAL_STATE } from './reducers';
 import * as settingsActions from './actions';
 import * as settingsTypes from './types';
 
-export { settingsActions, settingsTypes, SettingsState, INITIAL_STATE };
-
+export { settingsActions, settingsTypes, INITIAL_STATE };
+export type { SettingsState } from './reducers';
 export default reducers;

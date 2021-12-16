@@ -1,1 +1,6 @@
-<svg height='300px' width='300px'  fill="#000000" xmlns:x="http://ns.adobe.com/Extensibility/1.0/" xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/" xmlns:graph="http://ns.adobe.com/Graphs/1.0/" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve"><switch><foreignObject requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/" x="0" y="0" width="1" height="1"></foreignObject><g i:extraneous="self"><g><polygon points="10.5,20.8 2.5,28.8 23.7,50 2.5,71.2 10.5,79.2 39.7,50    "></polygon><polygon points="39.4,20.8 31.4,28.8 52.6,50 31.4,71.2 39.4,79.2 68.6,50    "></polygon><polygon points="68.3,20.8 60.3,28.8 81.4,50 60.3,71.2 68.3,79.2 97.5,50    "></polygon></g></g></switch></svg>
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M31.5 62.4L7.5 86.4L71.1 150L7.5 213.6L31.5 237.6L119.1 150L31.5 62.4Z" fill="currentColor" />
+  <path d="M118.2 62.4L94.2 86.4L157.8 150L94.2 213.6L118.2 237.6L205.8 150L118.2 62.4Z" fill="currentColor" />
+  <path d="M204.9 62.4L180.9 86.4L244.2 150L180.9 213.6L204.9 237.6L292.5 150L204.9 62.4Z" fill="currentColor" />
+</svg>
+  
