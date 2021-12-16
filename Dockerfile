@@ -1,23 +1,16 @@
 # This Dockerfile can be used to build a production release of joule:
 #
-# Usage:
-# 1. Build the docker image
-# 2. Get the production distribution .zip file from the image
+# Use `yarn build:docker` to build the dockerfile and copy out the deterministic build.
 
-# $ docker build -t joule .
-# $ docker run --rm -v "$(pwd):/out" joule sh -c "cp /app/dist-prod/joule*.zip /out"
-# ls ./out
-#
-FROM node:lts
-run apt-get update
+FROM node:14-slim
+RUN apt-get update
 RUN apt-get install strip-nondeterminism --yes
 
 WORKDIR /app
-COPY . /app
-RUN rm -rf /app/dist-prod # remove potentially old folder
+COPY package.json ./app
+COPY yarn.lock ./app
 RUN yarn
+COPY . /app
 RUN yarn build
-RUN strip-nondeterminism /app/dist-prod/joule-*.zip
-RUN sha256sum -b /app/dist-prod/joule-*.zip
-#COPY /app/dist-prod/joule-v0.5.2.zip /out
-
+RUN strip-nondeterminism dist-prod/joule-*.zip
+RUN sha256sum -b dist-prod/joule-*.zip | cut -d " " -f 1 > sha256.txt
