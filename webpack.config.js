@@ -5,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const hash = require('string-hash');
 
 // webpack plugins
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
@@ -82,6 +81,7 @@ const urlLoaderClient = {
   options: {
     limit: 2048,
     name: 'assets/[name].[hash:8].[ext]',
+    esModule: false,
   },
 };
 
