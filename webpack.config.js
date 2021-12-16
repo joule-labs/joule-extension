@@ -75,14 +75,9 @@ const svgLoaderClient = {
   }), // svg -> react component
 };
 
-const urlLoaderClient = {
+const assetLoader = {
   test: /\.(png|jpe?g|gif)$/,
-  loader: require.resolve('url-loader'),
-  options: {
-    limit: 2048,
-    name: 'assets/[name].[hash:8].[ext]',
-    esModule: false,
-  },
+  type: 'asset/resource',
 };
 
 module.exports = {
@@ -103,6 +98,7 @@ module.exports = {
     filename: '[name].js',
     publicPath: '/',
     chunkFilename: isDev ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js',
+    assetModuleFilename: 'assets/[name].[hash:8][ext][query]',
   },
   module: {
     rules: [
@@ -142,7 +138,7 @@ module.exports = {
       externalLessLoaderClient,
       cssLoaderClient,
       svgLoaderClient,
-      urlLoaderClient,
+      assetLoader,
     ],
   },
   resolve: {
