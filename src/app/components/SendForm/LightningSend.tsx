@@ -104,13 +104,8 @@ class LightningSend extends React.Component<Props, State> {
       );
     }
 
-    const {
-      paymentRequestValue,
-      showMoreInfo,
-      value,
-      denomination,
-      routedRequest,
-    } = this.state;
+    const { paymentRequestValue, showMoreInfo, value, denomination, routedRequest } =
+      this.state;
     const requestData = this.props.paymentRequests[paymentRequestValue] || {};
     const prStatus = requestData.isLoading
       ? 'validating'

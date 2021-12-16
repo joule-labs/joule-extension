@@ -44,13 +44,8 @@ class NodeSettings extends React.Component<Props, State> {
   }
 
   componentWillUpdate(nextProps: Props) {
-    const {
-      isNodeChecked,
-      salt,
-      isUpdatingMacaroons,
-      adminMacaroon,
-      readonlyMacaroon,
-    } = this.props;
+    const { isNodeChecked, salt, isUpdatingMacaroons, adminMacaroon, readonlyMacaroon } =
+      this.props;
     const { editingNodeField } = this.state;
 
     if (isNodeChecked !== nextProps.isNodeChecked && nextProps.isNodeChecked) {

@@ -83,14 +83,8 @@ export default class CreatePassword extends React.Component<Props, State> {
   };
 
   render() {
-    const {
-      currPassword,
-      currPassErr,
-      password1,
-      password2,
-      isReady,
-      strength,
-    } = this.state;
+    const { currPassword, currPassErr, password1, password2, isReady, strength } =
+      this.state;
     const { requestCurrentPassword } = this.props;
     const p2status =
       password2.length > 0 ? (password1 === password2 ? 'success' : 'error') : undefined;

@@ -28,9 +28,7 @@ export interface SyncConfig<T> {
   triggerActions: string[];
   migrations?: { [version: number]: (oldData: any) => any };
   selector(state: AppState): T;
-  action(
-    payload: T,
-  ): {
+  action(payload: T): {
     type: string;
     payload: T;
   };

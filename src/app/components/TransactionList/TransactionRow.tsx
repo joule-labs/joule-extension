@@ -32,16 +32,8 @@ type Props = StateProps & OwnProps;
 
 class TransactionRow extends React.Component<Props> {
   render() {
-    const {
-      pubkey,
-      timestamp,
-      status,
-      delta,
-      onClick,
-      source,
-      title,
-      chain,
-    } = this.props;
+    const { pubkey, timestamp, status, delta, onClick, source, title, chain } =
+      this.props;
 
     let icon;
     if (pubkey !== null && pubkey !== undefined) {
