@@ -7,7 +7,7 @@ import Unit from 'components/Unit';
 import { enumToClassName } from 'utils/formatters';
 import { channelStatusText } from 'utils/constants';
 import { ChannelWithNode } from 'modules/channels/types';
-import { CHANNEL_STATUS } from 'lnd/message';
+import { CHANNEL_STATUS } from 'lib/lnd-http';
 import './ChannelRow.less';
 
 interface Props {

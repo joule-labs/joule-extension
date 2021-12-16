@@ -1,4 +1,4 @@
-import { Peer, LightningNode } from 'lnd/message';
+import { Peer, LightningNode } from 'lib/lnd-http';
 
 enum PeersTypes {
   GET_PEERS = 'GET_PEERS_INFO',

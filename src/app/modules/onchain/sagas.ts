@@ -1,7 +1,7 @@
 import { SagaIterator } from 'redux-saga';
 import { takeLatest, select, call, put } from 'redux-saga/effects';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
-import { GetUtxosResponse } from 'lnd/types';
+import { GetUtxosResponse } from 'lib/lnd-http/types';
 import types from './types';
 
 export function* handleGetUtxos() {

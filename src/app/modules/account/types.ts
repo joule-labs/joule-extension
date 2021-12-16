@@ -3,7 +3,7 @@ import {
   LightningInvoice,
   LightningPayment,
   ChainTransaction,
-} from 'lnd/message';
+} from 'lib/lnd-http';
 
 enum AccountTypes {
   GET_ACCOUNT_INFO = 'GET_ACCOUNT_INFO',

@@ -2,7 +2,7 @@ import {
   SendPaymentArguments,
   CreateInvoiceArguments,
   SendOnChainArguments,
-} from 'lnd/message';
+} from 'lib/lnd-http';
 import types from './types';
 
 export function checkPaymentRequest(paymentRequest: string, amount?: string) {

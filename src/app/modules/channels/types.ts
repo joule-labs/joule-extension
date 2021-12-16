@@ -5,7 +5,7 @@ import {
   ForceClosingChannel,
   WaitingChannel,
   LightningNode,
-} from 'lnd/message';
+} from 'lib/lnd-http';
 
 enum ChannelsTypes {
   GET_CHANNELS = 'GET_CHANNELS',

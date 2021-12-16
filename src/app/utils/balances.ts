@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 import moment from 'moment';
 import { ChannelWithNode } from 'modules/channels/types';
-import { Utxo, CHANNEL_STATUS } from 'lnd/message';
+import { Utxo, CHANNEL_STATUS } from 'lib/lnd-http';
 
 export interface BalanceStats {
   total: string;

@@ -1,6 +1,6 @@
 import { GetInfoResponse } from 'webln';
 import runSelector from '../content_script/runSelector';
-import { LndHttpClient } from 'lnd/http';
+import { LndHttpClient } from 'lib/lnd-http';
 import { selectSyncedUnencryptedNodeState } from 'modules/node/selectors';
 
 export default async function getNodeInfo(): Promise<GetInfoResponse> {

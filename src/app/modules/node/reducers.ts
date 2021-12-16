@@ -1,9 +1,9 @@
-import { Macaroon, GetInfoResponse, LndAPI } from 'lnd/message';
+import LndHttpClient, { Macaroon, GetInfoResponse } from 'lib/lnd-http';
 import types from './types';
 import settingsTypes from 'modules/settings/types';
 
 export interface NodeState {
-  lib: LndAPI | null;
+  lib: LndHttpClient | null;
   url: string | null;
   isNodeChecked: boolean;
   adminMacaroon: Macaroon | null;

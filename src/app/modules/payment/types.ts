@@ -1,4 +1,4 @@
-import { DecodePaymentRequestResponse, LightningNode, Route } from 'lnd/message';
+import { DecodePaymentRequestResponse, LightningNode, Route } from 'lib/lnd-http';
 
 enum PaymentTypes {
   CHECK_PAYMENT_REQUEST = 'CHECK_PAYMENT_REQUEST',

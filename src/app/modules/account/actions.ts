@@ -1,4 +1,4 @@
-import { NewAddressArguments } from 'lnd/message';
+import { NewAddressArguments } from 'lib/lnd-http';
 import types from './types';
 
 export function getAccountInfo() {

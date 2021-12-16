@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
-import { GetInfoResponse } from 'lnd/message';
+import { GetInfoResponse } from 'lib/lnd-http';
 import { blockchainDisplayName, CHAIN_TYPE } from 'utils/constants';
 import './ConfirmNode.less';
 

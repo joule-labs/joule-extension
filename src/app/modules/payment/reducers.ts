@@ -2,7 +2,7 @@ import {
   SendPaymentResponse,
   CreateInvoiceResponse,
   SendOnChainResponse,
-} from 'lnd/message';
+} from 'lib/lnd-http';
 import types, { PaymentRequestState, OnChainFeeEstimates } from './types';
 
 export interface PaymentState {
