@@ -1,4 +1,4 @@
-import { takeLatest, call, put } from 'typed-redux-saga';
+import { takeLatest, call, put } from 'typed-redux-saga/macro';
 import { CHAIN_TYPE, Fiat } from 'utils/constants';
 import { fetchRates } from './actions';
 import { apiFetchRates } from 'lib/cryptocompare';

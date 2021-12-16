@@ -1,4 +1,4 @@
-import { takeLatest, put, select, take, call } from 'typed-redux-saga';
+import { takeLatest, put, select, take, call } from 'typed-redux-saga/macro';
 import { encryptData, TEST_CIPHER_DATA } from 'utils/crypto';
 import { getPasswordCache, setPasswordCache } from 'utils/background';
 import { syncTypes } from 'modules/sync';

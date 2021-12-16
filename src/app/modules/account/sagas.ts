@@ -1,4 +1,4 @@
-import { takeLatest, select, call, all, put } from 'typed-redux-saga';
+import { takeLatest, select, call, all, put } from 'typed-redux-saga/macro';
 import BN from 'bn.js';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { getNodePubKey } from 'modules/node/sagas';

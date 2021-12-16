@@ -7,7 +7,7 @@ import {
   take,
   fork,
   delay,
-} from 'typed-redux-saga';
+} from 'typed-redux-saga/macro';
 import { browser } from 'webextension-polyfill-ts';
 import {
   selectSalt,
@@ -102,7 +102,7 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any) {
   yield put({ type: types.FINISH_DECRYPT });
 }
 
-export default function* cryptoSagas() {
+export default function* syncSagas() {
   yield takeEvery(types.CLEAR_DATA, clearData);
 
   // First fetch sync'd data and hydrate the store

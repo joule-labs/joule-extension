@@ -1,4 +1,4 @@
-import { takeLatest, select, call, all, put } from 'typed-redux-saga';
+import { takeLatest, select, call, all, put } from 'typed-redux-saga/macro';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, safeConnectPeer } from 'utils/misc';

@@ -1,4 +1,4 @@
-import { takeEvery, call, select, put } from 'typed-redux-saga';
+import { takeEvery, call, select, put } from 'typed-redux-saga/macro';
 import {
   selectNodeLibOrThrow,
   selectNodeInfo,

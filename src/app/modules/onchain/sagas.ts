@@ -1,4 +1,4 @@
-import { takeLatest, select, call, put } from 'typed-redux-saga';
+import { takeLatest, select, call, put } from 'typed-redux-saga/macro';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import types from './types';
 

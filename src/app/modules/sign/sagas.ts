@@ -1,4 +1,4 @@
-import { takeLatest, select, call, put } from 'typed-redux-saga';
+import { takeLatest, select, call, put } from 'typed-redux-saga/macro';
 import { SignMessageResponse as WebLNSignMessageResponse } from 'webln';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
 import { requirePassword } from 'modules/crypto/sagas';
