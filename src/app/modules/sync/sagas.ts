@@ -1,4 +1,3 @@
-import { SagaIterator } from 'redux-saga';
 import {
   takeLatest,
   takeEvery,
@@ -8,7 +7,7 @@ import {
   take,
   fork,
   delay,
-} from 'redux-saga/effects';
+} from 'typed-redux-saga';
 import { browser } from 'webextension-polyfill-ts';
 import {
   selectSalt,
@@ -31,19 +30,19 @@ export function* encryptAndSync(syncConfig: SyncConfig<any>) {
   // Debounce by a bit in case of rapid calls
   yield delay(300);
 
-  let data = yield select(syncConfig.selector);
+  let data = yield* select(syncConfig.selector);
 
   if (syncConfig.encrypted) {
     // Get things needed for encryption, hang if we don't yet have
-    const salt = yield select(selectSalt);
-    let password: Yielded<typeof selectPassword> = yield select(selectPassword);
+    const salt = yield* select(selectSalt);
+    let password = yield* select(selectPassword);
     if (!password) {
       yield take(cryptoTypes.SET_PASSWORD);
       password = (yield select(selectPassword)) as string;
     }
 
     // Encrypt the desired data
-    data = encryptData(data, password, salt);
+    data = encryptData(data, password, salt || '');
   }
 
   // Sync cypher
@@ -58,10 +57,10 @@ export function* sync() {
   yield put(startSync());
 
   const keys = syncConfigs.map(c => c.key);
-  const items = yield call(storageSyncGet, keys);
+  const items = yield* call(storageSyncGet, keys);
 
   for (const config of syncConfigs) {
-    if (items[config.key] !== undefined) {
+    if (items && items[config.key] !== undefined) {
       if (config.encrypted) {
         yield fork(decryptSyncedData, config, items[config.key]);
       } else {
@@ -74,21 +73,21 @@ export function* sync() {
   return;
 }
 
-export function* clearData(): SagaIterator {
+export function* clearData() {
   yield call(browser.storage.sync.clear);
   window.close();
 }
 
 export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any) {
   // Bail out if they haven't signed up yet
-  const hasSetPassword = yield select(selectHasSetPassword);
+  const hasSetPassword = yield* select(selectHasSetPassword);
   if (!hasSetPassword) {
     return;
   }
 
   // Get things needed for decryption
-  const salt = yield select(selectSalt);
-  let password: Yielded<typeof selectPassword> = yield select(selectPassword);
+  const salt = yield* select(selectSalt);
+  let password = yield* select(selectPassword);
 
   // Wait on password if we don't have it
   if (!password) {
@@ -97,13 +96,13 @@ export function* decryptSyncedData(syncConfig: SyncConfig<any>, data: any) {
   }
 
   // Migrate the data once it's decrypted & call the config action
-  const decryptedItem = decryptData(data, password, salt);
+  const decryptedItem = decryptData(data, password, salt || '');
   const payload = migrateSyncedData(syncConfig, decryptedItem);
   yield put(syncConfig.action(payload));
   yield put({ type: types.FINISH_DECRYPT });
 }
 
-export default function* cryptoSagas(): SagaIterator {
+export default function* cryptoSagas() {
   yield takeEvery(types.CLEAR_DATA, clearData);
 
   // First fetch sync'd data and hydrate the store

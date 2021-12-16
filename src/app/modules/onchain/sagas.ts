@@ -1,15 +1,11 @@
-import { SagaIterator } from 'redux-saga';
-import { takeLatest, select, call, put } from 'redux-saga/effects';
+import { takeLatest, select, call, put } from 'typed-redux-saga';
 import { selectNodeLibOrThrow } from 'modules/node/selectors';
-import { GetUtxosResponse } from 'lib/lnd-http/types';
 import types from './types';
 
 export function* handleGetUtxos() {
   try {
-    const nodeLib: Yielded<typeof selectNodeLibOrThrow> = yield select(
-      selectNodeLibOrThrow,
-    );
-    const payload: Yielded<GetUtxosResponse> = yield call(nodeLib.getUtxos);
+    const nodeLib = yield* select(selectNodeLibOrThrow);
+    const payload = yield* call(nodeLib.getUtxos);
 
     yield put({
       type: types.GET_UTXOS_SUCCESS,
@@ -23,6 +19,6 @@ export function* handleGetUtxos() {
   }
 }
 
-export default function* onChainSagas(): SagaIterator {
+export default function* onChainSagas() {
   yield takeLatest(types.GET_UTXOS, handleGetUtxos);
 }
