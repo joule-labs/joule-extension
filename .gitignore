@@ -8,6 +8,7 @@
 /dist
 /dist-dev
 /dist-prod
+/dist-docker
 
 # misc
 .DS_Store
