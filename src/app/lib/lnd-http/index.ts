@@ -426,6 +426,12 @@ export class LndHttpClient {
           let errBody: any;
           try {
             errBody = await res.json();
+            // Breaking change in v0.14.1, res.error became res.message. Simply
+            // map it over for now.
+            if (errBody.message && !errBody.error) {
+              errBody.error = errBody.message;
+              delete errBody.message;
+            }
             if (!errBody.error) throw new Error();
           } catch (err) {
             throw new NetworkError(res.statusText, res.status);
