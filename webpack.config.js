@@ -98,7 +98,7 @@ module.exports = {
     filename: '[name].js',
     publicPath: '/',
     chunkFilename: isDev ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js',
-    assetModuleFilename: 'assets/[name].[hash:8][ext][query]',
+    assetModuleFilename: 'assets/[name].[contenthash:8][ext][query]',
   },
   module: {
     rules: [
@@ -166,7 +166,7 @@ module.exports = {
       Buffer: ['buffer', 'Buffer'],
     }),
     new MiniCssExtractPlugin({
-      filename: isDev ? '[name].css' : '[name].[hash:8].css',
+      filename: isDev ? '[name].css' : '[name].[contenthash:8].css',
     }),
     new HtmlWebpackPlugin({
       template: `${src}/options/template.html`,
