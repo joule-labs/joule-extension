@@ -52,21 +52,21 @@ const externalLessLoaderClient = {
 
 const svgLoaderClient = {
   test: /\.svg$/,
-  issuer: {
-    test: /\.tsx?$/,
-  },
+  issuer: /\.tsx?$/,
   use: ({ resource }) => ({
     loader: '@svgr/webpack',
     options: {
       svgoConfig: {
         plugins: [
           {
-            inlineStyles: {
+            name: 'inlineStyles',
+            params: {
               onlyMatchedOnce: false,
             },
           },
           {
-            cleanupIDs: {
+            name: 'cleanupIDs',
+            params: {
               prefix: `svg-${hash(resource)}`,
             },
           },
@@ -89,7 +89,7 @@ module.exports = {
   mode: isDev ? 'development' : 'production',
   name: 'client',
   target: 'web',
-  devtool: 'cheap-module-inline-source-map',
+  devtool: 'inline-cheap-module-source-map',
   entry: {
     background_script: path.join(__dirname, 'src/background_script/index.ts'),
     content_script: path.join(__dirname, 'src/content_script/index.ts'),
@@ -163,6 +163,9 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    }),
     new MiniCssExtractPlugin({
       filename: isDev ? '[name].css' : '[name].[hash:8].css',
     }),
@@ -187,7 +190,10 @@ module.exports = {
       inject: true,
       reactDevToolsUrl,
     }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new CopyWebpackPlugin({ patterns: [{ from: 'static/*', flatten: true }] }),
     isDev &&
       new CopyWebpackPlugin({

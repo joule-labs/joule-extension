@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
+import { getAppContainer } from 'utils/globals';
 import './style.less';
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 
 export default class Splash extends React.Component<Props> {
   componentDidMount() {
-    if (process.env.APP_CONTAINER === 'page') {
+    if (getAppContainer() === 'page') {
       browser.storage.local.get('skipSplash').then(value => {
         if (value && value.skipSplash) {
           browser.storage.local.remove('skipSplash').then(() => {
@@ -43,7 +44,7 @@ export default class Splash extends React.Component<Props> {
   }
 
   private handleContinue = () => {
-    if (process.env.APP_CONTAINER === 'page') {
+    if (getAppContainer() === 'page') {
       this.props.handleContinue();
     } else {
       browser.storage.local.set({ skipSplash: true }).then(() => {
