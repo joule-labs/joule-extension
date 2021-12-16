@@ -1,6 +1,5 @@
 import { Store, createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import { composeWithDevTools } from 'remote-redux-devtools';
 import rootReducer, { AppState, combineInitialState } from './reducers';
 import rootSaga from './sagas';
 
@@ -14,7 +13,7 @@ const bindMiddleware = (middleware: any) => {
     });
     middleware = [...middleware, logger];
   }
-  return composeWithDevTools(applyMiddleware(...middleware));
+  return applyMiddleware(...middleware);
 };
 
 export function configureStore(initialState: Partial<AppState> = combineInitialState) {
