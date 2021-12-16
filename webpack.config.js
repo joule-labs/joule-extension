@@ -166,6 +166,9 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new MiniCssExtractPlugin({
       filename: isDev ? '[name].css' : '[name].[hash:8].css',
     }),
