@@ -1,4 +1,4 @@
-const API_URL = 'https://bitcoinfees.earn.com/api/v1/fees/recommended';
+const API_URL = 'https://mempool.space/api/v1/fees/recommended';
 
 export async function apiFetchOnChainFees() {
   const res = await fetch(API_URL);
