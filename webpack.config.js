@@ -84,7 +84,7 @@ module.exports = {
   mode: isDev ? 'development' : 'production',
   name: 'client',
   target: 'web',
-  devtool: 'inline-cheap-module-source-map',
+  devtool: isDev ? 'inline-cheap-module-source-map' : 'source-map',
   entry: {
     background_script: path.join(__dirname, 'src/background_script/index.ts'),
     content_script: path.join(__dirname, 'src/content_script/index.ts'),

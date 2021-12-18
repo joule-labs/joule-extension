@@ -16,21 +16,21 @@ jobs:
     name: build-prod
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
 
-      - name: Build docker image
-        run: docker build -t joule-build .
-
-      - name: Copy extension zip file
-        run: docker run --rm -v "$(pwd):/out" joule-build sh -c "cp /app/dist-prod/joule*.zip /out && cp /app/sha256.txt /out"
+      - name: Build Joule via docker image
+        run: yarn build:docker
 
       - name: Archive zip file
         uses: actions/upload-artifact@v2
         with:
           name: joule.zip
-          path: joule-*.zip
+          path: ./dist-docker/joule-*.zip
 
-      - name: Archive hash txt
+      - name: Archive sha256sum manifest file
         uses: actions/upload-artifact@v2
         with:
-          name: sha256.txt
-          path: sha256.txt
+          name: manifest.txt
+          path: ./dist-docker/manifest.txt
