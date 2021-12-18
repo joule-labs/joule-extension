@@ -56,6 +56,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: extension
+          path: /assets
 
       - name: Upload extension build to release
         if: startsWith(github.ref, 'refs/tags/')
@@ -64,7 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./joule-${{ github.ref }}.zip
+          asset_path: /assets/joule-${{ github.ref }}.zip
           asset_name: joule-${{ github.ref }}.zip
           asset_content_type: application/zip
 
@@ -72,6 +73,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: manifest
+          path: /assets
 
       - name: Upload sha256sum manifest to release
         if: startsWith(github.ref, 'refs/tags/')
@@ -80,6 +82,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./manifest.txt
+          asset_path: /assets/manifest.txt
           asset_name: manifest.txt
           asset_content_type: text/plain
