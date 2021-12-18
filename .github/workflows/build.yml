@@ -11,8 +11,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Build extension
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -35,9 +35,10 @@ jobs:
           path: ./dist-docker/manifest.txt
 
   release:
+    name: Make release
+    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build]
-    name: Make release
     steps:
       - name: Create release
         id: create_release
