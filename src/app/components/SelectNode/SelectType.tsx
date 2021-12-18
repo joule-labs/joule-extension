@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Collapse, Icon } from 'antd';
 import { NODE_TYPE } from 'utils/constants';
-import LightningAppIcon from 'static/images/lightningapp.svg';
 import ZapAppIcon from 'static/images/zap.svg';
 import BTCPayServerIcon from 'static/images/btcpayserver.svg';
 import './SelectType.less';
@@ -31,13 +30,6 @@ export default class SelectType extends React.Component<Props> {
           onClick={() => onSelectNodeType(NODE_TYPE.REMOTE)}
         >
           Remote node
-        </Button>
-        <Button
-          size="large"
-          block
-          onClick={() => onSelectNodeType(NODE_TYPE.LIGHTNING_APP)}
-        >
-          <Icon component={LightningAppIcon} /> Lightning App
         </Button>
         <Button
           size="large"
