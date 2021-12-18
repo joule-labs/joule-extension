@@ -7,7 +7,7 @@ import {
 import { requirePassword } from 'modules/crypto/sagas';
 import { getAccountInfo, getTransactions } from 'modules/account/actions';
 import { checkPaymentRequest, sendPayment, createInvoice, sendOnChain } from './actions';
-import { apiFetchOnChainFees } from 'lib/earn';
+import { apiFetchOnChainFees } from 'lib/fees';
 import types from './types';
 import { CHAIN_TYPE } from 'utils/constants';
 import { NoRouteError } from 'lib/lnd-http/errors';
