@@ -5,9 +5,7 @@
 /coverage
 
 # production
-/dist
-/dist-dev
-/dist-prod
+/dist-*
 
 # misc
 .DS_Store

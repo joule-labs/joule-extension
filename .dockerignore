@@ -1,0 +1,10 @@
+# dependencies
+/node_modules
+
+# production
+/dist-*
+
+# misc files that don't affect build
+README.md
+LICENSE
+Dockerfile

@@ -26,6 +26,7 @@
     "build": "npm run build:prod",
     "build:dev": "rimraf dist-dev && cross-env NODE_ENV=development webpack",
     "build:prod": "rimraf dist-prod && cross-env NODE_ENV=production webpack",
+    "build:docker": "rm -rf dist-docker && docker build -t joule-build . && docker run --rm -v \"$(pwd)/dist-docker:/out\" joule-build sh -c \"cp /app/dist-prod/joule*.zip /out && cp /app/dist-prod/manifest.txt /out\"",
     "clean": "rimraf ./dist-dev && rimraf ./dist-prod",
     "lint": "tslint -p tsconfig.json",
     "tsc": "tsc --noEmit",

@@ -56,14 +56,8 @@ class InvoiceForm extends React.Component<Props, State> {
 
   render() {
     const { invoice, isCreatingInvoice, invoiceError, close } = this.props;
-    const {
-      isAnyValue,
-      memo,
-      expiry,
-      fallbackAddress,
-      amount,
-      privateHints,
-    } = this.state;
+    const { isAnyValue, memo, expiry, fallbackAddress, amount, privateHints } =
+      this.state;
     const disabled = (!amount && !isAnyValue) || !parseInt(expiry, 10);
 
     let content;
@@ -212,14 +206,8 @@ class InvoiceForm extends React.Component<Props, State> {
 
   private handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    const {
-      amount,
-      memo,
-      fallbackAddress,
-      expiry,
-      isAnyValue,
-      privateHints,
-    } = this.state;
+    const { amount, memo, fallbackAddress, expiry, isAnyValue, privateHints } =
+      this.state;
     this.props.createInvoice({
       value: isAnyValue ? undefined : amount,
       memo,

@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+      - master
     tags:
       - v*
 
@@ -15,35 +16,21 @@ jobs:
     name: build-prod
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Build Joule via docker image
+        run: yarn build:docker
 
-      - uses: actions/cache@v2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - run: yarn install
-      - run: yarn lint
-      - name: Build production
-        run: yarn build:prod
-
-      - name: Archive production zip file
+      - name: Archive zip file
         uses: actions/upload-artifact@v2
         with:
           name: joule.zip
-          path: dist-prod/joule-*.zip
+          path: ./dist-docker/joule-*.zip
 
-      - name: Archive production files
+      - name: Archive sha256sum manifest file
         uses: actions/upload-artifact@v2
         with:
-          name: joule
-          path: dist-prod/
+          name: manifest.txt
+          path: ./dist-docker/manifest.txt
