@@ -1,4 +1,4 @@
-name: Build Production
+name: Build
 
 on:
   pull_request:
@@ -12,25 +12,73 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    name: build-prod
+    name: Build extension
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
 
-      - name: Build Joule via docker image
+      - name: Build extension via docker image
         run: yarn build:docker
 
-      - name: Archive zip file
+      - name: Archive extension build zip file
         uses: actions/upload-artifact@v2
         with:
-          name: joule.zip
+          name: extension
           path: ./dist-docker/joule-*.zip
 
       - name: Archive sha256sum manifest file
         uses: actions/upload-artifact@v2
         with:
-          name: manifest.txt
+          name: manifest
           path: ./dist-docker/manifest.txt
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build]
+    name: Make release
+    steps:
+      - name: Create release
+        id: create_release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+          prerelease: true
+
+      - name: Download extension build zip artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: extension
+
+      - name: Upload extension build to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./joule-${{ github.ref }}.zip
+          asset_name: joule-${{ github.ref }}.zip
+          asset_content_type: application/zip
+
+      - name: Download sha256sum manifest artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: manifest
+
+      - name: Upload sha256sum manifest to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./manifest.txt
+          asset_name: manifest.txt
+          asset_content_type: text/plain
