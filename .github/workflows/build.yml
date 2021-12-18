@@ -51,6 +51,16 @@ jobs:
           release_name: ${{ github.ref }}
           draft: true
           prerelease: true
+          body: |
+            ## Release Notes
+
+            <!-- Release notes here -->
+
+            ## Verify Release
+
+            <!-- Make sure you upload gpg signature before releasing! -->
+
+            See https://github.com/joule-labs/joule-extension/tree/develop/docs/verify.md
 
       - name: Download extension build zip artifact
         uses: actions/download-artifact@v2
@@ -85,5 +95,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./manifest.txt
-          asset_name: manifest.txt
+          asset_name: manifest-${{ github.ref_name }}.txt
           asset_content_type: text/plain

@@ -90,11 +90,18 @@ To make a production build, follow these steps
 
 ## Releasing
 
-1. Bump the version number in `package.json` and `static/manifest.json`
+1. Bump the version number in `package.json` and `static/manifest.json` and commit it to develop
 2. Create a git tag called `v${version}` and push it
-3. Run a build
-4. Make a new Github release, upload the build assets, write a changelog
-5. Upload the built zip to the Chrome developer dashboard, Firefox addons site, and Opera addons site
+3. CI will make a release with the assets uploaded and place it in draft
+4. Build the release locally with Docker and sign the manifest with
+   ```sh
+   yarn build:docker && cd dist-docker && gpg --output manifest-[version].wbobeirne.sig --detach-sig manifest.txt
+   ```
+5. Download the `manifest-[version].txt` from the release and verify it with the signature you just made
+   ```sh
+   gpg --verify manifest-[version].wbobeirne.sig manifest-[version].txt
+   ```
+6. Upload the built zip to the Chrome developer dashboard + Firefox addons site
 
 ## Testing
 
