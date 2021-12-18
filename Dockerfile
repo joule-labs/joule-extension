@@ -12,4 +12,4 @@ RUN ls -la
 RUN yarn
 COPY . ./
 RUN yarn build
-RUN cd dist-prod && find . -type f ! -name '*.zip' -exec sha256sum {} \; > manifest.txt
+RUN cd dist-prod && find . -type f ! -name '*.zip' -print0 | sort -z | xargs -r0 sha256sum > manifest.txt
