@@ -6,6 +6,7 @@ import { requirePassword } from 'modules/crypto/sagas';
 import { safeGetNodeInfo, UNKNOWN_NODE } from 'utils/misc';
 import types, { Account } from './types';
 import { getDepositAddress } from './actions';
+import { getPaymentRecipientPubkey } from 'utils/lnd-shims';
 
 export function* handleGetAccountInfo() {
   try {
@@ -59,8 +60,8 @@ export function* handleGetTransactions() {
 
     // Get node information from payments
     const paymentNodeIds = paymentsRes.payments
-      .map(payment => (payment.path.length ? payment.path[payment.path.length - 1] : ''))
-      .filter(id => !!id)
+      .map(getPaymentRecipientPubkey)
+      .filter((id): id is string => !!id)
       .filter((id, idx, ids) => ids.indexOf(id) === idx);
     const paymentNodes = yield* all(
       paymentNodeIds.map(id => call(safeGetNodeInfo, nodeLib, id)),
@@ -68,15 +69,14 @@ export function* handleGetTransactions() {
     const payments = paymentsRes.payments
       .map(p => {
         // Handle payments that may be missing a path
-        if (!p.path.length) {
+        const pubkey = getPaymentRecipientPubkey(p);
+        if (!pubkey) {
           return {
             ...p,
             to: UNKNOWN_NODE,
           };
         }
-        const nodeResponse = paymentNodes.find(
-          n => p.path[p.path.length - 1] === n.node.pub_key,
-        );
+        const nodeResponse = paymentNodes.find(n => pubkey === n.node.pub_key);
         return {
           ...p,
           to: (nodeResponse as any).node,

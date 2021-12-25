@@ -119,6 +119,7 @@ export interface Hop {
   fee_msat: string;
   chan_capacity: string;
   amt_to_forward: string;
+  pub_key: string;
 }
 
 export interface Route {
@@ -141,6 +142,12 @@ export interface ChainTransaction {
   block_hash: string;
 }
 
+export interface HTLCAttempt {
+  attempt_id: string;
+  status: string;
+  route: Route;
+}
+
 export interface LightningPayment {
   payment_hash: string;
   fee: string;
@@ -148,7 +155,8 @@ export interface LightningPayment {
   value_sat: string;
   value_msat: string;
   payment_preimage: string;
-  path: string[];
+  path?: string[];
+  htlcs?: HTLCAttempt[];
 }
 
 export interface LightningInvoice {
