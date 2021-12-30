@@ -74,11 +74,9 @@ class PaymentPrompt extends React.Component<Props, State> {
         isLatestRoute: !!this.state.routedRequest,
       });
 
-      if (newPr.data.request.num_satoshis) {
-        const value = fromBaseToUnit(
-          newPr.data.request.num_satoshis,
-          denomination,
-        ).toString();
+      const { num_satoshis } = newPr.data.request;
+      if (num_satoshis && num_satoshis !== '0') {
+        const value = fromBaseToUnit(num_satoshis, denomination).toString();
         this.setState({
           value,
           // ...but if a payment came with the request, it's a latest route
@@ -122,7 +120,7 @@ class PaymentPrompt extends React.Component<Props, State> {
           <NodeInfo pubkey={node.pub_key} alias={node.alias} />
           <div className="PaymentPrompt-amount">
             <h4 className="PaymentPrompt-amount-label">Amount</h4>
-            {request.num_satoshis ? (
+            {request.num_satoshis && request.num_satoshis !== '0' ? (
               <div className="PaymentPrompt-amount-value">
                 <Unit value={request.num_satoshis} showFiat />
               </div>

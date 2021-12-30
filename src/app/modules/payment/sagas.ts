@@ -11,6 +11,7 @@ import { apiFetchOnChainFees } from 'lib/fees';
 import types from './types';
 import { CHAIN_TYPE } from 'utils/constants';
 import { NoRouteError } from 'lib/lnd-http/errors';
+import { Route } from 'lib/lnd-http';
 
 export function* handleSendPayment(action: ReturnType<typeof sendPayment>) {
   try {
@@ -73,23 +74,41 @@ export function* handleCheckPaymentRequest(
   let nodeLib: Yielded<typeof selectNodeLibOrThrow>;
   let decodedRequest: Yielded<typeof nodeLib.decodePaymentRequest> | undefined;
   let nodeInfo: Yielded<typeof nodeLib.getNodeInfo> | undefined;
+
+  const unknownRoute: Route = {
+    total_amt: '?',
+    total_amt_msat: '?',
+    total_fees: '?',
+    total_fees_msat: '?',
+    total_time_lock: '?',
+    hops: [],
+  };
+
   try {
     nodeLib = yield* select(selectNodeLibOrThrow);
     decodedRequest = yield* call(nodeLib.decodePaymentRequest, paymentRequest);
     nodeInfo = yield* call(nodeLib.getNodeInfo, decodedRequest.destination);
-    const routeInfo = yield* call(
-      nodeLib.queryRoutes,
-      decodedRequest.destination,
-      amount || decodedRequest.num_satoshis || '1',
-      { num_routes: 1 },
-    );
+    let route: Route;
+    const amountSats = parseInt(amount || decodedRequest.num_satoshis || '1', 10);
+    // QueryRoutes doesn't route zero-sat payments, so ignore if it's a zero (any) amount
+    if (amountSats > 0) {
+      const routeInfo = yield* call(
+        nodeLib.queryRoutes,
+        decodedRequest.destination,
+        amount || decodedRequest.num_satoshis || '1',
+        { num_routes: 1 },
+      );
+      route = routeInfo.routes[0];
+    } else {
+      route = unknownRoute;
+    }
     yield put({
       type: types.CHECK_PAYMENT_REQUEST_SUCCESS,
       payload: {
         paymentRequest,
         request: decodedRequest,
         node: nodeInfo.node,
-        route: routeInfo.routes[0],
+        route,
       },
     });
   } catch (err) {
@@ -108,14 +127,7 @@ export function* handleCheckPaymentRequest(
           paymentRequest,
           request: decodedRequest,
           node: nodeInfo.node,
-          route: {
-            total_amt: '?',
-            total_amt_msat: '?',
-            total_fees: '?',
-            total_fees_msat: '?',
-            total_time_lock: '?',
-            hops: [],
-          },
+          route: unknownRoute,
         },
       });
       return;

@@ -122,10 +122,12 @@ class LightningSend extends React.Component<Props, State> {
         'seconds',
       );
     const hasExpired = expiry && expiry.isBefore(moment.now());
+    const num_satoshis = requestData.data?.request.num_satoshis;
     const disabled =
       !requestData.data ||
       !!hasExpired ||
-      (!requestData.data.request.num_satoshis && !value);
+      (!num_satoshis && !value) ||
+      (num_satoshis === '0' && !value);
 
     return (
       <Form className="LightningSend" onSubmit={this.handleSubmit}>
@@ -179,7 +181,7 @@ class LightningSend extends React.Component<Props, State> {
                 </code>
               </div>
             </div>
-            {!routedRequest.request.num_satoshis && (
+            {(!num_satoshis || num_satoshis === '0') && (
               <div className="LightningSend-payment-value">
                 <Input.Group compact>
                   <Input
@@ -209,11 +211,11 @@ class LightningSend extends React.Component<Props, State> {
               <div className="LightningSend-payment-details">
                 <table>
                   <tbody>
-                    {routedRequest.request.num_satoshis && (
+                    {num_satoshis && (
                       <tr>
                         <td>Amount</td>
                         <td>
-                          <Unit value={routedRequest.request.num_satoshis} />
+                          <Unit value={num_satoshis} />
                         </td>
                       </tr>
                     )}
