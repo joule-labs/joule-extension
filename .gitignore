@@ -19,3 +19,5 @@ tmp/
 .vscode
 
 .idea/
+
+keys.json
