@@ -7,7 +7,7 @@
 import { Hop, LightningPayment } from 'lib/lnd-http';
 
 export function getPaymentHops(payment: LightningPayment) {
-  let path: Array<Partial<Hop>> = [];
+  let path: Partial<Hop>[] = [];
   if (payment.htlcs?.[0]) {
     path = payment.htlcs[0].route.hops;
   } else if (payment.path) {
