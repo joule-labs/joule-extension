@@ -32,7 +32,7 @@
     "persistent": true
   },
   "web_accessible_resources": ["inpage_script.js"],
-  "permissions": ["storage", "clipboardWrite", "activeTab", "contextMenus"],
+  "permissions": ["storage", "clipboardWrite", "contextMenus"],
   "optional_permissions": ["notifications", "http://*/", "https://*/"],
   "applications": {
     "gecko": {
