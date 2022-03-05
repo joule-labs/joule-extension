@@ -14,6 +14,7 @@ import { AnyTransaction } from 'modules/account/types';
 import { isPayment, isInvoice, isChainTx } from 'utils/typeguards';
 import { unixMoment, LONG_FORMAT } from 'utils/time';
 import { makeTxUrl, makeBlockUrl } from 'utils/formatters';
+import { getPaymentHops } from 'utils/lnd-shims';
 import { AppState } from 'store/reducers';
 import TransactionArrow from 'static/images/transaction-arrow.svg';
 import './style.less';
@@ -56,6 +57,7 @@ class TransactionInfo extends React.Component<Props> {
     let details: DetailsRow[] = [];
 
     if (isPayment(tx)) {
+      const hops = getPaymentHops(tx);
       to = {
         name: tx.to.alias,
         icon: <Identicon pubkey={tx.to.pub_key} />,
@@ -65,6 +67,10 @@ class TransactionInfo extends React.Component<Props> {
         icon: <Identicon pubkey={account.pubKey} />,
       };
       details = [
+        {
+          label: 'Pubkey',
+          value: <code>{tx.to.pub_key}</code>,
+        },
         {
           label: 'Amount',
           value: <Unit value={tx.value_sat} showFiat />,
@@ -77,20 +83,22 @@ class TransactionInfo extends React.Component<Props> {
           label: 'Date',
           value: unixMoment(tx.creation_date).format(LONG_FORMAT),
         },
-        {
+        hops && {
           label: 'Hops',
-          value: tx.path.length,
+          value: hops.length,
         },
-      ];
+      ].filter(d => !!d) as DetailsRow[];
       pathEl = (
         <div className="TxInfo-route">
           <h2 className="TxInfo-route-title">Route</h2>
           <div className="TxInfo-route-routes">
-            {tx.path.length ? (
+            {hops.length ? (
               <Timeline>
-                {tx.path.map(id => (
-                  <Timeline.Item key={id}>
-                    <code>{id}</code>
+                {hops.map(hop => (
+                  <Timeline.Item key={hop.pub_key}>
+                    <code>
+                      {hop.pub_key} {hop.fee ? `(${hop.fee} sats)` : ''}
+                    </code>
                   </Timeline.Item>
                 ))}
               </Timeline>
