@@ -1,20 +1,18 @@
+_**NOTICE:** Joule is no longer being actively developed. You can find other WebLN browser extensions that are actively maintained in the [WebLN documentation](https://webln.dev/#/). This repository now primarily serves as a learning resource for aspiring WebLN developers. Thanks for the support._
+
+---
+
 <p align="center">
 <a href="https://lightningjoule.com"><img src="https://camo.githubusercontent.com/ff4a641fba4f90ea2a24413d8874bb464883685d/68747470733a2f2f692e696d6775722e636f6d2f595968594335652e706e67" alt="Joule, get it now at lightningjoule.com" data-canonical-src="https://i.imgur.com/YYhYC5e.png" style="max-width:100%;" width="400"></a>
 </p>
 
 ## Overview
 
-A chrome extension that lightning-charges your browser with
+A browser extension that lightning-charges your browser with
 [webln](https://github.com/wbobeirne/webln), giving you
 the ability to pay and use your node as an identity on the web.
 
-**WARNING: Joule is in early alpha, and should not be used for large mainnet funds**
-
-<p align="center">
-  <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/joule/aejmoogjdllanidlpfjmmmmimfaficio"><img src="https://camo.githubusercontent.com/03f42faaa039db4a737c86efffa8fb51160b1c3e/68747470733a2f2f692e696d6775722e636f6d2f6b5742515539512e706e67" alt="Install for Chrome" data-canonical-src="https://i.imgur.com/kWBQU9Q.png" width="215" style="max-width:100%;"></a>
-  <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/joule/aejmoogjdllanidlpfjmmmmimfaficio"><img src="https://camo.githubusercontent.com/28cdbccd978c68df21b742fb5d0122a49977d3ba/68747470733a2f2f692e696d6775722e636f6d2f6c6f71443433312e706e67" alt="Install for Brave" data-canonical-src="https://i.imgur.com/loqD431.png" width="215" style="max-width:100%;"></a>
-  <a target="_blank" rel="noopener noreferrer" href="https://addons.mozilla.org/en-US/firefox/addon/lightning-joule/"><img src="https://camo.githubusercontent.com/0ab15bdbdfebab96bdb03d184f60eb0e28169a21/68747470733a2f2f692e696d6775722e636f6d2f614e4342324c472e706e67" alt="Install for Firefox" data-canonical-src="https://i.imgur.com/aNCB2LG.png" width="215" style="max-width:100%;"></a>
-</p>
+**WARNING: Joule is no longer acitvely developed, and should not be used for large mainnet funds**
 
 ## Project Layout
 
@@ -118,13 +116,3 @@ Please see the [Contributor Guidelines on the Wiki](https://github.com/wbobeirne
   reference implementation of the extension flow.
 - Thanks to [Chaincode Labs](https://chaincode.com) for putting together the 2018
   Lightning residency, where this was born.
-
-## Pay me money pls
-
-<p align="center">
-<a target="_blank" rel="noopener noreferrer" href="https://tiphub.io/user/964883859/tip?site=github">
-<img src="https://tiphub.io/static/images/tip-button-dark.png" alt="Tip wbobeirne on TipHub" height="60">
-<br />
-My pubkey starts with <code>02458b08</code>
-</a>
-</p>
